@@ -360,7 +360,7 @@ bool Monitor::saveXML(QDomDocument* doc, QDomElement* root)
  * Monitor Properties
  ****************************************************************************/
 
-MonitorProperties::MonitorProperties() : QLCWidgetProperties()
+MonitorProperties::MonitorProperties() : VCWidgetProperties()
 {
 	m_width = 640;
 	m_height = 480;
@@ -426,9 +426,9 @@ MonitorProperties::ValueStyle MonitorProperties::stringToValueStyle(
 void MonitorProperties::store(Monitor* monitor)
 {
 #ifdef __APPLE__
-	QLCWidgetProperties::store(monitor);
+	VCWidgetProperties::store(monitor);
 #else
-	QLCWidgetProperties::store(monitor->parentWidget());
+	VCWidgetProperties::store(monitor->parentWidget());
 #endif
 }
 
@@ -457,7 +457,7 @@ bool MonitorProperties::loadXML(const QDomElement* root)
 		else if (tag.tagName() == KXMLQLCMonitorChannelStyle)
 			m_channelStyle = stringToChannelStyle(tag.text());
 		else if (tag.tagName() == KXMLQLCWidgetProperties)
-			QLCWidgetProperties::loadXML(&tag);
+			VCWidgetProperties::loadXML(&tag);
 		else
 			qDebug() << "Unknown monitor tag:" << tag.tagName();
 
@@ -500,5 +500,5 @@ bool MonitorProperties::saveXML(QDomDocument* doc, QDomElement* root)
 	tag.appendChild(text);
 
 	/* Window state */
-	return QLCWidgetProperties::saveXML(doc, &prop_root);
+	return VCWidgetProperties::saveXML(doc, &prop_root);
 }

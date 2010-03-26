@@ -39,7 +39,6 @@
 #include <QIcon>
 #include <QUrl>
 
-#include "qlcdocbrowser.h"
 #include "qlcfixturedef.h"
 #include "qlcchannel.h"
 #include "qlcconfig.h"
@@ -47,6 +46,7 @@
 
 #include "app.h"
 #include "aboutbox.h"
+#include "docbrowser.h"
 #include "fixtureeditor.h"
 
 #define KSettingsGeometry "workspace/geometry"
@@ -373,7 +373,7 @@ void App::slotFileQuit()
 
 void App::slotHelpIndex()
 {
-	QLCDocBrowser* browser = new QLCDocBrowser(this, Qt::Window);
+	DocBrowser* browser = new DocBrowser(this, Qt::Window);
 	browser->setAttribute(Qt::WA_DeleteOnClose);
 	browser->show();
 }

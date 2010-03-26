@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcdocbrowser.h
+  docbrowser.h
 
   Copyright (C) Heikki Junnila
 
@@ -19,27 +19,27 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLCDOCBROWSER_H
-#define QLCDOCBROWSER_H
+#ifndef DOCBROWSER_H
+#define DOCBROWSER_H
 
 #include <QMainWindow>
 #include "qlctypes.h"
 
-class QLCDocBrowser;
 class QTextBrowser;
+class DocBrowser;
 class QToolBar;
 class QAction;
 
-class QLCDocBrowser : public QWidget
+class DocBrowser : public QWidget
 {
 	Q_OBJECT
 
 public:
-	QLCDocBrowser(QWidget* parent, Qt::WindowFlags f = 0);
-	~QLCDocBrowser();
+	DocBrowser(QWidget* parent, Qt::WindowFlags f = 0);
+	~DocBrowser();
 
 private:
-	Q_DISABLE_COPY(QLCDocBrowser)
+	Q_DISABLE_COPY(DocBrowser)
 
 protected slots:
 	void slotBackwardAvailable(bool);

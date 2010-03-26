@@ -25,7 +25,7 @@
 #include <QDialog>
 
 #include "ui_vcproperties.h"
-#include "qlcwidgetproperties.h"
+#include "vcwidgetproperties.h"
 #include "qlctypes.h"
 
 class VirtualConsole;
@@ -58,7 +58,7 @@ class VCFrame;
  * Properties
  *****************************************************************************/
 
-class VCProperties : public QLCWidgetProperties
+class VCProperties : public VCWidgetProperties
 {
 	friend class VCPropertiesEditor;
 	friend class VirtualConsole;

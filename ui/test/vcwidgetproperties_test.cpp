@@ -1,12 +1,12 @@
 #include <QWidget>
 #include <QtTest>
 
-#include "qlcwidgetproperties_test.h"
-#include "../qlcwidgetproperties.h"
+#include "vcwidgetproperties_test.h"
+#include "vcwidgetproperties.h"
 
-void QLCWidgetProperties_Test::stateAndVisibility()
+void VCWidgetProperties_Test::stateAndVisibility()
 {
-	QLCWidgetProperties p;
+	VCWidgetProperties p;
 	QVERIFY(p.state() == Qt::WindowNoState);
 	QVERIFY(p.visible() == false);
 
@@ -36,9 +36,9 @@ void QLCWidgetProperties_Test::stateAndVisibility()
 	QVERIFY(p.visible() == false);
 }
 
-void QLCWidgetProperties_Test::xy()
+void VCWidgetProperties_Test::xy()
 {
-	QLCWidgetProperties p;
+	VCWidgetProperties p;
 
 	QWidget w(NULL);
 	p.store(&w);
@@ -53,9 +53,9 @@ void QLCWidgetProperties_Test::xy()
 	QVERIFY(p.y() == 10);
 }
 
-void QLCWidgetProperties_Test::wh()
+void VCWidgetProperties_Test::wh()
 {
-	QLCWidgetProperties p;
+	VCWidgetProperties p;
 
 	QWidget w(NULL);
 	p.store(&w);
@@ -70,7 +70,7 @@ void QLCWidgetProperties_Test::wh()
 	QVERIFY(p.height() == 30);
 }
 
-void QLCWidgetProperties_Test::load()
+void VCWidgetProperties_Test::load()
 {
 	QDomDocument doc;
 
@@ -108,7 +108,7 @@ void QLCWidgetProperties_Test::load()
 	s.appendChild(sText);
 	root.appendChild(s);
 
-	QLCWidgetProperties p;
+	VCWidgetProperties p;
 	p.loadXML(&root);
 	QVERIFY(p.x() == 50);
 	QVERIFY(p.y() == 70);

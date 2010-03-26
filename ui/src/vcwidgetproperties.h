@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcwidgetproperties.h
+  vcwidgetproperties.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QLCWIDGETPROPERTIES_H
-#define QLCWIDGETPROPERTIES_H
+#ifndef VCWIDGETPROPERTIES_H
+#define VCWIDGETPROPERTIES_H
 
 #include <QtXml>
 #include "qlctypes.h"
@@ -37,12 +37,12 @@ class QWidget;
 
 /** Simple class to store a widget's visible state (minimized, maximized,
     visible or not visible and dimensions. */
-class QLCWidgetProperties
+class VCWidgetProperties
 {
 public:
-	QLCWidgetProperties();
-	QLCWidgetProperties(const QLCWidgetProperties& properties);
-	virtual ~QLCWidgetProperties();
+	VCWidgetProperties();
+	VCWidgetProperties(const VCWidgetProperties& properties);
+	virtual ~VCWidgetProperties();
 
 	QFlags <Qt::WindowState> state() const { return m_state; }
 	bool visible() const { return m_visible; }

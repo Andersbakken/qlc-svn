@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QtTest>
 
-#include "qlcwidgetproperties_test.h"
 #include "qlcfixturedefcache_test.h"
 #include "qlcinputchannel_test.h"
 #include "qlcinputprofile_test.h"
@@ -59,11 +58,6 @@ int main(int argc, char** argv)
 
 	QLCInputProfile_Test inputProfile;
 	r = QTest::qExec(&inputProfile, argc, argv);
-	if (r != 0)
-		return r;
-
-	QLCWidgetProperties_Test properties;
-	r = QTest::qExec(&properties, argc, argv);
 	if (r != 0)
 		return r;
 

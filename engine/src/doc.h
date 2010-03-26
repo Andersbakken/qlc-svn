@@ -29,7 +29,7 @@
 #include "function.h"
 #include "fixture.h"
 #include "bus.h"
-#include "../../ui/app.h" //! @todo change Mode to an engine component
+#include "../../ui/src/app.h" //! @todo change Mode to an engine component
 
 class QDomDocument;
 class QString;

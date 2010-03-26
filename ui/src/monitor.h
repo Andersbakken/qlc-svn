@@ -26,7 +26,7 @@
 #include <QHash>
 #include <QList>
 
-#include "qlcwidgetproperties.h"
+#include "vcwidgetproperties.h"
 #include "qlctypes.h"
 
 class MonitorProperties;
@@ -56,7 +56,7 @@ class Doc;
  * Monitor Properties
  *****************************************************************************/
 
-class MonitorProperties : public QLCWidgetProperties
+class MonitorProperties : public VCWidgetProperties
 {
 	/** Monitor can modify protected members */
 	friend class Monitor;

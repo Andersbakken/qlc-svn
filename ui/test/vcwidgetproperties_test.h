@@ -1,9 +1,9 @@
-#ifndef QLCWIDGETPROPERTIES_TEST_H
-#define QLCWIDGETPROPERTIES_TEST_H
+#ifndef VCWIDGETPROPERTIES_TEST_H
+#define VCWIDGETPROPERTIES_TEST_H
 
 #include <QObject>
 
-class QLCWidgetProperties_Test : public QObject
+class VCWidgetProperties_Test : public QObject
 {
 	Q_OBJECT
 

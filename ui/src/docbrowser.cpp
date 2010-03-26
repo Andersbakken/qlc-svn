@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcdocbrowser.cpp
+  docbrowser.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -28,14 +28,13 @@
 #include <QIcon>
 #include <QUrl>
 
-#include "qlcdocbrowser.h"
-#include "qlctypes.h"
+#include "docbrowser.h"
 #include "qlcconfig.h"
+#include "qlctypes.h"
 
 #define SETTINGS_GEOMETRY "documentbrowser/geometry"
 
-QLCDocBrowser::QLCDocBrowser(QWidget* parent, Qt::WindowFlags f)
-	: QWidget(parent, f)
+DocBrowser::DocBrowser(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
 	new QVBoxLayout(this);
 
@@ -91,18 +90,18 @@ QLCDocBrowser::QLCDocBrowser(QWidget* parent, Qt::WindowFlags f)
 	m_browser->setSource(QUrl(QString("index.html")));
 }
 
-QLCDocBrowser::~QLCDocBrowser()
+DocBrowser::~DocBrowser()
 {
 	QSettings settings;
 	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
-void QLCDocBrowser::slotBackwardAvailable(bool available)
+void DocBrowser::slotBackwardAvailable(bool available)
 {
 	m_backwardAction->setEnabled(available);
 }
 
-void QLCDocBrowser::slotForwardAvailable(bool available)
+void DocBrowser::slotForwardAvailable(bool available)
 {
 	m_forwardAction->setEnabled(available);
 }

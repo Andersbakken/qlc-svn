@@ -51,6 +51,7 @@
 #include "outputmanager.h"
 #include "inputmanager.h"
 #include "mastertimer.h"
+#include "docbrowser.h"
 #include "busmanager.h"
 #include "outputmap.h"
 #include "inputmap.h"
@@ -65,7 +66,6 @@
 #endif
 
 #include "qlcfixturedefcache.h"
-#include "qlcdocbrowser.h"
 #include "qlcfixturedef.h"
 #include "qlcconfig.h"
 #include "qlctypes.h"
@@ -1219,7 +1219,7 @@ void App::slotWindowAllToFront()
 
 void App::slotHelpIndex()
 {
-	QLCDocBrowser* browser = new QLCDocBrowser(this, Qt::Window);
+	DocBrowser* browser = new DocBrowser(this, Qt::Window);
 	browser->setAttribute(Qt::WA_DeleteOnClose);
 	browser->show();
 }

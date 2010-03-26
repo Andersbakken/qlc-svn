@@ -27,7 +27,6 @@ HEADERS += qlcphysical_test.h \
 	   qlcfixturedefcache_test.h \
 	   qlcinputchannel_test.h \
 	   qlcinputprofile_test.h \
-	   qlcwidgetproperties_test.h \
 	   qlcmacros_test.h
 
 SOURCES += qlcphysical_test.cpp \
@@ -38,7 +37,6 @@ SOURCES += qlcphysical_test.cpp \
 	   qlcfixturedefcache_test.cpp \
 	   qlcinputchannel_test.cpp \
 	   qlcinputprofile_test.cpp \
-	   qlcwidgetproperties_test.cpp \
 	   qlcmacros_test.cpp
 
 SOURCES += main.cpp

@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  qlcwidgetproperties.cpp
+  vcwidgetproperties.cpp
 
   Copyright (c) Heikki Junnila
 
@@ -22,9 +22,9 @@
 #include <QWidget>
 #include <QtXml>
 
-#include "qlcwidgetproperties.h"
+#include "vcwidgetproperties.h"
 
-QLCWidgetProperties::QLCWidgetProperties()
+VCWidgetProperties::VCWidgetProperties()
 {
 	m_state = Qt::WindowNoState;
 	m_visible = false;
@@ -34,7 +34,7 @@ QLCWidgetProperties::QLCWidgetProperties()
 	m_height = 0;
 }
 
-QLCWidgetProperties::QLCWidgetProperties(const QLCWidgetProperties& properties)
+VCWidgetProperties::VCWidgetProperties(const VCWidgetProperties& properties)
 {
 	m_state = properties.m_state;
 	m_visible = properties.m_visible;
@@ -44,11 +44,11 @@ QLCWidgetProperties::QLCWidgetProperties(const QLCWidgetProperties& properties)
 	m_height = properties.m_height;
 }
 
-QLCWidgetProperties::~QLCWidgetProperties()
+VCWidgetProperties::~VCWidgetProperties()
 {
 }
 
-void QLCWidgetProperties::store(QWidget* widget)
+void VCWidgetProperties::store(QWidget* widget)
 {
 	Q_ASSERT(widget != NULL);
 	m_state = widget->windowState();
@@ -59,7 +59,7 @@ void QLCWidgetProperties::store(QWidget* widget)
 	m_height = widget->height();
 }
 
-bool QLCWidgetProperties::loadXML(const QDomElement* root)
+bool VCWidgetProperties::loadXML(const QDomElement* root)
 {
 	QDomElement tag;
 	QDomNode node;
@@ -99,7 +99,7 @@ bool QLCWidgetProperties::loadXML(const QDomElement* root)
 	return true;
 }
 
-bool QLCWidgetProperties::saveXML(QDomDocument* doc, QDomElement* root)
+bool VCWidgetProperties::saveXML(QDomDocument* doc, QDomElement* root)
 {
 	QDomElement prop_root;
 	QDomElement tag;

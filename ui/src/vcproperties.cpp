@@ -42,7 +42,7 @@ extern App* _app;
  * Properties Initialization
  *****************************************************************************/
 
-VCProperties::VCProperties() : QLCWidgetProperties()
+VCProperties::VCProperties() : VCWidgetProperties()
 {
 	m_contents = NULL;
 
@@ -70,7 +70,7 @@ VCProperties::VCProperties() : QLCWidgetProperties()
 }
 
 VCProperties::VCProperties(const VCProperties& properties)
-	: QLCWidgetProperties(properties)
+	: VCWidgetProperties(properties)
 {
 	*this = properties;
 }
@@ -284,7 +284,7 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
         }
 
 	/* Save widget properties */
-	return QLCWidgetProperties::saveXML(doc, &prop_root);
+	return VCWidgetProperties::saveXML(doc, &prop_root);
 }
 
 bool VCProperties::loadProperties(const QDomElement* root)
@@ -393,7 +393,7 @@ bool VCProperties::loadProperties(const QDomElement* root)
 		}
 		else if (tag.tagName() == KXMLQLCWidgetProperties)
 		{
-			QLCWidgetProperties::loadXML(&tag);
+			VCWidgetProperties::loadXML(&tag);
 		}
 		else
 		{
