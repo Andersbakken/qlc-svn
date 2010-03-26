@@ -2,8 +2,9 @@ include(variables.pri)
 
 TEMPLATE	= subdirs
 
-SUBDIRS		= libs
-SUBDIRS		+= main
+SUBDIRS		+= libs
+SUBDIRS		+= engine
+SUBDIRS		+= ui
 SUBDIRS		+= fixtures
 SUBDIRS		+= inputprofiles
 SUBDIRS		+= fixtureeditor
@@ -22,7 +23,7 @@ QMAKE_EXTRA_TARGETS += unittests
 
 unix:unittests.commands += cd libs/common/test ; ./test_common ; \
                       cd ../../ewinginput/test ; ./test_ewing ; \
-                      cd ../../../main/test ; ./test_engine
+                      cd ../../../engine/test ; ./test_engine
 
 win32 {
 	# *sigh*.. Mr Ballmer's shell is just so utterly depressing

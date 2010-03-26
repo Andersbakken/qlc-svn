@@ -9,7 +9,10 @@ macx:CONFIG	-= app_bundle
 QT 		+= xml
 
 INCLUDEPATH 	+= ../libs/common
-DEPENDPATH	+= ../main
+DEPENDPATH	+= ../libs/common
+
+INCLUDEPATH	+= ../ui
+DEPENDPATH	+= ../ui
 
 unix:LIBS	+= ../libs/common/libqlccommon.a
 win32:{
@@ -25,7 +28,7 @@ INSTALLS 	+= target
 RESOURCES += fixtureeditor.qrc
 win32:RC_FILE = fixtureeditor.rc
 
-HEADERS += ../main/aboutbox.h \
+HEADERS += ../ui/aboutbox.h \
            app.h \
 	   capabilitywizard.h \
            editcapability.h \
@@ -33,14 +36,14 @@ HEADERS += ../main/aboutbox.h \
            editmode.h \
            fixtureeditor.h
 
-FORMS += ../main/aboutbox.ui \
+FORMS += ../ui/aboutbox.ui \
 	 capabilitywizard.ui \
 	 editcapability.ui \
 	 editchannel.ui \
 	 editmode.ui \
 	 fixtureeditor.ui
 
-SOURCES += ../main/aboutbox.cpp \
+SOURCES += ../ui/aboutbox.cpp \
            app.cpp \
 	   capabilitywizard.cpp \
            editcapability.cpp \

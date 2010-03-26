@@ -46,7 +46,7 @@
 #include "qlcfile.h"
 
 #include "app.h"
-#include "../main/aboutbox.h"
+#include "aboutbox.h"
 #include "fixtureeditor.h"
 
 #define KSettingsGeometry "workspace/geometry"
