@@ -26,6 +26,10 @@ win32:{
 INCLUDEPATH	+= ../../engine/src
 DEPENDPATH	+= ../../engine/src
 unix:LIBS	+= ../../engine/src/libqlcengine.a
+win32:{
+	CONFIG(release, debug|release) LIBS += ../../engine/src/release/libqlcengine.a
+	CONFIG(debug, debug|release) LIBS += ../../engine/src/debug/libqlcengine.a
+}
 
 # Installation
 target.path	= $$INSTALLROOT/$$BINDIR

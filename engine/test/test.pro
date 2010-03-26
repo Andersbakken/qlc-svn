@@ -12,12 +12,15 @@ QT 	+= xml
 INCLUDEPATH += ../src
 INCLUDEPATH += ../../libs/common
 DEPENDPATH  += ../src
-LIBS        += ../src/libqlcengine.a
 
+unix:LIBS	+= ../src/libqlcengine.a
 unix:LIBS	+= ../../libs/common/libqlccommon.a
 win32:{
 	CONFIG(release, debug|release) LIBS += ../../libs/common/release/libqlccommon.a
+	CONFIG(release, debug|release) LIBS += ../src/release/libqlcengine.a
+
 	CONFIG(debug, debug|release) LIBS += ../../libs/common/debug/libqlccommon.a
+	CONFIG(debug, debug|release) LIBS += ../src/debug/libqlcengine.a
 }
 
 STUBHEADERS += mastertimer_stub.h \
