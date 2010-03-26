@@ -592,6 +592,7 @@ void VirtualConsole::updateActions()
 		m_editCopyAction->setEnabled(false);
 		m_editDeleteAction->setEnabled(false);
 		m_editRenameAction->setEnabled(false);
+		m_editPropertiesAction->setEnabled(false);
 
 		/* All the rest are disabled for draw area, except BG & font */
 		m_fgActionGroup->setEnabled(false);
@@ -611,6 +612,7 @@ void VirtualConsole::updateActions()
 		m_editCopyAction->setEnabled(true);
 		m_editDeleteAction->setEnabled(true);
 		m_editRenameAction->setEnabled(true);
+		m_editPropertiesAction->setEnabled(true);
 
 		/* Enable all common properties */
 		m_bgActionGroup->setEnabled(true);
