@@ -40,6 +40,8 @@ MonitorFixture::MonitorFixture(QWidget* parent) : QFrame(parent)
 {
 	m_fixtureLabel = NULL;
 	m_fixture = Fixture::invalidId();
+	m_channelStyle = Monitor::DMXChannels;
+	m_valueStyle = Monitor::DMXValues;
 
 	new QGridLayout(this);
 	layout()->setMargin(3);
@@ -85,8 +87,8 @@ bool MonitorFixture::operator<(const MonitorFixture& mof)
 
 void MonitorFixture::updateLabelStyles()
 {
-	slotChannelStyleChanged(Monitor::properties().channelStyle());
-	slotValueStyleChanged(Monitor::properties().valueStyle());
+	slotChannelStyleChanged(m_channelStyle);
+	slotValueStyleChanged(m_valueStyle);
 }
 
 /****************************************************************************
@@ -145,17 +147,15 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
 			m_valueLabels.append(label);
 		}
 	}
-
-	slotChannelStyleChanged(Monitor::properties().channelStyle());
-	slotValueStyleChanged(Monitor::properties().valueStyle());
 }
 
-void MonitorFixture::slotChannelStyleChanged(
-					MonitorProperties::ChannelStyle style)
+void MonitorFixture::slotChannelStyleChanged(Monitor::ChannelStyle style)
 {
 	QString str;
 	int i = 0;
 
+	m_channelStyle = style;
+	
 	/* Check that this MonitorFixture represents a fixture */
 	if (m_fixture == Fixture::invalidId())
 		return;
@@ -164,14 +164,13 @@ void MonitorFixture::slotChannelStyleChanged(
 	Q_ASSERT(fxi != NULL);
 
 	/* Start channel numbering from this fixture's address */
-	if (style == MonitorProperties::DMXChannels)
+	if (style == Monitor::DMXChannels)
 		i = fxi->address();
 	else
 		i = 1;
 
 	/* +1 if addresses should be shown 1-based */
-	if (fxi->isDMXZeroBased() == false &&
-	    style == MonitorProperties::DMXChannels)
+	if (fxi->isDMXZeroBased() == false && style == Monitor::DMXChannels)
 	{
 		/* 1-based addresses */
 		i = i + 1;
@@ -226,8 +225,7 @@ void MonitorFixture::updateValues(const QByteArray& universes)
 		i++;
 
 		/* Set the label's text to reflect the changed value */
-		if (Monitor::properties().valueStyle() ==
-						MonitorProperties::DMXValues)
+		if (m_valueStyle == Monitor::DMXValues)
 		{
 			label->setText(str.sprintf("%.3d", value));
 		}
@@ -241,8 +239,10 @@ void MonitorFixture::updateValues(const QByteArray& universes)
 	}
 }
 
-void MonitorFixture::slotValueStyleChanged(MonitorProperties::ValueStyle style)
+void MonitorFixture::slotValueStyleChanged(Monitor::ValueStyle style)
 {
+	m_valueStyle = style;
+
 	QListIterator <QLabel*> it(m_valueLabels);
 	while (it.hasNext() == true)
 	{
@@ -255,7 +255,7 @@ void MonitorFixture::slotValueStyleChanged(MonitorProperties::ValueStyle style)
 
 		value = label->text().toInt();
 
-		if (style == MonitorProperties::DMXValues)
+		if (style == Monitor::DMXValues)
 		{
 			value = int(ceil(SCALE(double(value),
 						double(0), double(100),

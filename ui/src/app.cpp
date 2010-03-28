@@ -1358,10 +1358,6 @@ bool App::loadXML(const QDomDocument* doc)
 		{
 			m_doc->loadXML(&tag);
 		}
-		else if (tag.tagName() == KXMLQLCMonitor)
-		{
-			Monitor::loadXML(&tag);
-		}
 		else if (tag.tagName() == KXMLQLCVirtualConsole)
 		{
 			VirtualConsole::loadXML(&tag);
@@ -1418,9 +1414,6 @@ QFile::FileError App::saveXML(const QString& fileName)
 
 		/* Write engine components to the XML document */
 		m_doc->saveXML(doc, &root);
-
-		/* Write Monitor state to the XML document */
-		Monitor::saveXML(doc, &root);
 
 		/* Write virtual console to the XML document */
 		VirtualConsole::saveXML(doc, &root);

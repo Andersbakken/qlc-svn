@@ -26,10 +26,8 @@
 #include <QHash>
 #include <QList>
 
-#include "vcwidgetproperties.h"
 #include "qlctypes.h"
 
-class MonitorProperties;
 class MonitorFixture;
 class MonitorLayout;
 class QDomDocument;
@@ -41,88 +39,10 @@ class Fixture;
 class Monitor;
 class Doc;
 
-#define KXMLQLCMonitor "Monitor"
-#define KXMLQLCMonitorFont "Font"
-
-#define KXMLQLCMonitorChannelStyle "ChannelStyle"
-#define KXMLQLCMonitorChannelStyleDMX "DMX"
-#define KXMLQLCMonitorChannelStyleRelative "Relative"
-
-#define KXMLQLCMonitorValueStyle "ValueStyle"
-#define KXMLQLCMonitorValueStyleDMX "DMX"
-#define KXMLQLCMonitorValueStylePercentage "Percentage"
-
-/*****************************************************************************
- * Monitor Properties
- *****************************************************************************/
-
-class MonitorProperties : public VCWidgetProperties
-{
-	/** Monitor can modify protected members */
-	friend class Monitor;
-
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
-public:
-	MonitorProperties();
-	virtual ~MonitorProperties();
-
-	/*********************************************************************
-	 * Font
-	 *********************************************************************/
-public:
-	/** Get the font used for monitor fixture labels */
-	QString font() const { return m_font; }
-
-protected:
-	QString m_font;
-
-	/*********************************************************************
-	 * Channel & Value styles
-	 *********************************************************************/
-public:
-	enum ChannelStyle { DMXChannels, RelativeChannels };
-	enum ValueStyle { DMXValues, PercentageValues };
-
-	/** Get the style used to draw DMX values in monitor fixtures */
-	ValueStyle valueStyle() const { return m_valueStyle; }
-
-	/** Get the style used to draw channel numbers in monitor fixtures */
-	ChannelStyle channelStyle() const { return m_channelStyle; }
-
-protected:
-	static QString channelStyleToString(ChannelStyle style);
-	static ChannelStyle stringToChannelStyle(const QString& str);
-
-	static QString valueStyleToString(ValueStyle style);
-	static ValueStyle stringToValueStyle(const QString& str);
-
-protected:
-	ValueStyle m_valueStyle;
-	ChannelStyle m_channelStyle;
-
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
-public:
-	/** Store latest widget properties */
-	void store(Monitor* monitor);
-
-	/** Load contents from the given XML document */
-	bool loadXML(const QDomElement* root);
-
-	/** Save contents to the given XML document */
-	bool saveXML(QDomDocument* doc, QDomElement* root);
-};
-
-/*****************************************************************************
- * Monitor
- *****************************************************************************/
-
 class Monitor : public QWidget
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(Monitor)
 
 	/*********************************************************************
 	 * Initialization
@@ -138,26 +58,32 @@ public:
 	~Monitor();
 
 protected:
+	void loadSettings();
+	void saveSettings();
+
 	/** Protected constructor to prevent multiple instances. */
 	Monitor(QWidget* parent, Qt::WindowFlags f = 0);
-
-private:
-	Q_DISABLE_COPY(Monitor)
 
 protected:
 	/** The singleton Monitor instance */
 	static Monitor* s_instance;
 
 	/*********************************************************************
-	 * Properties
+	 * Channel & Value styles
 	 *********************************************************************/
 public:
-	/** Get properties for reading. */
-	static const MonitorProperties& properties() { return s_properties; }
+	enum ChannelStyle { DMXChannels, RelativeChannels };
+	enum ValueStyle { DMXValues, PercentageValues };
 
-protected:
-	/** Monitor properties */
-	static MonitorProperties s_properties;
+	/** Get the style used to draw DMX values in monitor fixtures */
+	ValueStyle valueStyle() const { return m_valueStyle; }
+
+	/** Get the style used to draw channel numbers in monitor fixtures */
+	ChannelStyle channelStyle() const { return m_channelStyle; }
+
+private:
+	ValueStyle m_valueStyle;
+	ChannelStyle m_channelStyle;
 
 	/*********************************************************************
 	 * Menu
@@ -198,14 +124,13 @@ protected slots:
 	void slotFixtureChanged(t_fixture_id fxi_id);
 
 signals:
-	void channelStyleChanged(MonitorProperties::ChannelStyle style);
-	void valueStyleChanged(MonitorProperties::ValueStyle style);
+	void channelStyleChanged(Monitor::ChannelStyle style);
+	void valueStyleChanged(Monitor::ValueStyle style);
 
 protected:
 	QScrollArea* m_scrollArea;
 	QWidget* m_monitorWidget;
 	MonitorLayout* m_monitorLayout;
-
 	QList <MonitorFixture*> m_monitorFixtures;
 
 	/*********************************************************************
@@ -218,13 +143,6 @@ protected:
 protected:
 	/** Timer ID */
 	int m_timer;
-
-	/*********************************************************************
-	 * Save & Load
-	 *********************************************************************/
-public:
-	static bool loadXML(const QDomElement* root);
-	static bool saveXML(QDomDocument* doc, QDomElement* root);
 };
 
 #endif

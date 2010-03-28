@@ -55,13 +55,13 @@ public:
 	t_fixture_id fixture() const { return m_fixture; }
 
 public slots:
-	void slotChannelStyleChanged(MonitorProperties::ChannelStyle style);
+	void slotChannelStyleChanged(Monitor::ChannelStyle style);
 	void slotFixtureChanged(t_fixture_id fxi_id);
 	void slotFixtureRemoved(t_fixture_id fxi_id);
 
 protected:
 	t_fixture_id m_fixture;
-
+	Monitor::ChannelStyle m_channelStyle;
 	QLabel* m_fixtureLabel;
 	QList <QLabel*> m_channelLabels;
 
@@ -72,10 +72,11 @@ public:
 	void updateValues(const QByteArray& universes);
 
 public slots:
-	void slotValueStyleChanged(MonitorProperties::ValueStyle style);
+	void slotValueStyleChanged(Monitor::ValueStyle style);
 
 protected:
 	QList <QLabel*> m_valueLabels;
+	Monitor::ValueStyle m_valueStyle;
 };
 
 #endif

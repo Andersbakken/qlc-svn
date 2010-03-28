@@ -43,10 +43,12 @@
 #include "qlcfile.h"
 
 #define SETTINGS_GEOMETRY "monitor/geometry"
+#define SETTINGS_FONT "monitor/font"
+#define SETTINGS_VALUESTYLE "monitor/valuestyle"
+#define SETTINGS_CHANNELSTYLE "monitor/channelstyle"
 
 extern App* _app;
 
-MonitorProperties Monitor::s_properties = MonitorProperties();
 Monitor* Monitor::s_instance = NULL;
 
 /*****************************************************************************
@@ -58,9 +60,6 @@ Monitor::Monitor(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 	/* Master layout for toolbar and scroll area */
 	new QVBoxLayout(this);
 
-	/* Create toolbar */
-	initToolBar();
-
 	/* Scroll area that contains the monitor widget */
 	m_scrollArea = new QScrollArea(this);
 	m_scrollArea->setWidgetResizable(true);
@@ -69,10 +68,15 @@ Monitor::Monitor(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 	/* Monitor widget that contains all MonitorFixtures */
 	m_monitorWidget = new QWidget(m_scrollArea);
 	m_monitorWidget->setBackgroundRole(QPalette::Dark);
-	m_monitorWidget->setFont(s_properties.font());
 	m_monitorLayout = new MonitorLayout(m_monitorWidget);
 	m_monitorLayout->setSpacing(1);
 	m_monitorLayout->setMargin(1);
+
+	/* Load global settings */
+	loadSettings();
+
+	/* Create toolbar */
+	initToolBar();
 
 	/* Create a bunch of MonitorFixtures for each fixture */
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
@@ -106,11 +110,53 @@ Monitor::~Monitor()
 	killTimer(m_timer);
 	m_timer = 0;
 
-	/* Store properties */
-	s_properties.store(s_instance);
-
+	saveSettings();
+	
 	/* Reset the singleton instance */
 	Monitor::s_instance = NULL;
+}
+
+void Monitor::loadSettings()
+{
+	QSettings settings;
+	QVariant var;
+
+	// Load font
+	var = settings.value(SETTINGS_FONT);
+	if (var.isValid() == true)
+	{
+		QFont fn;
+		fn.fromString(var.toString());
+		if (fn != _app->font())
+			m_monitorWidget->setFont(fn);
+	}
+
+	// Load channel style
+	var = settings.value(SETTINGS_CHANNELSTYLE);
+	if (var.isValid() == true)
+		m_channelStyle = ChannelStyle(var.toInt());
+	else
+		m_channelStyle = DMXChannels;
+
+	// Load value style
+	var = settings.value(SETTINGS_VALUESTYLE);
+	if (var.isValid() == true)
+		m_valueStyle = ValueStyle(var.toInt());
+	else
+		m_valueStyle = DMXValues;
+}
+
+void Monitor::saveSettings()
+{
+	QSettings settings;
+#ifdef __APPLE__
+	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+#else
+	settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
+#endif
+	settings.setValue(SETTINGS_FONT, m_monitorWidget->font().toString());
+	settings.setValue(SETTINGS_VALUESTYLE, valueStyle());
+	settings.setValue(SETTINGS_CHANNELSTYLE, channelStyle());
 }
 
 void Monitor::create(QWidget* parent)
@@ -138,9 +184,11 @@ void Monitor::create(QWidget* parent)
 	window->setWindowIcon(QIcon(":/monitor.png"));
 	window->setWindowTitle(tr("Fixture Monitor"));
 	window->setContextMenuPolicy(Qt::CustomContextMenu);
-	window->setWindowState(s_properties.state());
-	window->setGeometry(s_properties.x(), s_properties.y(),
-			    s_properties.width(), s_properties.height());
+
+	QSettings settings;
+	QVariant var = settings.value(SETTINGS_GEOMETRY);
+	if (var.isValid() == true)
+		window->restoreGeometry(var.toByteArray());
 	window->show();
 }
 
@@ -171,23 +219,23 @@ void Monitor::initToolBar()
 	action = toolBar->addAction(tr("DMX Channels"));
 	action->setToolTip(tr("Show absolute DMX channel numbers"));
 	action->setCheckable(true);
-	action->setData(MonitorProperties::DMXChannels);
+	action->setData(DMXChannels);
 	connect(action, SIGNAL(triggered(bool)),
 		this, SLOT(slotChannelStyleTriggered()));
 	toolBar->addAction(action);
 	group->addAction(action);
-	if (s_properties.channelStyle() == MonitorProperties::DMXChannels)
+	if (channelStyle() == DMXChannels)
 		action->setChecked(true);
 
 	action = toolBar->addAction(tr("Relative Channels"));
 	action->setToolTip(tr("Show channel numbers relative to fixture"));
 	action->setCheckable(true);
-	action->setData(MonitorProperties::RelativeChannels);
+	action->setData(RelativeChannels);
 	connect(action, SIGNAL(triggered(bool)),
 		this, SLOT(slotChannelStyleTriggered()));
 	toolBar->addAction(action);
 	group->addAction(action);
-	if (s_properties.channelStyle() == MonitorProperties::RelativeChannels)
+	if (channelStyle() == RelativeChannels)
 		action->setChecked(true);
 
 	toolBar->addSeparator();
@@ -199,36 +247,33 @@ void Monitor::initToolBar()
 	action = toolBar->addAction(tr("DMX Values"));
 	action->setToolTip(tr("Show DMX values 0-255"));
 	action->setCheckable(true);
-	action->setData(MonitorProperties::DMXValues);
+	action->setData(DMXValues);
 	connect(action, SIGNAL(triggered(bool)),
 		this, SLOT(slotValueStyleTriggered()));
 	toolBar->addAction(action);
 	group->addAction(action);
 	action->setChecked(true);
-	if (s_properties.valueStyle() == MonitorProperties::DMXValues)
+	if (valueStyle() == DMXValues)
 		action->setChecked(true);
 
 	action = toolBar->addAction(tr("Percent Values"));
 	action->setToolTip(tr("Show percentage values 0-100%"));
 	action->setCheckable(true);
-	action->setData(MonitorProperties::PercentageValues);
+	action->setData(PercentageValues);
 	connect(action, SIGNAL(triggered(bool)),
 		this, SLOT(slotValueStyleTriggered()));
 	toolBar->addAction(action);
 	group->addAction(action);
-	if (s_properties.valueStyle() == MonitorProperties::PercentageValues)
+	if (valueStyle() == PercentageValues)
 		action->setChecked(true);
 }
 
 void Monitor::slotChooseFont()
 {
 	bool ok = false;
-	QFont f = QFontDialog::getFont(&ok, font(), this);
+	QFont f = QFontDialog::getFont(&ok, m_monitorWidget->font(), this);
 	if (ok == true)
-	{
-		s_properties.m_font = f.toString();
 		m_monitorWidget->setFont(f);
-	}
 }
 
 void Monitor::slotChannelStyleTriggered()
@@ -237,9 +282,8 @@ void Monitor::slotChannelStyleTriggered()
 	Q_ASSERT(action != NULL);
 
 	action->setChecked(true);
-	s_properties.m_channelStyle =
-		MonitorProperties::ChannelStyle(action->data().toInt());
-	emit channelStyleChanged(s_properties.m_channelStyle);
+	m_channelStyle = ChannelStyle(action->data().toInt());
+	emit channelStyleChanged(channelStyle());
 }
 
 void Monitor::slotValueStyleTriggered()
@@ -248,14 +292,14 @@ void Monitor::slotValueStyleTriggered()
 	Q_ASSERT(action != NULL);
 
 	action->setChecked(true);
-	s_properties.m_valueStyle =
-		MonitorProperties::ValueStyle(action->data().toInt());
-	emit valueStyleChanged(s_properties.m_valueStyle);
+	m_valueStyle = ValueStyle(action->data().toInt());
+	emit valueStyleChanged(valueStyle());
 }
 
 /****************************************************************************
  * Fixture added/removed stuff
  ****************************************************************************/
+
 void Monitor::updateFixtureLabelStyles()
 {
 	QListIterator <MonitorFixture*> it(m_monitorFixtures);
@@ -267,13 +311,15 @@ void Monitor::createMonitorFixture(Fixture* fxi)
 {
 	MonitorFixture* mof = new MonitorFixture(m_monitorWidget);
 	mof->setFixture(fxi->id());
+	mof->slotChannelStyleChanged(channelStyle());
+	mof->slotValueStyleChanged(valueStyle());
 	mof->show();
 
 	/* Make mof listen to value & channel style changes */
-	connect(this, SIGNAL(valueStyleChanged(MonitorProperties::ValueStyle)),
-		mof, SLOT(slotValueStyleChanged(MonitorProperties::ValueStyle)));
-	connect(this, SIGNAL(channelStyleChanged(MonitorProperties::ChannelStyle)),
-		mof, SLOT(slotChannelStyleChanged(MonitorProperties::ChannelStyle)));
+	connect(this, SIGNAL(valueStyleChanged(Monitor::ValueStyle)),
+		mof, SLOT(slotValueStyleChanged(Monitor::ValueStyle)));
+	connect(this, SIGNAL(channelStyleChanged(Monitor::ChannelStyle)),
+		mof, SLOT(slotChannelStyleChanged(Monitor::ChannelStyle)));
 
 	m_monitorLayout->addItem(new MonitorLayoutItem(mof));
 	m_monitorFixtures.append(mof);
@@ -320,185 +366,4 @@ void Monitor::timerEvent(QTimerEvent* e)
 	QListIterator <MonitorFixture*> it(list);
 	while (it.hasNext() == true)
 		it.next()->updateValues(universes);
-}
-
-/****************************************************************************
- * Load & Save
- ****************************************************************************/
-
-bool Monitor::loadXML(const QDomElement* root)
-{
-	if (root->tagName() != KXMLQLCMonitor)
-	{
-		qWarning("Monitor node not found!");
-		return false;
-	}
-
-	s_properties.loadXML(root);
-	if (s_properties.visible() == true)
-		create(_app);
-
-	return true;
-}
-
-bool Monitor::saveXML(QDomDocument* doc, QDomElement* root)
-{
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
-
-	/* Store latest properties */
-	if (s_instance != NULL)
-		s_properties.store(s_instance);
-
-	/* Save the properties to file */
-	s_properties.saveXML(doc, root);
-
-	return false;
-}
-
-/****************************************************************************
- * Monitor Properties
- ****************************************************************************/
-
-MonitorProperties::MonitorProperties() : VCWidgetProperties()
-{
-	m_width = 640;
-	m_height = 480;
-
-	m_channelStyle = DMXChannels;
-	m_valueStyle = DMXValues;
-}
-
-MonitorProperties::~MonitorProperties()
-{
-}
-
-/****************************************************************************
- * Channel & Value styles
- ****************************************************************************/
-
-QString MonitorProperties::channelStyleToString(ChannelStyle style)
-{
-	switch (style)
-	{
-	default:
-	case DMXChannels:
-		return KXMLQLCMonitorChannelStyleDMX;
-	case RelativeChannels:
-		return KXMLQLCMonitorChannelStyleRelative;
-	}
-}
-
-MonitorProperties::ChannelStyle MonitorProperties::stringToChannelStyle(
-							const QString& str)
-{
-	if (str == QString(KXMLQLCMonitorChannelStyleRelative))
-		return RelativeChannels;
-	else
-		return DMXChannels;
-}
-
-QString MonitorProperties::valueStyleToString(ValueStyle style)
-{
-	switch (style)
-	{
-	default:
-	case DMXValues:
-		return KXMLQLCMonitorValueStyleDMX;
-	case PercentageValues:
-		return KXMLQLCMonitorValueStylePercentage;
-	}
-}
-
-MonitorProperties::ValueStyle MonitorProperties::stringToValueStyle(
-							const QString& str)
-{
-	if (str == QString(KXMLQLCMonitorValueStylePercentage))
-		return PercentageValues;
-	else
-		return DMXValues;
-}
-
-/****************************************************************************
- * Load & Save
- ****************************************************************************/
-
-void MonitorProperties::store(Monitor* monitor)
-{
-#ifdef __APPLE__
-	VCWidgetProperties::store(monitor);
-#else
-	VCWidgetProperties::store(monitor->parentWidget());
-#endif
-}
-
-bool MonitorProperties::loadXML(const QDomElement* root)
-{
-	QDomElement tag;
-	QDomNode node;
-
-	Q_ASSERT(root != NULL);
-
-	if (root->tagName() != KXMLQLCMonitor)
-	{
-		qWarning("Monitor node not found!");
-		return false;
-	}
-
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-
-		if (tag.tagName() == KXMLQLCMonitorFont)
-			m_font = tag.text();
-		else if (tag.tagName() == KXMLQLCMonitorValueStyle)
-			m_valueStyle = stringToValueStyle(tag.text());
-		else if (tag.tagName() == KXMLQLCMonitorChannelStyle)
-			m_channelStyle = stringToChannelStyle(tag.text());
-		else if (tag.tagName() == KXMLQLCWidgetProperties)
-			VCWidgetProperties::loadXML(&tag);
-		else
-			qDebug() << "Unknown monitor tag:" << tag.tagName();
-
-		node = node.nextSibling();
-	}
-
-	return true;
-}
-
-bool MonitorProperties::saveXML(QDomDocument* doc, QDomElement* root)
-{
-	QDomElement prop_root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
-
-	/* Monitor entry */
-	prop_root = doc->createElement(KXMLQLCMonitor);
-	root->appendChild(prop_root);
-
-	/* Font */
-	tag = doc->createElement(KXMLQLCMonitorFont);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(m_font);
-	tag.appendChild(text);
-
-	/* Value style */
-	tag = doc->createElement(KXMLQLCMonitorValueStyle);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(valueStyleToString(m_valueStyle));
-	tag.appendChild(text);
-
-	/* Channel style */
-	tag = doc->createElement(KXMLQLCMonitorChannelStyle);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(channelStyleToString(m_channelStyle));
-	tag.appendChild(text);
-
-	/* Window state */
-	return VCWidgetProperties::saveXML(doc, &prop_root);
 }
