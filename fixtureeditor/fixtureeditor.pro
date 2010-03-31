@@ -11,6 +11,9 @@ QT 		+= xml
 INCLUDEPATH 	+= ../libs/common
 DEPENDPATH	+= ../libs/common
 
+INCLUDEPATH	+= ../engine/src
+DEPENDPATH	+= ../engine/src
+
 INCLUDEPATH	+= ../ui/src
 DEPENDPATH	+= ../ui/src
 

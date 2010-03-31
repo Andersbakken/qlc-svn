@@ -127,7 +127,7 @@ public:
 	 *********************************************************************/
 public:
 	/** See VCWidget::setCaption() */
-	void slotModeChanged(App::Mode mode);
+	void slotModeChanged(Doc::Mode mode);
 
 	/*********************************************************************
 	 * Properties

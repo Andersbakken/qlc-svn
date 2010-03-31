@@ -30,6 +30,7 @@
 #include "qlcfixturedefcache.h"
 #include "qlcoutplugin.h"
 #include "qlcinplugin.h"
+#include "doc.h"
 
 class QDomDocument;
 class QDomElement;
@@ -53,7 +54,6 @@ class MasterTimer;
 class QLCPlugin;
 class OutputMap;
 class InputMap;
-class Doc;
 class App;
 
 #define KXMLQLCWorkspace "Workspace"
@@ -153,23 +153,14 @@ protected:
 	QLCFixtureDefCache m_fixtureDefCache;
 
 	/*********************************************************************
-	 * Mode: operate or design
+	 * Main operating mode
 	 *********************************************************************/
-public:
-	enum Mode { Operate, Design };
-	Mode mode() { return m_mode; }
-
 public slots:
 	void slotModeOperate();
 	void slotModeDesign();
 	void slotModeToggle();
 
-signals:
-	void modeChanged(App::Mode mode);
-
-protected:
-	/** Main operating mode */
-	Mode m_mode;
+	void slotModeChanged(Doc::Mode mode);
 
 	/*********************************************************************
 	 * Sane style

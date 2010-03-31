@@ -88,15 +88,10 @@ FixtureManager::FixtureManager(QWidget* parent, Qt::WindowFlags flags)
 	initDataView();
 	updateView();
 
-	/* To disable some actions when switching to operate mode */
-	connect(_app, SIGNAL(modeChanged(App::Mode)),
-		this, SLOT(slotModeChanged(App::Mode)));
-
 	/* Listen to document changes */
 	connect(_app, SIGNAL(documentChanged(Doc*)),
 		this, SLOT(slotDocumentChanged(Doc*)));
-
-	/* Listen to fixture additions/removals */
+	/* Use the initial document object */
 	slotDocumentChanged(_app->doc());
 }
 
@@ -170,6 +165,9 @@ void FixtureManager::slotDocumentChanged(Doc* doc)
 
 	connect(doc, SIGNAL(fixtureRemoved(t_fixture_id)),
 		this, SLOT(slotFixtureRemoved(t_fixture_id)));
+
+	connect(doc, SIGNAL(modeChanged(Doc::Mode)),
+		this, SLOT(slotModeChanged(Doc::Mode)));
 }
 
 void FixtureManager::slotFixtureAdded(t_fixture_id id)
@@ -219,9 +217,9 @@ void FixtureManager::slotFixtureRemoved(t_fixture_id id)
 	}
 }
 
-void FixtureManager::slotModeChanged(App::Mode mode)
+void FixtureManager::slotModeChanged(Doc::Mode mode)
 {
-	if (mode == App::Operate)
+	if (mode == Doc::Operate)
 	{
 		m_addAction->setEnabled(false);
 		m_removeAction->setEnabled(false);
@@ -355,7 +353,7 @@ void FixtureManager::slotSelectionChanged()
 	if (item == NULL)
 	{
 		// Add is not available in operate mode
-		if (_app->mode() == App::Design)
+		if (_app->doc()->mode() == Doc::Design)
 			m_addAction->setEnabled(true);
 		else
 			m_addAction->setEnabled(false);
@@ -411,7 +409,7 @@ void FixtureManager::slotSelectionChanged()
 		m_tab->setCurrentIndex(page);
 
 		// Enable/disable actions
-		if (_app->mode() == App::Design)
+		if (_app->doc()->mode() == Doc::Design)
 		{
 			m_addAction->setEnabled(true);
 			m_removeAction->setEnabled(true);
@@ -428,7 +426,7 @@ void FixtureManager::slotSelectionChanged()
 
 void FixtureManager::slotDoubleClicked(QTreeWidgetItem* item)
 {
-	if (item != NULL && _app->mode() != App::Operate)
+	if (item != NULL && _app->doc()->mode() != Doc::Operate)
 		slotProperties();
 }
 

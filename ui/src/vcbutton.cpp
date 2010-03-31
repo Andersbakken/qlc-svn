@@ -516,7 +516,7 @@ void VCButton::slotInputValueChanged(t_input_universe universe,
 	Q_UNUSED(value);
 
 	/* Don't allow operation during design mode */
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 		return;
 
 	if (universe == m_inputUniverse && channel == m_inputChannel)
@@ -712,7 +712,7 @@ void VCButton::paintEvent(QPaintEvent* e)
 		option.state= QStyle::State_Raised;
 
 	/* Enabled or disabled looks based on application mode */
-	if (_app->mode() == App::Operate)
+	if (mode() == Doc::Operate)
 		option.state |= QStyle::State_Enabled;
 
 	/* Icon */
@@ -748,7 +748,7 @@ void VCButton::paintEvent(QPaintEvent* e)
 
 void VCButton::mousePressEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 		VCWidget::mousePressEvent(e);
 	else
 		pressFunction();
@@ -756,7 +756,7 @@ void VCButton::mousePressEvent(QMouseEvent* e)
 
 void VCButton::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 		VCWidget::mouseReleaseEvent(e);
 	else
 		releaseFunction();

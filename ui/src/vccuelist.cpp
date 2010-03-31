@@ -69,7 +69,7 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 
 	m_current = NULL;
 
-	slotModeChanged(_app->mode());
+	slotModeChanged(mode());
 
 	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
 		this, SLOT(slotFunctionRemoved(t_function_id)));
@@ -157,7 +157,7 @@ void VCCueList::slotFunctionRemoved(t_function_id fid)
 
 void VCCueList::slotNextCue()
 {
-	if (_app->mode() != App::Operate)
+	if (mode() != Doc::Operate)
 		return;
 
 	if (m_list->currentItem() == NULL)
@@ -184,7 +184,7 @@ void VCCueList::slotFunctionStopped(t_function_id fid)
 
 void VCCueList::slotItemActivated(QTreeWidgetItem* item)
 {
-	if (_app->mode() != App::Operate)
+	if (mode() != Doc::Operate)
 		return;
 
 	if (m_current != NULL)
@@ -234,16 +234,12 @@ void VCCueList::setCaption(const QString& text)
  * QLC Mode
  *****************************************************************************/
 
-void VCCueList::slotModeChanged(App::Mode mode)
+void VCCueList::slotModeChanged(Doc::Mode mode)
 {
-	if (mode == App::Operate)
-	{
+	if (mode == Doc::Operate)
 		m_list->setEnabled(true);
-	}
 	else
-	{
 		m_list->setEnabled(false);
-	}
 
 	/* Always start from the beginning */
 	m_list->setCurrentItem(NULL);

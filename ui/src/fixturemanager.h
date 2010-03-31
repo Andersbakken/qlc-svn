@@ -79,8 +79,8 @@ public slots:
 	 /** Callback for Doc::fixtureRemoved() signals */
 	void slotFixtureRemoved(t_fixture_id id);
 
-	/** Callback that listens to App mode change signals */
-	void slotModeChanged(App::Mode mode);
+	/** Callback that listens to mode change signals */
+	void slotModeChanged(Doc::Mode mode);
 
 	/********************************************************************
 	 * Data view

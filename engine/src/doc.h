@@ -29,7 +29,6 @@
 #include "function.h"
 #include "fixture.h"
 #include "bus.h"
-#include "../../ui/src/app.h" //! @todo change Mode to an engine component
 
 class QDomDocument;
 class QString;
@@ -58,6 +57,25 @@ public:
 	 * Destructor.
 	 */
 	~Doc();
+
+	/*********************************************************************
+	 * Main operating mode
+	 *********************************************************************/
+public:
+	enum Mode
+	{
+		Design  = 0, //! Editing allowed
+		Operate = 1  //! Running allowed, editing disabled
+	};
+
+	void setMode(Mode mode);
+	Mode mode() const { return m_mode; }
+
+signals:
+	void modeChanged(Doc::Mode mode);
+
+protected:
+	Mode m_mode;
 
 	/*********************************************************************
 	 * Fixture definition cache
@@ -239,9 +257,6 @@ protected:
 	void assignFunction(Function* function, t_function_id id);
 
 public slots:
-	/** Catch mode changes */
-	void slotModeChanged(App::Mode mode);
-
 	/** Catch fixture property changes */
 	void slotFixtureChanged(t_fixture_id fxi_id);
 

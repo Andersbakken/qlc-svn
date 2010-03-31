@@ -92,7 +92,6 @@ App::App() : QMainWindow()
 	m_inputMap = NULL;
 	m_doc = NULL;
 
-	m_mode = Design;
 	m_modeIndicator = NULL;
 
 	m_blackoutIndicator = NULL;
@@ -252,7 +251,7 @@ void App::closeEvent(QCloseEvent* e)
 {
 	int result = 0;
 
-	if (m_mode == Operate)
+	if (doc()->mode() == Doc::Operate)
 	{
 		QMessageBox::warning(this,
 				     "Cannot exit in Operate mode",
@@ -262,10 +261,10 @@ void App::closeEvent(QCloseEvent* e)
 		return;
 	}
 
-	if (m_doc->isModified())
+	if (doc()->isModified() == true)
 	{
 		result = QMessageBox::information(
-			this, 
+			this,
 			"Close Q Light Controller...",
 			"Do you wish to save the current workspace \n"	\
 			"before closing the application?",
@@ -397,8 +396,8 @@ void App::initDoc()
 	connect(m_doc, SIGNAL(modified(bool)),
 		this, SLOT(slotDocModified(bool)));
 
-	connect(this, SIGNAL(modeChanged(App::Mode)),
-		m_doc, SLOT(slotModeChanged(App::Mode)));
+	connect(m_doc, SIGNAL(modeChanged(Doc::Mode)),
+		this, SLOT(slotModeChanged(Doc::Mode)));
 
 	emit documentChanged(m_doc);
 }
@@ -464,52 +463,12 @@ void App::loadFixtureDefinitions()
 
 void App::slotModeOperate()
 {
-	/* Nothing to do if we're already in the desired mode */
-	if (m_mode == Operate)
-		return;
-
-	/* Set highlighted palette to mode indicator */
-	m_modeIndicator->setText(KModeTextOperate);
-	m_modeIndicator->setToolTip(
-		tr("Operate mode is active; editing facilities are disabled"));
-
-	QPalette pal = palette();
-	pal.setColor(QPalette::Window,
-		     QApplication::palette().color(QPalette::Highlight));
-	pal.setColor(QPalette::WindowText,
-		     QApplication::palette().color(QPalette::HighlightedText));
-	m_modeIndicator->setPalette(pal);
-
-	m_fileNewAction->setEnabled(false);
-	m_fileOpenAction->setEnabled(false);
-	m_fileQuitAction->setEnabled(false);
-
-	m_functionManagerAction->setEnabled(false);
-	m_outputManagerAction->setEnabled(false);
-	m_inputManagerAction->setEnabled(false);
-	m_busManagerAction->setEnabled(false);
-
-	m_modeToggleAction->setIcon(QIcon(":/design.png"));
-	m_modeToggleAction->setText(tr("Design"));
-	m_modeToggleAction->setToolTip(tr("Switch to design mode"));
-
-	/* Prevent opening a context menu */
-	#ifndef __APPLE__
-		// No centralWidget() on APPLE
-		centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
-	#endif
-
-	m_mode = Operate;
-	emit modeChanged(Operate);
+	doc()->setMode(Doc::Operate);
 }
 
 void App::slotModeDesign()
 {
-	/* Nothing to do if we're already in the desired mode */
-	if (m_mode == Design)
-		return;
-
-	if (m_masterTimer->runningFunctions())
+	if (m_masterTimer->runningFunctions() > 0)
 	{
 		int result = QMessageBox::warning(
 			this,
@@ -526,47 +485,85 @@ void App::slotModeDesign()
 			m_masterTimer->stopAllFunctions();
 	}
 
-	/* Set normal palette to mode indicator */
-	m_modeIndicator->setText(KModeTextDesign);
-	m_modeIndicator->setToolTip(
-		tr("Design mode is active; editing facilities are enabled"));
-
-	QPalette pal = palette();
-	pal.setColor(QPalette::Window,
-		     QApplication::palette().color(QPalette::Window));
-	pal.setColor(QPalette::WindowText,
-		     QApplication::palette().color(QPalette::WindowText));
-	m_modeIndicator->setPalette(pal);
-
-	m_fileNewAction->setEnabled(true);
-	m_fileOpenAction->setEnabled(true);
-	m_fileQuitAction->setEnabled(true);
-
-	m_functionManagerAction->setEnabled(true);
-	m_outputManagerAction->setEnabled(true);
-	m_inputManagerAction->setEnabled(true);
-	m_busManagerAction->setEnabled(true);
-
-	m_modeToggleAction->setIcon(QIcon(":/operate.png"));
-	m_modeToggleAction->setText(tr("Operate"));
-	m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
-
-	/* Allow opening a context menu */
-	#ifndef __APPLE__
-		// No centralWidget on APPLE
-		centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
-	#endif
-
-	m_mode = Design;
-	emit modeChanged(Design);
+	doc()->setMode(Doc::Design);
 }
 
 void App::slotModeToggle()
 {
-	if (m_mode == Design)
+	if (doc()->mode() == Doc::Design)
 		slotModeOperate();
 	else
 		slotModeDesign();
+}
+
+void App::slotModeChanged(Doc::Mode mode)
+{
+	if (mode == Doc::Operate)
+	{
+		/* Set highlighted palette to mode indicator */
+		m_modeIndicator->setText(KModeTextOperate);
+		m_modeIndicator->setToolTip(
+			tr("Operate mode is active; editing facilities are disabled"));
+
+		QPalette pal = palette();
+		pal.setColor(QPalette::Window,
+			     QApplication::palette().color(QPalette::Highlight));
+		pal.setColor(QPalette::WindowText,
+			     QApplication::palette().color(QPalette::HighlightedText));
+		m_modeIndicator->setPalette(pal);
+
+		/* Disable editing features */
+		m_fileNewAction->setEnabled(false);
+		m_fileOpenAction->setEnabled(false);
+		m_fileQuitAction->setEnabled(false);
+
+		m_functionManagerAction->setEnabled(false);
+		m_outputManagerAction->setEnabled(false);
+		m_inputManagerAction->setEnabled(false);
+
+		m_modeToggleAction->setIcon(QIcon(":/design.png"));
+		m_modeToggleAction->setText(tr("Design"));
+		m_modeToggleAction->setToolTip(tr("Switch to design mode"));
+
+		/* Prevent opening a context menu */
+		#ifndef __APPLE__
+		// No centralWidget() on APPLE
+		centralWidget()->setContextMenuPolicy(Qt::PreventContextMenu);
+		#endif
+	}
+	else if (mode == Doc::Design)
+	{
+		/* Set normal palette to mode indicator */
+		m_modeIndicator->setText(KModeTextDesign);
+		m_modeIndicator->setToolTip(
+			tr("Design mode is active; editing facilities are enabled"));
+
+		QPalette pal = palette();
+		pal.setColor(QPalette::Window,
+			     QApplication::palette().color(QPalette::Window));
+		pal.setColor(QPalette::WindowText,
+			     QApplication::palette().color(QPalette::WindowText));
+		m_modeIndicator->setPalette(pal);
+
+		/* Enable editing features */
+		m_fileNewAction->setEnabled(true);
+		m_fileOpenAction->setEnabled(true);
+		m_fileQuitAction->setEnabled(true);
+
+		m_functionManagerAction->setEnabled(true);
+		m_outputManagerAction->setEnabled(true);
+		m_inputManagerAction->setEnabled(true);
+
+		m_modeToggleAction->setIcon(QIcon(":/operate.png"));
+		m_modeToggleAction->setText(tr("Operate"));
+		m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
+
+		/* Allow opening a context menu */
+		#ifndef __APPLE__
+		// No centralWidget on APPLE
+		centralWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
+		#endif
+	}
 }
 
 /*****************************************************************************

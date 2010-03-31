@@ -60,8 +60,8 @@ protected:
 	InputManager(QWidget* parent, Qt::WindowFlags flags = 0);
 
 protected slots:
-	void slotAppModeChanged(App::Mode mode);
-	void slotDocumentChanged();
+	void slotModeChanged(Doc::Mode mode);
+	void slotDocumentChanged(Doc* doc);
 
 protected:
 	static InputManager* s_instance;

@@ -79,7 +79,11 @@ OutputManager::OutputManager(QWidget* parent, Qt::WindowFlags flags)
 	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 		this, SLOT(slotEditClicked()));
 
-	updateTree();
+	/* Listen to document changes */
+	connect(_app, SIGNAL(documentChanged(Doc*)),
+		this, SLOT(slotDocumentChanged(Doc*)));
+	/* Use the initial document */
+	slotDocumentChanged(_app->doc());
 }
 
 OutputManager::~OutputManager()
@@ -120,11 +124,6 @@ void OutputManager::create(QWidget* parent)
 	window->setContextMenuPolicy(Qt::CustomContextMenu);
 	window->show();
 
-	connect(_app, SIGNAL(modeChanged(App::Mode)),
-		s_instance, SLOT(slotAppModeChanged(App::Mode)));
-	connect(_app, SIGNAL(documentChanged(Doc*)),
-		s_instance, SLOT(slotDocumentChanged()));
-
 	QSettings settings;
 	QVariant var = settings.value(SETTINGS_GEOMETRY);
 	if (var.isValid() == true)
@@ -142,10 +141,10 @@ void OutputManager::create(QWidget* parent)
 	}
 }
 
-void OutputManager::slotAppModeChanged(App::Mode mode)
+void OutputManager::slotModeChanged(Doc::Mode mode)
 {
 	/* Close this when entering operate mode */
-	if (mode == App::Operate)
+	if (mode == Doc::Operate)
 #ifdef __APPLE__
 		deleteLater();
 #else
@@ -153,8 +152,10 @@ void OutputManager::slotAppModeChanged(App::Mode mode)
 #endif
 }
 
-void OutputManager::slotDocumentChanged()
+void OutputManager::slotDocumentChanged(Doc* doc)
 {
+	connect(doc, SIGNAL(modeChanged(Doc::Mode)),
+		this, SLOT(slotModeChanged(Doc::Mode)));
 	updateTree();
 }
 

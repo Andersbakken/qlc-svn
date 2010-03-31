@@ -343,7 +343,7 @@ signals:
 	 *********************************************************************/
 public slots:
 	/** Slot that catches main application mode changes */
-	void slotAppModeChanged(App::Mode mode);
+	void slotModeChanged(Doc::Mode mode);
 
 	/*********************************************************************
 	 * Load & Save

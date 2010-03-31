@@ -174,7 +174,7 @@ bool VCLabel::saveXML(QDomDocument* doc, QDomElement* vc_root)
 void VCLabel::paintEvent(QPaintEvent* e)
 {
 	bool enabled = false;
-	if (_app->mode() == App::Operate)
+	if (mode() == Doc::Operate)
 		enabled = true;
 
 	QPainter painter(this);

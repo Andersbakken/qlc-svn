@@ -61,7 +61,7 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 	setObjectName(VCWidget::staticMetaObject.className());
 
 	setMinimumSize(QSize(20, 20));
-	
+
 	m_backgroundImage = QString::null;
 	m_hasCustomBackgroundColor = false;
 	m_hasCustomForegroundColor = false;
@@ -77,8 +77,9 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 	m_inputUniverse = KInputUniverseInvalid;
 	m_inputChannel = KInputChannelInvalid;
 
-	connect(_app, SIGNAL(modeChanged(App::Mode)), 
-		this, SLOT(slotModeChanged(App::Mode)));
+	connect(_app->doc(), SIGNAL(modeChanged(Doc::Mode)),
+		this, SLOT(slotModeChanged(Doc::Mode)));
+	m_mode = Doc::Design;
 
 	/* Listen to parent's (only VCWidget-kind) key signals */
 	if (parent->inherits(metaObject()->className()) == true)
@@ -552,16 +553,15 @@ bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
  * QLC Mode change
  *****************************************************************************/
 
-void VCWidget::slotModeChanged(App::Mode mode)
+void VCWidget::slotModeChanged(Doc::Mode mode)
 {
+	m_mode = mode;
+
 	/* Reset mouse cursor */
 	unsetCursor();
-	
+
 	/* Force an update to get rid of selection markers */
 	update();
-
-	/* Patch the signal thru to all children */
-	emit modeChanged(mode);
 }
 
 /*****************************************************************************
@@ -675,7 +675,7 @@ void VCWidget::paintEvent(QPaintEvent* e)
 	QWidget::paintEvent(e);
 
 	/* Draw selection frame */
-	if (_app->mode() == App::Design && vc->isWidgetSelected(this) == true)
+	if (mode() == Doc::Design && vc->isWidgetSelected(this) == true)
 	{
 		/* Draw a dotted line around the widget */
 		QPen pen(Qt::DotLine);
@@ -695,7 +695,7 @@ void VCWidget::mousePressEvent(QMouseEvent* e)
 {
 	Q_ASSERT(e != NULL);
 
-	if (_app->mode() == App::Operate)
+	if (mode() == Doc::Operate)
 	{
 		QWidget::mousePressEvent(e);
 		return;
@@ -775,7 +775,7 @@ void VCWidget::handleWidgetSelection(QMouseEvent* e)
 
 void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 	{
 		unsetCursor();
 		m_resizeMode = false;
@@ -789,7 +789,7 @@ void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 
 void VCWidget::mouseDoubleClickEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 		editProperties();
 	else
 		QWidget::mouseDoubleClickEvent(e);
@@ -797,7 +797,7 @@ void VCWidget::mouseDoubleClickEvent(QMouseEvent* e)
 
 void VCWidget::mouseMoveEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 	{
 		if (m_resizeMode == true)
 		{

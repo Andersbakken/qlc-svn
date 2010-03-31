@@ -117,9 +117,6 @@ void BusManager::create(QWidget* parent)
 	window->setContextMenuPolicy(Qt::CustomContextMenu);
 	window->show();
 
-	connect(_app, SIGNAL(modeChanged(App::Mode)),
-		s_instance, SLOT(slotAppModeChanged(App::Mode)));
-
 	QSettings settings;
 	QVariant var = settings.value(SETTINGS_GEOMETRY);
 	if (var.isValid() == true)
@@ -136,21 +133,6 @@ void BusManager::create(QWidget* parent)
 		else
 			window->resize(300, 400);
 	}
-}
-
-/****************************************************************************
- * App mode
- ****************************************************************************/
-
-void BusManager::slotAppModeChanged(App::Mode mode)
-{
-	/* Destroy this when going to operate mode */
-	if (mode == App::Operate)
-#ifdef __APPLE__
-		deleteLater(); /* Destroy this */
-#else
-		parent()->deleteLater(); /* Destroy mdi subwindow */
-#endif
 }
 
 /****************************************************************************

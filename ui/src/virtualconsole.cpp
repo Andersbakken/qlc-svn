@@ -102,6 +102,8 @@ VirtualConsole::VirtualConsole(QWidget* parent, Qt::WindowFlags flags)
 
 	initDockArea();
 	initContents();
+
+	slotModeChanged(_app->doc()->mode());
 }
 
 VirtualConsole::~VirtualConsole()
@@ -141,8 +143,8 @@ void VirtualConsole::create(QWidget* parent)
 #endif
 
 	/* Listen to mode changes */
-	connect(_app, SIGNAL(modeChanged(App::Mode)),
-		s_instance, SLOT(slotAppModeChanged(App::Mode)));
+	connect(_app->doc(), SIGNAL(modeChanged(Doc::Mode)),
+		s_instance, SLOT(slotModeChanged(Doc::Mode)));
 
 	/* Set some common properties for the window and show it */
 	window->setAttribute(Qt::WA_DeleteOnClose);
@@ -1420,7 +1422,7 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* event)
  * Main application mode
  *****************************************************************************/
 
-void VirtualConsole::slotAppModeChanged(App::Mode mode)
+void VirtualConsole::slotModeChanged(Doc::Mode mode)
 {
 	QString config;
 
@@ -1432,7 +1434,7 @@ void VirtualConsole::slotAppModeChanged(App::Mode mode)
 		display = XOpenDisplay(NULL);
 		Q_ASSERT(display != NULL);
 
-		if (mode == App::Design)
+		if (mode == Doc::Design)
 			XAutoRepeatOn(display);
 		else
 			XAutoRepeatOff(display);
@@ -1445,13 +1447,13 @@ void VirtualConsole::slotAppModeChanged(App::Mode mode)
 	/* Grab keyboard */
 	if (s_properties.isGrabKeyboard() == true)
 	{
-		if (mode == App::Design)
+		if (mode == Doc::Design)
 			releaseKeyboard();
 		else
 			grabKeyboard();
 	}
 
-	if (mode == App::Operate)
+	if (mode == Doc::Operate)
 	{
 		// Don't allow editing or adding in operate mode
 		m_toolsSettingsAction->setEnabled(false);

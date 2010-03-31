@@ -53,9 +53,6 @@ protected:
 	/** Protected constructor to prevent multiple instances. */
 	BusManager(QWidget* parent, Qt::WindowFlags f = 0);
 
-protected slots:
-	void slotAppModeChanged(App::Mode mode);
-
 protected:
 	static BusManager* s_instance;
 

@@ -66,9 +66,6 @@ VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 	m_currentXYPosition.setX(width() / 2);
 	m_currentXYPosition.setY(height() / 2);
 	m_currentXYPositionChanged = false;
-
-	connect(_app, SIGNAL(modeChanged(App::Mode)),
-		this, SLOT(slotAppModeChanged(App::Mode)));
 }
 
 VCXYPad::~VCXYPad()
@@ -188,23 +185,23 @@ void VCXYPad::writeDMX(MasterTimer* timer, QByteArray* universes)
 }
 
 /*****************************************************************************
- * Application mode
+ * QLC mode
  *****************************************************************************/
 
-void VCXYPad::slotAppModeChanged(App::Mode mode)
+void VCXYPad::slotModeChanged(Doc::Mode mode)
 {
 	QMutableListIterator <VCXYPadFixture> it(m_fixtures);
 	while (it.hasNext() == true)
 	{
 		VCXYPadFixture fxi(it.next());
-		if (mode == App::Operate)
+		if (mode == Doc::Operate)
 			fxi.arm();
 		else
 			fxi.disarm();
 		it.setValue(fxi);
 	}
 
-	if (mode == App::Operate)
+	if (mode == Doc::Operate)
 		_app->masterTimer()->registerDMXSource(this);
 	else
 		_app->masterTimer()->unregisterDMXSource(this);
@@ -212,6 +209,8 @@ void VCXYPad::slotAppModeChanged(App::Mode mode)
 	/* Reset this flag so that the pad won't immediately set a value
 	   when mode is changed */
 	m_currentXYPositionChanged = false;
+
+	VCWidget::slotModeChanged(mode);
 }
 
 /*****************************************************************************
@@ -380,7 +379,7 @@ void VCXYPad::paintEvent(QPaintEvent* e)
 
 void VCXYPad::mousePressEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Operate)
+	if (mode() == Doc::Operate)
 	{
 		/* Mouse moves the XY point in operate mode */
 		int x = CLAMP(e->x(), 0, width());
@@ -397,7 +396,7 @@ void VCXYPad::mousePressEvent(QMouseEvent* e)
 
 void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Operate)
+	if (mode() == Doc::Operate)
 	{
 		/* Mouse moves the XY point in operate mode */
 		setMouseTracking(false);
@@ -411,7 +410,7 @@ void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 
 void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 {
-	if (_app->mode() == App::Operate)
+	if (mode() == Doc::Operate)
 	{
 		/* Mouse moves the XY point in operate mode */
 		int x = CLAMP(e->x(), 0, width());

@@ -260,10 +260,16 @@ protected:
 	 * QLC Mode change
 	 *********************************************************************/
 protected slots:
-	virtual void slotModeChanged(App::Mode mode);
+	/** Listens to Doc mode changes */
+	virtual void slotModeChanged(Doc::Mode mode);
 
-signals:
-	void modeChanged(App::Mode);
+protected:
+	/** Shortcut for inheritors to check current mode */
+	Doc::Mode mode() const { return m_mode; }
+
+private:
+	/** Current operating mode, stored in slotModeChanged */
+	Doc::Mode m_mode;
 
 	/*********************************************************************
 	 * Widget menu

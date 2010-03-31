@@ -136,7 +136,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	setInvertedAppearance(true);
 
 	/* Update the slider according to current mode */
-	slotModeChanged(_app->mode());
+	slotModeChanged(mode());
 }
 
 VCSlider::~VCSlider()
@@ -228,9 +228,9 @@ void VCSlider::editProperties()
  * QLC Mode
  *****************************************************************************/
 
-void VCSlider::slotModeChanged(App::Mode mode)
+void VCSlider::slotModeChanged(Doc::Mode mode)
 {
-	if (mode == App::Operate)
+	if (mode == Doc::Operate)
 	{
 		m_topLabel->setEnabled(true);
 		m_slider->setEnabled(true);
@@ -733,7 +733,7 @@ void VCSlider::slotInputValueChanged(t_input_universe universe,
 				     t_input_value value)
 {
 	/* Don't let input data thru in design mode */
-	if (_app->mode() == App::Design)
+	if (mode() == Doc::Design)
 		return;
 
 	if (universe == m_inputUniverse && channel == m_inputChannel)

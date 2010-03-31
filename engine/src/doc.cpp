@@ -40,8 +40,9 @@
 #include "doc.h"
 
 Doc::Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache)
-	: QObject(parent),
-	m_fixtureDefCache(fixtureDefCache)
+	: QObject(parent)
+	, m_mode(Design)
+	, m_fixtureDefCache(fixtureDefCache)
 {
 	// Allocate fixture array
 	m_fixtureArray = (Fixture**) malloc(sizeof(Fixture*) *
@@ -106,6 +107,32 @@ void Doc::resetModified()
 {
 	m_modified = false;
 	emit modified(false);
+}
+
+/*****************************************************************************
+ * Main operating mode
+ *****************************************************************************/
+
+void Doc::setMode(Doc::Mode mode)
+{
+	/* Don't do mode switching twice */
+	if (m_mode == mode)
+		return;
+	m_mode = mode;
+
+	/* Go thru all functions and arm/disarm them, depending on new mode */
+	for (int i = 0; i < KFunctionArraySize; i++)
+	{
+		Function* function = m_functionArray[i];
+		if (function == NULL)
+			continue;
+		else if (mode == Design)
+			function->disarm();
+		else if (mode == Operate)
+			function->arm();
+	}
+
+	emit modeChanged(m_mode);
 }
 
 /*****************************************************************************
@@ -372,35 +399,6 @@ void Doc::slotFunctionChanged(t_function_id fid)
 /*****************************************************************************
  * Monitoring/listening methods
  *****************************************************************************/
-
-void Doc::slotModeChanged(App::Mode mode)
-{
-	Function* function;
-	int i;
-
-	if (mode == App::Operate)
-	{
-		/* Arm all functions, i.e. allocate everything that is
-		   needed if the function is run. */
-		for (i = 0; i < KFunctionArraySize; i++)
-		{
-			function = m_functionArray[i];
-			if (function != NULL)
-				function->arm();
-		}
-	}
-	else
-	{
-		/* Disarm all functions, i.e. delete everything that was
-		   allocated when the functions were armed. */
-		for (i = 0; i < KFunctionArraySize; i++)
-		{
-			function = m_functionArray[i];
-			if (function != NULL)
-				function->disarm();
-		}
-	}
-}
 
 void Doc::slotFixtureChanged(t_fixture_id id)
 {

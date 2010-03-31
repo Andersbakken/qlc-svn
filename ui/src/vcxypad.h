@@ -86,7 +86,7 @@ public:
 	void clearFixtures();
 
 	QList <VCXYPadFixture> fixtures() const { return m_fixtures; }
-	
+
 protected:
 	QList <VCXYPadFixture> m_fixtures;
 
@@ -111,10 +111,10 @@ protected:
         QMutex m_currentXYPositionMutex;
 
 	/*********************************************************************
-	 * Application Mode
+	 * QLC mode
 	 *********************************************************************/
 protected slots:
-	void slotAppModeChanged(App::Mode mode);
+	void slotModeChanged(Doc::Mode mode);
 
 	/*********************************************************************
 	 * Load & Save
