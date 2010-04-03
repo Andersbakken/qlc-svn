@@ -116,6 +116,7 @@ protected slots:
 	void slotAddChaser();
 	void slotAddCollection();
 	void slotAddEFX();
+	void slotWizard();
 
 	int slotEdit();
 	void slotClone();
@@ -136,6 +137,7 @@ protected:
 	QAction* m_addChaserAction;
 	QAction* m_addCollectionAction;
 	QAction* m_addEFXAction;
+	QAction* m_wizardAction;
 
 	QAction* m_cloneAction;
 	QAction* m_editAction;

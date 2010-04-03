@@ -39,6 +39,7 @@
 
 #include "collectioneditor.h"
 #include "functionmanager.h"
+#include "functionwizard.h"
 #include "chasereditor.h"
 #include "sceneeditor.h"
 #include "collection.h"
@@ -190,6 +191,12 @@ void FunctionManager::initActions()
 	connect(m_addEFXAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotAddEFX()));
 
+	m_wizardAction = new QAction(QIcon(":/wizard.png"),
+				     tr("Function Wizard"), this);
+	m_wizardAction->setShortcut(QKeySequence("CTRL+A"));
+	connect(m_wizardAction, SIGNAL(triggered(bool)),
+		this, SLOT(slotWizard()));
+
 	/* Edit actions */
 	m_editAction = new QAction(QIcon(":/edit.png"),
 				   tr("&Edit"), this);
@@ -229,6 +236,8 @@ void FunctionManager::initMenu()
 	m_addMenu->addAction(m_addChaserAction);
 	m_addMenu->addAction(m_addEFXAction);
 	m_addMenu->addAction(m_addCollectionAction);
+	m_addMenu->addSeparator();
+	m_addMenu->addAction(m_wizardAction);
 
 	/* Edit menu */
 	m_editMenu = new QMenu(this);
@@ -281,6 +290,8 @@ void FunctionManager::initToolbar()
 	m_toolbar->addAction(m_addChaserAction);
 	m_toolbar->addAction(m_addEFXAction);
 	m_toolbar->addAction(m_addCollectionAction);
+	m_toolbar->addSeparator();
+	m_toolbar->addAction(m_wizardAction);
 	m_toolbar->addSeparator();
 	m_toolbar->addAction(m_editAction);
 	m_toolbar->addAction(m_cloneAction);
@@ -419,6 +430,13 @@ void FunctionManager::slotAddEFX()
 		QMessageBox::critical(this, tr("Function creation failed"),
 			tr("Unable to create new function."));
 	}
+}
+
+void FunctionManager::slotWizard()
+{
+	FunctionWizard fw(this);
+	if (fw.exec() == QDialog::Accepted)
+		updateTree();
 }
 
 int FunctionManager::slotEdit()

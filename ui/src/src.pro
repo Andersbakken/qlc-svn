@@ -55,6 +55,7 @@ HEADERS += aboutbox.h \
            fixtureselection.h \
            functionmanager.h \
            functionselection.h \
+	   functionwizard.h \
            generatorarea.h \
 	   inputchanneleditor.h \
 	   inputprofileeditor.h \
@@ -94,6 +95,7 @@ FORMS += aboutbox.ui \
          efxeditor.ui \
          fixtureselection.ui \
          functionselection.ui \
+	 functionwizard.ui \
 	 inputchanneleditor.ui \
 	 inputprofileeditor.ui \
          inputpatcheditor.ui \
@@ -123,6 +125,7 @@ SOURCES += aboutbox.cpp \
            fixtureselection.cpp \
            functionmanager.cpp \
            functionselection.cpp \
+	   functionwizard.cpp \
            generatorarea.cpp \
 	   inputchanneleditor.cpp \
 	   inputprofileeditor.cpp \
