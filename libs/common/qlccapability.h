@@ -77,6 +77,8 @@ public:
 	t_value max() const { return m_max; }
 	void setMax(t_value value) { m_max = value; }
 
+	t_value middle() const { return int((m_max + m_min) / 2); }
+
 	QString name() const { return m_name; }
 	void setName(const QString& name) { m_name = name; }
 
