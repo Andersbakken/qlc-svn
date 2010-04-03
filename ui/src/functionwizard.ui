@@ -121,6 +121,12 @@
       <iconset resource="main.qrc">
        <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
      </property>
+     <property name="iconSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
     </widget>
    </item>
    <item row="1" column="1">
@@ -131,6 +137,12 @@
      <property name="icon">
       <iconset resource="main.qrc">
        <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
      </property>
     </widget>
    </item>
