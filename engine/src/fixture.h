@@ -134,6 +134,14 @@ public:
 	 */
 	QString type() const;
 
+	/**
+	 * Check, whether the fixture is a dimmer-type fixture (i.e. without
+	 * a definition).
+	 *
+	 * @return true if the fixture is a dimmer, otherwise false
+	 */
+	bool isDimmer() const;
+
 	/*********************************************************************
 	 * Universe
 	 *********************************************************************/
@@ -206,7 +214,7 @@ public:
 	 * @param channel The channel number to get
 	 * @return A QLCChannel* instance that should not be modified
 	 */
-	const QLCChannel* channel(t_channel channel);
+	const QLCChannel* channel(t_channel channel) const;
 
 	/**
 	 * Get a fixture's channel's DMX address.
@@ -232,15 +240,6 @@ public:
 	 * The invalid channel number (for comparison etc...)
 	 */
 	static t_channel invalidChannel();
-
-protected:
-	/**
-	 * Create a QLCChannel for generic dimmers if such a channel doesn't
-	 * exist yet. Returns just the one channel.
-	 *
-	 * @return The generic QLCChannel 
-	 */
-	const QLCChannel* genericChannel();
 
 protected:
 	/** DMX address & universe */

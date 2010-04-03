@@ -119,6 +119,14 @@ QString Fixture::type() const
 		return QString(KXMLFixtureDimmer);
 }
 
+bool Fixture::isDimmer() const
+{
+	if (m_fixtureDef != NULL)
+		return false;
+	else
+		return true;
+}
+
 /*****************************************************************************
  * Universe
  *****************************************************************************/
@@ -181,12 +189,12 @@ t_channel Fixture::channels() const
 		return m_channels;
 }
 
-const QLCChannel* Fixture::channel(t_channel channel)
+const QLCChannel* Fixture::channel(t_channel channel) const
 {
 	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
 		return m_fixtureMode->channel(channel);
 	else if (channel < channels())
-		return genericChannel();
+		return m_genericChannel;
 	else
 		return NULL;
 }
@@ -238,21 +246,6 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
 	}
 }
 
-const QLCChannel* Fixture::genericChannel()
-{
-	if (m_genericChannel == NULL)
-	{
-		m_genericChannel = new QLCChannel();
-		Q_ASSERT(m_genericChannel != NULL);
-		m_genericChannel->setGroup(KQLCChannelGroupIntensity);
-		m_genericChannel->setName(KQLCChannelGroupIntensity);
-		m_genericChannel->addCapability(
-			new QLCCapability(0, 255, KQLCChannelGroupIntensity));
-	}
-
-	return m_genericChannel;
-}
-
 t_channel Fixture::invalidChannel()
 {
 	return KInvalidFixtureChannel;
@@ -287,19 +280,26 @@ void Fixture::setFixtureDefinition(const QLCFixtureDef* fixtureDef,
 	{
 		m_fixtureDef = fixtureDef;
 		m_fixtureMode = fixtureMode;
+
+		if (m_genericChannel != NULL)
+			delete m_genericChannel;
+		m_genericChannel = NULL;
 	}
 	else
 	{
 		m_fixtureDef = NULL;
 		m_fixtureMode = NULL;
-	}
 
-	/* In case the old def was a dimmer and the new one is not, delete
-	   the generic channel as possibly useless. It is created automatically
-	   if it is again needed. */
-	if (m_genericChannel != NULL)
-		delete m_genericChannel;
-	m_genericChannel = NULL;
+		if (m_genericChannel == NULL)
+		{
+			m_genericChannel = new QLCChannel();
+			Q_ASSERT(m_genericChannel != NULL);
+			m_genericChannel->setGroup(KQLCChannelGroupIntensity);
+			m_genericChannel->setName(KQLCChannelGroupIntensity);
+			m_genericChannel->addCapability(new QLCCapability(
+				0, 255, KQLCChannelGroupIntensity));
+		}
+	}
 
 	emit changed(m_id);
 }
