@@ -34,7 +34,8 @@
 #include "qlcchannel.h"
 
 #define KColumnName 0
-#define KColumnID   1
+#define KColumnCaps 1
+#define KColumnID   2
 
 extern App* _app;
 
@@ -105,6 +106,15 @@ void FunctionWizard::addFixture(t_fixture_id fxi_id)
 	QTreeWidgetItem* item = new QTreeWidgetItem(m_fixtureTree);
 	item->setText(KColumnName, fxi->name());
 	item->setData(KColumnID, Qt::UserRole, fxi_id);
+
+	QString caps;
+	if (findChannels(fxi, KQLCChannelGroupColour).isEmpty() == false)
+		caps.append(KQLCChannelGroupColour);
+	if (findChannels(fxi, KQLCChannelGroupGobo).isEmpty() == false)
+		caps.append(QString(", ") + KQLCChannelGroupGobo);
+	if (findChannels(fxi, KQLCChannelGroupShutter).isEmpty() == false)
+		caps.append(QString(", ") + KQLCChannelGroupShutter);
+	item->setText(KColumnCaps, caps);
 }
 
 QList <Fixture*> FunctionWizard::fixtures() const

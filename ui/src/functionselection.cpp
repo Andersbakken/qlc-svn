@@ -113,6 +113,7 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 		this, SLOT(slotItemDoubleClicked(QTreeWidgetItem*)));
 
 	refillTree();
+	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 }
 
 FunctionSelection::~FunctionSelection()

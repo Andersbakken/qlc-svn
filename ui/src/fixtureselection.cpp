@@ -84,6 +84,7 @@ FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
 	}
 
 	m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 }
 
 FixtureSelection::~FixtureSelection()
