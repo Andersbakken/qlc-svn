@@ -21,6 +21,7 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
+#include <QHeaderView>
 
 #include "qlcfixturedef.h"
 
