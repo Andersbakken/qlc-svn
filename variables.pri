@@ -74,3 +74,8 @@ macx:INPUTPLUGINDIR	= $$PLUGINDIR/Input
 win32:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
 unix:!macx:OUTPUTPLUGINDIR = $$PLUGINDIR/output
 macx:OUTPUTPLUGINDIR	= $$PLUGINDIR/Output
+
+# Translations
+win32:TRANSLATIONDIR	=
+unix:!macx:TRANSLATIONDIR = $$DATADIR/translations
+macx:TRANSLATIONDIR	= $$DATADIR/Translations
