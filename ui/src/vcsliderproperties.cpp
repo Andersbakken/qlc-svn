@@ -155,9 +155,6 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
 	m_levelHighLimitSpin->setValue(m_slider->levelHighLimit());
 
 	/* Tree widget columns */
-	QStringList labels;
-	labels << "Name" << "Type" << "Range";
-	m_levelList->setHeaderLabels(labels);
 	m_levelList->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	/* Tree widget contents */

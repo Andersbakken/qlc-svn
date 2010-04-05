@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>VCXYPadProperties</class>
- <widget class="QDialog" name="VCXYPadProperties" >
-  <property name="geometry" >
+ <widget class="QDialog" name="VCXYPadProperties">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,78 +10,82 @@
     <height>317</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>XY Pad Properties</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" >
-   <item row="0" column="0" >
-    <widget class="QLabel" name="m_nameLabel" >
-     <property name="text" >
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="m_nameLabel">
+     <property name="text">
       <string>XY Pad Name</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" >
-    <widget class="QLineEdit" name="m_nameEdit" />
-   </item>
-   <item row="1" column="0" colspan="2" >
-    <widget class="QTreeWidget" name="m_tree" >
-     <property name="toolTip" >
-      <string>List of scenes that can be activated with this cue list</string>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="m_nameEdit">
+     <property name="toolTip">
+      <string>The name of this XY Pad</string>
      </property>
-     <property name="showDropIndicator" stdset="0" >
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QTreeWidget" name="m_tree">
+     <property name="toolTip">
+      <string>List of fixtures that are controlled by this pad</string>
+     </property>
+     <property name="showDropIndicator" stdset="0">
       <bool>false</bool>
      </property>
-     <property name="alternatingRowColors" >
+     <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
-     <property name="selectionMode" >
+     <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>
      </property>
-     <property name="rootIsDecorated" >
+     <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
-     <property name="itemsExpandable" >
+     <property name="itemsExpandable">
       <bool>false</bool>
      </property>
-     <property name="allColumnsShowFocus" >
+     <property name="allColumnsShowFocus">
       <bool>true</bool>
      </property>
-     <property name="expandsOnDoubleClick" >
+     <property name="expandsOnDoubleClick">
       <bool>false</bool>
      </property>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>Fixture</string>
       </property>
      </column>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>X-Axis</string>
       </property>
      </column>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>Y-Axis</string>
       </property>
      </column>
     </widget>
    </item>
-   <item row="1" column="2" >
-    <layout class="QVBoxLayout" name="verticalLayout" >
+   <item row="1" column="2">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QToolButton" name="m_addButton" >
-       <property name="toolTip" >
-        <string>Add scene(s) to the cue list</string>
+      <widget class="QToolButton" name="m_addButton">
+       <property name="toolTip">
+        <string>Add fixture(s) to the pad</string>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>...</string>
        </property>
-       <property name="icon" >
-        <iconset resource="main.qrc" >
+       <property name="icon">
+        <iconset resource="main.qrc">
          <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
        </property>
-       <property name="iconSize" >
+       <property name="iconSize">
         <size>
          <width>26</width>
          <height>26</height>
@@ -89,18 +94,18 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="m_removeButton" >
-       <property name="toolTip" >
-        <string>Remove selected scene(s) from the cue list</string>
+      <widget class="QToolButton" name="m_removeButton">
+       <property name="toolTip">
+        <string>Remove selected fixture(s) from the pad</string>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>...</string>
        </property>
-       <property name="icon" >
-        <iconset resource="main.qrc" >
+       <property name="icon">
+        <iconset resource="main.qrc">
          <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
        </property>
-       <property name="iconSize" >
+       <property name="iconSize">
         <size>
          <width>26</width>
          <height>26</height>
@@ -109,18 +114,18 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="m_editButton" >
-       <property name="toolTip" >
-        <string>Raise the selected scene</string>
+      <widget class="QToolButton" name="m_editButton">
+       <property name="toolTip">
+        <string>Edit the selected fixture's axis</string>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>...</string>
        </property>
-       <property name="icon" >
-        <iconset resource="main.qrc" >
+       <property name="icon">
+        <iconset resource="main.qrc">
          <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
        </property>
-       <property name="iconSize" >
+       <property name="iconSize">
         <size>
          <width>26</width>
          <height>26</height>
@@ -129,11 +134,11 @@
       </widget>
      </item>
      <item>
-      <spacer name="verticalSpacer" >
-       <property name="orientation" >
+      <spacer name="verticalSpacer">
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>40</height>
@@ -143,12 +148,12 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0" colspan="3" >
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="orientation" >
+   <item row="2" column="0" colspan="3">
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -156,7 +161,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="main.qrc" />
+  <include location="main.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -165,11 +170,11 @@
    <receiver>VCXYPadProperties</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>257</x>
      <y>307</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -181,11 +186,11 @@
    <receiver>VCXYPadProperties</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>325</x>
      <y>307</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>
@@ -197,11 +202,11 @@
    <receiver>VCXYPadProperties</receiver>
    <slot>slotAddClicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>418</x>
      <y>47</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>438</x>
      <y>15</y>
     </hint>
@@ -213,11 +218,11 @@
    <receiver>VCXYPadProperties</receiver>
    <slot>slotRemoveClicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>422</x>
      <y>92</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>439</x>
      <y>87</y>
     </hint>
@@ -229,11 +234,11 @@
    <receiver>VCXYPadProperties</receiver>
    <slot>slotEditClicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>416</x>
      <y>131</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>416</x>
      <y>159</y>
     </hint>

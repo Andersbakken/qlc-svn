@@ -25,6 +25,7 @@
 #include <QMdiSubWindow>
 #include <QStyleFactory>
 #include <QApplication>
+#include <QImageReader>
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -73,8 +74,8 @@
 
 #define SETTINGS_GEOMETRY "workspace/geometry"
 
-#define KModeTextOperate tr("Operate")
-#define KModeTextDesign tr("Design")
+#define KModeTextOperate QObject::tr("Operate")
+#define KModeTextDesign QObject::tr("Design")
 
 App* _app;
 QStyle* App::s_saneStyle = NULL;
@@ -1271,9 +1272,14 @@ void App::setBackgroundImage(QString path)
 
 void App::slotSetBackgroundImage()
 {
+	QString formats;
+	QListIterator <QByteArray> it(QImageReader::supportedImageFormats());
+	while (it.hasNext() == true)
+		formats += QString("*.%1 ").arg(QString(it.next()).toLower());
+
 	QString path = QFileDialog::getOpenFileName(
 		this, tr("Open an image file"), getenv("HOME"),
-		tr("Images (*.png *.xpm *.jpg *.gif)"));
+		tr("Images (%1)").arg(formats));
 
 	if (path.isEmpty() == false)
 		setBackgroundImage(path);

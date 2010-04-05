@@ -335,13 +335,13 @@ void InputProfileEditor::slotWizardClicked(bool checked)
 	if (checked == true)
 	{
 		QMessageBox::information(this, tr("Channel wizard activated"),
-			tr("You have enabled the input channel wizard. After ")
-		      + tr("clicking OK, wiggle your mapped input profile's ")
-		      + tr("controls. They should appear into the list. ")
-		      + tr("Click the wizard button again to stop channel ")
-		      + tr("auto-detection.\n\nNote that the wizard cannot ")
-		      + tr("tell the difference between a knob and a slider ")
-		      + tr("so you will have to do the change manually."));
+			tr("You have enabled the input channel wizard. After "
+		           "clicking OK, wiggle your mapped input profile's "
+		           "controls. They should appear into the list. "
+		           "Click the wizard button again to stop channel "
+		           "auto-detection.\n\nNote that the wizard cannot "
+		           "tell the difference between a knob and a slider "
+		           "so you will have to do the change manually."));
 
 		connect(_app->inputMap(),
 			SIGNAL(inputValueChanged(t_input_universe,

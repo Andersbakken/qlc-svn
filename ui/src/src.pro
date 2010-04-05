@@ -31,9 +31,16 @@ win32:{
 	CONFIG(debug, debug|release) LIBS += ../../engine/src/debug/libqlcengine.a
 }
 
+# Translation sources files
+TRANSLATIONS	+= qlc_fi_FI.ts
+
+# Translation object files
+translations.files += qlc_fi_FI.qm
+translations.path = $$INSTALLROOT/$$TRANSLATIONDIR
+
 # Installation
 target.path	= $$INSTALLROOT/$$BINDIR
-INSTALLS	+= target
+INSTALLS	+= target translations
 
 # Resources
 RESOURCES 	+= main.qrc
@@ -157,3 +164,9 @@ SOURCES += aboutbox.cpp \
            vcxypadfixtureeditor.cpp \
            vcxypadproperties.cpp \
            virtualconsole.cpp
+
+# Just a hack to force qmake to create all .qm files (along with _fi_FI.qm)
+i18n.target = qlc_fi_FI.qm
+i18n.commands += lrelease src.pro
+QMAKE_EXTRA_TARGETS += i18n
+PRE_TARGETDEPS += qlc_fi_FI.qm

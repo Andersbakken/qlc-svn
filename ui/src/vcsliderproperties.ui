@@ -1,74 +1,75 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>VCSliderProperties</class>
- <widget class="QDialog" name="VCSliderProperties" >
-  <property name="geometry" >
+ <widget class="QDialog" name="VCSliderProperties">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>458</width>
+    <width>511</width>
     <height>412</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Slider properties</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <widget class="QTabWidget" name="tabWidget" >
-     <property name="toolTip" >
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="toolTip">
       <string/>
      </property>
-     <property name="currentIndex" >
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="General" >
-      <attribute name="title" >
+     <widget class="QWidget" name="General">
+      <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2" >
-       <item row="0" column="0" colspan="2" >
-        <layout class="QHBoxLayout" >
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" colspan="2">
+        <layout class="QHBoxLayout">
          <item>
-          <widget class="QLabel" name="m_nameLabel" >
-           <property name="text" >
+          <widget class="QLabel" name="m_nameLabel">
+           <property name="text">
             <string>Slider name</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="m_nameEdit" >
-           <property name="toolTip" >
+          <widget class="QLineEdit" name="m_nameEdit">
+           <property name="toolTip">
             <string>Name of the slider</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="1" column="0" >
-        <widget class="QGroupBox" name="m_valueGroup" >
-         <property name="title" >
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="m_valueGroup">
+         <property name="title">
           <string>Value display style</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" >
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QRadioButton" name="m_valueExactRadio" >
-            <property name="toolTip" >
+           <widget class="QRadioButton" name="m_valueExactRadio">
+            <property name="toolTip">
              <string>Show exact DMX values</string>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>DMX / Time</string>
             </property>
-            <property name="checked" >
+            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="m_valuePercentageRadio" >
-            <property name="toolTip" >
+           <widget class="QRadioButton" name="m_valuePercentageRadio">
+            <property name="toolTip">
              <string>Show value as percentage</string>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Percentage</string>
             </property>
            </widget>
@@ -76,25 +77,25 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="1" >
-        <widget class="QGroupBox" name="m_sliderMovementGroup" >
-         <property name="title" >
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="m_sliderMovementGroup">
+         <property name="title">
           <string>Slider movement</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" >
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QRadioButton" name="m_sliderMovementNormalRadio" >
-            <property name="text" >
+           <widget class="QRadioButton" name="m_sliderMovementNormalRadio">
+            <property name="text">
              <string>Normal</string>
             </property>
-            <property name="checked" >
+            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="m_sliderMovementInvertedRadio" >
-            <property name="text" >
+           <widget class="QRadioButton" name="m_sliderMovementInvertedRadio">
+            <property name="text">
              <string>Inverted</string>
             </property>
            </widget>
@@ -102,52 +103,52 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2" >
-        <widget class="QGroupBox" name="m_externalInputGroup" >
-         <property name="title" >
+       <item row="2" column="0" colspan="2">
+        <widget class="QGroupBox" name="m_externalInputGroup">
+         <property name="title">
           <string>External Input</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="m_inputUniverseLabel" >
-            <property name="text" >
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_inputUniverseLabel">
+            <property name="text">
              <string>Input universe</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" colspan="2" >
-           <widget class="QLineEdit" name="m_inputUniverseEdit" >
-            <property name="toolTip" >
+          <item row="0" column="1" colspan="2">
+           <widget class="QLineEdit" name="m_inputUniverseEdit">
+            <property name="toolTip">
              <string>The input universe that sends data to this widget</string>
             </property>
-            <property name="readOnly" >
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QLabel" name="m_inputChannelLabel" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QLabel" name="m_inputChannelLabel">
+            <property name="text">
              <string>Input channel</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="2" >
-           <widget class="QLineEdit" name="m_inputChannelEdit" >
-            <property name="toolTip" >
+          <item row="1" column="1" colspan="2">
+           <widget class="QLineEdit" name="m_inputChannelEdit">
+            <property name="toolTip">
              <string>The particular input channel within the input universe that sends data to this widget</string>
             </property>
-            <property name="readOnly" >
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2" >
-           <spacer name="horizontalSpacer" >
-            <property name="orientation" >
+          <item row="2" column="0" colspan="2">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>298</width>
               <height>20</height>
@@ -155,12 +156,12 @@
             </property>
            </spacer>
           </item>
-          <item row="2" column="2" >
-           <widget class="QPushButton" name="m_chooseInputButton" >
-            <property name="toolTip" >
+          <item row="2" column="2">
+           <widget class="QPushButton" name="m_chooseInputButton">
+            <property name="toolTip">
              <string>Choose the external input universe &amp; channel that this widget should listen to</string>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Choose...</string>
             </property>
            </widget>
@@ -168,12 +169,12 @@
          </layout>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2" >
+       <item row="3" column="0" colspan="2">
         <spacer>
-         <property name="orientation" >
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>40</height>
@@ -183,65 +184,65 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Bus" >
-      <attribute name="title" >
+     <widget class="QWidget" name="Bus">
+      <attribute name="title">
        <string>Bus</string>
       </attribute>
-      <layout class="QVBoxLayout" >
+      <layout class="QVBoxLayout">
        <item>
-        <widget class="QGroupBox" name="m_busValueRangeGroup" >
-         <property name="title" >
+        <widget class="QGroupBox" name="m_busValueRangeGroup">
+         <property name="title">
           <string>Value range</string>
          </property>
-         <layout class="QGridLayout" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="m_busLowLimitLabel" >
-            <property name="text" >
+         <layout class="QGridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_busLowLimitLabel">
+            <property name="text">
              <string>Low limit</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <widget class="QSpinBox" name="m_busLowLimitSpin" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="m_busLowLimitSpin">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip" >
+            <property name="toolTip">
              <string>The lowest value that can be set with this slider for a bus</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>s</string>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>998</number>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QLabel" name="m_busHighLimitLabel" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QLabel" name="m_busHighLimitLabel">
+            <property name="text">
              <string>High limit</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" >
-           <widget class="QSpinBox" name="m_busHighLimitSpin" >
-            <property name="toolTip" >
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="m_busHighLimitSpin">
+            <property name="toolTip">
              <string>The highest value that can be set with this slider for a bus</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>s</string>
             </property>
-            <property name="minimum" >
+            <property name="minimum">
              <number>1</number>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>999</number>
             </property>
-            <property name="value" >
+            <property name="value">
              <number>15</number>
             </property>
            </widget>
@@ -250,29 +251,29 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="m_busGroup" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+        <widget class="QGroupBox" name="m_busGroup">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title" >
+         <property name="title">
           <string>Bus</string>
          </property>
-         <layout class="QVBoxLayout" >
+         <layout class="QVBoxLayout">
           <item>
-           <widget class="QComboBox" name="m_busCombo" />
+           <widget class="QComboBox" name="m_busCombo"/>
           </item>
          </layout>
         </widget>
        </item>
        <item>
-        <spacer name="m_busSpacer" >
-         <property name="orientation" >
+        <spacer name="m_busSpacer">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>418</width>
            <height>241</height>
@@ -281,71 +282,71 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="m_switchToBusModeButton" >
-         <property name="toolTip" >
+        <widget class="QPushButton" name="m_switchToBusModeButton">
+         <property name="toolTip">
           <string>Make the slider control a bus</string>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>Switch to Bus Mode</string>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Level" >
-      <attribute name="title" >
+     <widget class="QWidget" name="Level">
+      <attribute name="title">
        <string>Level</string>
       </attribute>
-      <layout class="QVBoxLayout" >
+      <layout class="QVBoxLayout">
        <item>
-        <widget class="QGroupBox" name="m_levelValueRangeGroup" >
-         <property name="title" >
+        <widget class="QGroupBox" name="m_levelValueRangeGroup">
+         <property name="title">
           <string>Value range</string>
          </property>
-         <layout class="QHBoxLayout" >
+         <layout class="QHBoxLayout">
           <item>
-           <widget class="QLabel" name="m_levelLowLimitLabel" >
-            <property name="text" >
+           <widget class="QLabel" name="m_levelLowLimitLabel">
+            <property name="text">
              <string>Low limit</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="m_levelLowLimitSpin" >
-            <property name="toolTip" >
+           <widget class="QSpinBox" name="m_levelLowLimitSpin">
+            <property name="toolTip">
              <string>Lowest DMX value that can be se with this slider</string>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>255</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="m_levelHighLimitLabel" >
-            <property name="text" >
+           <widget class="QLabel" name="m_levelHighLimitLabel">
+            <property name="text">
              <string>High limit</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="m_levelHighLimitSpin" >
-            <property name="toolTip" >
+           <widget class="QSpinBox" name="m_levelHighLimitSpin">
+            <property name="toolTip">
              <string>Highest DMX value that can be set with this slider</string>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>255</number>
             </property>
-            <property name="value" >
+            <property name="value">
              <number>255</number>
             </property>
            </widget>
           </item>
           <item>
            <spacer>
-            <property name="orientation" >
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>40</width>
               <height>20</height>
@@ -354,14 +355,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="m_levelCapabilityButton" >
-            <property name="enabled" >
+           <widget class="QPushButton" name="m_levelCapabilityButton">
+            <property name="enabled">
              <bool>false</bool>
             </property>
-            <property name="toolTip" >
+            <property name="toolTip">
              <string>Set value range from the selected capability</string>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>From capability</string>
             </property>
            </widget>
@@ -370,61 +371,71 @@
         </widget>
        </item>
        <item>
-        <widget class="QTreeWidget" name="m_levelList" >
-         <property name="alternatingRowColors" >
+        <widget class="QTreeWidget" name="m_levelList">
+         <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
-         <property name="selectionMode" >
+         <property name="selectionMode">
           <enum>QAbstractItemView::SingleSelection</enum>
          </property>
-         <property name="allColumnsShowFocus" >
+         <property name="allColumnsShowFocus">
           <bool>true</bool>
          </property>
          <column>
-          <property name="text" >
-           <string>1</string>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Type</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Range</string>
           </property>
          </column>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" >
+        <layout class="QHBoxLayout">
          <item>
-          <widget class="QPushButton" name="m_levelAllButton" >
-           <property name="toolTip" >
+          <widget class="QPushButton" name="m_levelAllButton">
+           <property name="toolTip">
             <string>Select all channels</string>
            </property>
-           <property name="text" >
+           <property name="text">
             <string>All</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="m_levelNoneButton" >
-           <property name="toolTip" >
+          <widget class="QPushButton" name="m_levelNoneButton">
+           <property name="toolTip">
             <string>Unselect everything</string>
            </property>
-           <property name="text" >
+           <property name="text">
             <string>None</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="m_levelInvertButton" >
-           <property name="toolTip" >
+          <widget class="QPushButton" name="m_levelInvertButton">
+           <property name="toolTip">
             <string>Invert selection</string>
            </property>
-           <property name="text" >
+           <property name="text">
             <string>Invert</string>
            </property>
           </widget>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
              <height>20</height>
@@ -433,11 +444,11 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="m_levelByGroupButton" >
-           <property name="toolTip" >
+          <widget class="QPushButton" name="m_levelByGroupButton">
+           <property name="toolTip">
             <string>Choose channels by channel group</string>
            </property>
-           <property name="text" >
+           <property name="text">
             <string>By group...</string>
            </property>
           </widget>
@@ -445,28 +456,28 @@
         </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="m_switchToLevelModeButton" >
-         <property name="toolTip" >
+        <widget class="QPushButton" name="m_switchToLevelModeButton">
+         <property name="toolTip">
           <string>Make the slider control the level of a set of channels</string>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>Switch to Level Mode</string>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="Submaster" >
-      <attribute name="title" >
+     <widget class="QWidget" name="Submaster">
+      <attribute name="title">
        <string>Submaster</string>
       </attribute>
-      <layout class="QVBoxLayout" >
+      <layout class="QVBoxLayout">
        <item>
-        <widget class="QLabel" name="label" >
-         <property name="text" >
+        <widget class="QLabel" name="label">
+         <property name="text">
           <string>Not implemented yet</string>
          </property>
-         <property name="alignment" >
+         <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
@@ -476,11 +487,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="orientation" >
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -495,11 +506,11 @@
    <receiver>VCSliderProperties</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>257</x>
      <y>402</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -511,11 +522,11 @@
    <receiver>VCSliderProperties</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>325</x>
      <y>402</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

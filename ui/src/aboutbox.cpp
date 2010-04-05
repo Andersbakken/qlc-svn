@@ -30,6 +30,16 @@ AboutBox::AboutBox(QWidget* parent) : QDialog (parent)
 
 	m_titleLabel->setText(App::longName());
 	m_versionLabel->setText(App::version());
+	m_copyrightLabel->setText(QString("Copyright &copy; Heikki Junnila %1")
+				.arg(tr("and contributors:")));
+	m_websiteLabel->setText(tr("Website: %1").arg("<A HREF=\"http://www.sf.net/projects/qlc\">http://www.sf.net/projects/qlc</a>"));
+
+	m_contributors->clear();
+	m_contributors->addItem("Stefan Krumm");
+	m_contributors->addItem(QByteArray::fromPercentEncoding("Christian S%fchs"));
+	m_contributors->addItem("Simon Newton");
+	m_contributors->addItem("Christopher Staite");
+	m_contributors->addItem("Lutz Hillebrand");
 }
 
 AboutBox::~AboutBox()

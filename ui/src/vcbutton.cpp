@@ -21,6 +21,7 @@
 
 #include <QStyleOptionButton>
 #include <QColorDialog>
+#include <QImageReader>
 #include <QFileDialog>
 #include <QPaintEvent>
 #include <QMouseEvent>
@@ -241,9 +242,14 @@ void VCButton::slotChooseIcon()
 	if (vc == NULL)
 		return;
 
+        QString formats;
+        QListIterator <QByteArray> it(QImageReader::supportedImageFormats());
+        while (it.hasNext() == true)
+                formats += QString("*.%1 ").arg(QString(it.next()).toLower());
+
 	QString path;
 	path = QFileDialog::getOpenFileName(this, tr("Select button icon"),
-			icon(), tr("Images (*.png *.xpm *.jpg *.gif)"));
+		icon(), tr("Images (%1)").arg(formats));
         if (path.isEmpty() == false)
 	{
 		VCWidget* widget;

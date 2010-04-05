@@ -205,7 +205,7 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
 	Q_ASSERT(item != NULL);
 	Q_ASSERT(ip != NULL);
 
-	item->setText(KColumnUniverse, tr("%1").arg(universe + 1));
+	item->setText(KColumnUniverse, QString("%1").arg(universe + 1));
 	item->setText(KColumnPlugin, ip->pluginName());
 	item->setText(KColumnInput, ip->inputName());
 	item->setText(KColumnProfile, ip->profileName());

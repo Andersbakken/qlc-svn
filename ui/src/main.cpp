@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QHash>
 
+#include "qlcconfig.h"
 #include "qlctypes.h"
 
 #include "app.h"
@@ -147,13 +148,12 @@ int main(int argc, char** argv)
 	QApplication qapp(argc, argv);
 
 	/* Make QLC i18n-friendly */
-	QTranslator qtTran;
-	qtTran.load("qt_" + QLocale::system().name());
-	qapp.installTranslator(&qtTran);
-
-	QTranslator smTran;
-	smTran.load("qlc_" + QLocale::system().name());
-	qapp.installTranslator(&smTran);
+	QString locale(QLocale::system().name());
+	QTranslator translator;
+	translator.load(QString("qlc_%1").arg(locale),
+		QString("%1/../%2").arg(QApplication::applicationDirPath())
+				   .arg(TRANSLATIONDIR));
+	qapp.installTranslator(&translator);
 
 	/* Registering needed to pass signals with these types to between
 	   different contexts (threads) */
