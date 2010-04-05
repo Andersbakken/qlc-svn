@@ -88,4 +88,5 @@ win32 {
 	conf.commands += @echo $$LITERAL_HASH define INPUTPLUGINDIR \"$$INPUTPLUGINDIR\" >> $$CONFIGFILE &&
 	conf.commands += @echo $$LITERAL_HASH define OUTPUTPLUGINDIR \"$$OUTPUTPLUGINDIR\" >> $$CONFIGFILE &&
 	conf.commands += @echo $$LITERAL_HASH define TRANSLATIONDIR \"$$TRANSLATIONDIR\" >> $$CONFIGFILE &&
+	conf.commands += @echo $$LITERAL_HASH endif >> $$CONFIGFILE
 }

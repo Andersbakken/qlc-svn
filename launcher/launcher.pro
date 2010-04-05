@@ -16,12 +16,13 @@ SOURCES += launcher.cpp main.cpp
 TRANSLATIONS	+= launcher_fi_FI.ts
 
 # Translation object files
+translations.path   = $$INSTALLROOT/$$TRANSLATIONDIR
 translations.files += launcher_fi_FI.qm
-translations.path = $$INSTALLROOT/$$TRANSLATIONDIR
+INSTALLS 	   += translations
 
 # Installation
 target.path     = $$INSTALLROOT/$$BINDIR
-INSTALLS        += target translations
+INSTALLS        += target
 
 # Just a hack to force qmake to create all .qm files (along with _fi_FI.qm)
 i18n.target = launcher_fi_FI.qm

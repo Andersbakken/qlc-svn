@@ -37,10 +37,11 @@ TRANSLATIONS	+= qlc_fi_FI.ts
 # Translation object files
 translations.files += qlc_fi_FI.qm
 translations.path = $$INSTALLROOT/$$TRANSLATIONDIR
+INSTALLS	+= translations
 
 # Installation
 target.path	= $$INSTALLROOT/$$BINDIR
-INSTALLS	+= target translations
+INSTALLS	+= target
 
 # Resources
 RESOURCES 	+= main.qrc

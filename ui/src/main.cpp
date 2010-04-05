@@ -52,6 +52,11 @@ namespace QLCArgs
 	 * has been done, but before switching to operate mode (if applicable)
 	 */
 	QString workspace;
+	
+	/**
+	 * Specifies a locale for forced translation
+	 */
+	QString locale;
 }
 
 /**
@@ -81,6 +86,7 @@ void printUsage()
 	cout << "Options:" << endl;
 	cout << "  -o <file> or --open <file>\tOpen the specified workspace file" << endl;
 	cout << "  -p or --operate\t\tStart in operate mode" << endl;
+	cout << "  -l <locale> or --locale <locale>\tForce QLC to use the given locale for translation" << endl;
 	cout << "  -h or --help\t\t\tPrint this help" << endl;
 	cout << "  -v or --version\t\tPrint version information" << endl;
 	cout << endl;
@@ -124,9 +130,35 @@ bool parseArgs(int argc, char **argv)
 		{
 			QLCArgs::workspace = QString(argv[++i]);
 		}
+		else if (::strcmp(argv[i], "-l") == 0 ||
+			 ::strcmp(argv[i], "--locale") == 0)
+		{
+			QLCArgs::locale = QString(argv[++i]);
+		}
 	}
 
 	return true;
+}
+
+void loadTranslation(const QString& locale, QApplication& app)
+{
+	QString file(QString("qlc_%1").arg(locale));
+#ifdef __APPLE__
+	QString path(QString("%1/../%2").arg(QApplication::applicationDirPath())
+					.arg(TRANSLATIONDIR));
+#else
+	QString path(TRANSLATIONDIR);
+#endif
+	QTranslator* translator = new QTranslator(&app);
+	if (translator->load(file, path) == true)
+	{
+		qDebug() << "Using translation for" << locale;
+		QCoreApplication::installTranslator(translator);
+	}
+	else
+	{
+		qDebug() << "Unable to find translation for" << locale;
+	}
 }
 
 /**
@@ -147,19 +179,13 @@ int main(int argc, char** argv)
 	/* Create the Qt core application object */
 	QApplication qapp(argc, argv);
 
-	/* Make QLC i18n-friendly */
-	QString locale(QLocale::system().name());
-	QTranslator translator;
-	translator.load(QString("qlc_%1").arg(locale),
-		QString("%1/../%2").arg(QApplication::applicationDirPath())
-				   .arg(TRANSLATIONDIR));
-	qapp.installTranslator(&translator);
+	/* Load translation for current locale */
+	loadTranslation(QLocale::system().name(), qapp);
 
-	/* Registering needed to pass signals with these types to between
+	/* Registering needed to pass signals with these types between
 	   different contexts (threads) */
 	qRegisterMetaType <t_function_id>("t_function_id");
-	qRegisterMetaType < QHash<t_channel,t_value> >(
-						"QHash<t_channel,t_value>");
+	qRegisterMetaType <QHash<t_channel,t_value> >("QHash<t_channel,t_value>");
 
 	/* Create and initialize the QLC application object */
 	App app;
@@ -170,16 +196,6 @@ int main(int argc, char** argv)
 
 	/* Show and execute the application */
 	app.show();
-	qapp.exec();
 
-#if !defined(WIN32) && !defined(__APPLE__)
-	/* Set key repeat on in case QLC is set to turn it off in operate mode.
-	   It's safe to assume that most users have it always turned on. */
-	Display* display;
-	display = XOpenDisplay(NULL);
-	Q_ASSERT(display != NULL);
-	XAutoRepeatOn(display);
-	XCloseDisplay(display);
-#endif
-	return 0;
+	return qapp.exec();
 }
