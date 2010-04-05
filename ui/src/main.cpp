@@ -52,7 +52,7 @@ namespace QLCArgs
 	 * has been done, but before switching to operate mode (if applicable)
 	 */
 	QString workspace;
-	
+
 	/**
 	 * Specifies a locale for forced translation
 	 */
@@ -142,7 +142,13 @@ bool parseArgs(int argc, char **argv)
 
 void loadTranslation(const QString& locale, QApplication& app)
 {
-	QString file(QString("qlc_%1").arg(locale));
+	QString lc;
+	if (QLCArgs::locale.isEmpty() == true)
+		lc = locale;
+	else
+		lc = QLCArgs::locale;
+	QString file(QString("qlc_%1").arg(lc));
+
 #ifdef __APPLE__
 	QString path(QString("%1/../%2").arg(QApplication::applicationDirPath())
 					.arg(TRANSLATIONDIR));
@@ -152,12 +158,12 @@ void loadTranslation(const QString& locale, QApplication& app)
 	QTranslator* translator = new QTranslator(&app);
 	if (translator->load(file, path) == true)
 	{
-		qDebug() << "Using translation for" << locale;
+		qDebug() << "Using translation for" << lc;
 		QCoreApplication::installTranslator(translator);
 	}
 	else
 	{
-		qDebug() << "Unable to find translation for" << locale;
+		qDebug() << "Unable to find translation for" << lc;
 	}
 }
 
