@@ -128,8 +128,19 @@ public:
 	/** Search for a particular capability by its channel value */
 	QLCCapability* searchCapability(t_value value) const;
 
-	/** Search for a particular capability by its name */
-	QLCCapability* searchCapability(const QString& name) const;
+	/**
+	 * Search for a particular capability by its name. If exactMatch = true,
+	 * the first exact match is returned. If exactMatch = false, the
+	 * first capability whose name _contains_ the given string is
+	 * returned.
+	 *
+	 * @param name The name to search for
+	 * @param exactMatch if true, only exact matches are returned,
+	 *                   otherwise a "contains" comparison is made.
+	 * @return QLCCapability or NULL
+	 */
+	QLCCapability* searchCapability(const QString& name,
+					bool exactMatch = true) const;
 
 	/** Add a new capability to the channel */
 	bool addCapability(QLCCapability* cap);

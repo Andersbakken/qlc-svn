@@ -60,6 +60,11 @@ protected:
 	 ********************************************************************/
 protected:
 	/**
+	 * Create scenes for colour, gobo and shutter channel groups
+	 */
+	void createGroupScenes();
+
+	/**
 	 * Create functions for the given fixture for each capability found
 	 * from the fixture's channels that belong to the given group.
 	 *
@@ -67,6 +72,11 @@ protected:
 	 * @param group The channel group to create functions from
 	 */
 	void createGroupFunctions(const Fixture* fxi, const QString& group);
+
+	/**
+	 * Create chasers that use fixtures' intensity channels
+	 */
+	void createIntensityChasers();
 
 	/**
 	 * Find channels from the given fixture that belong to the given group.

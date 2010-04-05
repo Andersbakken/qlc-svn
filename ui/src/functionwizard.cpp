@@ -26,6 +26,7 @@
 #include "fixtureselection.h"
 #include "functionwizard.h"
 #include "fixture.h"
+#include "chaser.h"
 #include "scene.h"
 #include "app.h"
 #include "doc.h"
@@ -68,28 +69,9 @@ void FunctionWizard::slotRemoveClicked()
 
 void FunctionWizard::accept()
 {
-	/* Create functions for each selected fixture */
-	QListIterator <Fixture*> fxiit(fixtures());
-	while (fxiit.hasNext() == true)
-	{
-		Fixture* fxi(fxiit.next());
-		Q_ASSERT(fxi != NULL);
+	createGroupScenes();
 
-		if (m_coloursCheck->isChecked() == true)
-			createGroupFunctions(fxi, KQLCChannelGroupColour);
-		if (m_goboCheck->isChecked() == true)
-			createGroupFunctions(fxi, KQLCChannelGroupGobo);
-		if (m_shutterCheck->isChecked() == true)
-			createGroupFunctions(fxi, KQLCChannelGroupShutter);
-	}
-
-	/* Add all created functions to Doc */
-	QHashIterator <QString,Scene*> hashit(m_scenes);
-	while (hashit.hasNext() == true)
-	{
-		hashit.next();
-		_app->doc()->addFunction(hashit.value());
-	}
+	createIntensityChasers();
 
 	QDialog::accept();
 }
@@ -114,6 +96,8 @@ void FunctionWizard::addFixture(t_fixture_id fxi_id)
 		caps.append(QString(", ") + KQLCChannelGroupGobo);
 	if (findChannels(fxi, KQLCChannelGroupShutter).isEmpty() == false)
 		caps.append(QString(", ") + KQLCChannelGroupShutter);
+	if (findChannels(fxi, KQLCChannelGroupIntensity).isEmpty() == false)
+		caps.append(QString(", ") + KQLCChannelGroupIntensity);
 	item->setText(KColumnCaps, caps);
 }
 
@@ -141,6 +125,32 @@ QList <Fixture*> FunctionWizard::fixtures() const
  * Function creation
  ****************************************************************************/
 
+void FunctionWizard::createGroupScenes()
+{
+	/* Create functions for each selected fixture */
+	QListIterator <Fixture*> fxiit(fixtures());
+	while (fxiit.hasNext() == true)
+	{
+		Fixture* fxi(fxiit.next());
+		Q_ASSERT(fxi != NULL);
+
+		if (m_coloursCheck->isChecked() == true)
+			createGroupFunctions(fxi, KQLCChannelGroupColour);
+		if (m_goboCheck->isChecked() == true)
+			createGroupFunctions(fxi, KQLCChannelGroupGobo);
+		if (m_shutterCheck->isChecked() == true)
+			createGroupFunctions(fxi, KQLCChannelGroupShutter);
+	}
+
+	/* Add all created functions to Doc */
+	QHashIterator <QString,Scene*> hashit(m_scenes);
+	while (hashit.hasNext() == true)
+	{
+		hashit.next();
+		_app->doc()->addFunction(hashit.value());
+	}
+}
+
 void FunctionWizard::createGroupFunctions(const Fixture* fxi, const QString& group)
 {
 	QList <t_channel> channels = findChannels(fxi, group);
@@ -148,8 +158,7 @@ void FunctionWizard::createGroupFunctions(const Fixture* fxi, const QString& gro
 	{
 		t_channel ch = channels.at(i);
 		const QLCChannel* channel = fxi->channel(ch);
-		if (channel == NULL)
-			return;
+		Q_ASSERT(channel != NULL);
 
 		QListIterator <QLCCapability*> capit(channel->capabilities());
 		while (capit.hasNext() == true)
@@ -192,8 +201,95 @@ void FunctionWizard::createGroupFunctions(const Fixture* fxi, const QString& gro
 	}
 }
 
+void FunctionWizard::createIntensityChasers()
+{
+	Scene* even = new Scene(_app->doc());
+	even->setName("Automatic Even");
+
+	Scene* odd = new Scene(_app->doc());
+	odd->setName("Automatic Odd");
+
+	Scene* full = new Scene(_app->doc());
+	full->setName("Automatic Full");
+
+	Scene* zero = new Scene(_app->doc());
+	zero->setName("Automatic Zero");
+
+	QList <Fixture*> list(fixtures());
+	for (int i = 0; i < list.size(); i++)
+	{
+		Fixture* fxi = list[i];
+		Q_ASSERT(fxi != NULL);
+
+		QList <t_channel> channels(findChannels(fxi, KQLCChannelGroupIntensity));
+		for (int j = 0; j < channels.size(); j++)
+		{
+			t_channel ch = channels.at(j);
+			const QLCChannel* channel = fxi->channel(ch);
+			Q_ASSERT(channel != NULL);
+	
+			t_value min = 0;
+			t_value max = 255;
+
+			// The intensity channel contains also something else
+			// than just a dimmer if it has more than one capability.
+			// Try to be smart and guess which capability provides
+			// dimmer intensity. Otherwise 0-255 is used.
+			if (channel->capabilities().size() > 1)
+			{
+				const QLCCapability* cap = NULL;
+
+				// Search for (I|i)ntensity or (D|d)immer capability
+				cap = channel->searchCapability("ntensity", false);
+				if (cap == NULL)
+					cap = channel->searchCapability("immer", false);
+
+				if (cap != NULL)
+				{
+					min = cap->min();
+					max = cap->max();
+				}
+			}
+
+			SceneValue fullValue(fxi->id(), ch, max);
+			full->setValue(fullValue);
+
+			SceneValue zeroValue(fxi->id(), ch, min);
+			zero->setValue(zeroValue);
+
+			if ((i % 2) == 0)
+			{
+				even->setValue(fxi->id(), ch, max);
+				odd->setValue(fxi->id(), ch, min);
+			}
+			else
+			{
+				even->setValue(fxi->id(), ch, min);
+				odd->setValue(fxi->id(), ch, max);
+			}
+		}
+	}
+
+	_app->doc()->addFunction(odd);
+	_app->doc()->addFunction(even);
+	_app->doc()->addFunction(full);
+	_app->doc()->addFunction(zero);
+
+	Chaser* evenOddChaser = new Chaser(_app->doc());
+	evenOddChaser->setName("Automatic Even-Odd");
+	evenOddChaser->addStep(odd->id());
+	evenOddChaser->addStep(even->id());
+	_app->doc()->addFunction(evenOddChaser);
+
+	Chaser* fullZeroChaser = new Chaser(_app->doc());
+	fullZeroChaser->setName("Automatic Full-Zero");
+	fullZeroChaser->addStep(full->id());
+	fullZeroChaser->addStep(zero->id());
+	_app->doc()->addFunction(fullZeroChaser);
+}
+
 QList <t_channel> FunctionWizard::findChannels(const Fixture* fixture,
-						const QString& group) const
+					       const QString& group) const
 {
 	QList <t_channel> channels;
 
@@ -202,7 +298,7 @@ QList <t_channel> FunctionWizard::findChannels(const Fixture* fixture,
 	{
 		const QLCChannel* channel(fixture->channel(ch));
 		Q_ASSERT(channel != NULL);
-		if (channel->group() == group && channel->capabilities().size() > 2)
+		if (channel->group() == group)
 			channels << ch;
 	}
 

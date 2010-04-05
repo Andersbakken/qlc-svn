@@ -162,13 +162,17 @@ QLCCapability* QLCChannel::searchCapability(t_value value) const
 	return NULL;
 }
 
-QLCCapability* QLCChannel::searchCapability(const QString& name) const
+QLCCapability* QLCChannel::searchCapability(const QString& name,
+					    bool exactMatch) const
 {
 	QListIterator <QLCCapability*> it(m_capabilities);
 	while (it.hasNext() == true)
 	{
 		QLCCapability* capability = it.next();
-		if (capability->name() == name)
+		if (exactMatch == true && capability->name() == name)
+			return capability;
+		else if (exactMatch == false &&
+			 capability->name().contains(name) == true)
 			return capability;
 	}
 
