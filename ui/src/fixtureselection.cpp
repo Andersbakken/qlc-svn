@@ -22,6 +22,7 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 #include <QHeaderView>
+#include <QLabel>
 
 #include "qlcfixturedef.h"
 
@@ -84,8 +85,21 @@ FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
 			item->setFlags(0); // Disables the item
 	}
 
-	m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+	if (m_tree->topLevelItemCount() == 0)
+	{
+		m_tree->setHeaderLabel(tr("No fixtures available"));
+		m_tree->header()->hideSection(KColumnManufacturer);
+		m_tree->header()->hideSection(KColumnModel);
+		QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
+		item->setText(0, tr("Go to Fixture Manager to add some fixtures first."));
+		m_tree->setEnabled(false);
+		m_buttonBox->setStandardButtons(QDialogButtonBox::Close);
+	}
+	else
+	{
+		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+		m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+	}
 }
 
 FixtureSelection::~FixtureSelection()
