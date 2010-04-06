@@ -70,7 +70,6 @@ void FunctionWizard::slotRemoveClicked()
 void FunctionWizard::accept()
 {
 	createGroupScenes();
-
 	createIntensityChasers();
 
 	QDialog::accept();
@@ -89,16 +88,16 @@ void FunctionWizard::addFixture(t_fixture_id fxi_id)
 	item->setText(KColumnName, fxi->name());
 	item->setData(KColumnID, Qt::UserRole, fxi_id);
 
-	QString caps;
+	QStringList caps;
 	if (findChannels(fxi, KQLCChannelGroupColour).isEmpty() == false)
-		caps.append(KQLCChannelGroupColour);
+		caps << KQLCChannelGroupColour;
 	if (findChannels(fxi, KQLCChannelGroupGobo).isEmpty() == false)
-		caps.append(QString(", ") + KQLCChannelGroupGobo);
+		caps << KQLCChannelGroupGobo;
 	if (findChannels(fxi, KQLCChannelGroupShutter).isEmpty() == false)
-		caps.append(QString(", ") + KQLCChannelGroupShutter);
+		caps << KQLCChannelGroupShutter;
 	if (findChannels(fxi, KQLCChannelGroupIntensity).isEmpty() == false)
-		caps.append(QString(", ") + KQLCChannelGroupIntensity);
-	item->setText(KColumnCaps, caps);
+		caps << KQLCChannelGroupIntensity;
+	item->setText(KColumnCaps, caps.join(", "));
 }
 
 QList <Fixture*> FunctionWizard::fixtures() const
