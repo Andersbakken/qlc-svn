@@ -242,6 +242,10 @@ public:
 	static t_channel invalidChannel();
 
 protected:
+	/** Create a generic intensity channel */
+	void createGenericChannel();
+
+protected:
 	/** DMX address & universe */
 	t_channel m_address;
 
