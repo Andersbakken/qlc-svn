@@ -23,6 +23,8 @@
 #include <QDebug>
 #include <QHash>
 
+#include <cstdlib>
+
 #include "fixtureselection.h"
 #include "functionwizard.h"
 #include "fixture.h"
@@ -202,19 +204,47 @@ void FunctionWizard::createGroupFunctions(const Fixture* fxi, const QString& gro
 
 void FunctionWizard::createIntensityChasers()
 {
+	// Get the list of fixtures that user has selected
+	QList <Fixture*> list(fixtures());
+
+	// Even fixtures' intensity channels set full, others zero
 	Scene* even = new Scene(_app->doc());
 	even->setName("Automatic Even");
 
+	// Odd fixtures' intensity channels set full, others zero
 	Scene* odd = new Scene(_app->doc());
 	odd->setName("Automatic Odd");
 
+	// All fixtures' intensity channel set full
 	Scene* full = new Scene(_app->doc());
-	full->setName("Automatic Full");
+	full->setName("Intensity - Full");
 
+	// All fixtures' intensity channel set zero
 	Scene* zero = new Scene(_app->doc());
-	zero->setName("Automatic Zero");
+	zero->setName("Intensity - Zero");
 
-	QList <Fixture*> list(fixtures());
+	QList <Scene*> sequence;
+	QList <Scene*> random;
+	int i = 1;
+	foreach (Fixture* fxi, list)
+	{
+		Scene* sq = new Scene(_app->doc());
+		sq->setName(tr("Intensity - ") + fxi->name());
+		sequence << sq;
+
+		sq = new Scene(_app->doc());
+		sq->setName(tr("Intensity - Random - %1").arg(i++));
+		random << sq;
+	}
+
+	// Scene list's size should be the same as fixture list's size
+	Q_ASSERT(sequence.size() == list.size());
+	Q_ASSERT(random.size() == list.size());
+
+	// Initialize random seed
+	srand(QDateTime::currentDateTime().toTime_t());
+
+	// Go thru all fixtures and create functions for each of them
 	for (int i = 0; i < list.size(); i++)
 	{
 		Fixture* fxi = list[i];
@@ -226,7 +256,7 @@ void FunctionWizard::createIntensityChasers()
 			t_channel ch = channels.at(j);
 			const QLCChannel* channel = fxi->channel(ch);
 			Q_ASSERT(channel != NULL);
-	
+
 			t_value min = 0;
 			t_value max = 255;
 
@@ -266,25 +296,213 @@ void FunctionWizard::createIntensityChasers()
 				even->setValue(fxi->id(), ch, min);
 				odd->setValue(fxi->id(), ch, max);
 			}
+
+			for (int s = 0; s < sequence.size(); s++)
+			{
+				if (s == i)
+					sequence[s]->setValue(fullValue);
+				else
+					sequence[s]->setValue(zeroValue);
+
+				if ((rand() % 2) == 0)
+					random[s]->setValue(fullValue);
+				else
+					random[s]->setValue(zeroValue);
+			}
 		}
 	}
 
-	_app->doc()->addFunction(odd);
-	_app->doc()->addFunction(even);
-	_app->doc()->addFunction(full);
-	_app->doc()->addFunction(zero);
+	if (createOddEvenChaser(odd, even) == false)
+	{
+		delete odd;
+		odd = NULL;
+		delete even;
+		even = NULL;
+	}
 
-	Chaser* evenOddChaser = new Chaser(_app->doc());
-	evenOddChaser->setName("Automatic Even-Odd");
-	evenOddChaser->addStep(odd->id());
-	evenOddChaser->addStep(even->id());
-	_app->doc()->addFunction(evenOddChaser);
+	if (createFullZeroChaser(full, zero) == false)
+	{
+		delete full;
+		full = NULL;
+		delete zero;
+		zero = NULL;
+	}
 
-	Chaser* fullZeroChaser = new Chaser(_app->doc());
-	fullZeroChaser->setName("Automatic Full-Zero");
-	fullZeroChaser->addStep(full->id());
-	fullZeroChaser->addStep(zero->id());
-	_app->doc()->addFunction(fullZeroChaser);
+	if (createSequenceChasers(sequence) == false)
+	{
+		foreach (Scene* sc, sequence)
+			delete sc;
+		sequence.clear();
+	}
+
+	if (createRandomChaser(random) == false)
+	{
+		foreach (Scene* sc, random)
+			delete sc;
+		random.clear();
+	}
+}
+
+bool FunctionWizard::createOddEvenChaser(Scene* odd, Scene* even)
+{
+	if (odd == NULL || even == NULL)
+		return false;
+
+	// Create the chaser only if both steps contain something
+	if (odd->values().size() != 0 && even->values().size() != 0)
+	{
+		// Abort if doc won't take the scenes
+		if (_app->doc()->addFunction(odd) == false)
+			return false;
+		if (_app->doc()->addFunction(even) == false)
+			return false;
+
+		Chaser* evenOddChaser = new Chaser(_app->doc());
+		evenOddChaser->setName("Intensity - Even/Odd");
+		evenOddChaser->addStep(odd->id());
+		evenOddChaser->addStep(even->id());
+
+		// Abort if doc won't take the chaser
+		if (_app->doc()->addFunction(evenOddChaser) == false)
+		{
+			delete evenOddChaser;
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool FunctionWizard::createFullZeroChaser(Scene* full, Scene* zero)
+{
+	if (full == NULL || zero == NULL)
+		return false;
+
+	// Create the chaser only if both steps contain something
+	if (full->values().size() != 0 && zero->values().size() != 0)
+	{
+		// Abort if doc won't take the scenes
+		if (_app->doc()->addFunction(full) == false)
+			return false;
+		if (_app->doc()->addFunction(zero) == false)
+			return false;
+
+		Chaser* fullZeroChaser = new Chaser(_app->doc());
+		fullZeroChaser->setName("Intensity - Full/Zero");
+		fullZeroChaser->addStep(full->id());
+		fullZeroChaser->addStep(zero->id());
+
+		if (_app->doc()->addFunction(fullZeroChaser) == false)
+		{
+			delete fullZeroChaser;
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool FunctionWizard::createSequenceChasers(const QList <Scene*>& sequence)
+{
+	// Abort immediately if doc won't take all sequence steps
+	foreach (Scene* sq, sequence)
+	{
+		if (_app->doc()->addFunction(sq) == false)
+			return false;
+	}
+
+	if (createForwardSequenceChaser(sequence) == false)
+		return false;
+
+	if (createBackwardSequenceChaser(sequence) == false)
+		return false;
+
+	return true;
+}
+
+bool FunctionWizard::createForwardSequenceChaser(const QList <Scene*>& sequence)
+{
+	if (sequence.size() == 0)
+		return false;
+
+	// Create a forward sequence chaser
+	Chaser* seqChaser = new Chaser(_app->doc());
+	seqChaser->setName("Intensity - Sequence Forward");
+	if (_app->doc()->addFunction(seqChaser) == false)
+	{
+		// Abort if doc won't accept the chaser
+		delete seqChaser;
+		return false;
+	}
+	else
+	{
+		for (int i = 0; i < sequence.size(); i++)
+			seqChaser->addStep(sequence[i]->id());
+		return true;
+	}
+}
+
+bool FunctionWizard::createBackwardSequenceChaser(const QList <Scene*>& sequence)
+{
+	if (sequence.size() == 0)
+		return false;
+
+	// Create a forward sequence chaser
+	Chaser* seqChaser = new Chaser(_app->doc());
+	seqChaser->setName("Intensity - Sequence Forward");
+	if (_app->doc()->addFunction(seqChaser) == false)
+	{
+		// Abort if doc won't accept the chaser
+		delete seqChaser;
+		return false;
+	}
+	else
+	{
+		for (int i = sequence.size() - 1; i > 0; i--)
+			seqChaser->addStep(sequence[i]->id());
+		return true;
+	}
+}
+
+bool FunctionWizard::createRandomChaser(const QList <Scene*>& random)
+{
+	if (random.size() == 0)
+		return false;
+
+	// Abort immediately if doc won't take all sequence steps
+	foreach (Scene* rnd, random)
+	{
+		if (_app->doc()->addFunction(rnd) == false)
+			return false;
+	}
+
+	// Create a random chaser
+	Chaser* rndChaser = new Chaser(_app->doc());
+	rndChaser->setName("Intensity - Random");
+	if (_app->doc()->addFunction(rndChaser) == false)
+	{
+		// Abort if doc won't accept the chaser
+		delete rndChaser;
+		return false;
+	}
+	else
+	{
+		for (int i = 0; i < random.size(); i++)
+			rndChaser->addStep(random[i]->id());
+		return true;
+	}
 }
 
 QList <t_channel> FunctionWizard::findChannels(const Fixture* fixture,

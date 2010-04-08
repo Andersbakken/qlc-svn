@@ -77,6 +77,12 @@ protected:
 	 * Create chasers that use fixtures' intensity channels
 	 */
 	void createIntensityChasers();
+	bool createOddEvenChaser(Scene* odd, Scene* even);
+	bool createFullZeroChaser(Scene* full, Scene* zero);
+	bool createSequenceChasers(const QList <Scene*>& sequence);
+	bool createForwardSequenceChaser(const QList <Scene*>& sequence);
+	bool createBackwardSequenceChaser(const QList <Scene*>& sequence);
+	bool createRandomChaser(const QList <Scene*>& random);
 
 	/**
 	 * Find channels from the given fixture that belong to the given group.
