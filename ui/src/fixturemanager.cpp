@@ -252,7 +252,7 @@ void FixtureManager::initDataView()
 	m_splitter->addWidget(m_tree);
 
 	QStringList labels;
-	labels << "Universe" << "Address" << "Name";
+	labels << tr("Universe") << tr("Address") << tr("Name");
 	m_tree->setHeaderLabels(labels);
 	m_tree->setRootIsDecorated(false);
 	m_tree->setSortingEnabled(true);

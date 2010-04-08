@@ -170,14 +170,14 @@ void FunctionWizard::createGroupFunctions(const Fixture* fxi, const QString& gro
 			{
 				// There's more than one channel (for example two
 				// gobo channels, several distinct color wheels...)
-				name = tr("%1 (%2) - %3").arg(group).arg(i + 1)
-							 .arg(cap->name());
+				name = QString("%1 (%2) - %3").arg(group).arg(i + 1)
+							      .arg(cap->name());
 			}
 			else
 			{
 				// There's only one channel of the requested group
 				// in the fixture (for example one gobo wheel)
-				name = tr("%1 - %2").arg(group).arg(cap->name());
+				name = QString("%1 - %2").arg(group).arg(cap->name());
 			}
 
 			Scene* scene = NULL;

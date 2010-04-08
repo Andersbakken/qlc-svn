@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="fi_FI">
+<!DOCTYPE TS><TS version="1.1" language="fi_FI">
 <context>
     <name>AboutBox</name>
     <message>
@@ -188,24 +187,22 @@ p, li { white-space: pre-wrap; }
         <translation> - Uusi työtila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="426"/>
-        <location filename="app.cpp" line="602"/>
+        <location filename="app.cpp" line="603"/>
         <source>Fixtures: %1/%2</source>
         <translation>Valaisimia: %1/%2</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="429"/>
+        <location filename="app.cpp" line="430"/>
         <source>Space left for %1 fixtures</source>
         <translation>Tilaa jäljellä vielä %1:lle valaisimelle</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="432"/>
-        <location filename="app.cpp" line="610"/>
+        <location filename="app.cpp" line="611"/>
         <source>Functions: %1/%2</source>
         <translation>Funktioita: %1/%2</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="435"/>
+        <location filename="app.cpp" line="436"/>
         <source>Space left for %1 functions</source>
         <translation>Tilaa jäljellä vielä %1:lle funktiolle</translation>
     </message>
@@ -215,7 +212,7 @@ p, li { white-space: pre-wrap; }
         <translation>Vaihda Suunnittelutilaan</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="477"/>
+        <location filename="app.cpp" line="479"/>
         <source>There are still running functions.
 Really stop them and switch back to Design mode?</source>
         <translation>Joitain funktioita on vielä ajossa.
@@ -237,7 +234,6 @@ Haluatko varmasti pysäyttää ne ja vaihtaa takaisin Suunnittelutilaan?</transl
         <translation>Vaihda Suunnittelutilaan</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="540"/>
         <location filename="app.cpp" line="620"/>
         <source>Design mode is active; editing facilities are enabled</source>
         <translation>Suunnittelutila valittu; muokkaustoiminnot ovat käytettävissä</translation>
@@ -248,7 +244,6 @@ Haluatko varmasti pysäyttää ne ja vaihtaa takaisin Suunnittelutilaan?</transl
         <translation>Käyttötila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="560"/>
         <location filename="app.cpp" line="705"/>
         <source>Switch to operate mode</source>
         <translation>Vaihda Käyttötilaan</translation>
@@ -434,7 +429,7 @@ Haluatko varmasti pysäyttää ne ja vaihtaa takaisin Suunnittelutilaan?</transl
         <translation>Tiedostovirhe</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="953"/>
+        <location filename="app.cpp" line="954"/>
         <source>Do you wish to save the current workspace?
 Otherwise you will lose changes.</source>
         <translation>Haluatko tallentaa nykyisen työtilan?
@@ -489,7 +484,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Aseta näppäin</translation>
     </message>
     <message>
-        <location filename="assignhotkey.cpp" line="40"/>
+        <location filename="assignhotkey.cpp" line="42"/>
         <source>Hit the key combination that you wish to assign. You may hit either a single key or a combination using CTRL, ALT, and SHIFT.</source>
         <translation>Paina näppäimistöltä sellaista näppäinyhdistelmää, jonka haluat asettaa. Voit painaa yhtä nappia tai tehdä yhdistelmiä CTRL, ALT ja SHIFT-näppäimillä.</translation>
     </message>
@@ -497,7 +492,6 @@ Muuten menetät tekemäsi muutokset.</translation>
 <context>
     <name>BusManager</name>
     <message>
-        <location filename="busmanager.cpp" line="61"/>
         <location filename="busmanager.cpp" line="116"/>
         <source>Bus Manager</source>
         <translation>Väylien hallinta</translation>
@@ -561,9 +555,6 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Lisää askel(eita) valittuun kohtaan</translation>
     </message>
     <message>
-        <location filename="chasereditor.ui" line="77"/>
-        <location filename="chasereditor.ui" line="97"/>
-        <location filename="chasereditor.ui" line="117"/>
         <location filename="chasereditor.ui" line="137"/>
         <source>...</source>
         <translation></translation>
@@ -687,7 +678,6 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Lisää funktioita kokoelmaan</translation>
     </message>
     <message>
-        <location filename="collectioneditor.ui" line="63"/>
         <location filename="collectioneditor.ui" line="83"/>
         <source>...</source>
         <translation></translation>
@@ -772,9 +762,6 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Käänteinen</translation>
     </message>
     <message>
-        <location filename="efxeditor.ui" line="89"/>
-        <location filename="efxeditor.ui" line="106"/>
-        <location filename="efxeditor.ui" line="123"/>
         <location filename="efxeditor.ui" line="140"/>
         <source>...</source>
         <translation></translation>
@@ -1000,7 +987,6 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Alusta valaisimet</translation>
     </message>
     <message>
-        <location filename="efxeditor.ui" line="662"/>
         <location filename="efxeditor.ui" line="701"/>
         <source>Scene</source>
         <translation>Tilanne</translation>
@@ -1079,7 +1065,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Liian monta valaisinta</translation>
     </message>
     <message>
-        <location filename="fixturemanager.cpp" line="571"/>
+        <location filename="fixturemanager.cpp" line="572"/>
         <source>You can&apos;t create more than %1 fixtures.</source>
         <translation>Et voi luoda enempää kuin %1 valaisinta.</translation>
     </message>
@@ -1097,6 +1083,21 @@ Muuten menetät tekemäsi muutokset.</translation>
         <location filename="fixturemanager.cpp" line="632"/>
         <source>Change fixture properties</source>
         <translation>Muokkaa valaisimen ominaisuuksia</translation>
+    </message>
+    <message>
+        <location filename="fixturemanager.cpp" line="255"/>
+        <source>Universe</source>
+        <translation>Universumi</translation>
+    </message>
+    <message>
+        <location filename="fixturemanager.cpp" line="255"/>
+        <source>Address</source>
+        <translation>Osoite</translation>
+    </message>
+    <message>
+        <location filename="fixturemanager.cpp" line="255"/>
+        <source>Name</source>
+        <translation>Nimi</translation>
     </message>
 </context>
 <context>
@@ -1122,10 +1123,19 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Malli</translation>
     </message>
     <message>
-        <location filename="fixtureselection.cpp" line="72"/>
-        <location filename="fixtureselection.cpp" line="73"/>
+        <location filename="fixtureselection.cpp" line="74"/>
         <source>Generic</source>
         <translation>Yleinen</translation>
+    </message>
+    <message>
+        <location filename="fixtureselection.cpp" line="90"/>
+        <source>No fixtures available</source>
+        <translation>Ei valaisimia saatavilla</translation>
+    </message>
+    <message>
+        <location filename="fixtureselection.cpp" line="94"/>
+        <source>Go to Fixture Manager to add some fixtures first.</source>
+        <translation>Käytä Valaisinten Hallintaa lisätäksesi valaisimia.</translation>
     </message>
 </context>
 <context>
@@ -1186,37 +1196,21 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>&amp;Lisää</translation>
     </message>
     <message>
-        <location filename="functionmanager.cpp" line="364"/>
-        <location filename="functionmanager.cpp" line="384"/>
-        <location filename="functionmanager.cpp" line="404"/>
-        <location filename="functionmanager.cpp" line="424"/>
         <location filename="functionmanager.cpp" line="651"/>
         <source>Too many functions</source>
         <translation>Liian monta funktiota</translation>
     </message>
     <message>
-        <location filename="functionmanager.cpp" line="365"/>
-        <location filename="functionmanager.cpp" line="385"/>
-        <location filename="functionmanager.cpp" line="405"/>
-        <location filename="functionmanager.cpp" line="425"/>
-        <location filename="functionmanager.cpp" line="652"/>
+        <location filename="functionmanager.cpp" line="653"/>
         <source>You can&apos;t create more than %1 functions.</source>
         <translation>Et voi luoda enempää kuin %1 funktiota.</translation>
     </message>
     <message>
-        <location filename="functionmanager.cpp" line="370"/>
-        <location filename="functionmanager.cpp" line="390"/>
-        <location filename="functionmanager.cpp" line="410"/>
-        <location filename="functionmanager.cpp" line="430"/>
         <location filename="functionmanager.cpp" line="657"/>
         <source>Function creation failed</source>
         <translation>Funktion luonti epäonnistui</translation>
     </message>
     <message>
-        <location filename="functionmanager.cpp" line="371"/>
-        <location filename="functionmanager.cpp" line="391"/>
-        <location filename="functionmanager.cpp" line="411"/>
-        <location filename="functionmanager.cpp" line="431"/>
         <location filename="functionmanager.cpp" line="658"/>
         <source>Unable to create new function.</source>
         <translation>Funktiota ei voida luoda.</translation>
@@ -1265,25 +1259,21 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Kokoelmat</translation>
     </message>
     <message>
-        <location filename="functionselection.cpp" line="134"/>
         <location filename="functionselection.cpp" line="146"/>
         <source>New Scene</source>
         <translation>Uusi tilanne</translation>
     </message>
     <message>
-        <location filename="functionselection.cpp" line="136"/>
         <location filename="functionselection.cpp" line="157"/>
         <source>New Chaser</source>
         <translation>Uusi juoksutus</translation>
     </message>
     <message>
-        <location filename="functionselection.cpp" line="138"/>
         <location filename="functionselection.cpp" line="168"/>
         <source>New EFX</source>
         <translation>Uusi EFX</translation>
     </message>
     <message>
-        <location filename="functionselection.cpp" line="140"/>
         <location filename="functionselection.cpp" line="179"/>
         <source>New Collection</source>
         <translation>Uusi kokoelma</translation>
@@ -1294,7 +1284,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Liian monta funktiota</translation>
     </message>
     <message>
-        <location filename="functionselection.cpp" line="222"/>
+        <location filename="functionselection.cpp" line="223"/>
         <source>You can&apos;t create more than %1 functions.</source>
         <translation>Et voi luoda enempää kuin %1 funktiota.</translation>
     </message>
@@ -1334,7 +1324,7 @@ Muuten menetät tekemäsi muutokset.</translation>
     <message>
         <location filename="functionwizard.ui" line="71"/>
         <source>Created Function Types</source>
-        <translation>Luotavien funktioiden tyypit</translation>
+        <translation type="obsolete">Luotavien funktioiden tyypit</translation>
     </message>
     <message>
         <location filename="functionwizard.ui" line="77"/>
@@ -1387,14 +1377,19 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Poista</translation>
     </message>
     <message>
-        <location filename="functionwizard.cpp" line="165"/>
-        <source>%1 (%2) - %3</source>
-        <translation></translation>
+        <location filename="functionwizard.ui" line="71"/>
+        <source>Scenes</source>
+        <translation>Tilanteet</translation>
     </message>
     <message>
-        <location filename="functionwizard.cpp" line="172"/>
-        <source>%1 - %2</source>
-        <translation></translation>
+        <location filename="functionwizard.ui" line="169"/>
+        <source>Chasers</source>
+        <translation>Juoksutukset</translation>
+    </message>
+    <message>
+        <location filename="functionwizard.ui" line="175"/>
+        <source>Intensity</source>
+        <translation>Intensiteetti</translation>
     </message>
 </context>
 <context>
@@ -1428,7 +1423,6 @@ Muuten menetät tekemäsi muutokset.</translation>
 <context>
     <name>InputManager</name>
     <message>
-        <location filename="inputmanager.cpp" line="69"/>
         <location filename="inputmanager.cpp" line="143"/>
         <source>Input Manager</source>
         <translation>Sisääntulojen hallinta</translation>
@@ -1449,7 +1443,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Liitännäinen</translation>
     </message>
     <message>
-        <location filename="inputmanager.cpp" line="83"/>
+        <location filename="inputmanager.cpp" line="84"/>
         <source>Input</source>
         <translation>Sisääntulo</translation>
     </message>
@@ -1487,15 +1481,11 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Sisääntulon tiedot</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.ui" line="83"/>
-        <location filename="inputpatcheditor.ui" line="131"/>
-        <location filename="inputpatcheditor.ui" line="151"/>
         <location filename="inputpatcheditor.ui" line="171"/>
         <source>...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.ui" line="104"/>
         <location filename="inputpatcheditor.ui" line="120"/>
         <source>Profile</source>
         <translation>Profiili</translation>
@@ -1526,18 +1516,17 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Oletusuniversumi muokkaukseen</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.cpp" line="64"/>
+        <location filename="inputpatcheditor.cpp" line="65"/>
         <source>Mapping properties for input universe %1</source>
         <translation>Ohjauksen ominaisuudet universumille %1</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.cpp" line="528"/>
         <location filename="inputpatcheditor.cpp" line="685"/>
         <source>Saving failed</source>
         <translation>Tallennus epäonnistui</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.cpp" line="529"/>
+        <location filename="inputpatcheditor.cpp" line="530"/>
         <source>Unable to save the profile to %1</source>
         <translation>Profiilia ei voida tallentaa tiedostoon %1</translation>
     </message>
@@ -1547,7 +1536,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Poista profiili</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.cpp" line="567"/>
+        <location filename="inputpatcheditor.cpp" line="568"/>
         <source>Do you wish to permanently delete profile &quot;%1&quot;?</source>
         <translation>Haluat poistaa profiilin %1 pysyvästi?</translation>
     </message>
@@ -1557,12 +1546,12 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Tiedoston poisto epäonnistui</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.cpp" line="596"/>
+        <location filename="inputpatcheditor.cpp" line="597"/>
         <source>Unable to delete file %1</source>
         <translation>Tiedostoa %1 ei voida poistaa</translation>
     </message>
     <message>
-        <location filename="inputpatcheditor.cpp" line="686"/>
+        <location filename="inputpatcheditor.cpp" line="687"/>
         <source>Unable to save %1 to %2</source>
         <translation>Profiilia %1 ei voida tallentaa tiedostoon %2</translation>
     </message>
@@ -1625,9 +1614,6 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Lisää uusi kanavakuvaus</translation>
     </message>
     <message>
-        <location filename="inputprofileeditor.ui" line="120"/>
-        <location filename="inputprofileeditor.ui" line="140"/>
-        <location filename="inputprofileeditor.ui" line="160"/>
         <location filename="inputprofileeditor.ui" line="180"/>
         <source>...</source>
         <translation></translation>
@@ -1653,7 +1639,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Tiedoston ei voida kirjoittaa</translation>
     </message>
     <message>
-        <location filename="inputprofileeditor.cpp" line="81"/>
+        <location filename="inputprofileeditor.cpp" line="84"/>
         <source>You do not have permission to write to the file %1. You might not be able to save your modifications to the profile.</source>
         <translation>Sinulla ei ole oikeuksia kirjoittaa tiedostoon %1. Et ehkä voi tallettaa muutoksiasi valittuun profiiliin.</translation>
     </message>
@@ -1668,14 +1654,12 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Valmistaja ja/tai mallinimike puuttuu.</translation>
     </message>
     <message>
-        <location filename="inputprofileeditor.cpp" line="193"/>
         <location filename="inputprofileeditor.cpp" line="296"/>
         <source>Channel already exists</source>
         <translation>Kanava on jo olemassa</translation>
     </message>
     <message>
-        <location filename="inputprofileeditor.cpp" line="194"/>
-        <location filename="inputprofileeditor.cpp" line="297"/>
+        <location filename="inputprofileeditor.cpp" line="298"/>
         <source>Channel %1 already exists</source>
         <translation>Kanava %1 on jo olemassa</translation>
     </message>
@@ -1685,7 +1669,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Poista kanavia</translation>
     </message>
     <message>
-        <location filename="inputprofileeditor.cpp" line="217"/>
+        <location filename="inputprofileeditor.cpp" line="218"/>
         <source>Delete all %1 selected channels?</source>
         <translation>Poistetaanko kaikki %1 valittua kanavaa?</translation>
     </message>
@@ -1695,7 +1679,7 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Kanavavelho on aktiivisena</translation>
     </message>
     <message>
-        <location filename="inputprofileeditor.cpp" line="338"/>
+        <location filename="inputprofileeditor.cpp" line="344"/>
         <source>You have enabled the input channel wizard. After clicking OK, wiggle your mapped input profile&apos;s controls. They should appear into the list. Click the wizard button again to stop channel auto-detection.
 
 Note that the wizard cannot tell the difference between a knob and a slider so you will have to do the change manually.</source>
@@ -1770,7 +1754,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
 <context>
     <name>OutputManager</name>
     <message>
-        <location filename="outputmanager.cpp" line="62"/>
         <location filename="outputmanager.cpp" line="123"/>
         <source>Output Manager</source>
         <translation>Ulostulojen hallinta</translation>
@@ -1844,7 +1827,7 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Käytä nolla-alkuisia DMX-osoitteita tässä universumissa</translation>
     </message>
     <message>
-        <location filename="outputpatcheditor.cpp" line="54"/>
+        <location filename="outputpatcheditor.cpp" line="55"/>
         <source>Mapping properties for output universe %1</source>
         <translation>Ohjauksen ominaisuudet ulostulo-universumille %1</translation>
     </message>
@@ -1857,12 +1840,12 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
 <context>
     <name>QObject</name>
     <message>
-        <location filename="app.cpp" line="77"/>
+        <location filename="app.cpp" line="78"/>
         <source>Operate</source>
         <translation>Käyttötila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="78"/>
+        <location filename="app.cpp" line="80"/>
         <source>Design</source>
         <translation>Suunnittelu</translation>
     </message>
@@ -1900,7 +1883,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Lisää tilanteeseen uusi valaisin</translation>
     </message>
     <message>
-        <location filename="sceneeditor.ui" line="73"/>
         <location filename="sceneeditor.ui" line="93"/>
         <source>...</source>
         <translation></translation>
@@ -1971,7 +1953,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Tilanne - %1</translation>
     </message>
     <message>
-        <location filename="sceneeditor.cpp" line="484"/>
         <location filename="sceneeditor.cpp" line="485"/>
         <source>Generic</source>
         <translation>Yleinen</translation>
@@ -2071,9 +2052,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Liitä funktio tähän nappiin</translation>
     </message>
     <message>
-        <location filename="vcbuttonproperties.ui" line="59"/>
-        <location filename="vcbuttonproperties.ui" line="79"/>
-        <location filename="vcbuttonproperties.ui" line="125"/>
         <location filename="vcbuttonproperties.ui" line="145"/>
         <source>...</source>
         <translation></translation>
@@ -2230,11 +2208,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Lisää tilanteita muokattavalle cue-listalle</translation>
     </message>
     <message>
-        <location filename="vccuelistproperties.ui" line="79"/>
-        <location filename="vccuelistproperties.ui" line="99"/>
-        <location filename="vccuelistproperties.ui" line="119"/>
-        <location filename="vccuelistproperties.ui" line="139"/>
-        <location filename="vccuelistproperties.ui" line="192"/>
         <location filename="vccuelistproperties.ui" line="212"/>
         <source>...</source>
         <translation></translation>
@@ -2357,7 +2330,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Komponenttien vaakaresoluutio ruudukossa</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="80"/>
         <location filename="vcproperties.ui" line="103"/>
         <source>px</source>
         <translation>px</translation>
@@ -2383,7 +2355,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Fade-väylän oletusliuku</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="158"/>
         <location filename="vcproperties.ui" line="268"/>
         <source>Low limit</source>
         <translation>Alaraja</translation>
@@ -2394,15 +2365,11 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Alin arvo, joka voidaan asettaa Fade-väylään oletusliukua käyttäen</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="168"/>
-        <location filename="vcproperties.ui" line="188"/>
-        <location filename="vcproperties.ui" line="278"/>
         <location filename="vcproperties.ui" line="298"/>
         <source>s</source>
         <translation>sek</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="178"/>
         <location filename="vcproperties.ui" line="288"/>
         <source>High limit</source>
         <translation>Yläraja</translation>
@@ -2413,19 +2380,16 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Ylin arvo, joka voidaan asettaa Fade-väylään oletusliukua käyttäen</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="211"/>
         <location filename="vcproperties.ui" line="321"/>
         <source>Input universe</source>
         <translation>Sisääntulon universumi</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="225"/>
         <location filename="vcproperties.ui" line="335"/>
         <source>Input channel</source>
         <translation>Sisääntulon kanava</translation>
     </message>
     <message>
-        <location filename="vcproperties.ui" line="252"/>
         <location filename="vcproperties.ui" line="362"/>
         <source>Choose...</source>
         <translation>Valitse...</translation>
@@ -2446,13 +2410,11 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Ylin arvo, joka voidaan asettaa Hold-väylään oletusliukua käyttäen</translation>
     </message>
     <message>
-        <location filename="vcproperties.cpp" line="559"/>
-        <location filename="vcproperties.cpp" line="631"/>
+        <location filename="vcproperties.cpp" line="632"/>
         <source>%1: Unknown</source>
         <translation>%1: Tuntematon</translation>
     </message>
     <message>
-        <location filename="vcproperties.cpp" line="578"/>
         <location filename="vcproperties.cpp" line="649"/>
         <source>Unknown</source>
         <translation>Tuntematon</translation>
@@ -2556,19 +2518,16 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Valitse...</translation>
     </message>
     <message>
-        <location filename="vcsliderproperties.ui" line="189"/>
         <location filename="vcsliderproperties.ui" line="262"/>
         <source>Bus</source>
         <translation>Väylä</translation>
     </message>
     <message>
-        <location filename="vcsliderproperties.ui" line="195"/>
         <location filename="vcsliderproperties.ui" line="304"/>
         <source>Value range</source>
         <translation>Arvoalue</translation>
     </message>
     <message>
-        <location filename="vcsliderproperties.ui" line="201"/>
         <location filename="vcsliderproperties.ui" line="310"/>
         <source>Low limit</source>
         <translation>Alaraja</translation>
@@ -2579,13 +2538,11 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Alin arvo, joka voidaan asettaa väylään liukua käyttäen</translation>
     </message>
     <message>
-        <location filename="vcsliderproperties.ui" line="217"/>
         <location filename="vcsliderproperties.ui" line="237"/>
         <source>s</source>
         <translation>sek</translation>
     </message>
     <message>
-        <location filename="vcsliderproperties.ui" line="227"/>
         <location filename="vcsliderproperties.ui" line="327"/>
         <source>High limit</source>
         <translation>Yläraja</translation>
@@ -2706,7 +2663,7 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Ei vielä toteutettu</translation>
     </message>
     <message>
-        <location filename="vcsliderproperties.cpp" line="265"/>
+        <location filename="vcsliderproperties.cpp" line="266"/>
         <source>%1: Unknown</source>
         <translation>%1: Tuntematon</translation>
     </message>
@@ -2737,27 +2694,21 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Vaakasuuntainen X-akseli</translation>
     </message>
     <message>
-        <location filename="vcxypadfixtureeditor.ui" line="25"/>
         <location filename="vcxypadfixtureeditor.ui" line="81"/>
         <source>Minimum</source>
         <translation>Minimi</translation>
     </message>
     <message>
-        <location filename="vcxypadfixtureeditor.ui" line="32"/>
-        <location filename="vcxypadfixtureeditor.ui" line="49"/>
-        <location filename="vcxypadfixtureeditor.ui" line="88"/>
         <location filename="vcxypadfixtureeditor.ui" line="105"/>
         <source>%</source>
         <translation>%</translation>
     </message>
     <message>
-        <location filename="vcxypadfixtureeditor.ui" line="42"/>
         <location filename="vcxypadfixtureeditor.ui" line="98"/>
         <source>Maximum</source>
         <translation>Maksimi</translation>
     </message>
     <message>
-        <location filename="vcxypadfixtureeditor.ui" line="65"/>
         <location filename="vcxypadfixtureeditor.ui" line="121"/>
         <source>Reverse</source>
         <translation>Käänteinen</translation>
@@ -2821,8 +2772,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Muokkaa valitun valaisimen akseleita</translation>
     </message>
     <message>
-        <location filename="vcxypadproperties.ui" line="82"/>
-        <location filename="vcxypadproperties.ui" line="102"/>
         <location filename="vcxypadproperties.ui" line="122"/>
         <source>...</source>
         <translation></translation>
@@ -2931,7 +2880,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Nimeä</translation>
     </message>
     <message>
-        <location filename="virtualconsole.cpp" line="334"/>
         <location filename="virtualconsole.cpp" line="357"/>
         <source>Color</source>
         <translation>Väri</translation>
@@ -2942,8 +2890,6 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Kuva</translation>
     </message>
     <message>
-        <location filename="virtualconsole.cpp" line="344"/>
-        <location filename="virtualconsole.cpp" line="362"/>
         <location filename="virtualconsole.cpp" line="379"/>
         <source>Default</source>
         <translation>Oletus</translation>
