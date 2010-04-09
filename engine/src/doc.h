@@ -230,6 +230,13 @@ public:
 	int functions() const { return m_functionAllocation; }
 
 	/**
+	 * Get the number of available function slots.
+	 *
+	 * @return Number of functions that sill fit to Doc
+	 */
+	quint32 functionsFree() const { return KFunctionArraySize - functions(); }
+
+	/**
 	 * Delete the given function
 	 *
 	 * @param id The ID of the function to delete

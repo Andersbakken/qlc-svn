@@ -325,6 +325,8 @@ void Doc_Test::addFunction()
 	QVERIFY(e->id() == 3);
 	QVERIFY(doc.m_functionAllocation == 4);
 	QVERIFY(doc.isModified() == true);
+
+	QVERIFY(doc.functionsFree() == KFunctionArraySize - 4);
 }
 
 void Doc_Test::deleteFunction()
