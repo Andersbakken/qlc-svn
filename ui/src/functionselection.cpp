@@ -69,7 +69,7 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 	initToolBar();
 
 	/* Disable function */
-	m_disable = disableFunction;
+	m_disabledFunctions << disableFunction;
 
 	/* Filter */
 	m_filter = filter;
@@ -260,7 +260,7 @@ void FunctionSelection::refillTree()
 			item = new QTreeWidgetItem(m_tree);
 			updateFunctionItem(item, function);
 
-			if (m_disable == function->id())
+			if (disabledFunctions().contains(function->id()))
 				item->setFlags(0); // Disables the item
 		}
 	}

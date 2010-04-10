@@ -50,6 +50,7 @@ win32:RC_FILE	= main.rc
 # Sources
 HEADERS += aboutbox.h \
            addfixture.h \
+	   addvcbuttonmatrix.h \
            app.h \
            assignhotkey.h \
            busmanager.h \
@@ -97,6 +98,7 @@ HEADERS += aboutbox.h \
 
 FORMS += aboutbox.ui \
 	 addfixture.ui \
+	 addvcbuttonmatrix.ui \
          assignhotkey.ui \
          chasereditor.ui \
          collectioneditor.ui \
@@ -120,6 +122,7 @@ FORMS += aboutbox.ui \
 
 SOURCES += aboutbox.cpp \
            addfixture.cpp \
+	   addvcbuttonmatrix.cpp \
            app.cpp \
            assignhotkey.cpp \
            busmanager.cpp \

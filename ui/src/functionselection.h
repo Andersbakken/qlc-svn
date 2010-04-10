@@ -40,6 +40,7 @@ class Doc;
 class FunctionSelection : public QDialog, public Ui_FunctionSelection
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(FunctionSelection)
 
 	/*********************************************************************
 	 * Initialization
@@ -68,8 +69,18 @@ public:
 	 */
 	~FunctionSelection();
 
-private:
-	Q_DISABLE_COPY(FunctionSelection)
+	/*********************************************************************
+	 * Disabled functions
+	 *********************************************************************/
+public:
+	void setDisabledFunctions(const QList <t_function_id>& ids)
+		{ m_disabledFunctions = ids; }
+
+	QList <t_function_id> disabledFunctions() const
+		{ return m_disabledFunctions; }
+
+protected:
+	QList <t_function_id> m_disabledFunctions;
 
 	/*********************************************************************
 	 * Selection

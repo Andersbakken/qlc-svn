@@ -41,6 +41,7 @@
 #include <QList>
 #include <QtXml>
 
+#include "addvcbuttonmatrix.h"
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "vcdockslider.h"
@@ -704,53 +705,41 @@ void VirtualConsole::slotAddButtonMatrix()
 	if (parent == NULL)
 		return;
 
-	// Recall the latest size setting
-	QSettings settings;
-	QString defSize = settings.value(SETTINGS_BUTTON_MATRIX_SIZE,
-					 QString("5 x 5 x 30")).toString();
-
-	bool ok = false;
-	QString size = QInputDialog::getText(this,
-				     tr("New Button Matrix"),
-				     tr("Horizontal x Vertical x Button Size"),
-				     QLineEdit::Normal,
-				     defSize, &ok);
-	size = size.simplified();
-	if (ok == false || size.isEmpty() == true)
+	AddVCButtonMatrix abm(this);
+	if (abm.exec() == QDialog::Rejected)
 		return;
+
+	int h = abm.horizontalCount();
+	int v = abm.verticalCount();
+	int sz = abm.buttonSize();
 
 	VCFrame* frame = new VCFrame(parent);
 	Q_ASSERT(frame != NULL);
 
-	QStringList list(size.split("x", QString::SkipEmptyParts));
-	int h = 5;
-	int v = 5;
-	int sz = VCButton::defaultSize.width();
-
-	// Don't attempt to fetch nonexistent values from list
-	if (list.size() >= 1)
-		h = list[0].toInt();
-	if (list.size() >= 2)
-		v = list[1].toInt();
-	if (list.size() >= 3)
-		sz = MAX(list[2].toInt(), VCButton::defaultSize.width());
-
-	// Store the latest size as a string to settings
-	settings.setValue(SETTINGS_BUTTON_MATRIX_SIZE,
-			  QString("%1 x %2 x %3").arg(h).arg(v).arg(sz));
-
 	// Resize the parent frame to fit the buttons nicely
 	frame->resize(QSize((h * sz) + 20, (v * sz) + 20));
 
-	for (int x = 0; x < h; x++)
+	for (int y = 0; y < v; y++)
 	{
-		for (int y = 0; y < v; y++)
+		for (int x = 0; x < h; x++)
 		{
 			VCButton* button = new VCButton(frame);
 			Q_ASSERT(button != NULL);
 			button->move(QPoint(10 + (x * sz), 10 + (y * sz)));
 			button->resize(QSize(sz, sz));
 			button->show();
+
+			int index = (y * h) + x;
+			if (index < abm.functions().size())
+			{
+				t_function_id fid = abm.functions().at(index);
+				Function* function = _app->doc()->function(fid);
+				if (function != NULL)
+				{
+					button->setFunction(fid);
+					button->setCaption(function->name());
+				}
+			}
 		}
 	}
 
