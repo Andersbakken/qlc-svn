@@ -6,14 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>402</width>
+    <height>349</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Add Button Matrix</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" rowspan="3">
+    <widget class="QTreeWidget" name="m_tree">
+     <column>
+      <property name="text">
+       <string>Function</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
+    </widget>
+   </item>
    <item row="0" column="1">
     <widget class="QToolButton" name="m_addButton">
      <property name="toolTip">
@@ -80,26 +94,12 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" rowspan="2">
+      <item row="0" column="1">
        <widget class="QSpinBox" name="m_horizontalSpin">
         <property name="minimum">
          <number>1</number>
         </property>
         <property name="value">
-         <number>1</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Vertical button count</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="m_verticalSpin">
-        <property name="minimum">
          <number>1</number>
         </property>
        </widget>
@@ -119,6 +119,40 @@
         <property name="minimum">
          <number>20</number>
         </property>
+        <property name="value">
+         <number>60</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Vertical button count</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="m_verticalSpin">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Allocation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="m_allocationEdit">
+        <property name="toolTip">
+         <string>Functions / Buttons</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
@@ -134,20 +168,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="3">
-    <widget class="QTreeWidget" name="m_tree">
-     <column>
-      <property name="text">
-       <string>Function</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Type</string>
-      </property>
-     </column>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources>
@@ -161,8 +181,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>290</y>
+     <x>266</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -177,8 +197,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>325</x>
-     <y>290</y>
+     <x>334</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -218,9 +238,60 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_horizontalSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AddVCButtonMatrix</receiver>
+   <slot>slotHorizontalChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>178</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>379</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_verticalSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AddVCButtonMatrix</receiver>
+   <slot>slotVerticalChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>281</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_sizeSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AddVCButtonMatrix</receiver>
+   <slot>slotButtonSizeChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>242</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>242</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotAddClicked()</slot>
   <slot>slotRemoveClicked()</slot>
+  <slot>slotHorizontalChanged()</slot>
+  <slot>slotVerticalChanged()</slot>
+  <slot>slotButtonSizeChanged()</slot>
  </slots>
 </ui>

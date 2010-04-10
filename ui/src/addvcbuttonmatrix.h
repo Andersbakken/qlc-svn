@@ -45,10 +45,14 @@ public:
 protected slots:
 	void slotAddClicked();
 	void slotRemoveClicked();
+	void slotHorizontalChanged();
+	void slotVerticalChanged();
+	void slotButtonSizeChanged();
 	void accept();
 
 private:
 	void addFunction(t_function_id fid);
+	void setAllocationText();
 
 private:
 	QList <t_function_id> m_functions;

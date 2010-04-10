@@ -55,7 +55,7 @@
 
 extern App* _app;
 
-const QSize VCButton::defaultSize(QSize(30, 30));
+const QSize VCButton::defaultSize(QSize(50, 50));
 
 /*****************************************************************************
  * Initialization

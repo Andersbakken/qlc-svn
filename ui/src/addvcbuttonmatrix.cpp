@@ -23,6 +23,7 @@
 
 #include "functionselection.h"
 #include "addvcbuttonmatrix.h"
+#include "vcbutton.h"
 #include "function.h"
 #include "app.h"
 #include "doc.h"
@@ -43,17 +44,28 @@ AddVCButtonMatrix::AddVCButtonMatrix(QWidget* parent) : QDialog(parent)
 
 	setupUi(this);
 
-	var = settings.value(HORIZONTAL_COUNT, 5);
+	var = settings.value(HORIZONTAL_COUNT);
 	if (var.isValid() == true)
 		m_horizontalSpin->setValue(var.toInt());
+	else
+		m_horizontalSpin->setValue(5);
+	m_horizontalCount = m_horizontalSpin->value();
 
-	var = settings.value(VERTICAL_COUNT, 5);
+	var = settings.value(VERTICAL_COUNT);
 	if (var.isValid() == true)
 		m_verticalSpin->setValue(var.toInt());
+	else
+		m_verticalSpin->setValue(5);
+	m_verticalCount = m_verticalSpin->value();
 
-	var = settings.value(BUTTON_SIZE, 50);
+	var = settings.value(BUTTON_SIZE);
 	if (var.isValid() == true)
 		m_sizeSpin->setValue(var.toInt());
+	else
+		m_sizeSpin->setValue(VCButton::defaultSize.width());
+	m_buttonSize = m_sizeSpin->value();
+
+	setAllocationText();
 }
 
 AddVCButtonMatrix::~AddVCButtonMatrix()
@@ -74,6 +86,8 @@ void AddVCButtonMatrix::slotAddClicked()
 		while (it.hasNext() == true)
 			addFunction(it.next());
 	}
+
+	setAllocationText();
 }
 
 void AddVCButtonMatrix::slotRemoveClicked()
@@ -86,14 +100,29 @@ void AddVCButtonMatrix::slotRemoveClicked()
 			item->data(KColumnFunction, Qt::UserRole).toInt());
 		delete item;
 	}
+
+	setAllocationText();
+}
+
+void AddVCButtonMatrix::slotHorizontalChanged()
+{
+	m_horizontalCount = m_horizontalSpin->value();
+	setAllocationText();
+}
+
+void AddVCButtonMatrix::slotVerticalChanged()
+{
+	m_verticalCount = m_verticalSpin->value();
+	setAllocationText();
+}
+
+void AddVCButtonMatrix::slotButtonSizeChanged()
+{
+	m_buttonSize = m_sizeSpin->value();
 }
 
 void AddVCButtonMatrix::accept()
 {
-	m_horizontalCount = m_horizontalSpin->value();
-	m_verticalCount = m_verticalSpin->value();
-	m_buttonSize = m_sizeSpin->value();
-
 	QDialog::accept();
 }
 
@@ -109,4 +138,11 @@ void AddVCButtonMatrix::addFunction(t_function_id fid)
 	item->setData(KColumnFunction, Qt::UserRole, fid);
 
 	m_functions << fid;
+}
+
+void AddVCButtonMatrix::setAllocationText()
+{
+	QString text("%1 / %2");
+	m_allocationEdit->setText(text.arg(m_tree->topLevelItemCount())
+				      .arg(horizontalCount() * verticalCount()));
 }
