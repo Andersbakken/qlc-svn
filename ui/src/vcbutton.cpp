@@ -708,8 +708,8 @@ void VCButton::paintEvent(QPaintEvent* e)
 	QStyleOptionButton option;
 	option.initFrom(this);
 
-	/* Caption */
-	option.text = caption();
+	/* This should look like a normal button */
+	option.features = QStyleOptionButton::None;
 
 	/* Sunken or raised based on isOn() status */
 	if (isOn() == true)
@@ -736,6 +736,17 @@ void VCButton::paintEvent(QPaintEvent* e)
 	/* Paint the button */
 	QPainter painter(this);
 	style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
+
+	/* Paint caption with text wrapping */
+	if (caption().isEmpty() == false)
+	{
+		style()->drawItemText(&painter,
+				      rect(),
+				      Qt::AlignCenter | Qt::TextWordWrap,
+				      palette(),
+				      (mode() == Doc::Operate),
+				      caption());
+	}
 
 	/* Flash emblem */
 	if (m_action == Flash)
