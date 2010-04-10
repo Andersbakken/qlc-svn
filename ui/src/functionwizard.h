@@ -52,50 +52,11 @@ protected:
 	/** Add a fixture to the tree widget */
 	void addFixture(t_fixture_id fxi_id);
 
-	/** Get a list of fixtures in the tree widget */
+	/** Get a list of currently selected fixtures */
 	QList <Fixture*> fixtures() const;
 
-	/********************************************************************
-	 * Function creation
-	 ********************************************************************/
-protected:
-	/**
-	 * Create scenes for colour, gobo and shutter channel groups
-	 */
-	void createGroupScenes();
-
-	/**
-	 * Create functions for the given fixture for each capability found
-	 * from the fixture's channels that belong to the given group.
-	 *
-	 * @param fxi The fixture to create functions for
-	 * @param group The channel group to create functions from
-	 */
-	void createGroupFunctions(const Fixture* fxi, const QString& group);
-
-	/**
-	 * Create chasers that use fixtures' intensity channels
-	 */
-	void createIntensityChasers();
-	bool createOddEvenChaser(Scene* odd, Scene* even);
-	bool createFullZeroChaser(Scene* full, Scene* zero);
-	bool createSequenceChasers(const QList <Scene*>& sequence);
-	bool createForwardSequenceChaser(const QList <Scene*>& sequence);
-	bool createBackwardSequenceChaser(const QList <Scene*>& sequence);
-	bool createRandomChaser(const QList <Scene*>& random);
-
-	/**
-	 * Find channels from the given fixture that belong to the given group.
-	 *
-	 * @param fixture The fixture to find the channels from
-	 * @param group The channel group to find
-	 * @return List of channel numbers (empty if none found)
-	 */
-	QList <t_channel> findChannels(const Fixture* fixture,
-					const QString& group) const;
-
-protected:
-	QHash <QString,Scene*> m_scenes;
+	/** Get a list of currently selected fixture ids */
+	QList <t_fixture_id> fixtureIds() const;
 };
 
 #endif
