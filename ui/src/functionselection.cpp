@@ -104,7 +104,7 @@ FunctionSelection::FunctionSelection(QWidget* parent,
 
 	/* Multiple/single selection */
 	if (multiple == true)
-		m_tree->setSelectionMode(QAbstractItemView::MultiSelection);
+		m_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	else
 		m_tree->setSelectionMode(QAbstractItemView::SingleSelection);
 
