@@ -108,6 +108,10 @@ App::App() : QMainWindow()
 	init();
 	slotModeDesign();
 	slotDocModified(false);
+
+#ifdef __APPLE__
+	slotWindowAllToFront();
+#endif
 }
 
 App::~App()
@@ -1209,6 +1213,8 @@ void App::slotWindowAllToFront()
 			continue;
 		w->raise();
 	}
+
+	this->raise();
 }
 #endif
 /*****************************************************************************
