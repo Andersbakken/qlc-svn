@@ -30,16 +30,35 @@ class Fixture;
 class Scene;
 class Doc;
 
+/**
+ * This class can be used on intelligent lights (scanners, moving heads..)
+ * to automatically generate functions for their capabilities (color, gobo..)
+ * for easy and quick initial setup.
+ */
 class IntelligentPaletteGenerator
 {
 public:
+	/**
+	 * Create a new generator.
+	 *
+	 * @param doc The Doc object that takes all generated functions
+	 * @param fxiList List of fixtures to create functions for
+	 */
 	IntelligentPaletteGenerator(Doc* doc, const QList <Fixture*>& fxiList);
+
+	/** Destructor */
 	~IntelligentPaletteGenerator();
 
+	/** Create colour macros for each fixture's colour capabilities */
 	void createColours();
+
+	/** Create gobo macros for each fixture's gobo capabilities */
 	void createGobos();
+
+	/** Create shutter macros for each fixture's shutter capabilities */
 	void createShutters();
 
+protected:
 	/**
 	 * Create scenes for each capability found from fixture's channels
 	 * that belong to the given channel group. For example, if $group
@@ -55,7 +74,6 @@ public:
 	 */
 	void createGroupScenes(const Fixture* fxi, const QString& group);
 
-protected:
 	/** Find fixture channels that belong to a certain group and have more
 	    than one capability (i.e. there's something make a palette from) */
 	QList <t_channel> findChannels(const Fixture* fixture,

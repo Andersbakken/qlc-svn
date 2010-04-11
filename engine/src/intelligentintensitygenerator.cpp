@@ -33,17 +33,17 @@
 IntelligentIntensityGenerator::IntelligentIntensityGenerator(Doc* doc,
                                       const QList <Fixture*>& fxiList)
 	: m_doc(doc)
-	, fixtures(fxiList)
-	, odd(NULL)
-	, even(NULL)
-	, full(NULL)
-	, zero(NULL)
+	, m_fixtures(fxiList)
+	, m_odd(NULL)
+	, m_even(NULL)
+	, m_full(NULL)
+	, m_zero(NULL)
 {
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(fxiList.size() != 0);
 
 	// Remove all dimmers from fixture list
-	QMutableListIterator <Fixture*> it(fixtures);
+	QMutableListIterator <Fixture*> it(m_fixtures);
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -61,44 +61,44 @@ IntelligentIntensityGenerator::IntelligentIntensityGenerator(Doc* doc,
 IntelligentIntensityGenerator::~IntelligentIntensityGenerator()
 {
 	// Destroy all functions that have NOT been added to Doc
-	if (m_doc->function(odd->id()) == NULL)
-		delete odd;
-	odd = NULL;
+	if (m_doc->function(m_odd->id()) == NULL)
+		delete m_odd;
+	m_odd = NULL;
 
-	if (m_doc->function(even->id()) == NULL)
-		delete even;
-	even = NULL;
+	if (m_doc->function(m_even->id()) == NULL)
+		delete m_even;
+	m_even = NULL;
 
-	if (m_doc->function(full->id()) == NULL)
-		delete full;
-	full = NULL;
+	if (m_doc->function(m_full->id()) == NULL)
+		delete m_full;
+	m_full = NULL;
 
-	if (m_doc->function(zero->id()) == NULL)
-		delete zero;
-	zero = NULL;
+	if (m_doc->function(m_zero->id()) == NULL)
+		delete m_zero;
+	m_zero = NULL;
 
-	QListIterator <Scene*> seqit(sequence);
+	QListIterator <Scene*> seqit(m_sequence);
 	while (seqit.hasNext() == true)
 	{
 		Scene* scene(seqit.next());
 		if (m_doc->function(scene->id()) == NULL)
 			delete scene;
 	}
-	sequence.clear();
+	m_sequence.clear();
 
-	QListIterator <Scene*> rndit(random);
+	QListIterator <Scene*> rndit(m_random);
 	while (rndit.hasNext() == true)
 	{
 		Scene* scene(rndit.next());
 		if (m_doc->function(scene->id()) == NULL)
 			delete scene;
 	}
-	random.clear();
+	m_random.clear();
 }
 
 bool IntelligentIntensityGenerator::createOddEvenChaser()
 {
-	if (odd == NULL || even == NULL)
+	if (m_odd == NULL || m_even == NULL)
 		return false;
 
 	// Abort if doc can't fit the chaser and its two members
@@ -106,18 +106,18 @@ bool IntelligentIntensityGenerator::createOddEvenChaser()
 		return false;
 
 	// Create the chaser only if both steps contain something
-	if (odd->values().size() != 0 && even->values().size() != 0)
+	if (m_odd->values().size() != 0 && m_even->values().size() != 0)
 	{
 		// Abort if doc won't take the scenes
-		if (m_doc->addFunction(odd) == false)
+		if (m_doc->addFunction(m_odd) == false)
 			return false;
-		if (m_doc->addFunction(even) == false)
+		if (m_doc->addFunction(m_even) == false)
 			return false;
 
 		Chaser* chaser = new Chaser(m_doc);
 		chaser->setName("Intensity - Even/Odd");
-		chaser->addStep(odd->id());
-		chaser->addStep(even->id());
+		chaser->addStep(m_odd->id());
+		chaser->addStep(m_even->id());
 
 		// Abort if doc won't take the chaser
 		if (m_doc->addFunction(chaser) == false)
@@ -138,7 +138,7 @@ bool IntelligentIntensityGenerator::createOddEvenChaser()
 
 bool IntelligentIntensityGenerator::createFullZeroChaser()
 {
- 	if (full == NULL || zero == NULL)
+ 	if (m_full == NULL || m_zero == NULL)
 		return false;
 
 	// Abort if doc can't fit the chaser and its two members
@@ -146,18 +146,18 @@ bool IntelligentIntensityGenerator::createFullZeroChaser()
 		return false;
 
 	// Create the chaser only if both steps contain something
-	if (full->values().size() != 0 && zero->values().size() != 0)
+	if (m_full->values().size() != 0 && m_zero->values().size() != 0)
 	{
 		// Abort if doc won't take the scenes
-		if (m_doc->addFunction(full) == false)
+		if (m_doc->addFunction(m_full) == false)
 			return false;
-		if (m_doc->addFunction(zero) == false)
+		if (m_doc->addFunction(m_zero) == false)
 			return false;
 
 		Chaser* chaser = new Chaser(m_doc);
 		chaser->setName("Intensity - Full/Zero");
-		chaser->addStep(full->id());
-		chaser->addStep(zero->id());
+		chaser->addStep(m_full->id());
+		chaser->addStep(m_zero->id());
 
 		if (m_doc->addFunction(chaser) == false)
 		{
@@ -177,15 +177,15 @@ bool IntelligentIntensityGenerator::createFullZeroChaser()
 
 bool IntelligentIntensityGenerator::createSequenceChasers()
 {
-	if (sequence.size() == 0)
+	if (m_sequence.size() == 0)
 		return false;
 
 	// Abort if doc can't fit the two chasers and their sequence members
-	if (m_doc->functionsFree() < quint32(sequence.size() + 2))
+	if (m_doc->functionsFree() < quint32(m_sequence.size() + 2))
 		return false;
 
 	// Abort immediately if doc won't take all sequence steps
-	QListIterator <Scene*> it(sequence);
+	QListIterator <Scene*> it(m_sequence);
 	while (it.hasNext() == true)
 	{
 		Scene* scene(it.next());
@@ -206,15 +206,15 @@ bool IntelligentIntensityGenerator::createSequenceChasers()
 
 bool IntelligentIntensityGenerator::createRandomChaser()
 {
-	if (random.size() == 0)
+	if (m_random.size() == 0)
 		return false;
 
 	// Abort if doc can't fit the chaser and its members
-	if (m_doc->functionsFree() < quint32(random.size() + 1))
+	if (m_doc->functionsFree() < quint32(m_random.size() + 1))
 		return false;
 
 	// Abort immediately if doc won't take all sequence steps
-	QListIterator <Scene*> it(random);
+	QListIterator <Scene*> it(m_random);
 	while (it.hasNext() == true)
 	{
 		if (m_doc->addFunction(it.next()) == false)
@@ -232,29 +232,29 @@ bool IntelligentIntensityGenerator::createRandomChaser()
 	}
 	else
 	{
-		for (int i = 0; i < random.size(); i++)
-			chaser->addStep(random[i]->id());
+		for (int i = 0; i < m_random.size(); i++)
+			chaser->addStep(m_random[i]->id());
 		return true;
 	}
 }
 
 void IntelligentIntensityGenerator::createScenes()
 {
-	odd = new Scene(m_doc);
-	odd->setName("Intensity - Odd");
+	m_odd = new Scene(m_doc);
+	m_odd->setName("Intensity - Odd");
 
-	even = new Scene(m_doc);
-	even->setName("Intensity - Even");
+	m_even = new Scene(m_doc);
+	m_even->setName("Intensity - Even");
 
-	full = new Scene(m_doc);
-	full->setName("Intensity - Full");
+	m_full = new Scene(m_doc);
+	m_full->setName("Intensity - Full");
 
-	zero = new Scene(m_doc);
-	zero->setName("Intensity - Zero");
+	m_zero = new Scene(m_doc);
+	m_zero->setName("Intensity - Zero");
 
 	// Create sequence & random scene lists
 	int i = 0;
-	QListIterator <Fixture*> it(fixtures);
+	QListIterator <Fixture*> it(m_fixtures);
 	while (it.hasNext() == true)
 	{
 		Fixture* fxi(it.next());
@@ -262,17 +262,17 @@ void IntelligentIntensityGenerator::createScenes()
 
 		Scene* sq = new Scene(m_doc);
 		sq->setName(QString("Intensity - ") + fxi->name());
-		sequence << sq;
+		m_sequence << sq;
 
 		sq = new Scene(m_doc);
 		sq->setName(QString("Intensity - Random - %1").arg(++i));
-		random << sq;
+		m_random << sq;
 	}
 
 	// Go thru all fixtures
-	for (int i = 0; i < fixtures.size(); i++)
+	for (int i = 0; i < m_fixtures.size(); i++)
 	{
-		Fixture* fxi = fixtures[i];
+		Fixture* fxi = m_fixtures[i];
 		Q_ASSERT(fxi != NULL);
 
 		// Find such channels from the fixture that belong to the
@@ -295,35 +295,35 @@ void IntelligentIntensityGenerator::createScenes()
 			findMinMax(channel, &min, &max);
 
 			// Set all intensity channels to max in the $full scene
-			full->setValue(fxi->id(), ch, max);
+			m_full->setValue(fxi->id(), ch, max);
 
 			// Set all intensity channels to min in the $zero scene
-			zero->setValue(fxi->id(), ch, min);
+			m_zero->setValue(fxi->id(), ch, min);
 
 			// Create even & odd values
 			if ((i % 2) == 0)
 			{
-				even->setValue(fxi->id(), ch, max);
-				odd->setValue(fxi->id(), ch, min);
+				m_even->setValue(fxi->id(), ch, max);
+				m_odd->setValue(fxi->id(), ch, min);
 			}
                         else
                         {
-                                even->setValue(fxi->id(), ch, min);
-                                odd->setValue(fxi->id(), ch, max);
+                                m_even->setValue(fxi->id(), ch, min);
+                                m_odd->setValue(fxi->id(), ch, max);
                         }
 
 			// Create sequence and random values
-                        for (int s = 0; s < sequence.size(); s++)
+                        for (int s = 0; s < m_sequence.size(); s++)
                         {
                                 if (s == i)
-                                        sequence[s]->setValue(fxi->id(), ch, max);
+                                        m_sequence[s]->setValue(fxi->id(), ch, max);
                                 else
-                                        sequence[s]->setValue(fxi->id(), ch, min);
+                                        m_sequence[s]->setValue(fxi->id(), ch, min);
 
                                 if ((rand() % 2) == 0)
-                                        random[s]->setValue(fxi->id(), ch, max);
+                                        m_random[s]->setValue(fxi->id(), ch, max);
                                 else
-                                        random[s]->setValue(fxi->id(), ch, min);
+                                        m_random[s]->setValue(fxi->id(), ch, min);
                         }
                 }
         }
@@ -352,8 +352,8 @@ bool IntelligentIntensityGenerator::createSequenceChaser(bool forward)
 	}
 	else
 	{
-		for (int i = 0; i < sequence.size(); i++)
-			chaser->addStep(sequence[i]->id());
+		for (int i = 0; i < m_sequence.size(); i++)
+			chaser->addStep(m_sequence[i]->id());
 		return true;
 	}
 }

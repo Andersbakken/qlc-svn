@@ -41,10 +41,11 @@ public:
 	 * Create a new instance.
 	 *
 	 * @param doc The Doc instance that should take the created functions
-	 * @param fxiList List of fixture to create functions for
+	 * @param fxis List of fixtures to create functions for
 	 */
-	IntelligentIntensityGenerator(Doc* doc,
-				      const QList <Fixture*>& fxiList);
+	IntelligentIntensityGenerator(Doc* doc, const QList <Fixture*>& fxis);
+
+	/** Destructor */
 	~IntelligentIntensityGenerator();
 
 	/**
@@ -104,16 +105,16 @@ public:
 
 private:
 	Doc* m_doc;
-	QList <Fixture*> fixtures;
+	QList <Fixture*> m_fixtures;
 
-	Scene* odd;
-	Scene* even;
+	Scene* m_odd;
+	Scene* m_even;
 
-	Scene* full;
-	Scene* zero;
+	Scene* m_full;
+	Scene* m_zero;
 
-	QList <Scene*> sequence;
-	QList <Scene*> random;
+	QList <Scene*> m_sequence;
+	QList <Scene*> m_random;
 };
 
 #endif
