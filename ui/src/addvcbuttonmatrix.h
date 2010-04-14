@@ -1,4 +1,4 @@
-﻿/*
+/*
   Q Light Controller
   addvcbuttonmatrix.h
 

@@ -1,7 +1,7 @@
 # Application & version
 APPNAME			= Q Light Controller
 FXEDNAME		= Fixture Definition Editor
-APPVERSION		= 3.0.4
+APPVERSION		= $$system("head -1 debian/changelog | sed \'s/.*(\\(.*\\)).*/\\1/\'")
 
 # Uncomment these two lines when making a release
 CONFIG			+= release
