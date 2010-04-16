@@ -115,6 +115,7 @@ InputManager::~InputManager()
 #else
         settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
+	InputManager::s_instance = NULL;
 }
 
 void InputManager::create(QWidget* parent)
