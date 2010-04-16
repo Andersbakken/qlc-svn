@@ -107,9 +107,15 @@ void VCButtonProperties::slotSetFunction(t_function_id fid)
 
 	func = _app->doc()->function(m_function);
 	if (func == NULL)
+	{
 		m_functionEdit->setText("No function");
+	}
 	else
+	{
 		m_functionEdit->setText(func->name());
+		if (m_nameEdit->text().simplified().isEmpty() == true)
+			m_nameEdit->setText(func->name());
+	}
 }
 
 void VCButtonProperties::slotAttachKey()
