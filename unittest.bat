@@ -18,9 +18,17 @@ IF NOT ERRORLEVEL 0 exit /B %ERRORLEVEL%
 popd
 pushd .
 
-REM Main engine test
-cd main\test\%1
+REM Engine test
+cd engine\test\%1
 test_engine.exe
+IF NOT ERRORLEVEL 0 exit /B %ERRORLEVEL%
+
+popd
+pushd .
+
+REM UI test
+cd ui\test\%1
+test_ui.exe
 IF NOT ERRORLEVEL 0 exit /B %ERRORLEVEL%
 
 popd
