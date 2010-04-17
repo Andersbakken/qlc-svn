@@ -53,6 +53,7 @@ Section ""
   File QtXml4.dll
   File QtNetwork4.dll
   File Sample.qxw
+  File *.qm
   File /r Documents
   File /r Fixtures
   File /r InputProfiles
