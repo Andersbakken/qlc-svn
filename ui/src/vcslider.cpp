@@ -77,6 +77,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
 	m_sliderValue = 0;
 	m_levelValue = 0;
+	m_lastWrittenLevelValue = 0;
 
 	m_time = NULL;
 
@@ -552,15 +553,14 @@ void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
 {
 	Q_UNUSED(timer);
 
-	static char value = 0;
 	bool exit = false;
 
 	/* Check, whether the current value has changed */
 	m_levelValueMutex.lock();
-	if (m_levelValue == value)
+	if (m_levelValue == m_lastWrittenLevelValue)
 		exit = true;
 	else
-		value = m_levelValue;
+		m_lastWrittenLevelValue = m_levelValue;
 	m_levelValueMutex.unlock();
 
 	/* Value has not been changed -> don't do anything with it */
@@ -580,7 +580,7 @@ void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
 		if (fxi != NULL)
 		{
 			dmx_ch = fxi->channelAddress(ch);
-			(*universes)[dmx_ch] = value;
+			(*universes)[dmx_ch] = m_lastWrittenLevelValue;
 		}
 	}
 }

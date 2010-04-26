@@ -347,7 +347,8 @@ public:
 
 protected:
 	QMutex m_levelValueMutex;
-	char m_levelValue;
+	t_value m_levelValue;
+	t_value m_lastWrittenLevelValue;
 
 	/*********************************************************************
 	 * Top label
