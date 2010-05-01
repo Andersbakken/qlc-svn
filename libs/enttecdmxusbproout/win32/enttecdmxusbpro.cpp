@@ -180,6 +180,7 @@ bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
 	}
 
 	QByteArray request(universe);
+	request.prepend(char(0x00));
 	request.prepend(char((universe.size() >> 8) & 0xff)); // Data length MSB
 	request.prepend(char(universe.size() & 0xff)); // Data length LSB
 	request.prepend(char(0x06)); // Command
