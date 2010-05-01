@@ -1256,19 +1256,24 @@ void App::slotCustomContextMenuRequested(const QPoint&)
 
 void App::setBackgroundImage(QString path)
 {
+	QMdiArea* area = qobject_cast<QMdiArea*>(centralWidget());
+	Q_ASSERT(area != NULL);
+
 	if (path.isEmpty() == true)
 	{
-		/* TODO: Is there some better way to "reset" the palette
-		   instead of explicitly specifying a color? */
-		qobject_cast<QMdiArea*> (centralWidget())->setBackground(
-			QBrush(QApplication::palette().color(QPalette::Dark)));
+		QMdiArea temp;
+		area->setBackground(temp.background());
 	}
-	else if (path != m_backgroundImage)
+	else
 	{
-		/* Set background image only if it's not already there */
-		qobject_cast<QMdiArea*>	(centralWidget())->setBackground(
-								QPixmap(path));
+		area->setBackground(QBrush(QPixmap(path)));
 	}
+
+
+	// Force background update immediately in a rather weird way because
+	// for example area->update() has no effect.
+	area->hide();
+	QTimer::singleShot(1, area, SLOT(show()));
 
 	/* Save workspace background setting */
 	QSettings settings;
