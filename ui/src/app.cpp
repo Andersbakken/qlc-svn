@@ -577,7 +577,6 @@ void App::slotModeChanged(Doc::Mode mode)
 
 QStyle* App::saneStyle()
 {
-#ifdef WIN32
 	if (s_saneStyle == NULL)
 	{
 		QStringList keys(QStyleFactory::keys());
@@ -588,9 +587,6 @@ QStyle* App::saneStyle()
 	}
 
 	return s_saneStyle;
-#else
-	return QApplication::style();
-#endif
 }
 
 /*****************************************************************************

@@ -85,6 +85,8 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
 
 	init();
 	updateValue();
+
+	setStyle(App::saneStyle());
 }
 
 ConsoleChannel::~ConsoleChannel()

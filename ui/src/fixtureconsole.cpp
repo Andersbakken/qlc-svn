@@ -86,11 +86,6 @@ void FixtureConsole::setFixture(t_fixture_id id)
 
 	/* Make a spacer item eat excess space to justify channels left */
 	layout()->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
-
-	/* Resize the console to some sensible proportions if at least
-	   one channel unit was inserted */
-	if (cc != NULL)
-		resize((fxi->channels() * 75), 250);
 }
 
 /*****************************************************************************
