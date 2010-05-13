@@ -3,6 +3,7 @@
 <HEAD>
 <TITLE>Q Light Controller Documentation - Coding Convention</TITLE>
 </HEAD>
+<BODY>
 
 <CENTER>
 <IMG SRC="../gfx/qlc.png">
@@ -18,7 +19,7 @@ clear code.
 <HR>
 
 <P>
-Each source/header file should begin with this header:<BR>
+Each source/header file should begin with this header:</P>
 <PRE>
 /*
   Q Light Controller
@@ -42,20 +43,19 @@ Each source/header file should begin with this header:<BR>
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 </PRE>
-</P>
 
 <HR>
 
 <P>
-Each member variable has a prefix "m_", for example:<BR>
+Each member variable has a prefix "m_", for example:</P>
 <PRE>
 	int m_fooMember;
 </PRE>
-Each global variable or function begins with "_", for example:
+<P>Each global variable or function begins with "_", for example:</P>
 <PRE>
 	int _foo;
 </PRE>
-<BR>
+<P>
 <B>Still, try to avoid global variables at all costs!</B>
 </P>
 
@@ -65,13 +65,13 @@ Each global variable or function begins with "_", for example:
 Each function begins with a small letter and in compound words, all
 the following words begin with a capital letter. No word separation with
 underscore is allowed. Otherwise known as camel-case. Examples:
+</P>
 <PRE>
 	int foo();
 	int fooBar();
 	int thisIsAMemberFunction();
 	int this_is_not_allowed_because_it_is_ugly;
 </PRE>
-</P>
 
 <HR>
 
@@ -79,6 +79,7 @@ underscore is allowed. Otherwise known as camel-case. Examples:
 Follow the <A HREF="http://en.wikipedia.org/wiki/Indent_style#Allman_style_.28bsd_in_Emacs.29">
 Allman style</A> with curly braces. The reason for this is simply code
 readability by CLEARLY separating the <I>conditions</I> from <I>then(s)</I>.
+</P>
 <PRE>
 	do
 	{
@@ -122,18 +123,16 @@ Kernighan and Ritchie</A> made back in the days:
 		do_something_else();
 	}
 </PRE>
-</P>
 
 <HR>
 
 <P>
 Each class name will be written with each word beginning with a capital letter.
-Same rules apply here as for functions.
+Same rules apply here as for functions.</P>
 <PRE>
 	class FooBar;
 	class Foo;
 </PRE>
-</P>
 
 <P>
 Respectively, each class should be in its own file and the file name must be
@@ -162,30 +161,29 @@ may be separated with "_". Example:
 Normal integer macros, like the ones you would use to identify certain menu
 items, columns etc. can be substituted with static constants, in which case, the
 constant's name begins with a capital 'K'. This is done to associate them more
-into the field of #defined macros than variables.<BR>
+into the field of #defined macros than variables.
+</P>
 <PRE>
 static const int KMenuItem ( 1000 );
 </PRE>
-</P>
 
 <HR>
 
-<P>
-Each operator will be separated with spaces:
+<P>Each operator will be separated with spaces:</P>
 <PRE>
 	if (foo == bar)
 	while (foo != bar)
 	int foo = bar;
 	for (int foo = 0; foo != bar; foo++)
 </PRE>
-
+<P>
 Not like this. You're only saving the spring mechanism on your space bar, but
 cause a lot of bad eyesight for people trying to read your code.
+</P>
 <PRE>
 	if(foo==bar)
 	while(foo!=bar)
 </PRE>
-</P>
 
 <HR>
 

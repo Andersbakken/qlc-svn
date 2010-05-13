@@ -3,6 +3,7 @@
 <HEAD>
 <TITLE>Q Light Controller Documentation - Basic Concepts</TITLE>
 </HEAD>
+<BODY>
 
 <CENTER>
 <IMG SRC="../gfx/qlc.png">
@@ -162,13 +163,14 @@ Instead, their values are set immediately, as if their speed setting was zero.
 <P>
 Fixtures taking part in an EFX function can be set to follow the algorithm
 either in parallel or serial:
+</P>
 <UL>
 <LI>Parallel: all fixtures follow the same pattern synchronously</LI>
 <LI>Serial: fixtures start following the pattern one after the other, with a
 little in-between delay, creating a more lively, wave-like effect. To see the
 effect, you need at least two similar moving fixtures, preferably four.</LI>
 </UL>
-</P>
+
 
 <P>
 EFX functions' direction can be reversed for all fixtures at once or on a
@@ -196,30 +198,32 @@ can, can be grouped together to form one single fixture.
 <P>
 Users can store shared fixture information in a fixture library that contains
 the following properties for each fixture:
+</P>
 <UL>
 <LI>Manufacturer (e.g. Martin)</LI>
 <LI>Model (e.g. MAC250)</LI>
 <LI>Type (Color Changer, Scanner, Moving Head, Smoke, Haze, Fan...)</LI>
 <LI>Physical properties (bulb type, beam angle, dimensions...)</LI>
-<LI>Channels:</LI>
+<LI>Channels:
 <UL>
  <LI>Channel group (Pan, Tilt, Gobo, Color, Speed etc.)</LI>
- <LI>8bit and 16bit channel bindings for pan & tilt groups
- <LI>Value ranges for channel features (e.g. 0-5:Lamp on, 6-15:Strobe etc..)
+ <LI>8bit and 16bit channel bindings for pan & tilt groups</LI>
+ <LI>Value ranges for channel features (e.g. 0-5:Lamp on, 6-15:Strobe etc..)</LI>
 </UL>
+</LI>
 </UL>
-</P>
+
 
 <P>
 These fixture entries can then be used to create fixture instances (256 at most
 at a time), that will, after instantiation, have additional properties defined
 by users:
+</P>
 <UL>
 <LI>DMX Universe</LI>
 <LI>DMX Address</LI>
 <LI>Name</LI>
 </UL>
-</P>
 
 <P>
 Several instances of a fixture can be created (i.e. users must be able to
@@ -245,13 +249,13 @@ values to channels. Each function type has its own way for automating lights.
 
 <P>
 The function types are:
+</P>
 <UL>
 <LI><A HREF="#Scene">Scene</A></LI>
 <LI><A HREF="#Chaser">Chaser</A></LI>
 <LI><A HREF="#EFX">EFX</A></LI>
 <LI><A HREF="#Collection">Collection</A></LI>
 </UL>
-</P>
 
 <P>
 Each function can be named, but the name is not used internally to identify
@@ -295,6 +299,7 @@ Behringer BCF-2000.
 Q Light Controller is based on the common concept of having two distinct
 operational modes to prevent accidental or otherwise harmful changes during
 operation:
+</P>
 <UL>
 <LI><U>Design mode</U> is meant to edit the behaviour of the program;
 create and edit <A HREF="#Functions">functions</A> and
@@ -302,7 +307,6 @@ create and edit <A HREF="#Functions">functions</A> and
 <LI><U>Operate mode</U> is meant to execute the created functions that
 eventually control the user's lighting fixtures.</LI>
 </UL>
-</P>
 
 <A NAME="Output" HREF="#OutputPlugins"><H3>Output plugins</H3></A>
 
@@ -347,6 +351,7 @@ two functions are completely independent entities that behave exactly the same.
 The purpose of the virtual console is to act as an open sandbox where the user
 can create a lighting desk layout of his choice. Users can create various GUI
 (Graphical User Interface) elements, called widgets, onto the console surface:
+</P>
 <UL>
 <LI>Buttons for starting and stopping functions</LI>
 <LI>Sliders for adjusting selected bus or channel values</LI>
@@ -355,7 +360,6 @@ can create a lighting desk layout of his choice. Users can create various GUI
 <LI>Frames for grouping various widgets together</LI>
 <LI>Labels to act as static information banners for other widgets</LI>
 </UL>
-</P>
 
 <HR>
 <I>Last modified: 2009-01-05 by Heikki Junnila</I>
