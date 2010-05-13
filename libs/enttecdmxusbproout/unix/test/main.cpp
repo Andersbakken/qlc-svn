@@ -1,4 +1,6 @@
-#include <QtCore>
+#include <QCoreApplication>
+#include <QStringList>
+#include <QDebug>
 
 #include "enttecdmxusbproout.h"
 
@@ -11,7 +13,7 @@ int main(int argc, char** argv)
 
 	qDebug() << pro.outputs();
 
-	unsigned char uni[512] = { 0 };
+	QByteArray uni(512, 0);
 	uni[0] = 64;
 	uni[1] = 127;
 	uni[2] = 192;
@@ -19,7 +21,7 @@ int main(int argc, char** argv)
 	if (pro.outputs().size() > 0)
 	{
 		pro.open(0);
-		pro.writeRange(0, 0, (t_value*) uni, 512);
+		pro.outputDMX(0, uni);
 		pro.close(0);
 	}
 
