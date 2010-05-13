@@ -1,80 +1,81 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>EditMode</class>
- <widget class="QDialog" name="EditMode" >
-  <property name="geometry" >
+ <widget class="QDialog" name="EditMode">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>595</width>
-    <height>444</height>
+    <height>465</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Edit Mode</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <widget class="QLabel" name="m_modeNameLabel" >
-       <property name="text" >
+      <widget class="QLabel" name="m_modeNameLabel">
+       <property name="text">
         <string>Mode Name</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_modeNameEdit" />
+      <widget class="QLineEdit" name="m_modeNameEdit"/>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QTabWidget" name="m_tab" >
-     <property name="currentIndex" >
+    <widget class="QTabWidget" name="m_tab">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
        <string>Channels</string>
       </attribute>
-      <layout class="QHBoxLayout" >
+      <layout class="QHBoxLayout">
        <item>
-        <widget class="QTreeWidget" name="m_channelList" >
-         <property name="alternatingRowColors" >
+        <widget class="QTreeWidget" name="m_channelList">
+         <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
-         <property name="rootIsDecorated" >
+         <property name="rootIsDecorated">
           <bool>false</bool>
          </property>
-         <property name="itemsExpandable" >
+         <property name="itemsExpandable">
           <bool>false</bool>
          </property>
-         <property name="allColumnsShowFocus" >
+         <property name="allColumnsShowFocus">
           <bool>true</bool>
          </property>
          <column>
-          <property name="text" >
+          <property name="text">
            <string>Number</string>
           </property>
          </column>
          <column>
-          <property name="text" >
+          <property name="text">
            <string>Name</string>
           </property>
          </column>
         </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" >
+        <layout class="QVBoxLayout">
          <item>
-          <widget class="QToolButton" name="m_addChannelButton" >
-           <property name="text" >
+          <widget class="QToolButton" name="m_addChannelButton">
+           <property name="text">
             <string>...</string>
            </property>
-           <property name="icon" >
-            <iconset resource="fixtureeditor.qrc" >
+           <property name="icon">
+            <iconset resource="fixtureeditor.qrc">
              <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
            </property>
-           <property name="iconSize" >
+           <property name="iconSize">
             <size>
              <width>26</width>
              <height>26</height>
@@ -83,15 +84,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="m_removeChannelButton" >
-           <property name="text" >
+          <widget class="QToolButton" name="m_removeChannelButton">
+           <property name="text">
             <string>...</string>
            </property>
-           <property name="icon" >
-            <iconset resource="fixtureeditor.qrc" >
+           <property name="icon">
+            <iconset resource="fixtureeditor.qrc">
              <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
            </property>
-           <property name="iconSize" >
+           <property name="iconSize">
             <size>
              <width>26</width>
              <height>26</height>
@@ -100,15 +101,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="m_raiseChannelButton" >
-           <property name="text" >
+          <widget class="QToolButton" name="m_raiseChannelButton">
+           <property name="text">
             <string>...</string>
            </property>
-           <property name="icon" >
-            <iconset resource="fixtureeditor.qrc" >
+           <property name="icon">
+            <iconset resource="fixtureeditor.qrc">
              <normaloff>:/up.png</normaloff>:/up.png</iconset>
            </property>
-           <property name="iconSize" >
+           <property name="iconSize">
             <size>
              <width>26</width>
              <height>26</height>
@@ -117,15 +118,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="m_lowerChannelButton" >
-           <property name="text" >
+          <widget class="QToolButton" name="m_lowerChannelButton">
+           <property name="text">
             <string>...</string>
            </property>
-           <property name="icon" >
-            <iconset resource="fixtureeditor.qrc" >
+           <property name="icon">
+            <iconset resource="fixtureeditor.qrc">
              <normaloff>:/down.png</normaloff>:/down.png</iconset>
            </property>
-           <property name="iconSize" >
+           <property name="iconSize">
             <size>
              <width>26</width>
              <height>26</height>
@@ -135,10 +136,10 @@
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <property name="sizeHint" stdset="0" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
              <height>40</height>
@@ -150,191 +151,191 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
        <string>Physical</string>
       </attribute>
-      <layout class="QGridLayout" >
-       <item row="0" column="0" >
-        <widget class="QGroupBox" name="groupBox" >
-         <property name="title" >
+      <layout class="QGridLayout">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
           <string>Bulb</string>
          </property>
-         <layout class="QVBoxLayout" >
+         <layout class="QVBoxLayout">
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_bulbTypeLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_bulbTypeLabel">
+              <property name="text">
                <string>Type</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="m_bulbTypeCombo" >
-              <property name="editable" >
+             <widget class="QComboBox" name="m_bulbTypeCombo">
+              <property name="editable">
                <bool>true</bool>
               </property>
-              <property name="currentIndex" >
+              <property name="currentIndex">
                <number>27</number>
               </property>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CDM 70W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CDM 150W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP29 5000W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP41 2000W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP60 1000W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP61 1000W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP62 1000W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP86 500W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP87 500W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>CP88 500W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>EFP 100W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>EFP 150W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>EFR 100W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>EFR 150W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>ELC 250W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HMI 1200W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HMI 4000W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 150W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 250W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 300W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 400W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 575W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 700W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 1200W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>HTI 2500W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>LED</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>MSD 200W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>MSD 250W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>MSD 275W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>MSD 575W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>MSR 700W</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>MSR 1200W</string>
                </property>
               </item>
@@ -343,23 +344,23 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_bulbLumensLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_bulbLumensLabel">
+              <property name="text">
                <string>Lumens</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_bulbLumensSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_bulbLumensSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>99999</number>
               </property>
-              <property name="value" >
+              <property name="value">
                <number>18000</number>
               </property>
              </widget>
@@ -367,94 +368,94 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_bulbTempLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_bulbTempLabel">
+              <property name="text">
                <string>Color Temperature (K)</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="m_bulbTempCombo" >
-              <property name="editable" >
+             <widget class="QComboBox" name="m_bulbTempCombo">
+              <property name="editable">
                <bool>true</bool>
               </property>
-              <property name="currentIndex" >
+              <property name="currentIndex">
                <number>12</number>
               </property>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>2000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>2800</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>3200</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>4000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>4500</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>5000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>5500</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>6000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>6500</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>7000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>7200</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>8000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>8300</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>9000</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>9300</string>
                </property>
               </item>
@@ -465,30 +466,30 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="1" >
-        <widget class="QGroupBox" name="groupBox_3" >
-         <property name="title" >
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
           <string>Dimensions</string>
          </property>
-         <layout class="QVBoxLayout" >
+         <layout class="QVBoxLayout">
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_weightLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_weightLabel">
+              <property name="text">
                <string>Weight</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_weightSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_weightSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="suffix" >
+              <property name="suffix">
                <string>kg</string>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>999</number>
               </property>
              </widget>
@@ -496,23 +497,23 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_widthLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_widthLabel">
+              <property name="text">
                <string>Width</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_widthSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_widthSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="suffix" >
+              <property name="suffix">
                <string>mm</string>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>9999</number>
               </property>
              </widget>
@@ -520,23 +521,23 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_heightLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_heightLabel">
+              <property name="text">
                <string>Height</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_heightSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_heightSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="suffix" >
+              <property name="suffix">
                <string>mm</string>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>9999</number>
               </property>
              </widget>
@@ -544,23 +545,23 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_depthLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_depthLabel">
+              <property name="text">
                <string>Depth</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_depthSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_depthSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="suffix" >
+              <property name="suffix">
                <string>mm</string>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>9999</number>
               </property>
              </widget>
@@ -570,38 +571,38 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0" >
-        <widget class="QGroupBox" name="groupBox_2" >
-         <property name="title" >
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
           <string>Lens</string>
          </property>
-         <layout class="QVBoxLayout" >
+         <layout class="QVBoxLayout">
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_lensNameLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_lensNameLabel">
+              <property name="text">
                <string>Name</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="m_lensNameCombo" >
-              <property name="editable" >
+             <widget class="QComboBox" name="m_lensNameCombo">
+              <property name="editable">
                <bool>true</bool>
               </property>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>Other</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>PC</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>Fresnel</string>
                </property>
               </item>
@@ -610,20 +611,20 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_lensDegreesMinLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_lensDegreesMinLabel">
+              <property name="text">
                <string>Min Degrees</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_lensDegreesMinSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_lensDegreesMinSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>360</number>
               </property>
              </widget>
@@ -631,20 +632,20 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_lensDegreesMaxLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_lensDegreesMaxLabel">
+              <property name="text">
                <string>Max Degrees</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_lensDegreesMaxSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_lensDegreesMaxSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>360</number>
               </property>
              </widget>
@@ -654,43 +655,43 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="1" >
-        <widget class="QGroupBox" name="groupBox_4" >
-         <property name="title" >
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
           <string>Focus</string>
          </property>
-         <layout class="QVBoxLayout" >
+         <layout class="QVBoxLayout">
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_focusTypeLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_focusTypeLabel">
+              <property name="text">
                <string>Type</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="m_focusTypeCombo" >
-              <property name="editable" >
+             <widget class="QComboBox" name="m_focusTypeCombo">
+              <property name="editable">
                <bool>true</bool>
               </property>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>Fixed</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>Head</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>Mirror</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>Barrel</string>
                </property>
               </item>
@@ -699,20 +700,20 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_panMaxLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_panMaxLabel">
+              <property name="text">
                <string>Pan Max Degrees</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_panMaxSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_panMaxSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>999</number>
               </property>
              </widget>
@@ -720,22 +721,91 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" >
+           <layout class="QHBoxLayout">
             <item>
-             <widget class="QLabel" name="m_tiltMaxLabel" >
-              <property name="text" >
+             <widget class="QLabel" name="m_tiltMaxLabel">
+              <property name="text">
                <string>Tilt Max Degrees</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_tiltMaxSpin" >
-              <property name="accelerated" >
+             <widget class="QSpinBox" name="m_tiltMaxSpin">
+              <property name="accelerated">
                <bool>true</bool>
               </property>
-              <property name="maximum" >
+              <property name="maximum">
                <number>999</number>
               </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Technical</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QLabel" name="m_powerConsumptionLabel">
+              <property name="text">
+               <string>Power Consumption</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="m_powerConsumptionSpin">
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="suffix">
+               <string>W</string>
+              </property>
+              <property name="maximum">
+               <number>999</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="m_dmxConnectorLabel">
+              <property name="text">
+               <string>DMX Connector</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="m_dmxConnectorCombo">
+              <property name="editable">
+               <bool>true</bool>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>5-pin</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>3-pin</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>3-pin and 5-pin</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -748,11 +818,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="orientation" >
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -760,7 +830,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="fixtureeditor.qrc" />
+  <include location="fixtureeditor.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -769,11 +839,11 @@
    <receiver>EditMode</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>257</x>
      <y>401</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -785,11 +855,11 @@
    <receiver>EditMode</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>325</x>
      <y>401</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

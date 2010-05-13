@@ -42,6 +42,9 @@ QLCPhysical::QLCPhysical()
 	m_focusType = "Fixed";
 	m_focusPanMax = 0;
 	m_focusTiltMax = 0;
+
+	m_powerConsumption = 0;
+	m_dmxConnector = "5-pin";
 }
 
 QLCPhysical::~QLCPhysical()
@@ -68,6 +71,9 @@ QLCPhysical& QLCPhysical::operator=(const QLCPhysical& physical)
 		m_focusType = physical.focusType();
 		m_focusPanMax = physical.focusPanMax();
 		m_focusTiltMax = physical.focusTiltMax();
+
+		m_powerConsumption = physical.powerConsumption();
+		m_dmxConnector = physical.dmxConnector();
 	}
 
 	return *this;
@@ -113,6 +119,11 @@ bool QLCPhysical::loadXML(const QDomElement* root)
 			m_focusType = tag.attribute(KXMLQLCPhysicalFocusType);
 			m_focusPanMax = tag.attribute(KXMLQLCPhysicalFocusPanMax).toInt();
 			m_focusTiltMax = tag.attribute(KXMLQLCPhysicalFocusTiltMax).toInt();
+		}
+		else if (tag.tagName() == KXMLQLCPhysicalTechnical)
+		{
+			m_powerConsumption = tag.attribute(KXMLQLCPhysicalTechnicalPowerConsumption).toInt();
+			m_dmxConnector = tag.attribute(KXMLQLCPhysicalTechnicalDmxConnector);
 		}
 		else
 		{
@@ -166,6 +177,12 @@ bool QLCPhysical::saveXML(QDomDocument* doc, QDomElement* root)
 	subtag.setAttribute(KXMLQLCPhysicalFocusType, m_focusType);
 	subtag.setAttribute(KXMLQLCPhysicalFocusPanMax, m_focusPanMax);
 	subtag.setAttribute(KXMLQLCPhysicalFocusTiltMax, m_focusTiltMax);
+	tag.appendChild(subtag);
+
+	/* Technical */
+	subtag = doc->createElement(KXMLQLCPhysicalTechnical);
+	subtag.setAttribute(KXMLQLCPhysicalTechnicalPowerConsumption, m_powerConsumption);
+	subtag.setAttribute(KXMLQLCPhysicalTechnicalDmxConnector, m_dmxConnector);
 	tag.appendChild(subtag);
 
 	return true;

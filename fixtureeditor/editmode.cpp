@@ -80,10 +80,10 @@ EditMode::~EditMode()
 
 void EditMode::loadDefaults()
 {
-        QSettings settings;
-        QVariant var = settings.value(KSettingsGeometry);
-        if (var.isValid() == true)
-                restoreGeometry(var.toByteArray());
+	QSettings settings;
+	QVariant var = settings.value(KSettingsGeometry);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 }
 
 void EditMode::init()
@@ -122,6 +122,9 @@ void EditMode::init()
 	m_focusTypeCombo->setEditText(physical.focusType());
 	m_panMaxSpin->setValue(physical.focusPanMax());
 	m_tiltMaxSpin->setValue(physical.focusTiltMax());
+
+	m_powerConsumptionSpin->setValue(physical.powerConsumption());
+	m_dmxConnectorCombo->setEditText(physical.dmxConnector());
 }
 
 /****************************************************************************
@@ -314,6 +317,8 @@ void EditMode::accept()
 	physical.setFocusType(m_focusTypeCombo->currentText());
 	physical.setFocusPanMax(m_panMaxSpin->value());
 	physical.setFocusTiltMax(m_tiltMaxSpin->value());
+	physical.setPowerConsumption(m_powerConsumptionSpin->value());
+	physical.setDmxConnector(m_dmxConnectorCombo->currentText());
 
 	m_mode->setPhysical(physical);
 	m_mode->setName(m_modeNameEdit->text());

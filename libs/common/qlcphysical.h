@@ -51,6 +51,11 @@ class QDomDocument;
 #define KXMLQLCPhysicalFocusPanMax "PanMax"
 #define KXMLQLCPhysicalFocusTiltMax "TiltMax"
 
+#define KXMLQLCPhysicalTechnical "Technical"
+#define KXMLQLCPhysicalTechnicalPowerConsumption "PowerConsumption"
+#define KXMLQLCPhysicalTechnicalDmxConnector "DmxConnector"
+
+
 /**
  * QLCPhysical represents the physical properties of a fixture (in a certain
  * mode). These properties include weight, dimensions, light source, lens,
@@ -104,6 +109,12 @@ public:
 	void setFocusTiltMax(const int tilt) { m_focusTiltMax = tilt; }
 	int focusTiltMax() const { return m_focusTiltMax; }
 
+	void setPowerConsumption(const int watt) { m_powerConsumption = watt; }
+	int powerConsumption() const { return m_powerConsumption; }
+
+	void setDmxConnector(const QString& type) { m_dmxConnector = type; }
+	QString dmxConnector() const { return m_dmxConnector; }
+
 	bool loadXML(const QDomElement* root);
 	bool saveXML(QDomDocument* doc, QDomElement* root);
 
@@ -124,6 +135,9 @@ protected:
 	QString m_focusType;
 	int m_focusPanMax;
 	int m_focusTiltMax;
+
+	int m_powerConsumption;
+	QString m_dmxConnector;
 };
 
 #endif

@@ -779,6 +779,136 @@ QString Fixture::status()
 
 	info += QString("</TR>");
 	info += QString("</TABLE>");
+
+	// Extended Device Information
+	// @TODO better move this to QLCPhysical?
+	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+	{
+		QLCPhysical physical = m_fixtureMode->physical();
+		info += QString("<BR><TABLE WIDTH=\"100%\">");
+		info += QString("<TR>");
+		info += QString("<TD BGCOLOR=\"");
+		info += pal.color(QPalette::Highlight).name();
+		info += QString("\" COLSPAN=\"2\">");
+		info += QString("<FONT COLOR=\"");
+		info += pal.color(QPalette::HighlightedText).name();
+		info += QString("\" SIZE=\"3\">");
+		info += tr("<B>Physical information</B>");
+		info += QString("</FONT></TD></TR>");
+		info += tr("<TR><TD><B>Width</B></TD><TD>");
+		info += tr("%1mm").arg(physical.width());
+		info += QString("</TD></TR>");
+		info += tr("<TR><TD><B>Height</B></TD><TD>");
+		info += tr("%1mm").arg(physical.height());
+		info += QString("</TD></TR>");
+		info += tr("<TR><TD><B>Depth</B></TD><TD>");
+		info += tr("%1mm").arg(physical.depth());
+		info += QString("</TD></TR>");
+		info += tr("<TR><TD><B>Weight</B></TD><TD>");
+		info += tr("%1kg").arg(physical.weight());
+		info += QString("</TD></TR>");
+		info += tr("<TR><TD><B>Power Consumption</B></TD><TD>");
+		info += QString("%1W").arg(physical.powerConsumption());
+		info += QString("</TD></TR>");
+		info += tr("<TR><TD><B>DMX Connector</B></TD><TD>");
+		info += physical.dmxConnector();
+		info += QString("</TD></TR>");
+		info += QString("</TABLE>");
+
+		// @TODO types should be compared to constants
+		// @TODO more flexibel physicals for different types in general
+		if (m_fixtureDef->type() != "Dimmer" || m_fixtureDef->type() != "Fan"
+		    || m_fixtureDef->type() != "Hazer" || m_fixtureDef->type() != "Smoke")
+		{
+			// Bulb
+			info += QString("<BR><TABLE WIDTH=\"100%\">");
+			info += QString("<TR>");
+			info += QString("<TD BGCOLOR=\"");
+			info += pal.color(QPalette::Highlight).name();
+			info += QString("\" COLSPAN=\"2\">");
+			info += QString("<FONT COLOR=\"");
+			info += pal.color(QPalette::HighlightedText).name();
+			info += QString("\" SIZE=\"3\">");
+			info += tr("<B>Bulb</B>");
+			info += QString("</FONT></TD></TR>");
+
+			info += tr("<TR><TD><B>Type</B></TD><TD>");
+			info += QString("%1").arg(physical.bulbType());
+			info += QString("</TD></TR>");
+			if (physical.bulbLumens() > 0)
+			{
+				info += tr("<TR><TD><B>Lumens</B></TD><TD>");
+				info += QString("%1").arg(physical.bulbLumens());
+				info += QString("</TD></TR>");
+			}
+			if (physical.bulbColourTemperature() > 0)
+			{
+				info += tr("<TR><TD><B>Colour Temperature (K)</B></TD><TD>");
+				info += QString("%1").arg(physical.bulbColourTemperature());
+				info += QString("</TD></TR>");
+			}
+			info += QString("</TABLE>");
+
+			// Lens
+			info += QString("<BR><TABLE WIDTH=\"100%\">");
+			info += QString("<TR>");
+			info += QString("<TD BGCOLOR=\"");
+			info += pal.color(QPalette::Highlight).name();
+			info += QString("\" COLSPAN=\"2\">");
+			info += QString("<FONT COLOR=\"");
+			info += pal.color(QPalette::HighlightedText).name();
+			info += QString("\" SIZE=\"3\">");
+			info += tr("<B>Lens</B>");
+			info += QString("</FONT></TD></TR>");
+
+			info += tr("<TR><TD><B>Name</B></TD><TD>");
+			info += QString("%1").arg(physical.lensName());
+			info += QString("</TD></TR>");
+			if (physical.lensDegreesMin() > 0)
+			{
+				info += tr("<TR><TD><B>Min Degrees</B></TD><TD>");
+				info += QString("%1").arg(physical.lensDegreesMin());
+				info += QString("</TD></TR>");
+			}
+			if (physical.lensDegreesMax() > 0)
+			{
+				info += tr("<TR><TD><B>Max Degrees</B></TD><TD>");
+				info += QString("%1").arg(physical.lensDegreesMax());
+				info += QString("</TD></TR>");
+			}
+			info += QString("</TABLE>");
+
+			// Focus
+			info += QString("<BR><TABLE WIDTH=\"100%\">");
+			info += QString("<TR>");
+			info += QString("<TD BGCOLOR=\"");
+			info += pal.color(QPalette::Highlight).name();
+			info += QString("\" COLSPAN=\"2\">");
+			info += QString("<FONT COLOR=\"");
+			info += pal.color(QPalette::HighlightedText).name();
+			info += QString("\" SIZE=\"3\">");
+			info += tr("<B>Focus</B>");
+			info += QString("</FONT></TD></TR>");
+
+			info += tr("<TR><TD><B>Type</B></TD><TD>");
+			info += QString("%1").arg(physical.focusType());
+			info += QString("</TD></TR>");
+			if (physical.focusPanMax() > 0)
+			{
+				info += tr("<TR><TD><B>Pan Max Degrees</B></TD><TD>");
+				info += QString("%1").arg(physical.focusPanMax());
+				info += QString("</TD></TR>");
+			}
+			if (physical.focusTiltMax() > 0)
+			{
+				info += tr("<TR><TD><B>Tilt Max Degrees</B></TD><TD>");
+				info += QString("%1").arg(physical.focusTiltMax());
+				info += QString("</TD></TR>");
+			}
+			info += QString("</TABLE>");
+		}
+	}
+
 	info += QString("</BODY>");
 	info += QString("</HTML>");
 

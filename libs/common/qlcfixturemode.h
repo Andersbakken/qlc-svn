@@ -194,7 +194,7 @@ public:
 	 *
 	 * @return Mode's physical properties
 	 */
-	QLCPhysical physical();
+	QLCPhysical physical() const;
 
 protected:
 	QLCPhysical m_physical;
