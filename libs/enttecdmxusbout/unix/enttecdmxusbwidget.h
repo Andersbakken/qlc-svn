@@ -28,6 +28,9 @@
 class EnttecDMXUSBWidget
 {
 public:
+	static const int VID = 0x0403;
+	static const int PID = 0x6001;
+
 	/** Remove this and suffer the oh-so-lovely crashing consequences! */
 	virtual ~EnttecDMXUSBWidget() {}
 
@@ -54,7 +57,7 @@ public:
 	 *
 	 * @return true if widget is open, otherwise false
 	 */
-	virtual bool isOpen() const = 0;
+	virtual bool isOpen() = 0;
 
 	/********************************************************************
 	 * Serial & name

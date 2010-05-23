@@ -3,7 +3,6 @@
   enttecdmxusbopen.h
 
   Copyright (C) Heikki Junnila
-		Christopher Staite
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -26,14 +25,8 @@
 #include <QByteArray>
 #include <QThread>
 
-#include "enttecdmxusbwidget.h"
-
-#ifdef WIN32
-#	include "windows.h"
-#	include "ftd2xx-win32.h"
-#else
-#	include "ftd2xx.h"
-#endif
+#include "../unix/enttecdmxusbwidget.h"
+#include "ftdi.hpp"
 
 class EnttecDMXUSBOpen : public QThread, public EnttecDMXUSBWidget
 {
@@ -45,15 +38,12 @@ class EnttecDMXUSBOpen : public QThread, public EnttecDMXUSBWidget
 public:
 	/**
 	 * Construct a new DMXUSBOpen object with the given parent and
-	 * FTDI device information. Neither can be null.
+	 * FTDI device context. Neither can be null.
 	 *
 	 * @param parent The owner of this object
-	 * @param info FTDI device information
-	 * @param id The device's unique ID
+	 * @param context FTDI context for the DMX USB Open widget
 	 */
-	EnttecDMXUSBOpen(QObject* parent,
-			 const FT_DEVICE_LIST_INFO_NODE& info,
-			 DWORD id);
+	EnttecDMXUSBOpen(QObject* parent, Ftdi::Context context);
 
 	/**
 	 * Destructor
@@ -61,16 +51,14 @@ public:
 	virtual ~EnttecDMXUSBOpen();
 
 protected:
-	/** FTDI device information */
-	FT_HANDLE m_handle;
-	DWORD m_id;
+	Ftdi::Context m_context;
 
 	/********************************************************************
 	 * Open & close
 	 ********************************************************************/
 public:
 	/**
-	 * Open widget for further operations, such as serial() and sendDMX()
+	 * Open widget for further operations.
 	 *
 	 * @return true if widget was opened successfully (or was already open)
 	 */
@@ -89,13 +77,6 @@ public:
 	 * @return true if widget is open, otherwise false
 	 */
         bool isOpen();
-
-	/**
-	 * Initialize the widget port for DMX output
-	 *
-	 * @return true if successful, otherwise false
-	 */
-	bool initializePort();
 
 	/********************************************************************
 	 * Serial & name
@@ -124,16 +105,6 @@ public:
 	 * @return widget's unique name as: "<name> (S/N: <serial>)"
 	 */
 	QString uniqueName() const;
-
-	/**
-	 * Set the serial number for the widget. Open DMX USB doesn't have
-	 * API for getting the serial, so it has to be given to the device.
-	 *
-	 * Serial is used only by users to discern which widget is which.
-	 *
-	 * @param serial The serial to set
-	 */
-	void setSerial(const QString& serial) { m_serial = serial; }
 
 protected:
 	QString m_serial;

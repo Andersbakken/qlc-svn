@@ -85,7 +85,7 @@ public:
 	 *
 	 * @return true if widget is open, otherwise false
 	 */
-        bool isOpen() const;
+        bool isOpen();
 
 	/**
 	 * Initialize the widget port for DMX output
