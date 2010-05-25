@@ -380,10 +380,34 @@ void EFXEditor::slotAddFixtureClicked()
 			((*twit)->data(0, Qt::UserRole).toULongLong());
 		Q_ASSERT(ef != NULL);
 
-		/* TODO: Disable all fixtures that don't have pan&tilt chans */
-
 		disabled.append(ef->fixture());
 		twit++;
+	}
+
+	/* Disable all fixtures that don't have pan OR tilt channels */
+	for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+	{
+		Fixture* fixture = _app->doc()->fixture(fxi_id);
+		if (fixture == NULL)
+			continue;
+
+		// If a channel with pan group exists, don't disable this fixture
+		if (fixture->channel("", Qt::CaseSensitive, KQLCChannelGroupPan)
+			!= Fixture::invalidChannel())
+		{
+			continue;
+		}
+
+		// If a channel with tilt group exists, don't disable this fixture
+		if (fixture->channel("", Qt::CaseSensitive, KQLCChannelGroupTilt)
+			!= Fixture::invalidChannel())
+		{
+			continue;
+		}
+
+		// Disable all fixtures without pan or tilt channels
+		disabled << fxi_id;
+
 	}
 
 	/* Get a list of new fixtures to add to the scene */
