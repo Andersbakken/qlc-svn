@@ -26,6 +26,9 @@ private slots:
 	void focusPanMax();
 	void focusTiltMax();
 
+	void powerConsumption();
+	void dmxConnector();
+
 	void copy();
 	void load();
 	void loadWrongRoot();

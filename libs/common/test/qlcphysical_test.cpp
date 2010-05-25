@@ -94,6 +94,18 @@ void QLCPhysical_Test::focusTiltMax()
 	p.setFocusTiltMax(270);
 	QVERIFY(p.focusTiltMax() == 270);
 }
+void QLCPhysical_Test::powerConsumption()
+{
+	QVERIFY(p.powerConsumption() == 0);
+	p.setPowerConsumption(24000);
+	QVERIFY(p.powerConsumption() == 24000);
+}
+void QLCPhysical_Test::dmxConnector()
+{
+	QVERIFY(p.dmxConnector() == "5-pin");
+	p.setDmxConnector("3-pin");
+	QVERIFY(p.dmxConnector() == "3-pin");
+}
 
 void QLCPhysical_Test::copy()
 {
@@ -111,6 +123,8 @@ void QLCPhysical_Test::copy()
 	QVERIFY(c.focusType() == p.focusType());
 	QVERIFY(c.focusPanMax() == p.focusPanMax());
 	QVERIFY(c.focusTiltMax() == p.focusTiltMax());
+	QVERIFY(c.powerConsumption() == p.powerConsumption());
+	QVERIFY(c.dmxConnector() == p.dmxConnector());
 }
 
 void QLCPhysical_Test::load()
@@ -149,6 +163,12 @@ void QLCPhysical_Test::load()
 	focus.setAttribute("TiltMax", 270);
 	root.appendChild(focus);
 
+	/* Technical */
+	QDomElement technical=  doc.createElement("Technical");
+	technical.setAttribute("PowerConsumption", 250);
+	technical.setAttribute("DmxConnector", "5-pin");
+	root.appendChild(technical);
+
 	QVERIFY(p.loadXML(&root) == true);
 	QVERIFY(p.bulbType() == "LED");
 	QVERIFY(p.bulbLumens() == 18000);
@@ -163,6 +183,8 @@ void QLCPhysical_Test::load()
 	QVERIFY(p.focusType() == "Head");
 	QVERIFY(p.focusPanMax() == 520);
 	QVERIFY(p.focusTiltMax() == 270);
+	QVERIFY(p.powerConsumption() == 250);
+	QVERIFY(p.dmxConnector() == "5-pin");
 }
 
 void QLCPhysical_Test::loadWrongRoot()
@@ -201,6 +223,12 @@ void QLCPhysical_Test::loadWrongRoot()
 	focus.setAttribute("TiltMax", 270);
 	root.appendChild(focus);
 
+	/* Technical */
+	QDomElement technical=  doc.createElement("Technical");
+	technical.setAttribute("PowerConsumption", 250);
+	technical.setAttribute("DmxConnector", "5-pin");
+	root.appendChild(technical);
+
 	QVERIFY(p.loadXML(&root) == false);
 }
 
@@ -208,7 +236,7 @@ void QLCPhysical_Test::save()
 {
 	QDomDocument doc;
 	QDomElement root = doc.createElement("Test Root");
-	bool bulb = false, dim = false, lens = false, focus = false;
+	bool bulb = false, dim = false, lens = false, focus = false, technical = false;
 
 	QVERIFY(p.saveXML(&doc, &root) == true);
 	QVERIFY(root.firstChild().toElement().tagName() == "Physical");
@@ -246,6 +274,12 @@ void QLCPhysical_Test::save()
 			QVERIFY(e.attribute("PanMax") == "520");
 			QVERIFY(e.attribute("TiltMax") == "270");
 		}
+		else if (e.tagName() == "Technical")
+		{
+			technical = true;
+			QVERIFY(e.attribute("PowerConsumption") == "250");
+			QVERIFY(e.attribute("DmxConnector") == "5-pin");
+		}
 		else
 		{
 			QFAIL(QString("Unexpected tag: %1").arg(e.tagName())
@@ -259,4 +293,5 @@ void QLCPhysical_Test::save()
 	QVERIFY(dim == true);
 	QVERIFY(lens == true);
 	QVERIFY(focus == true);
+	QVERIFY(technical == true);
 }
