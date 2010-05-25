@@ -768,7 +768,7 @@
                <string>W</string>
               </property>
               <property name="maximum">
-               <number>999</number>
+               <number>99999</number>
               </property>
              </widget>
             </item>
