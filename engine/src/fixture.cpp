@@ -807,21 +807,22 @@ QString Fixture::status()
 		info += tr("<TR><TD><B>Weight</B></TD><TD>");
 		info += tr("%1kg").arg(physical.weight());
 		info += QString("</TD></TR>");
-		info += tr("<TR><TD><B>Power Consumption</B></TD><TD>");
-		info += QString("%1W").arg(physical.powerConsumption());
-		info += QString("</TD></TR>");
+		if(physical.powerConsumption() > 0)
+		{
+			info += tr("<TR><TD><B>Power Consumption</B></TD><TD>");
+			info += QString("%1W").arg(physical.powerConsumption());
+			info += QString("</TD></TR>");
+		}
 		info += tr("<TR><TD><B>DMX Connector</B></TD><TD>");
 		info += physical.dmxConnector();
 		info += QString("</TD></TR>");
-		info += QString("</TABLE>");
 
-		// @TODO types should be compared to constants
+		// @TODO types should be compared against constants
 		// @TODO more flexibel physicals for different types in general
 		if (m_fixtureDef->type() != "Dimmer" || m_fixtureDef->type() != "Fan"
 		    || m_fixtureDef->type() != "Hazer" || m_fixtureDef->type() != "Smoke")
 		{
 			// Bulb
-			info += QString("<BR><TABLE WIDTH=\"100%\">");
 			info += QString("<TR>");
 			info += QString("<TD BGCOLOR=\"");
 			info += pal.color(QPalette::Highlight).name();
@@ -847,10 +848,8 @@ QString Fixture::status()
 				info += QString("%1").arg(physical.bulbColourTemperature());
 				info += QString("</TD></TR>");
 			}
-			info += QString("</TABLE>");
 
 			// Lens
-			info += QString("<BR><TABLE WIDTH=\"100%\">");
 			info += QString("<TR>");
 			info += QString("<TD BGCOLOR=\"");
 			info += pal.color(QPalette::Highlight).name();
@@ -876,10 +875,8 @@ QString Fixture::status()
 				info += QString("%1").arg(physical.lensDegreesMax());
 				info += QString("</TD></TR>");
 			}
-			info += QString("</TABLE>");
 
 			// Focus
-			info += QString("<BR><TABLE WIDTH=\"100%\">");
 			info += QString("<TR>");
 			info += QString("<TD BGCOLOR=\"");
 			info += pal.color(QPalette::Highlight).name();
@@ -905,8 +902,8 @@ QString Fixture::status()
 				info += QString("%1").arg(physical.focusTiltMax());
 				info += QString("</TD></TR>");
 			}
-			info += QString("</TABLE>");
 		}
+		info += QString("</TABLE>");
 	}
 
 	info += QString("</BODY>");
