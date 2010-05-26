@@ -11,8 +11,8 @@ CONFIG			+= release
 CONFIG			-= debug
 
 # Enable both for Mac OS 10.6 Snow Leopard (PPC no longer supported)
-macx:CONFIG		-= x86_64
-macx:CONFIG		+= x86
+# macx:CONFIG		+= x86_64
+# macx:CONFIG		+= x86
 
 # Enable to build universal binaries on Mac OS 10.5
 # macx:CONFIG		+= x86 ppc
