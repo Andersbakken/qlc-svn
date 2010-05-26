@@ -33,8 +33,8 @@
 MIDIDevice::MIDIDevice(MIDIOut* parent, MIDIEntityRef entity)
 	: QObject(parent),
 	m_entity(entity),
-	m_destination(NULL),
-	m_outPort(NULL),
+	m_destination(0),
+	m_outPort(0),
 	m_uid(0),
 	m_mode(ControlChange),
 	m_midiChannel(1)
@@ -150,9 +150,9 @@ QString MIDIDevice::infoText() const
 	QString info;
 
 	plugin = static_cast<MIDIOut*> (parent());
-	Q_ASSERT(plugin != NULL);
+	Q_ASSERT(plugin != 0);
 
-	if (plugin->client() != NULL)
+	if (plugin->client() != 0)
 	{
 		info += QString("<B>%1</B>").arg(name());
 		info += QString("<P>");
@@ -211,10 +211,10 @@ bool MIDIDevice::open()
         OSStatus s;
 
         plugin = qobject_cast<MIDIOut*> (parent());
-        Q_ASSERT(plugin != NULL);
+        Q_ASSERT(plugin != 0);
 
         /* Don't open twice */
-        if (m_outPort != NULL)
+        if (m_outPort != 0)
                 return true;
 
         /* Use the first destination */
@@ -228,8 +228,8 @@ bool MIDIDevice::open()
                 {
                         qWarning() << "Unable to make an output port for"
                                    << name() << ":" << s;
-                        m_outPort = NULL;
-                        m_destination = NULL;
+                        m_outPort = 0;
+                        m_destination = 0;
                 }
                 else
                 {
@@ -241,8 +241,8 @@ bool MIDIDevice::open()
         }
 	else
 	{
-		m_outPort = NULL;
-		m_destination = NULL;
+		m_outPort = 0;
+		m_destination = 0;
 		qWarning() << "MIDI entity has no destinations";
 		return false;
 	}
@@ -252,7 +252,7 @@ void MIDIDevice::close()
 {
         OSStatus s;
 
-	if (m_outPort != NULL && m_destination != NULL)
+	if (m_outPort != 0 && m_destination != 0)
         {
                 s = MIDIPortDispose(m_outPort);
                 if (s != 0)
@@ -262,8 +262,8 @@ void MIDIDevice::close()
                 }
                 else
                 {
-                        m_outPort = NULL;
-                        m_destination = NULL;
+                        m_outPort = 0;
+                        m_destination = 0;
                 }
         }
 }
@@ -276,7 +276,7 @@ void MIDIDevice::outputDMX(const QByteArray& universe)
 {
         /* If there's no output port or a destination, the endpoint probably
            doesn't have a MIDI OUT port. */
-        if (m_outPort == NULL || m_destination == NULL)
+        if (m_outPort == 0 || m_destination == 0)
                 return;
 
 	Byte buffer[512]; // Should be enough for 128 channels
@@ -325,7 +325,7 @@ void MIDIDevice::outputDMX(const QByteArray& universe)
 		/* Add the MIDI command to the packet list */
 		packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
 					   sizeof(cmd), cmd);
-		if (packet == NULL)
+		if (packet == 0)
 		{
 			qWarning() << "MIDIOut buffer overflow";
 			break;
