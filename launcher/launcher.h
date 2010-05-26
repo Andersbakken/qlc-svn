@@ -4,11 +4,12 @@
 #include <QWidget>
 
 /**
- * Launcher is a very simple for displaying an initial launch dialog
- * for choosing, whether to execute QLC main application or Fixture Editor.
- * Once the choice has been made, the launcher window terminates and the
- * chosen application will be started. This kind of launcher is needed for
- * MacOS X because application bundles can launch only one binary program.
+ * Launcher is a very simple dialog for choosing whether to execute the main
+ * QLC application or the Fixture Editor application.
+ *
+ * Once the choice has been made, the launcher window terminates and the chosen
+ * application will be started. This kind of launcher is needed only for OSX
+ * because application bundles can launch only one binary program.
  */
 class Launcher : public QWidget
 {
