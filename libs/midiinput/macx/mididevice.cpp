@@ -38,10 +38,10 @@
 MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEntityRef entity)
 	: QObject(parent),
 	m_entity(entity),
-	m_source(NULL),
-	m_destination(NULL),
-	m_inPort(NULL),
-	m_outPort(NULL),
+	m_source(0),
+	m_destination(0),
+	m_inPort(0),
+	m_outPort(0),
 	m_isOK(false),
 	m_mode(ControlChange),
 	m_midiChannel(0)
@@ -172,7 +172,7 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
 	Q_UNUSED(readProcRefCon);
 
 	MIDIDevice* self = static_cast<MIDIDevice*>(srcConnRefCon);
-	Q_ASSERT(self != NULL);
+	Q_ASSERT(self != 0);
 
 	for (UInt32 i = 0; i < pktList->numPackets; i++)
 	{
@@ -206,20 +206,20 @@ bool MIDIDevice::open()
 	OSStatus s;
 
 	plugin = qobject_cast<MIDIInput*> (parent());
-	Q_ASSERT(plugin != NULL);
+	Q_ASSERT(plugin != 0);
 
 	/* Don't open twice */
-	if (m_inPort != NULL)
+	if (m_inPort != 0)
 		return true;
 
 	/* Make an input port */
 	s = MIDIInputPortCreate(plugin->client(), CFSTR("QLC Input Port"),
-				MidiInProc, NULL, &m_inPort);
+				MidiInProc, 0, &m_inPort);
 	if (s != 0)
 	{
 		qWarning() << "Unable to make an input port for" << name()
 			   << ":" << s;
-		m_inPort = NULL;
+		m_inPort = 0;
 		m_isOK = false;
 		return false;
 	}
@@ -236,8 +236,8 @@ bool MIDIDevice::open()
 		if (s != 0)
 			qWarning() << "Unable to dispose of port for" << name();
 
-		m_inPort = NULL;
-		m_source = NULL;
+		m_inPort = 0;
+		m_source = 0;
 		m_isOK = false;
 
 		return false;
@@ -254,8 +254,8 @@ bool MIDIDevice::open()
 		{
 			qWarning() << "Unable to make an output port for"
 				   << name() << ":" << s;
-			m_outPort = NULL;
-			m_destination = NULL;
+			m_outPort = 0;
+			m_destination = 0;
 		}
 		else
 		{
@@ -272,7 +272,7 @@ void MIDIDevice::close()
 {
 	OSStatus s;
 
-	if (m_inPort != NULL && m_source != NULL)
+	if (m_inPort != 0 && m_source != 0)
 	{
 		s = MIDIPortDisconnectSource(m_inPort, m_source);
 		if (s != 0)
@@ -289,12 +289,12 @@ void MIDIDevice::close()
 		}
 		else
 		{
-			m_inPort = NULL;
-			m_source = NULL;
+			m_inPort = 0;
+			m_source = 0;
 		}
 	}
 
-	if (m_outPort != NULL && m_destination != NULL)
+	if (m_outPort != 0 && m_destination != 0)
 	{
 		s = MIDIPortDispose(m_outPort);
 		if (s != 0)
@@ -304,8 +304,8 @@ void MIDIDevice::close()
 		}
 		else
 		{
-			m_outPort = NULL;
-			m_destination = NULL;
+			m_outPort = 0;
+			m_destination = 0;
 		}
 	}
 }
@@ -391,7 +391,7 @@ void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 
 	/* If there's no output port or a destination, the endpoint probably
 	   doesn't have a MIDI IN port -> no feedback. */
-	if (m_outPort == NULL || m_destination == NULL)
+	if (m_outPort == 0 || m_destination == 0)
 		return;
 
 	/* MIDI doesn't support more than 127 distinct notes/cc's */
@@ -428,7 +428,7 @@ void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
 	MIDIPacket* packet = MIDIPacketListInit(list);
 	packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
 				   sizeof(cmd), cmd);
-	if (packet == NULL)
+	if (packet == 0)
 	{
 		qWarning() << "MIDI buffer overflow";
 	}
