@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  enttecdmxusbout.h
+  enttecdmxusb.h
 
   Copyright (C) Heikki Junnila
 
@@ -53,9 +53,6 @@ protected slots:
 	 ********************************************************************/
 public:
 	bool rescanWidgets();
-	EnttecDMXUSBWidget* widget(const QString& serial) const;
-
-	/** @reimp */
 	QStringList outputs();
 
 protected:
@@ -65,28 +62,24 @@ protected:
 	 * Name
 	 ********************************************************************/
 public:
-	/** @reimp */
 	QString name();
 
 	/********************************************************************
 	 * Configuration
 	 ********************************************************************/
 public:
-	/** @reimp */
 	void configure();
 
 	/********************************************************************
 	 * Plugin status
 	 ********************************************************************/
 public:
-	/** @reimp */
 	QString infoText(t_output output = KOutputInvalid);
 
 	/********************************************************************
 	 * Value read/write methods
 	 ********************************************************************/
 public:
-	/** @reimp */
 	void outputDMX(t_output output, const QByteArray& universe);
 };
 

@@ -26,23 +26,21 @@
  * Initialization
  ****************************************************************************/
 
-EnttecDMXUSBPro::EnttecDMXUSBPro(QObject* parent,
-				 const FT_DEVICE_LIST_INFO_NODE& info,
-				 DWORD id)
+EnttecDMXUSBPro::EnttecDMXUSBPro(QObject* parent, const QString& name,
+				 const QString& serial)
 	: QObject(parent)
+	, m_name(name)
+	, m_serial(serial)
+	, m_enttecSerial(serial)
 {
-	m_name = QString(info.Description);
-	m_handle = NULL;
-	m_id = id;
-
-	open();
-	extractSerial();
-	close();
+	ftdi_init(&m_context);
+	extractEnttecSerial(); // Opens and closes the device by itself
 }
 
 EnttecDMXUSBPro::~EnttecDMXUSBPro()
 {
 	close();
+	ftdi_deinit(&m_context);
 }
 
 /****************************************************************************
@@ -53,28 +51,55 @@ bool EnttecDMXUSBPro::open()
 {
 	if (isOpen() == false)
 	{
-		/* Attempt to open the device */
-		FT_STATUS status = FT_Open(m_id, &m_handle);
-		if (status == FT_OK)
+		int r;
+
+		r = ftdi_usb_open_desc(&m_context, EnttecDMXUSBWidget::VID,
+						   EnttecDMXUSBWidget::PID,
+						   name().toAscii(),
+						   serial().toAscii());
+		if (r < 0)
 		{
-			if (initializePort() == false)
-			{
-				qWarning() << "Unable to initialize port."
-					   << "Closing widget.";
-				close();
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-		else
-		{
-			qWarning() << "Unable to open" << name()
-				   << ". Error:" << status;
+			qWarning() << "Unable to open" << uniqueName()
+				   << ":" << ftdi_get_error_string(&m_context);
 			return false;
 		}
+
+		r = ftdi_usb_reset(&m_context);
+		if (r < 0)
+		{
+			qWarning() << "Unable to reset" << uniqueName()
+				   << ":" << ftdi_get_error_string(&m_context);
+			return close();
+		}
+
+		r = ftdi_set_baudrate(&m_context, 250000);
+		if (r < 0)
+		{
+			qWarning() << "Unable to set 250kbps baudrate for"
+				   << uniqueName() << ":"
+				   << ":" << ftdi_get_error_string(&m_context);
+			return close();
+		}
+
+		r = ftdi_set_line_property(&m_context, BITS_8, STOP_BIT_2, NONE);
+		if (r < 0)
+		{
+			qWarning() << "Unable to set 8N2 serial properties to"
+				   << uniqueName()
+				   << ":" << ftdi_get_error_string(&m_context);
+			return close();
+		}
+
+		r = ftdi_setrts(&m_context, 0);
+		if (r < 0)
+		{
+			qWarning() << "Unable to set RTS line to 0 for"
+				   << uniqueName()
+				   << ":" << ftdi_get_error_string(&m_context);
+			return close();
+		}
+
+		return true;
 	}
 	else
 	{
@@ -87,17 +112,16 @@ bool EnttecDMXUSBPro::close()
 {
 	if (isOpen() == true)
 	{
-		FT_STATUS status = FT_Close(m_handle);
-		if (status == FT_OK)
+		int r = ftdi_usb_close(&m_context);
+		if (r < 0)
 		{
-			m_handle = NULL;
-			return true;
+			qWarning() << "Unable to close" << uniqueName()
+				   << ":" << ftdi_get_error_string(&m_context);
+			return false;
 		}
 		else
 		{
-			qWarning() << "Unable to close" << name()
-				   << ". Error:" << status;
-			return false;
+			return true;
 		}
 	}
 	else
@@ -108,63 +132,10 @@ bool EnttecDMXUSBPro::close()
 
 bool EnttecDMXUSBPro::isOpen()
 {
-	if (m_handle != NULL)
-		return true;
+	if (m_context.usb_dev == NULL)
+		return false;
 	else
-		return false;
-}
-
-bool EnttecDMXUSBPro::initializePort()
-{
-	FT_STATUS status = FT_OK;
-
-	/* Can't get the serial unless the widget is open */
-	if (isOpen() == false)
-	{
-		qWarning() << "Unable to initialize because widget is closed";
-		return false;
-	}
-
-	/* Reset the widget */
-	status = FT_ResetDevice(m_handle);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_ResetDevice:" << status;
-		return false;
-	}
-
-	/* Set the baud rate. 12 will give us 250Kbits */
-	status = FT_SetDivisor(m_handle, 12);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_SetDivisor:" << status;
-		return false;
-	}
-
-	/* Set data characteristics */
-	status = FT_SetDataCharacteristics(m_handle, FT_BITS_8,
-					   FT_STOP_BITS_2, FT_PARITY_NONE);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_SetDataCharacteristics:" << status;
-		return false;
-	}
-
-	/* Set flow control */
-	status = FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_SetFlowControl:" << status;
-		return false;
-	}
-
-	/* Set RS485 for sending */
-	FT_ClrRts(m_handle);
-
-	/* Clear TX RX buffers */
-	FT_Purge(m_handle, FT_PURGE_TX | FT_PURGE_RX);
-
-	return true;
+		return true;
 }
 
 /****************************************************************************
@@ -181,39 +152,46 @@ QString EnttecDMXUSBPro::serial() const
 	return m_serial;
 }
 
-QString EnttecDMXUSBPro::uniqueName() const
+QString EnttecDMXUSBPro::enttecSerial() const
 {
-	return QString("%1 (S/N: %2)").arg(name()).arg(serial());
+	return m_enttecSerial;
 }
 
-bool EnttecDMXUSBPro::extractSerial()
+QString EnttecDMXUSBPro::uniqueName() const
+{
+	return QString("%1 (S/N: %2)").arg(name()).arg(enttecSerial());
+}
+
+bool EnttecDMXUSBPro::extractEnttecSerial()
 {
 	unsigned char request[] = { 0x7e, 0x0a, 0x00, 0x00, 0xe7 };
 	unsigned char reply[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	DWORD written = 0;
-	DWORD read = 0;
-	FT_STATUS status = FT_OK;
-	QString serial("Unknown");
+	int r;
 
 	/* Can't get the serial unless the widget is open */
 	if (isOpen() == false)
-	{
-		qWarning() << "Unable to get serial because widget is closed";
-		return false;
-	}
+		open();
 
 	/* Write "Get Widget Serial Number Request" message */
-	status = FT_Write(m_handle, request, sizeof(request), &written);
-	if (status != FT_OK)
+	r = ftdi_write_data(&m_context, request, sizeof(request));
+	if (r < 0)
 	{
-		qWarning() << "Unable to write serial request to"
-			   << name() << ". Error:" << status;
+		qWarning() << "Unable to write serial request to" << name()
+			   << ":" << ftdi_get_error_string(&m_context);
+		close();
 		return false;
 	}
 
 	/* Read "Get Widget Serial Number Reply" message */
-	status = FT_Read(m_handle, reply, sizeof(reply), &read);
-	if (status == FT_OK)
+	r = ftdi_read_data(&m_context, reply, sizeof(reply));
+	if (r < 0)
+	{
+		qWarning() << "Unable to read serial reply from" << name()
+			   << ":" << ftdi_get_error_string(&m_context);
+		close();
+		return false;
+	}
+	else
 	{
 		/* Reply message is:
 		   { 0x7E 0x0A 0x04 0x00 0xNN, 0xNN, 0xNN, 0xNN 0xE7 }
@@ -222,23 +200,18 @@ bool EnttecDMXUSBPro::extractSerial()
 		    reply[2] == 0x04 && reply[3] == 0x00 &&
 		    reply[8] == 0xe7)
 		{
-			m_serial.sprintf("%x%.2x%.2x%.2x",
+			m_enttecSerial.sprintf(" %x%.2x%.2x%.2x",
 				reply[7], reply[6], reply[5], reply[4]);
+			close();
+			return true;
 		}
 		else
 		{
 			qWarning() << "Malformed serial reply from" << name();
+			close();
 			return false;
 		}
 	}
-	else
-	{
-		qWarning() << "Unable to read serial reply from"
-			   << name() << ". Error:" << status;
-		return false;
-	}
-
-	return true;
 }
 
 /****************************************************************************
@@ -247,15 +220,9 @@ bool EnttecDMXUSBPro::extractSerial()
 
 bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
 {
-	DWORD written = 0;
-	FT_STATUS status = FT_OK;
-
 	/* Can't send DMX unless the widget is open */
 	if (isOpen() == false)
-	{
-		qWarning() << "Unable to send DMX because widget is closed";
 		return false;
-	}
 
 	QByteArray request(universe);
 	request.prepend(char(0x00)); // DMX start code (Which constitutes the + 1 below)
@@ -266,12 +233,12 @@ bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
 	request.append(0xe7); // Stop byte
 
 	/* Write "Output Only Send DMX Packet Request" message */
-	status = FT_Write(m_handle, request.data(), request.size(),
-			  &written);
-	if (status != FT_OK)
+	int r = ftdi_write_data(&m_context, (unsigned char*) request.data(),
+				request.size());
+	if (r < 0)
 	{
-		qWarning() << "Unable to write DMX request to"
-			   << name() << ". Error:" << status;
+		qWarning() << "Unable to write DMX request to" << uniqueName()
+			   << ":" << ftdi_get_error_string(&m_context);
 		return false;
 	}
 	else

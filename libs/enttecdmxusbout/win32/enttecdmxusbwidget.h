@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  enttecdmxusbopen.h
+  enttecdmxusbwidget.h
 
   Copyright (C) Heikki Junnila
 
@@ -16,100 +16,76 @@
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef ENTTECDMXUSBOPEN_H
-#define ENTTECDMXUSBOPEN_H
+#ifndef ENTTECDMXUSBWIDGET_H
+#define ENTTECDMXUSBWIDGET_H
 
-#include <QByteArray>
-#include <QThread>
-
-#include "../unix/enttecdmxusbwidget.h"
-#include "ftdi.h"
-
-class EnttecDMXUSBOpen : public QThread, public EnttecDMXUSBWidget
+/**
+ * This is the base interface class for ENTTEC USB DMX [Pro|Open] widgets.
+ */
+class EnttecDMXUSBWidget
 {
-	Q_OBJECT
-
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
 public:
-	/**
-	 * Construct a new DMXUSBOpen object with the given parent and
-	 * FTDI device context. Neither can be null.
-	 *
-	 * @param parent The owner of this object
-	 * @param name The name of the device
-	 * @param serial The unique serial number of the device
-	 */
-	EnttecDMXUSBOpen(QObject* parent, const QString& name,
-			 const QString& serial);
+	static const int VID = 0x0403;
+	static const int PID = 0x6001;
 
-	/**
-	 * Destructor
-	 */
-	virtual ~EnttecDMXUSBOpen();
-
-protected:
-	struct ftdi_context m_context;
+	/** Remove this and suffer the oh-so-lovely crashing consequences! */
+	virtual ~EnttecDMXUSBWidget() {}
 
 	/********************************************************************
 	 * Open & close
 	 ********************************************************************/
 public:
 	/**
-	 * Open widget for further operations.
+	 * Open widget for further operations, such as serial() and sendDMX()
 	 *
 	 * @return true if widget was opened successfully (or was already open)
 	 */
-        bool open();
+	virtual bool open() = 0;
 
 	/**
 	 * Close widget, preventing any further operations
 	 *
 	 * @param true if widget was closed successfully (or was already closed)
 	 */
-        bool close();
+	virtual bool close() = 0;
 
 	/**
 	 * Check, whether widget has been opened
 	 *
 	 * @return true if widget is open, otherwise false
 	 */
-        bool isOpen();
+	virtual bool isOpen() = 0;
 
 	/********************************************************************
 	 * Serial & name
 	 ********************************************************************/
 public:
 	/**
-	 * Get the device's friendly name, which is not unique, but only
-	 * tells the product name (e.g. "Open DMX USB")
-	 *
-	 * @return widget's name
-	 */
-	QString name() const;
-
-	/**
-	 * Get the widget serial number as a string. Can be used to uniquely
+	 * Get the widget serial number as a string. The same serial should be
+	 * printed on the actual physical device. Can be used to uniquely
 	 * identify widgets.
 	 *
 	 * @return widget's serial number in string form
 	 */
-        QString serial() const;
+	virtual QString serial() const = 0;
+
+	/**
+	 * Get the device's friendly name, which is not unique, but only
+	 * tells the product name (e.g. "DMX USB PRO")
+	 *
+	 * @return widget's name
+	 */
+	virtual QString name() const = 0;
 
 	/**
 	 * Get the widget's unique name
 	 *
 	 * @return widget's unique name as: "<name> (S/N: <serial>)"
 	 */
-	QString uniqueName() const;
-
-protected:
-	QString m_name;
-	QString m_serial;
+	virtual QString uniqueName() const = 0;
 
 	/********************************************************************
 	 * DMX operations
@@ -122,24 +98,7 @@ public:
 	 * @param universe The DMX universe to send
 	 * @return true if the values were sent successfully, otherwise false
 	 */
-	bool sendDMX(const QByteArray& universe);
-
-	/********************************************************************
-	 * Thread
-	 ********************************************************************/
-protected:
-	/** Sleep for $ms milliseconds */
-	void sleep(quint32 ms);
-
-	/** Stop the writer thread */
-	void stop();
-
-	/** DMX writer thread */
-	void run();
-
-protected:
-	bool m_running;
-	QByteArray m_universe;
+	virtual bool sendDMX(const QByteArray& universe) = 0;
 };
 
 #endif

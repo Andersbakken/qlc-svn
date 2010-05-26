@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  enttecdmxusb.cpp
+  enttecdmxusbout.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
-/* HAL DBus service is not available on Apple & Windows */
 #ifdef DBUS_ENABLED
 #include <QDBusConnection>
 #endif
@@ -28,10 +27,11 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#include "enttecdmxusbwidget.h"
+#include "../unix/enttecdmxusbwidget.h"
 #include "enttecdmxusbopen.h"
 #include "enttecdmxusbpro.h"
 #include "enttecdmxusbout.h"
+#include "ftdi.h"
 
 /****************************************************************************
  * Initialization
@@ -52,7 +52,6 @@ void EnttecDMXUSBOut::init()
 				QString("DeviceRemoved"),
 				this, SLOT(slotDeviceRemoved(const QString&)));
 #endif
-
 	/* Search for new widgets */
 	rescanWidgets();
 }
@@ -89,59 +88,74 @@ void EnttecDMXUSBOut::slotDeviceRemoved(const QString& name)
 
 bool EnttecDMXUSBOut::rescanWidgets()
 {
-	FT_DEVICE_LIST_INFO_NODE* devInfo = NULL;
-	FT_STATUS status = FT_OK;
-	DWORD num = 0;
+	QStringList openList;
 
+	// Construct a list of lines that were open before rescan so that
+	// they can be re-opened again after the scan.
 	while (m_widgets.isEmpty() == false)
-		delete m_widgets.takeFirst();
-
-	/* Find out the number of FTDI devices present */
-	status = FT_CreateDeviceInfoList(&num);
-	if (status != FT_OK)
 	{
-		qWarning() << "CreateDeviceInfoList failed:" << status;
-		return false;
-	}
-	else if (num <= 0)
-	{
-		return true;
+		EnttecDMXUSBWidget* w = m_widgets.takeFirst();
+		Q_ASSERT(w != NULL);
+		if (w->isOpen() == true)
+			openList << w->serial();
+		delete w;
 	}
 
-	// Allocate storage for list based on numDevices
-	devInfo = new FT_DEVICE_LIST_INFO_NODE[num];
-
-	// Get the device information list
-	if (FT_GetDeviceInfoList(devInfo, &num) == FT_OK)
+	struct ftdi_device_list* list = 0;
+	struct ftdi_context ftdi;
+	ftdi_init(&ftdi);
+	ftdi_usb_find_all(&ftdi, &list, EnttecDMXUSBWidget::VID,
+					EnttecDMXUSBWidget::PID);
+	while (list != NULL)
 	{
-		for (DWORD i = 0; i < num; i++)
+		struct usb_device* dev = list->dev;
+		Q_ASSERT(dev != NULL);
+
+		char serial[256];
+		char name[256];
+		char vendor[256];
+
+		ftdi_usb_get_strings(&ftdi, dev,
+				     vendor, sizeof(vendor),
+				     name, sizeof(name),
+				     serial, sizeof(serial));
+
+		if (QString(vendor).toUpper() == QString("FTDI"))
 		{
-			/* Get the device description field so that it can be
-			   used to determine the device type (Pro/Open) */
-			QString desc(devInfo[i].Description);
-
-			if (desc.contains("pro", Qt::CaseInsensitive) == true)
-			{
-				/* This is a DMX USB Pro widget */
-				EnttecDMXUSBPro* w;
-				w = new EnttecDMXUSBPro(this, devInfo[i], i);
-				m_widgets.append(w);
-			}
-			else
-			{
-				/* This is an Open DMX USB widget */
-				EnttecDMXUSBOpen* w;
-				w = new EnttecDMXUSBOpen(this, devInfo[i], i);
-				Q_ASSERT(w != NULL);
-				//w->setSerial(QString("%1").arg(i));
-				m_widgets.append(w);
-			}
+			m_widgets.append(new EnttecDMXUSBOpen(this,
+					 QString(name), QString(serial)));
 		}
+		else if (QString(vendor).toUpper() == QString("ENTTEC"))
+		{
+			m_widgets.append(new EnttecDMXUSBPro(this,
+					 QString(name), QString(serial)));
+		}
+
+		list = list->next;
 	}
 
-	delete [] devInfo;
+	ftdi_deinit(&ftdi);
+
+	// Re-open lines that were open before rescan
+	while (openList.isEmpty() == false)
+	{
+		EnttecDMXUSBWidget* w = widget(openList.takeFirst());
+		if (w != NULL)
+			w->open();
+	}
 
 	return true;
+}
+
+EnttecDMXUSBWidget* EnttecDMXUSBOut::widget(const QString& serial) const
+{
+	foreach (EnttecDMXUSBWidget* w, m_widgets)
+	{
+		if (w->serial() == serial)
+			return w;
+	}
+
+	return NULL;
 }
 
 QStringList EnttecDMXUSBOut::outputs()
@@ -149,9 +163,11 @@ QStringList EnttecDMXUSBOut::outputs()
 	QStringList list;
 	int i = 1;
 
-	QListIterator <EnttecDMXUSBWidget*> it(m_widgets);
-	while (it.hasNext() == true)
-		list << QString("%1: %2").arg(i++).arg(it.next()->uniqueName());
+	foreach (EnttecDMXUSBWidget* w, m_widgets)
+	{
+		Q_ASSERT(w != NULL);
+		list << QString("%1: %2").arg(i++).arg(w->uniqueName());
+	}
 	return list;
 }
 
@@ -197,22 +213,14 @@ QString EnttecDMXUSBOut::infoText(t_output output)
 		if (m_widgets.size() == 0)
 		{
 			str += QString("<P>");
-			str += QString("<B>No devices available</B>. ");
-#ifdef WIN32
-			str += QString("Make sure you have your Enttec hardware ");
-			str += QString("plugged in and the <I>D2XX</I> ");
-			str += QString("drivers installed from <a href=\"http://www.ftdichip.com/Drivers/D2XX.htm\">");
-			str += QString("http://www.ftdichip.com/Drivers/D2XX.htm</a>. ");
-			str += QString("Note that the VCP interface used by Enttec DMX USB Pro ");
-			str += QString("is not supported by this plugin.");
-#endif
+			str += QString("<B>No devices available/detected</B>. ");
 			str += QString("</P>");
 		}
 
 		str += QString("<P>");
 		str += QString("This plugin provides DMX output support for ");
-		str += QString("ENTTEC DMX USB Pro and Open DMX USB, using the ");
-		str += QString("proprietary D2XX interface. See <a href=\"http://www.enttec.com\">");
+		str += QString("ENTTEC Open/Pro DMX USB, using the open source ");
+		str += QString("libftdi library. See <a href=\"http://www.enttec.com\">");
 		str += QString("http://www.enttec.com</a> for more information.");
 		str += QString("</P>");
 	}

@@ -15,11 +15,11 @@ INSTALLS	+= target
 
 HEADERS += ../ftdi/ftd2xx.h \
 	   ../ftdi/WinTypes.h \
-	   ../unix/enttecdmxusbout.h \
-	   ../unix/enttecdmxusbwidget.h \
-	   ../unix/enttecdmxusbpro.h \
-	   ../unix/enttecdmxusbopen.h
+	   enttecdmxusbout.h \
+	   enttecdmxusbwidget.h \
+	   enttecdmxusbpro.h \
+	   enttecdmxusbopen.h
 
-SOURCES += ../unix/enttecdmxusbout.cpp \
-	   ../unix/enttecdmxusbpro.cpp \
-	   ../unix/enttecdmxusbopen.cpp
+SOURCES += enttecdmxusbout.cpp \
+	   enttecdmxusbpro.cpp \
+	   enttecdmxusbopen.cpp

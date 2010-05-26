@@ -25,8 +25,14 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "../unix/enttecdmxusbwidget.h"
-#include "ftdi.hpp"
+#include "enttecdmxusbwidget.h"
+
+#ifdef WIN32
+#	include "windows.h"
+#	include "ftd2xx-win32.h"
+#else
+#	include "ftd2xx.h"
+#endif
 
 class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 {
@@ -38,13 +44,14 @@ class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 public:
 	/**
 	 * Construct a new DMXUSBPro object with the given parent and
-	 * FTDI device context. Neither can be NULL.
+	 * FTDI device information. Neither can be null.
 	 *
 	 * @param parent The owner of this object
 	 * @param info FTDI device information
 	 * @param id The ID of the device in FT2XX's internal structs
 	 */
-	EnttecDMXUSBPro(QObject* parent, Ftdi::Context context);
+	EnttecDMXUSBPro(QObject* parent, const FT_DEVICE_LIST_INFO_NODE& info,
+			DWORD id);
 
 	/**
 	 * Destructor
@@ -52,14 +59,15 @@ public:
 	virtual ~EnttecDMXUSBPro();
 
 protected:
-	Ftdi::Context m_context;
+	DWORD m_id;
+	FT_HANDLE m_handle;
 
 	/********************************************************************
 	 * Open & close
 	 ********************************************************************/
 public:
 	/**
-	 * Open widget for further operations.
+	 * Open widget for further operations, such as serial() and sendDMX()
 	 *
 	 * @return true if widget was opened successfully (or was already open)
 	 */
@@ -78,6 +86,13 @@ public:
 	 * @return true if widget is open, otherwise false
 	 */
         bool isOpen();
+
+	/**
+	 * Initialize the widget port for DMX output
+	 *
+	 * @return true if successful, otherwise false
+	 */
+	bool initializePort();
 
 	/********************************************************************
 	 * Serial & name

@@ -25,14 +25,8 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "enttecdmxusbwidget.h"
-
-#ifdef WIN32
-#	include "windows.h"
-#	include "ftd2xx-win32.h"
-#else
-#	include "ftd2xx.h"
-#endif
+#include "../unix/enttecdmxusbwidget.h"
+#include "ftdi.h"
 
 class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 {
@@ -44,14 +38,14 @@ class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 public:
 	/**
 	 * Construct a new DMXUSBPro object with the given parent and
-	 * FTDI device information. Neither can be null.
+	 * FTDI device context. Neither can be NULL.
 	 *
 	 * @param parent The owner of this object
-	 * @param info FTDI device information
-	 * @param id The ID of the device in FT2XX's internal structs
+	 * @param name The name of the device
+	 * @param serial The device's unique serial number
 	 */
-	EnttecDMXUSBPro(QObject* parent, const FT_DEVICE_LIST_INFO_NODE& info,
-			DWORD id);
+	EnttecDMXUSBPro(QObject* parent, const QString& name,
+			const QString& serial);
 
 	/**
 	 * Destructor
@@ -59,15 +53,14 @@ public:
 	virtual ~EnttecDMXUSBPro();
 
 protected:
-	DWORD m_id;
-	FT_HANDLE m_handle;
+	struct ftdi_context m_context;
 
 	/********************************************************************
 	 * Open & close
 	 ********************************************************************/
 public:
 	/**
-	 * Open widget for further operations, such as serial() and sendDMX()
+	 * Open widget for further operations.
 	 *
 	 * @return true if widget was opened successfully (or was already open)
 	 */
@@ -87,26 +80,10 @@ public:
 	 */
         bool isOpen();
 
-	/**
-	 * Initialize the widget port for DMX output
-	 *
-	 * @return true if successful, otherwise false
-	 */
-	bool initializePort();
-
 	/********************************************************************
 	 * Serial & name
 	 ********************************************************************/
 public:
-	/**
-	 * Get the widget serial number as a string. The same serial should be
-	 * printed on the actual physical device. Can be used to uniquely
-	 * identify widgets.
-	 *
-	 * @return widget's serial number in string form
-	 */
-        QString serial() const;
-
 	/**
 	 * Get the device's friendly name, which is not unique, but only
 	 * tells the product name (e.g. "DMX USB PRO")
@@ -116,19 +93,34 @@ public:
 	QString name() const;
 
 	/**
+	 * Get the FTDI chip's serial number as a string. Can be used to
+	 * uniquely identify widgets.
+	 *
+	 * @return widget's serial number in string form
+	 */
+        QString serial() const;
+
+	/**
+	 * Get the widget's ENTTEC serial number as a string. The same serial
+	 * should be printed on the actual physical device.
+	 */
+	QString enttecSerial() const;
+
+	/**
 	 * Get the widget's unique name
 	 *
-	 * @return widget's unique name as: "<name> (S/N: <serial>)"
+	 * @return widget's unique name as: "<name> (S/N: <enttecserial>)"
 	 */
 	QString uniqueName() const;
 
 protected:
-	/** Extract the widget's unique serial number */
-	bool extractSerial();
+	/** Extract the widget's ENTTEC serial number */
+	bool extractEnttecSerial();
 
 protected:
-	QString m_serial;
 	QString m_name;
+	QString m_serial;
+	QString m_enttecSerial;
 
 	/********************************************************************
 	 * DMX operations
