@@ -24,6 +24,7 @@
 
 #include <QByteArray>
 #include <QThread>
+#include <QMutex>
 
 #include "../unix/enttecdmxusbwidget.h"
 #include "ftdi.h"
@@ -139,6 +140,7 @@ protected:
 
 protected:
 	bool m_running;
+	QMutex m_mutex;
 	QByteArray m_universe;
 };
 

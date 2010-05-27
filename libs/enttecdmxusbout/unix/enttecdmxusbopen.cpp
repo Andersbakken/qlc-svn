@@ -20,6 +20,7 @@
 */
 
 #include <QDebug>
+#define USE_NANOSLEEP
 #ifdef USE_NANOSLEEP
 #	include <time.h>
 #else
@@ -38,7 +39,7 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent, const QString& name,
 	, m_name(name)
 	, m_serial(serial)
 	, m_running(false)
-	, m_universe(QByteArray(512, 0))
+	, m_universe(QByteArray(513, 0))
 {
 	ftdi_init(&m_context);
 }
@@ -176,8 +177,6 @@ QString EnttecDMXUSBOpen::uniqueName() const
 
 bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 {
-	Q_ASSERT(universe.size() == 512);
-
 	/* Can't send DMX unless the widget is open */
 	if (isOpen() == false || isRunning() == false)
 	{
@@ -185,7 +184,9 @@ bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 	}
 	else
 	{
-		m_universe = universe;
+		m_mutex.lock();
+		m_universe = m_universe.replace(1, universe.size(), universe);
+		m_mutex.unlock();
 		return true;
 	}
 }
@@ -217,14 +218,13 @@ void EnttecDMXUSBOpen::stop()
 
 void EnttecDMXUSBOpen::run()
 {
-	int r = 0;
-	unsigned char startByte = 0;
-
 	ftdi_usb_purge_buffers(&m_context);
 
 	m_running = true;
 	while (m_running == true)
 	{
+		int r;
+
 		if (isOpen() == false)
 			continue;
 
@@ -249,7 +249,7 @@ void EnttecDMXUSBOpen::run()
 		}
 
 		sleep(8);
-
+/*
 		r = ftdi_write_data(&m_context, &startByte, 1);
 		if (r < 0)
 		{
@@ -258,9 +258,12 @@ void EnttecDMXUSBOpen::run()
 				   << ":" << ftdi_get_error_string(&m_context);
 			goto framesleep;
 		}
-
-		r = ftdi_write_data(&m_context, (unsigned char*) m_universe.data(),
+*/
+		m_mutex.lock();
+		r = ftdi_write_data(&m_context,
+				    (unsigned char*) m_universe.data(),
 				    m_universe.size());
+		m_mutex.unlock();
 		if (r < 0)
 		{
 			qWarning() << "Unable to write DMX data to"
