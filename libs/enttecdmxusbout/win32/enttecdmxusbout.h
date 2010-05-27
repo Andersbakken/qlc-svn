@@ -42,12 +42,6 @@ public:
 	void open(t_output output);
 	void close(t_output output);
 
-#ifdef DBUS_ENABLED
-protected slots:
-	void slotDeviceAdded(const QString& name);
-	void slotDeviceRemoved(const QString& name);
-#endif
-
 	/********************************************************************
 	 * Devices (ENTTEC calls them "widgets" and so shall we)
 	 ********************************************************************/

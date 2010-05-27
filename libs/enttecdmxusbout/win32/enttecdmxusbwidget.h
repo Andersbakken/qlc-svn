@@ -28,9 +28,6 @@
 class EnttecDMXUSBWidget
 {
 public:
-	static const int VID = 0x0403;
-	static const int PID = 0x6001;
-
 	/** Remove this and suffer the oh-so-lovely crashing consequences! */
 	virtual ~EnttecDMXUSBWidget() {}
 

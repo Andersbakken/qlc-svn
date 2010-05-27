@@ -23,16 +23,11 @@
 #define ENTTECDMXUSBPRO_H
 
 #include <QByteArray>
+#include <windows.h>
 #include <QObject>
 
 #include "enttecdmxusbwidget.h"
-
-#ifdef WIN32
-#	include "windows.h"
-#	include "ftd2xx-win32.h"
-#else
-#	include "ftd2xx.h"
-#endif
+#include "ftd2xx.h"
 
 class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 {
