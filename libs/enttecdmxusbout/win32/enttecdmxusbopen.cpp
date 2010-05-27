@@ -36,7 +36,7 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent,
 	m_serial(QString(info.SerialNumber)),
 	m_name(QString(info.Description)),
 	m_running(false),
-	m_universe(QByteArray(512, 0))
+	m_universe(QByteArray(513, 0))
 {
 }
 
@@ -190,19 +190,10 @@ QString EnttecDMXUSBOpen::uniqueName() const
 
 bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 {
-	Q_ASSERT(universe.size() == 512);
-
-	/* Can't send DMX unless the widget is open */
-	if (isOpen() == false || isRunning() == false)
-	{
-		qWarning() << "Unable to send DMX because widget is closed.";
-		return false;
-	}
-	else
-	{
-		m_universe = universe;
-		return true;
-	}
+	m_mutex.lock();
+	m_universe = m_universe.replace(1, universe.size(), universe);
+	m_mutex.unlock();
+	return true;
 }
 
 /****************************************************************************
@@ -220,16 +211,15 @@ void EnttecDMXUSBOpen::stop()
 
 void EnttecDMXUSBOpen::run()
 {
-	ULONG written = 0;
-	FT_STATUS status = FT_OK;
-	unsigned char startByte = 0;
-
 	/* Wait for device to settle if the port was opened just recently */
 	usleep(1000);
 
 	m_running = true;
 	while (m_running == true)
 	{
+		ULONG written = 0;
+		FT_STATUS status = FT_OK;
+
 		if (isOpen() == false)
 		{
 			qWarning() << "Writer thread terminated."
@@ -256,15 +246,10 @@ void EnttecDMXUSBOpen::run()
 
 		usleep(8);
 
-		status = FT_Write(m_handle, &startByte, 1, &written);
-		if (status != FT_OK)
-		{
-			qWarning() << "FT_Write startbyte:" << status;
-			goto framesleep;
-		}
-
+		m_mutex.lock();
 		status = FT_Write(m_handle, m_universe.data(),
 				  m_universe.size(), &written);
+		m_mutex.unlock();
 		if (status != FT_OK)
 		{
 			qWarning() << "FT_Write universe:" << status;
@@ -272,7 +257,7 @@ void EnttecDMXUSBOpen::run()
 		}
 
 framesleep:
-		usleep(24000);
+		usleep(22754);
 	}
 }
 

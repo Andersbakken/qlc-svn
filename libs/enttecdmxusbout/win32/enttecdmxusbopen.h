@@ -26,6 +26,7 @@
 #include <QByteArray>
 #include <windows.h>
 #include <QThread>
+#include <QMutex>
 
 #include "enttecdmxusbwidget.h"
 #include "ftd2xx.h"
@@ -164,6 +165,7 @@ protected:
 protected:
 	bool m_running;
 	QByteArray m_universe;
+	QMutex m_mutex;
 };
 
 #endif
