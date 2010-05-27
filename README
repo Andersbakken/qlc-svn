@@ -42,11 +42,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements - ALL
 --------------------
-* Qt >= 4.3 development libraries & tools
+* Qt >= 4.6 development libraries & tools
 
 Requirements - Linux
 --------------------
-* Enttec DMX USB Pro Output plugin: No additional requirements
+* Enttec DMX USB Pro Output plugin: libftdi-dev, pkg-config
 * Enttec Open DMX USB Output plugin: No additional requirements
 * HID Input plugin: No additional requirements
 * MIDI Input plugin: libasound, libasound-dev, pkg-config
@@ -72,7 +72,7 @@ Requirements - Windows
 
 Requirements - OSX
 ------------------
-* Enttec DMX USB Pro Output plugin: No additional requirements
+* Enttec DMX USB Pro Output plugin: macports, libftdi-dev, pkg-config
 * Enttec Open DMX USB Output plugin: No additional requirements
 * HID Input plugin: Not available for OSX
 * MIDI Input plugin: No additional requirements
