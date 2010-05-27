@@ -10,7 +10,6 @@ macx:SUBDIRS		+= macx
 
 # Output plugins
 SUBDIRS			+= enttecdmxusbout
-SUBDIRS			+= enttecdmxusbproout
 SUBDIRS         	+= peperoniout
 SUBDIRS			+= udmxout
 SUBDIRS			+= midiout
