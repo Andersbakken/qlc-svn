@@ -259,20 +259,18 @@ void App::closeEvent(QCloseEvent* e)
 	if (doc()->mode() == Doc::Operate)
 	{
 		QMessageBox::warning(this,
-				     "Cannot exit in Operate mode",
-				     "You must switch back to Design mode\n" \
-				     "to be able to close the application.");
+				     tr("Cannot exit in Operate mode"),
+				     tr("You must switch back to Design mode " \
+				        "to close the application."));
 		e->ignore();
 		return;
 	}
 
 	if (doc()->isModified() == true)
 	{
-		result = QMessageBox::information(
-			this,
-			"Close Q Light Controller...",
-			"Do you wish to save the current workspace \n"	\
-			"before closing the application?",
+		result = QMessageBox::information(this, tr("Close"),
+			tr("Do you wish to save the current workspace " \
+			   "before closing the application?"),
 			QMessageBox::Yes,
 			QMessageBox::No,
 			QMessageBox::Cancel);
@@ -904,10 +902,10 @@ bool App::slotFileNew()
 
 	if (doc()->isModified())
 	{
-		QString msg;
-		msg = "Do you wish to save the current workspace?\n";
-		msg += "Changes will be lost if you don't save them.";
-		int result = QMessageBox::warning(this, "New Workspace", msg,
+		QString msg(tr("Do you wish to save the current workspace?\n" \
+			       "Changes will be lost if you don't save them."));
+		int result = QMessageBox::warning(this, tr("New Workspace"),
+						  msg,
 						  QMessageBox::Yes,
 						  QMessageBox::No,
 						  QMessageBox::Cancel);
@@ -950,9 +948,10 @@ QFile::FileError App::slotFileOpen()
 	/* Check that the user is aware of losing previous changes */
 	if (doc()->isModified() == true)
 	{
-		QString msg = tr("Do you wish to save the current workspace?\n"
-				 "Otherwise you will lose changes.");
-		int result = QMessageBox::warning(this, "Open Workspace", msg,
+		QString msg(tr("Do you wish to save the current workspace?\n" \
+			       "Changes will be lost if you don't save them."));
+		int result = QMessageBox::warning(this, tr("Open Workspace"),
+						  msg,
 						  QMessageBox::Yes,
 						  QMessageBox::No,
 						  QMessageBox::Cancel);
@@ -978,8 +977,12 @@ QFile::FileError App::slotFileOpen()
 
 	/* Append file filters to the dialog */
 	QStringList filters;
-	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
-	filters << QString("All Files (*)");
+	filters << tr("Workspaces (*%1)").arg(KExtWorkspace);
+#ifdef WIN32
+	filters << tr("All Files (*.*)");
+#else
+	filters << tr("All Files (*)");
+#endif
 	dialog.setNameFilters(filters);
 
 	/* Append useful URLs to the dialog */
@@ -1047,8 +1050,12 @@ QFile::FileError App::slotFileSaveAs()
 
 	/* Append file filters to the dialog */
 	QStringList filters;
-	filters << QString("Workspaces (*%1)").arg(KExtWorkspace);
-	filters << QString("All Files (*)");
+	filters << tr("Workspaces (*%1)").arg(KExtWorkspace);
+#ifdef WIN32
+	filters << tr("All Files (*.*)");
+#else
+	filters << tr("All Files (*)");
+#endif
 	dialog.setNameFilters(filters);
 
 	/* Append useful URLs to the dialog */
@@ -1232,7 +1239,7 @@ void App::slotHelpAbout()
 
 void App::slotHelpAboutQt()
 {
-	QMessageBox::aboutQt(this, QString("Q Light Controller"));
+	QMessageBox::aboutQt(this, QString(APPNAME));
 }
 
 void App::slotCustomContextMenuRequested(const QPoint&)

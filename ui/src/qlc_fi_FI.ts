@@ -188,29 +188,39 @@ p, li { white-space: pre-wrap; }
         <translation>Lisää painikematriisi</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="20"/>
+        <location filename="addvcbuttonmatrix.ui" line="34"/>
         <source>Add functions to be attached to the buttons in the matrix</source>
         <translation>Valitse funktiot, jotka liitetään uusiin painikkeisiin automaattisesti</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="40"/>
+        <location filename="addvcbuttonmatrix.ui" line="54"/>
         <source>Remove selected functions from the list of functions to attach</source>
         <translation>Poista valitut funktiot</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="73"/>
+        <location filename="addvcbuttonmatrix.ui" line="87"/>
         <source>Dimensions</source>
         <translation>Mittasuhteet</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="79"/>
+        <location filename="addvcbuttonmatrix.ui" line="93"/>
         <source>Horizontal button count</source>
         <translation>Painikkeita vaakasuunnassa</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="96"/>
+        <location filename="addvcbuttonmatrix.ui" line="130"/>
         <source>Vertical button count</source>
         <translation>Painikkeita pystysuunnassa</translation>
+    </message>
+    <message>
+        <location filename="addvcbuttonmatrix.ui" line="144"/>
+        <source>Allocation</source>
+        <translation>Käyttöaste</translation>
+    </message>
+    <message>
+        <location filename="addvcbuttonmatrix.ui" line="151"/>
+        <source>Functions / Buttons</source>
+        <translation>Funktioita / nappeja</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="110"/>
@@ -223,12 +233,12 @@ p, li { white-space: pre-wrap; }
         <translation>px</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="141"/>
+        <location filename="addvcbuttonmatrix.ui" line="21"/>
         <source>Function</source>
         <translation>Funktio</translation>
     </message>
     <message>
-        <location filename="addvcbuttonmatrix.ui" line="146"/>
+        <location filename="addvcbuttonmatrix.ui" line="26"/>
         <source>Type</source>
         <translation>Tyyppi</translation>
     </message>
@@ -236,290 +246,341 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>App</name>
     <message>
-        <location filename="app.cpp" line="417"/>
+        <location filename="app.cpp" line="262"/>
+        <source>Cannot exit in Operate mode</source>
+        <translation>Ei voida sulkea Käyttötilassa</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="263"/>
+        <source>You must switch back to Design mode to close the application.</source>
+        <translation>Sinun täytyy vaihtaa takaisin Suunnittelu-tilaan sulkeaksesi sovelluksen.</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="271"/>
+        <source>Close</source>
+        <translation>Sulje</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="272"/>
+        <source>Do you wish to save the current workspace before closing the application?</source>
+        <translation>Haluatko tallentaa nykyisen työtilan ennen sovelluksen sulkemista?</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="419"/>
         <source> - New Workspace</source>
         <translation> - Uusi työtila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="426"/>
-        <location filename="app.cpp" line="602"/>
+        <location filename="app.cpp" line="428"/>
+        <location filename="app.cpp" line="600"/>
         <source>Fixtures: %1/%2</source>
         <translation>Valaisimia: %1/%2</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="429"/>
+        <location filename="app.cpp" line="431"/>
         <source>Space left for %1 fixtures</source>
         <translation>Tilaa jäljellä vielä %1:lle valaisimelle</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="432"/>
-        <location filename="app.cpp" line="610"/>
+        <location filename="app.cpp" line="434"/>
+        <location filename="app.cpp" line="608"/>
         <source>Functions: %1/%2</source>
         <translation>Funktioita: %1/%2</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="435"/>
+        <location filename="app.cpp" line="437"/>
         <source>Space left for %1 functions</source>
         <translation>Tilaa jäljellä vielä %1:lle funktiolle</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="476"/>
+        <location filename="app.cpp" line="478"/>
         <source>Switch to Design Mode</source>
         <translation>Vaihda Suunnittelutilaan</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="477"/>
+        <location filename="app.cpp" line="479"/>
         <source>There are still running functions.
 Really stop them and switch back to Design mode?</source>
         <translation>Joitain funktioita on vielä ajossa.
 Haluatko varmasti pysäyttää ne ja vaihtaa takaisin Suunnittelutilaan?</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="507"/>
+        <location filename="app.cpp" line="509"/>
         <source>Operate mode is active; editing facilities are disabled</source>
         <translation>Käyttötila valittu; muokkaustoiminnot eivät ole käytössä</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="526"/>
+        <location filename="app.cpp" line="528"/>
         <source>Design</source>
         <translation>Suunnittelu</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="527"/>
+        <location filename="app.cpp" line="529"/>
         <source>Switch to design mode</source>
         <translation>Vaihda Suunnittelutilaan</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="540"/>
-        <location filename="app.cpp" line="620"/>
+        <location filename="app.cpp" line="542"/>
+        <location filename="app.cpp" line="618"/>
         <source>Design mode is active; editing facilities are enabled</source>
         <translation>Suunnittelutila valittu; muokkaustoiminnot ovat käytettävissä</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="559"/>
+        <location filename="app.cpp" line="561"/>
         <source>Operate</source>
         <translation>Käyttötila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="560"/>
-        <location filename="app.cpp" line="705"/>
+        <location filename="app.cpp" line="562"/>
+        <location filename="app.cpp" line="703"/>
         <source>Switch to operate mode</source>
         <translation>Vaihda Käyttötilaan</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="628"/>
+        <location filename="app.cpp" line="626"/>
         <source>Blackout</source>
         <translation>Pimennys</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="631"/>
+        <location filename="app.cpp" line="629"/>
         <source>Blackout is active; all outputs are disabled</source>
         <translation>Pimennys on aktiivisena; mikään ulostulo ei ole käytössä</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="644"/>
+        <location filename="app.cpp" line="642"/>
         <source>&amp;New</source>
         <translation>&amp;Uusi</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="650"/>
+        <location filename="app.cpp" line="648"/>
         <source>&amp;Open</source>
         <translation>&amp;Avaa</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="656"/>
+        <location filename="app.cpp" line="654"/>
         <source>&amp;Save</source>
         <translation>&amp;Tallenna</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="662"/>
+        <location filename="app.cpp" line="660"/>
         <source>Save &amp;As...</source>
         <translation>Tallenna &amp;nimellä...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="667"/>
+        <location filename="app.cpp" line="665"/>
         <source>&amp;Quit</source>
         <translation>&amp;Poistu</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="673"/>
+        <location filename="app.cpp" line="671"/>
         <source>&amp;Fixtures</source>
         <translation>&amp;Valaisimet</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="679"/>
+        <location filename="app.cpp" line="677"/>
         <source>&amp;Functions</source>
         <translation>&amp;Funktiot</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="685"/>
+        <location filename="app.cpp" line="683"/>
         <source>&amp;Buses</source>
         <translation>V&amp;äylät</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="691"/>
+        <location filename="app.cpp" line="689"/>
         <source>&amp;Inputs</source>
         <translation>S&amp;isääntulot</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="697"/>
+        <location filename="app.cpp" line="695"/>
         <source>&amp;Outputs</source>
         <translation>&amp;Ulostulot</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="704"/>
+        <location filename="app.cpp" line="702"/>
         <source>&amp;Operate</source>
         <translation>&amp;Käyttötila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="711"/>
+        <location filename="app.cpp" line="709"/>
         <source>&amp;Virtual Console</source>
         <translation>Virtuaali&amp;konsoli</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="717"/>
+        <location filename="app.cpp" line="715"/>
         <source>&amp;Monitor</source>
         <translation>&amp;Monitorointi</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="723"/>
+        <location filename="app.cpp" line="721"/>
         <source>Toggle &amp;Blackout</source>
         <translation>Kytke &amp;Pimennys</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="731"/>
+        <location filename="app.cpp" line="729"/>
         <source>Minimize</source>
         <translation>Minimoi</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="736"/>
+        <location filename="app.cpp" line="734"/>
         <source>Bring All to Front</source>
         <translation>Tuo kaikki edustalle</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="743"/>
+        <location filename="app.cpp" line="741"/>
         <source>&amp;Index</source>
         <translation>&amp;Hakemisto</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="749"/>
+        <location filename="app.cpp" line="747"/>
         <source>&amp;About QLC</source>
         <translation>Ti&amp;etoja QLC:stä</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="754"/>
+        <location filename="app.cpp" line="752"/>
         <source>About &amp;Qt</source>
         <translation>Tietoja &amp;Qt:sta</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="775"/>
+        <location filename="app.cpp" line="773"/>
         <source>&amp;File</source>
         <translation>&amp;Tiedosto</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="787"/>
+        <location filename="app.cpp" line="785"/>
         <source>&amp;Manager</source>
         <translation>&amp;Hallinta</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="798"/>
+        <location filename="app.cpp" line="796"/>
         <source>&amp;Control</source>
         <translation>&amp;Ohjaus</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="812"/>
+        <location filename="app.cpp" line="810"/>
         <source>&amp;Window</source>
         <translation>I&amp;kkuna</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="820"/>
+        <location filename="app.cpp" line="818"/>
         <source>&amp;Help</source>
         <translation>&amp;Apua</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="832"/>
+        <location filename="app.cpp" line="830"/>
         <source>Workspace</source>
         <translation>Työtila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="870"/>
+        <location filename="app.cpp" line="868"/>
         <source>Unable to read from file</source>
         <translation>Tiedostoa ei voida lukea</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="873"/>
+        <location filename="app.cpp" line="871"/>
         <source>Unable to write to file</source>
         <translation>Tiedostoon ei voida kirjoittaa</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="876"/>
+        <location filename="app.cpp" line="874"/>
         <source>A fatal error occurred</source>
         <translation>Peruuttamaton virhe on tapahtunut</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="879"/>
+        <location filename="app.cpp" line="877"/>
         <source>Unable to access resource</source>
         <translation>Resurssiin ei voida käsitellä</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="882"/>
+        <location filename="app.cpp" line="880"/>
         <source>Unable to open file for reading or writing</source>
         <translation>Tiedostoa ei voida avata lukemista tai kirjoittamista varten</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="885"/>
+        <location filename="app.cpp" line="883"/>
         <source>Operation was aborted</source>
         <translation>Toiminto peruutettiin</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="888"/>
+        <location filename="app.cpp" line="886"/>
         <source>Operation timed out</source>
         <translation>Toiminto aikakatkaistiin</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="892"/>
+        <location filename="app.cpp" line="890"/>
         <source>An unspecified error has occurred. Nice.</source>
         <translation>Määrittelemätön virhe on tapahtunut. Siistiä.</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="896"/>
+        <location filename="app.cpp" line="894"/>
         <source>File error</source>
         <translation>Tiedostovirhe</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="953"/>
+        <location filename="app.cpp" line="905"/>
+        <location filename="app.cpp" line="951"/>
+        <source>Do you wish to save the current workspace?
+Changes will be lost if you don&apos;t save them.</source>
+        <translation>Haluatko tallentaa nykyisen työtilan?
+Menetät muutokset jos et tallenna niitä.</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="907"/>
+        <source>New Workspace</source>
+        <translation>Uusi työtila</translation>
+    </message>
+    <message>
         <source>Do you wish to save the current workspace?
 Otherwise you will lose changes.</source>
-        <translation>Haluatko tallentaa nykyisen työtilan?
+        <translation type="obsolete">Haluatko tallentaa nykyisen työtilan?
 Muuten menetät tekemäsi muutokset.</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="975"/>
+        <location filename="app.cpp" line="953"/>
+        <location filename="app.cpp" line="974"/>
         <source>Open Workspace</source>
         <translation>Avaa työtila</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="1044"/>
+        <location filename="app.cpp" line="980"/>
+        <location filename="app.cpp" line="1053"/>
+        <source>Workspaces (*%1)</source>
+        <translation>Työtilat (*%1)</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="982"/>
+        <location filename="app.cpp" line="1055"/>
+        <source>All Files (*.*)</source>
+        <translation>Kaikki tiedostot (*.*)</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="984"/>
+        <location filename="app.cpp" line="1057"/>
+        <source>All Files (*)</source>
+        <translation>Kaikki tiedostot (*)</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="1047"/>
         <source>Save Workspace As</source>
         <translation>Tallenna työtila nimellä</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="1239"/>
+        <location filename="app.cpp" line="1248"/>
         <source>Set background image...</source>
         <translation>Aseta taustakuva...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="1242"/>
+        <location filename="app.cpp" line="1251"/>
         <source>Clear background image</source>
         <translation>Tyhjennä taustakuva</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="1281"/>
+        <location filename="app.cpp" line="1295"/>
         <source>Open an image file</source>
         <translation>Avaa kuvatiedosto</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="1282"/>
+        <location filename="app.cpp" line="1296"/>
         <source>Images (%1)</source>
         <translation>Kuvatiedostot (%1)</translation>
     </message>
@@ -759,7 +820,7 @@ Muuten menetät tekemäsi muutokset.</translation>
 <context>
     <name>ConsoleChannel</name>
     <message>
-        <location filename="consolechannel.cpp" line="146"/>
+        <location filename="consolechannel.cpp" line="148"/>
         <source>Level</source>
         <translation>Taso</translation>
     </message>
@@ -1074,12 +1135,12 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>EFX - %1</translation>
     </message>
     <message>
-        <location filename="efxeditor.cpp" line="410"/>
+        <location filename="efxeditor.cpp" line="434"/>
         <source>Remove fixtures</source>
         <translation>Poista valaisimia</translation>
     </message>
     <message>
-        <location filename="efxeditor.cpp" line="411"/>
+        <location filename="efxeditor.cpp" line="435"/>
         <source>Do you want to remove the selected fixture(s)?</source>
         <translation>Haluatko poistaa valitut valaisimet?</translation>
     </message>
@@ -1400,12 +1461,12 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation>Valaisimet, jotka otetaan mukaan automaattiseen funktioiden luontiin</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="39"/>
+        <location filename="functionwizard.ui" line="45"/>
         <source>Fixtures</source>
         <translation>Valaisimet</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="44"/>
+        <location filename="functionwizard.ui" line="50"/>
         <source>Supported capabilities</source>
         <translation>Tuetut kyvyt</translation>
     </message>
@@ -1414,67 +1475,67 @@ Muuten menetät tekemäsi muutokset.</translation>
         <translation type="obsolete">Luotavien funktioiden tyypit</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="77"/>
+        <location filename="functionwizard.ui" line="83"/>
         <source>Colour wheel presets</source>
         <translation>Väripyörien esiasetukset</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="80"/>
+        <location filename="functionwizard.ui" line="86"/>
         <source>Colours</source>
         <translation>Värit</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="90"/>
+        <location filename="functionwizard.ui" line="96"/>
         <source>Gobo wheel presets</source>
         <translation>Kuviopyörien esiasetukset</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="93"/>
+        <location filename="functionwizard.ui" line="99"/>
         <source>Gobos</source>
         <translation>Kuviot</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="103"/>
+        <location filename="functionwizard.ui" line="109"/>
         <source>Strobe, open, closed...</source>
         <translation>Strobo, auki, kiinni...</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="106"/>
+        <location filename="functionwizard.ui" line="112"/>
         <source>Shutter</source>
         <translation>Suljin</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="129"/>
+        <location filename="functionwizard.ui" line="135"/>
         <source>Select fixtures that will be included in the automatically created functions</source>
         <translation>Valitse valaisimet, jotka otetaan mukaan automaattiseen funktioiden luontiin</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="132"/>
+        <location filename="functionwizard.ui" line="138"/>
         <source>Add</source>
         <translation>Lisää</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="149"/>
+        <location filename="functionwizard.ui" line="155"/>
         <source>Don&apos;t include selected fixtures in the created functions</source>
         <translation>Älä sisällytä valittuja valaisimia luotaviin funktioihin</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="152"/>
+        <location filename="functionwizard.ui" line="158"/>
         <source>Remove</source>
         <translation>Poista</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="71"/>
+        <location filename="functionwizard.ui" line="77"/>
         <source>Scenes</source>
         <translation>Tilanteet</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="169"/>
+        <location filename="functionwizard.ui" line="175"/>
         <source>Chasers</source>
         <translation>Juoksutukset</translation>
     </message>
     <message>
-        <location filename="functionwizard.ui" line="175"/>
+        <location filename="functionwizard.ui" line="181"/>
         <source>Intensity</source>
         <translation>Intensiteetti</translation>
     </message>
@@ -1511,7 +1572,7 @@ Muuten menetät tekemäsi muutokset.</translation>
     <name>InputManager</name>
     <message>
         <location filename="inputmanager.cpp" line="69"/>
-        <location filename="inputmanager.cpp" line="143"/>
+        <location filename="inputmanager.cpp" line="144"/>
         <source>Input Manager</source>
         <translation>Sisääntulojen hallinta</translation>
     </message>
@@ -2251,12 +2312,12 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation>Väläytä funktiota (käytössä vain tilanteille)</translation>
     </message>
     <message>
-        <location filename="vcbuttonproperties.cpp" line="174"/>
+        <location filename="vcbuttonproperties.cpp" line="180"/>
         <source>%1: Unknown</source>
         <translation>%1: Tuntematon</translation>
     </message>
     <message>
-        <location filename="vcbuttonproperties.cpp" line="193"/>
+        <location filename="vcbuttonproperties.cpp" line="199"/>
         <source>Unknown</source>
         <translation>Tuntematon</translation>
     </message>
@@ -2910,12 +2971,12 @@ Huomaa, että velho ei osaa erottaa pyöritettävää nuppia ja liukua toisistaa
         <translation></translation>
     </message>
     <message>
-        <location filename="vcxypadproperties.cpp" line="174"/>
+        <location filename="vcxypadproperties.cpp" line="200"/>
         <source>Remove fixtures</source>
         <translation>Poista valaisimia</translation>
     </message>
     <message>
-        <location filename="vcxypadproperties.cpp" line="175"/>
+        <location filename="vcxypadproperties.cpp" line="201"/>
         <source>Do you want to remove the selected fixtures?</source>
         <translation>Haluatko poistaa valitut valaisimet?</translation>
     </message>
