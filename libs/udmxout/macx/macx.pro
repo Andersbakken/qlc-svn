@@ -6,18 +6,15 @@ TARGET		= udmxout
 
 CONFIG          += plugin
 INCLUDEPATH	+= ../../common
-INCLUDEPATH	+= ../../macx/libusb
+CONFIG		+= link_pkgconfig
+PKGCONFIG	+= libusb
 DEPENDPATH	+= ../unix
-LIBS		+= ../../macx/libusb/libusb.a
-LIBS		+= -framework IOKit -framework CoreFoundation
 
-target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS	+= target
-
-# uDMX headers
 HEADERS += ../unix/udmxdevice.h \
 	   ../unix/udmxout.h
 
-# uDMX plugin sources
 SOURCES += ../unix/udmxdevice.cpp \
 	   ../unix/udmxout.cpp
+
+target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS	+= target

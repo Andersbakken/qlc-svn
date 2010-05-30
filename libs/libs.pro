@@ -5,9 +5,6 @@ TEMPLATE		= subdirs
 # Common library
 SUBDIRS			+= common
 
-# Helper libraries for macx plugins
-macx:SUBDIRS		+= macx
-
 # Output plugins
 SUBDIRS			+= enttecdmxusbout
 SUBDIRS         	+= peperoniout

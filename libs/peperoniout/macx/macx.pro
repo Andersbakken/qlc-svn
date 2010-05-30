@@ -6,16 +6,15 @@ TARGET		= peperoniout
 
 CONFIG          += plugin
 INCLUDEPATH	+= ../../common
-INCLUDEPATH	+= ../../macx/libusb
-DEPENTPATH	+= ../unix
-LIBS		+= ../../macx/libusb/libusb.a
-LIBS		+= -framework IOKit -framework CoreFoundation
-
-target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS	+= target
+CONFIG		+= link_pkgconfig
+PKGCONFIG 	+= libusb
+DEPENDPATH	+= ../unix
 
 HEADERS += ../unix/peperonidevice.h \
 	   ../unix/peperoniout.h
 
 SOURCES += ../unix/peperonidevice.cpp \
 	   ../unix/peperoniout.cpp
+
+target.path 	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS	+= target
