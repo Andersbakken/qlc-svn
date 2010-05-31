@@ -29,3 +29,6 @@ win32 {
 	debug:unittests.commands += unittest.bat debug
 	release:unittests.commands += unittest.bat release
 }
+
+# Leave this on the last row of this file
+macx:SUBDIRS	+= macx

@@ -1,37 +1,5 @@
 #!/bin/bash
-
-rm -Rf qlc-dmg-source
-mkdir qlc-dmg-source
-cd qlc-dmg-source
-cp -r ~/qlc.app ./
-
-macdeployqt qlc.app
-
-# Install plugins
-function linkQtFramework {
-	install_name_tool -change $1.framework/Versions/4/$1 \
-		@executable_path/../Frameworks/$1.framework/Versions/4/$1 \
-		$2
-}
-
-function doAutoLink {
-	for ((i=0; i < ${#toLink[@]}; i++))
-		do
-		# This is a bit hacky, we should check if the library is used
-		# before changing it, but it'll only throw and error...
-		linkQtFramework QtCore "${toLink[i]}"
-		linkQtFramework QtGui "${toLink[i]}"
-		linkQtFramework QtXml "${toLink[i]}"
-		linkQtFramework QtNetwork "${toLink[i]}"
-	done
-}
-
-#cd qlc.app
-toLink=( $(find qlc.app/Contents/Plugins -name \*.dylib) )
-doAutoLink
-
-cd ..
-echo `pwd`
-rm qlc-3.0.4.dmg rw.qlc-3.0.4.dmg
-./create-dmg --volname "QLC v3.0.4" --background ../gfx/dmgbg.png --window-size 489 382 --icon-size 100 --icon " " 357 175 --icon "qlc" 160 110 --icon "qlc-fixtureeditor" 161 247 qlc-3.0.4.dmg qlc-dmg-source/
-rm -Rf qlc-dmg-source
+DMG=QLC-`head -1 ../debian/changelog | sed 's/.*(\(.*\)).*/\1/'`.dmg
+./create-dmg --volname $DMG --background ../gfx/dmgbg.png \
+	     --window-size 489 382 --icon-size 128 --icon "qlc" 160 110 \
+	     --icon " " 357 175 $DMG ~/QLC.app

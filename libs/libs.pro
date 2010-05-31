@@ -1,6 +1,7 @@
 include(../variables.pri)
 
 TEMPLATE		= subdirs
+CONFIG			+= ordered
 
 # Common library
 SUBDIRS			+= common
@@ -10,7 +11,7 @@ SUBDIRS			+= enttecdmxusbout
 SUBDIRS         	+= peperoniout
 SUBDIRS			+= udmxout
 SUBDIRS			+= midiout
-!win32:SUBDIRS		+= dmx4linuxout
+!macx:!win32:SUBDIRS	+= dmx4linuxout
 
 # OLA output plugin
 exists($$OLA_GIT) {

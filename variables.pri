@@ -66,7 +66,7 @@ macx:FIXTUREDIR		= $$DATADIR/Fixtures
 # Plugins
 win32:PLUGINDIR		= Plugins
 unix:!macx:PLUGINDIR	= $$LIBSDIR
-macx:PLUGINDIR		= $$DATADIR/Plugins
+macx:PLUGINDIR		= PlugIns
 
 # Input Plugins
 win32:INPUTPLUGINDIR	= $$PLUGINDIR/Input

@@ -10,17 +10,6 @@ INCLUDEPATH	+= ../../common
 DEPENDPATH	+= ../common
 LIBS		+= -framework CoreMIDI -framework CoreFoundation
 
-###############################################################################
-# Installation
-###############################################################################
-
-target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
-INSTALLS	+= target
-
-###############################################################################
-# Sources
-###############################################################################
-
 FORMS		+= ../common/configuremidiinput.ui \
 		   ../common/configuremidiline.ui
 
@@ -35,3 +24,10 @@ SOURCES		+= ../common/midiinputevent.cpp \
 		   ../common/configuremidiline.cpp \
 		   mididevice.cpp \
 		   midiinput.cpp
+
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+include(../../../macx/nametool.pri)
+
+target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
+INSTALLS	+= target

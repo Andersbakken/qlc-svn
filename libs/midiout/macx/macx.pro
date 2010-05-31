@@ -10,9 +10,6 @@ DEPENDPATH	+= ../common
 CONFIG          += plugin
 LIBS		+= -framework CoreMIDI -framework CoreFoundation
 
-target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS	+= target
-
 FORMS		+= ../common/configuremididevice.ui \
 		   ../common/configuremidiout.ui
 
@@ -25,3 +22,10 @@ SOURCES		+= ../common/configuremididevice.cpp \
 		   ../common/configuremidiout.cpp \
 		   mididevice.cpp \
 		   midiout.cpp
+
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+include(../../../macx/nametool.pri)
+
+target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS	+= target

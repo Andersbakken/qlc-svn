@@ -5,13 +5,12 @@ LANGUAGE 	= C++
 TARGET 		= qlc
 
 CONFIG          += qt
-macx:CONFIG	-= app_bundle
 QT 		+= xml
 
-# macdeployqt checks dependencies only for the main app, forgetting QtNetwork,
-# which is needed by the Enttec Wing plugin, so we need to add a bogus
-# dependency here...
-macx:QT		+= network
+# macdeployqt checks dependencies only for the main app so let's put all Qt
+# dependencies here
+macx:QT		+= network xml gui core
+macx:CONFIG	-= app_bundle
 
 # Common
 INCLUDEPATH 	+= ../../libs/common
@@ -38,10 +37,6 @@ TRANSLATIONS	+= qlc_fi_FI.ts
 translations.files += qlc_fi_FI.qm
 translations.path = $$INSTALLROOT/$$TRANSLATIONDIR
 INSTALLS	+= translations
-
-# Installation
-target.path	= $$INSTALLROOT/$$BINDIR
-INSTALLS	+= target
 
 # Resources
 RESOURCES 	+= main.qrc
@@ -174,3 +169,11 @@ i18n.target = qlc_fi_FI.qm
 i18n.commands += lrelease src.pro
 QMAKE_EXTRA_TARGETS += i18n
 PRE_TARGETDEPS += qlc_fi_FI.qm
+
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+include(../../macx/nametool.pri)
+
+# Installation
+target.path	= $$INSTALLROOT/$$BINDIR
+INSTALLS	+= target

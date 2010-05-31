@@ -1,15 +1,15 @@
-include (../../../variables.pri)
+include(../../../variables.pri)
 
-TEMPLATE	= lib
-LANGUAGE	= C++
-TARGET		= enttecdmxusbout
+TEMPLATE    = lib
+LANGUAGE    = C++
+TARGET	    = enttecdmxusbout
 
-CONFIG		+= plugin
+CONFIG	    += plugin
 
-INCLUDEPATH	+= ../../common
+INCLUDEPATH += ../../common
 
 CONFIG      += link_pkgconfig
-PKGCONFIG   += libftdi
+PKGCONFIG   += libftdi libusb
 
 HEADERS     += ../unix/enttecdmxusbout.h \
                ../unix/enttecdmxusbwidget.h \
@@ -20,15 +20,9 @@ SOURCES     += ../unix/enttecdmxusbout.cpp \
                ../unix/enttecdmxusbpro.cpp \
                ../unix/enttecdmxusbopen.cpp
 
-# Plugin installation
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+include(../../../macx/nametool.pri)
+
 target.path	 = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS	+= target
-
-# FTDI library installation
-# TODO: Modify to install libftdi.so (from macports) inside the bundle
-#QMAKE_POST_LINK += install_name_tool -change /usr/local/lib/libftd2xx.0.1.6.dylib \
-#		   @executable_path/../Frameworks/FTDI/libftd2xx.0.1.6.dylib \
-#		   libenttecdmxusbout.dylib
-#ftdilib.path	= $$INSTALLROOT/$$LIBSDIR/FTDI
-#ftdilib.files	= ../ftdi/macx/libftd2xx.0.1.6.dylib
-#INSTALLS	+= ftdilib

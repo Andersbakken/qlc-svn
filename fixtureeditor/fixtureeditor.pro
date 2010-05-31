@@ -23,10 +23,6 @@ win32:{
 	CONFIG(debug, debug|release) LIBS += ../libs/common/debug/libqlccommon.a
 }
 
-# Installation
-target.path 	= $$INSTALLROOT/$$BINDIR
-INSTALLS 	+= target
-
 # Sources
 RESOURCES += fixtureeditor.qrc
 win32:RC_FILE = fixtureeditor.rc
@@ -57,3 +53,10 @@ SOURCES += ../ui/src/aboutbox.cpp \
            fixtureeditor.cpp \
            main.cpp
 
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+include(../macx/nametool.pri)
+
+# Installation
+target.path 	= $$INSTALLROOT/$$BINDIR
+INSTALLS 	+= target

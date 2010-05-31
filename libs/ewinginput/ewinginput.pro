@@ -8,9 +8,6 @@ INCLUDEPATH	+= ../../libs/common
 CONFIG          += plugin
 QT		+= network
 
-target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
-INSTALLS	+= target
-
 win32 {
 	# Qt Libraries
 	qtnetwork.path  = $$INSTALLROOT/$$LIBSDIR
@@ -31,3 +28,13 @@ SOURCES += ewinginput.cpp \
 	   eshortcutwing.cpp \
 	   eprogramwing.cpp \
 	   ewing.cpp
+
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+macx {
+	include(../../macx/nametool.pri)
+}
+
+target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
+INSTALLS	+= target
+
