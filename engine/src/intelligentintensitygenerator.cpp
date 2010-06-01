@@ -42,15 +42,6 @@ IntelligentIntensityGenerator::IntelligentIntensityGenerator(Doc* doc,
 	Q_ASSERT(doc != NULL);
 	Q_ASSERT(fxiList.size() != 0);
 
-	// Remove all dimmers from fixture list
-	QMutableListIterator <Fixture*> it(m_fixtures);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		if (it.value()->isDimmer() == true)
-			it.remove();
-	}
-
 	// Initialize random seed
 	srand(QDateTime::currentDateTime().toTime_t());
 
@@ -289,6 +280,7 @@ void IntelligentIntensityGenerator::createScenes()
 
 			t_value min = 0;
 			t_value max = 255;
+			int modulo = i;
 
 			// Find the minimum and maximum intensity values for
 			// the current channel
@@ -301,32 +293,37 @@ void IntelligentIntensityGenerator::createScenes()
 			m_zero->setValue(fxi->id(), ch, min);
 
 			// Create even & odd values
-			if ((i % 2) == 0)
+			if (fxi->isDimmer() == false)
+				modulo = i; // For each intelligent fixture
+			else
+				modulo = j; // For each dimmer channel
+
+			if ((modulo % 2) == 0)
 			{
 				m_even->setValue(fxi->id(), ch, max);
 				m_odd->setValue(fxi->id(), ch, min);
 			}
-                        else
-                        {
-                                m_even->setValue(fxi->id(), ch, min);
-                                m_odd->setValue(fxi->id(), ch, max);
-                        }
+			else
+			{
+				m_even->setValue(fxi->id(), ch, min);
+				m_odd->setValue(fxi->id(), ch, max);
+			}
 
 			// Create sequence and random values
-                        for (int s = 0; s < m_sequence.size(); s++)
-                        {
-                                if (s == i)
-                                        m_sequence[s]->setValue(fxi->id(), ch, max);
-                                else
-                                        m_sequence[s]->setValue(fxi->id(), ch, min);
+			for (int s = 0; s < m_sequence.size(); s++)
+			{
+				if (s == i)
+					m_sequence[s]->setValue(fxi->id(), ch, max);
+				else
+					m_sequence[s]->setValue(fxi->id(), ch, min);
 
-                                if ((rand() % 2) == 0)
-                                        m_random[s]->setValue(fxi->id(), ch, max);
-                                else
-                                        m_random[s]->setValue(fxi->id(), ch, min);
-                        }
-                }
-        }
+				if ((rand() % 2) == 0)
+					m_random[s]->setValue(fxi->id(), ch, max);
+				else
+					m_random[s]->setValue(fxi->id(), ch, min);
+			}
+		}
+	}
 }
 
 bool IntelligentIntensityGenerator::createSequenceChaser(bool forward)
