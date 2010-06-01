@@ -50,6 +50,7 @@ Doc::Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache)
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 		m_fixtureArray[i] = NULL;
 	m_fixtureAllocation = 0;
+	m_totalPowerConsumption = 0;
 
 	// Allocate function array
 	m_functionArray = (Function**) malloc(sizeof(Function*) *
@@ -95,6 +96,7 @@ Doc::~Doc()
 	}
 	delete [] m_fixtureArray;
 	m_fixtureAllocation = 0;
+	m_totalPowerConsumption = 0;
 }
 
 void Doc::setModified()
@@ -191,6 +193,14 @@ bool Doc::deleteFixture(t_fixture_id id)
 
 	if (m_fixtureArray[id] != NULL)
 	{
+		// generic dimmer has no mode and physical
+		if (m_fixtureArray[id]->fixtureMode() != NULL)
+		{
+			QLCPhysical phys = m_fixtureArray[id]->fixtureMode()->physical();
+			m_totalPowerConsumption = totalPowerConsumption()
+					- phys.powerConsumption();
+		}
+
 		delete m_fixtureArray[id];
 		m_fixtureArray[id] = NULL;
 		m_fixtureAllocation--;
@@ -273,6 +283,14 @@ void Doc::assignFixture(Fixture* fixture, t_fixture_id id)
 	/* Patch fixture change signals thru Doc */
 	connect(fixture, SIGNAL(changed(t_fixture_id)),
 		this, SLOT(slotFixtureChanged(t_fixture_id)));
+
+	// generic dimmer has no mode and physical
+	if (fixture->fixtureMode() != NULL)
+	{
+		QLCPhysical phys = fixture->fixtureMode()->physical();
+		m_totalPowerConsumption = totalPowerConsumption() +
+				phys.powerConsumption();
+	}
 
 	m_fixtureArray[id] = fixture;
 	fixture->setID(id);
@@ -492,4 +510,3 @@ bool Doc::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
 	return true;
 }
-

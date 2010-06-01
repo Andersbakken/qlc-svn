@@ -425,17 +425,19 @@ void App::slotDocModified(bool state)
 		setWindowTitle(caption);
 
 	/* Update fixture & function allocation status */
-	m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2")
-		.arg(m_doc->fixtures()).arg(KFixtureArraySize));
+	m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2 (%3W)")
+		.arg(m_doc->fixtures()).arg(KFixtureArraySize)
+		.arg(m_doc->totalPowerConsumption()));
 	m_fixtureAllocationIndicator->setToolTip(
-		tr("Space left for %1 fixtures")
-		.arg(KFixtureArraySize - m_doc->fixtures()));
+			tr("Space left for %n fixtures. Currently consuming %1 watts total.", "",
+					KFixtureArraySize - m_doc->fixtures())
+					.arg(m_doc->totalPowerConsumption()));
 
 	m_functionAllocationIndicator->setText(tr("Functions: %1/%2")
 		.arg(m_doc->functions()).arg(KFunctionArraySize));
 	m_functionAllocationIndicator->setToolTip(
-		tr("Space left for %1 functions")
-		.arg(KFunctionArraySize - m_doc->functions()));
+		tr("Space left for %n functions", "",
+				KFunctionArraySize - m_doc->functions()));
 }
 
 /*****************************************************************************

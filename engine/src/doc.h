@@ -163,6 +163,13 @@ public:
 	 */
 	int fixtures() const { return m_fixtureAllocation; }
 
+	/**
+	 * Get the total power consumption of all fixtures in this workspace.
+	 *
+	 * @return Total power consumption
+	 */
+	int totalPowerConsumption() const { return m_totalPowerConsumption; }
+
 protected:
 	/**
 	 * Try to find the next free address from the given universe for
@@ -201,6 +208,9 @@ protected:
 
 	/** Number of allocated fixtures in fixture array */
 	int m_fixtureAllocation;
+
+	/** Total power consumption of all fixtures in this workspace **/
+	int m_totalPowerConsumption;
 
 	/*********************************************************************
 	 * Functions
@@ -317,4 +327,3 @@ public:
 };
 
 #endif
-
