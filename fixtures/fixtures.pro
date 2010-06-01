@@ -3,6 +3,8 @@ include(../variables.pri)
 TEMPLATE = subdirs
 TARGET = fixtures
 
+fixtures.files += American-DJ-Quad-Gem-DMX.qxf
+fixtures.files += American-DJ-Vizi-LED-Spot.qxf
 fixtures.files += Elation-Color-Spot-150.qxf
 fixtures.files += Elation-Vision-250.qxf
 fixtures.files += Eurolite-DMXSuperstrobe-2700.qxf
