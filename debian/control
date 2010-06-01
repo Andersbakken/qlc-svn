@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Heikki Junnila <hjunnila@users.sf.net>
 Build-Depends: debhelper (>= 7.0.0), libqt4-dev (>= 4.3.0),
 		libasound2-dev (>= 1.0.16), libusb-dev (>= 2:0.1.12),
-		libftdipp-dev (>= 0.17)
+		libftdi-dev (>= 0.17)
 Standards-Version: 3.6.0
 
 Package: qlc
@@ -54,26 +54,15 @@ Description: Output plugin for DMX devices supported thru the DMX4Linux suite
 Package: qlc-output-enttec-dmxusb
 Section: Other
 Architecture: i386 amd64
-Replaces: qlc-output-ftdi
+Replaces: qlc-output-ftdi, qlc-output-enttec-dmxusbpro
 Provides: qlc-output-ftdi
 Conflicts: qlc-output-ftdi, qlc-output-enttec-dmxusbpro
-Depends: qlc, libftdipp1 (>= 0.17)
+Depends: qlc, libftdi1 (>= 0.17)
 Description: Output plugin for Enttec DMX USB dongles
   Output plugin for Enttec DMX USB Pro and Open DMX USB. This plugin replaces
   the old qlc-output-ftdi package. It uses the FTDI D2XX interface to access
   Enttec DMX dongles and therefore cannot live together with
   qlc-output-enttec-usbdmxpro (which, in turn, uses the VCP interface).
-
-Package: qlc-output-enttec-dmxusbpro
-Section: Other
-Architecture: i386 amd64
-Conflicts: qlc-output-enttec-dmxusb, qlc-output-ftdi
-Depends: qlc
-Description: Output plugin for Enttec DMX USB Pro dongles with VCP support
-  Output plugin for Enttec DMX USB Pro using Virtual Communications Port for
-  accessing the device. This plugin requires that the qlc-output-enttec-dmxusb
-  and qlc-output-ftdi are removed because the D2XX interface used by them
-  overrides the ftdi_sio (VCP) kernel module used by this plugin.
 
 Package: qlc-output-udmx
 Section: Other
@@ -88,7 +77,7 @@ Architecture: i386 amd64
 Replaces: qlc-output-usbdmx
 Conflicts: qlc-output-usbdmx
 Provides: qlc-output-usbdmx
-Depends: qlc
+Depends: qlc, libusb-0.1-4 (>= 2:0.1.12)
 Description: Output plugin for Peperoni Light DMX dongles
   Output plugin for DMX dongles (Rodin, LPR2DMX, USBDMX21) manufactured by
   Peperoni Light (www.peperoni-light.de).
