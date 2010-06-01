@@ -53,9 +53,11 @@ SOURCES += ../ui/src/aboutbox.cpp \
            fixtureeditor.cpp \
            main.cpp
 
-# This must be after "TARGET = " and before target installation so that
-# install_name_tool can be run before target installation
-include(../macx/nametool.pri)
+macx {
+	# This must be after "TARGET = " and before target installation so that
+	# install_name_tool can be run before target installation
+	include(../macx/nametool.pri)
+}
 
 # Installation
 target.path 	= $$INSTALLROOT/$$BINDIR

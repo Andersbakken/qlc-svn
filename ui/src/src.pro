@@ -170,9 +170,11 @@ i18n.commands += lrelease src.pro
 QMAKE_EXTRA_TARGETS += i18n
 PRE_TARGETDEPS += qlc_fi_FI.qm
 
-# This must be after "TARGET = " and before target installation so that
-# install_name_tool can be run before target installation
-include(../../macx/nametool.pri)
+macx {
+	# This must be after "TARGET = " and before target installation so that
+	# install_name_tool can be run before target installation
+	include(../../macx/nametool.pri)
+}
 
 # Installation
 target.path	= $$INSTALLROOT/$$BINDIR
