@@ -2,7 +2,7 @@
 # QLC Master package
 #############################################################################
 
-%define version 3.0.4
+%define version %(echo $QLC_VERSION)
 
 Summary: Q Light Controller - The free DMX lighting console
 License: GPLv2
@@ -10,12 +10,13 @@ Group: Other
 Name: qlc
 Prefix: /usr
 Provides: qlc
+BuildRequires: qt-devel >= 4.6, libftdi-devel >= 0.17, libusb-devel >= 0.1.12, alsa-lib-devel >= 1.0.23
 Requires: qt >= 4.6
 Release: 1
 Source: qlc-%{version}.tar.gz
 URL: http://www.sf.net/projects/qlc
-Version: %{version}
 Buildroot: /tmp/qlcrpm
+Version: %{version}
 %description
 Q Light Controller - The free Linux DMX lighting desk. Includes also fixture definitions and input profiles.
 
