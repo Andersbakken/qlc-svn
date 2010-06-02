@@ -165,12 +165,14 @@ SOURCES += aboutbox.cpp \
            vcxypadproperties.cpp \
            virtualconsole.cpp
 
-# Just a hack to force qmake to create all .qm files (along with _fi_FI.qm)
+# Force qmake to create all .qm files
 i18n.target = qlc_fi_FI.qm
 unix:!macx:i18n.commands += lrelease-qt4 src.pro
 macx:i18n.commands += lrelease src.pro
 QMAKE_EXTRA_TARGETS += i18n
 PRE_TARGETDEPS += qlc_fi_FI.qm
+QMAKE_CLEAN += qlc_fi_FI.qm
+QMAKE_DISTCLEAN += qlc_fi_FI.qm
 
 macx {
 	# This must be after "TARGET = " and before target installation so that

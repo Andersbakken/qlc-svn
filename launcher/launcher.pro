@@ -25,6 +25,8 @@ i18n.target = launcher_fi_FI.qm
 i18n.commands += lrelease launcher.pro
 QMAKE_EXTRA_TARGETS += i18n
 PRE_TARGETDEPS += launcher_fi_FI.qm
+QMAKE_CLEAN += launcher_fi_FI.qm
+QMAKE_DISTCLEAN += launcher_fi_FI.qm
 
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
