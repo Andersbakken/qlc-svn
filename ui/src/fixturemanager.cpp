@@ -197,41 +197,17 @@ void FixtureManager::slotFixtureRemoved(t_fixture_id id)
 	{
 		if ((*it)->text(KColumnID).toInt() == id)
 		{
-			if ((*it)->isSelected() == true)
-			{
-				QTreeWidgetItem* nextItem;
-
-				// Try to select the closest neighbour
-				if (m_tree->itemAbove(*it) != NULL)
-					nextItem = m_tree->itemAbove(*it);
-				else
-					nextItem = m_tree->itemBelow(*it);
-				m_tree->setCurrentItem(nextItem);
-			}
-
 			delete (*it);
 			break;
 		}
-
-		++it;
 	}
+
+	slotSelectionChanged();
 }
 
 void FixtureManager::slotModeChanged(Doc::Mode mode)
 {
-	if (mode == Doc::Operate)
-	{
-		m_addAction->setEnabled(false);
-		m_removeAction->setEnabled(false);
-		m_propertiesAction->setEnabled(false);
-	}
-	else
-	{
-		m_addAction->setEnabled(true);
-		m_removeAction->setEnabled(true);
-		m_propertiesAction->setEnabled(true);
-	}
-
+	Q_UNUSED(mode);
 	slotSelectionChanged();
 }
 
@@ -259,6 +235,7 @@ void FixtureManager::initDataView()
 	m_tree->setAllColumnsShowFocus(true);
 	m_tree->sortByColumn(KColumnAddress, Qt::AscendingOrder);
 	m_tree->setContextMenuPolicy(Qt::CustomContextMenu);
+	m_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	connect(m_tree, SIGNAL(itemSelectionChanged()),
 		this, SLOT(slotSelectionChanged()));
@@ -349,37 +326,16 @@ void FixtureManager::updateItem(QTreeWidgetItem* item, Fixture* fxi)
 
 void FixtureManager::slotSelectionChanged()
 {
-	QTreeWidgetItem* item = m_tree->currentItem();
-	if (item == NULL)
-	{
-		// Add is not available in operate mode
-		if (_app->doc()->mode() == Doc::Design)
-			m_addAction->setEnabled(true);
-		else
-			m_addAction->setEnabled(false);
-
-		// Disable all other actions
-		m_removeAction->setEnabled(false);
-		m_propertiesAction->setEnabled(false);
-
-		QString info;
-		info = QString("<HTML><BODY>");
-		info += QString("<H1>No fixtures</H1>");
-		info += QString("Click <IMG SRC=\"" ":/edit_add.png\">");
-		info += QString(" from the toolbar to start adding fixtures.");
-		info += QString("</BODY></HTML>");
-		m_info->setText(info);
-
-		delete m_console;
-		m_console = NULL;
-		m_tab->removeTab(KTabConsole);
-	}
-	else
+	int selectedCount = m_tree->selectedItems().size();
+	if (selectedCount == 1)
 	{
 		QScrollArea* scrollArea;
 		t_fixture_id id;
 		Fixture* fxi;
 		int page;
+
+		QTreeWidgetItem* item = m_tree->selectedItems().first();
+		Q_ASSERT(item != NULL);
 
 		// Set the text view's contents
 		id = item->text(KColumnID).toInt();
@@ -421,6 +377,64 @@ void FixtureManager::slotSelectionChanged()
 			m_removeAction->setEnabled(false);
 			m_propertiesAction->setEnabled(false);
 		}
+	}
+	else
+	{
+		// More than one or less than one selected
+
+		QString info;
+
+		// Add is not available in operate mode
+		if (_app->doc()->mode() == Doc::Design)
+			m_addAction->setEnabled(true);
+		else
+			m_addAction->setEnabled(false);
+
+		// Disable properties action because its target is ambiguous
+		m_propertiesAction->setEnabled(false);
+
+		if (selectedCount > 1)
+		{
+			// Enable removal of multiple items in design mode
+			if (_app->doc()->mode() == Doc::Design)
+			{
+				m_removeAction->setEnabled(true);
+				info = tr("<HTML><BODY><H1>Multiple fixtures selected</H1>" \
+					  "<P>Click <IMG SRC=\"" ":/edit_remove.png\">" \
+					  " to remove the selected fixtures.</P></BODY></HTML>");
+			}
+			else
+			{
+				m_removeAction->setEnabled(false);
+				info = tr("<HTML><BODY><H1>Multiple fixtures selected</H1>" \
+					  "<P>Fixture list modification is not permitted" \
+					  " in operate mode.</P></BODY></HTML>");
+			}
+		}
+		else
+		{
+			// Disable remove since nothing is selected
+			m_removeAction->setEnabled(false);
+			if (m_tree->topLevelItemCount() <= 0)
+			{
+				info = tr("<HTML><BODY><H1>No fixtures</H1>" \
+					  "<P>Click <IMG SRC=\"" ":/edit_add.png\">" \
+					  " to add fixtures.</P></BODY></HTML>");
+			}
+			else
+			{
+				info = tr("<HTML><BODY><H1>Nothing selected</H1>" \
+					  "<P>Select a fixture from the list or " \
+					  "click <IMG SRC=\"" ":/edit_add.png\">" \
+					  " to add fixtures.</P></BODY></HTML>");
+			}
+		}
+
+		m_info->setText(info);
+
+		delete m_console;
+		m_console = NULL;
+		m_tab->removeTab(KTabConsole);
 	}
 }
 
@@ -580,20 +594,21 @@ void FixtureManager::addFixtureErrorMessage()
 
 void FixtureManager::slotRemove()
 {
-	QTreeWidgetItem* item = m_tree->currentItem();
-	if (item == NULL)
-		return;
-
-	// Get the fixture id
-	t_fixture_id id = item->text(KColumnID).toInt();
-
-	// Display a question
-	if (QMessageBox::question(this, "Delete Fixture",
-				  QString("Do you want to DELETE %1?")
-					.arg(item->text(KColumnName)),
-				  QMessageBox::Yes, QMessageBox::No)
-	    == QMessageBox::Yes)
+	// Ask before deletion
+	if (QMessageBox::question(this, tr("Delete Fixtures"),
+			tr("Do you want to DELETE the selected fixtures?"),
+			QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)
 	{
+		return;
+	}
+
+	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+	while (it.hasNext() == true)
+	{
+		QTreeWidgetItem* item(it.next());
+		Q_ASSERT(item != NULL);
+
+		t_fixture_id id = item->text(KColumnID).toInt();
 		_app->doc()->deleteFixture(id);
 	}
 }
