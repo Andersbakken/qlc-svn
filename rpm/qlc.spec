@@ -10,7 +10,7 @@ Group: Other
 Name: qlc
 Prefix: /usr
 Provides: qlc
-Requires: qt
+Requires: qt >= 4.6
 Release: 1
 Source: qlc-%{version}.tar.gz
 URL: http://www.sf.net/projects/qlc
@@ -36,6 +36,7 @@ INSTALL_ROOT=$RPM_BUILD_ROOT make install
 %files
 %defattr(-,root,root)
 /usr/bin/qlc
+/usr/share/qlc/translations/*.qm
 /usr/share/applications/qlc.desktop
 /usr/share/pixmaps/qlc.png
 /usr/bin/qlc-fixtureeditor
@@ -43,6 +44,7 @@ INSTALL_ROOT=$RPM_BUILD_ROOT make install
 /usr/share/pixmaps/qlc-fixtureeditor.png
 /usr/share/qlc/fixtures/*
 /usr/share/qlc/inputprofiles/*
+/usr/share/qlc/Sample.qxw
 %doc /usr/share/qlc/documents/*
 
 #############################################################################
@@ -50,7 +52,7 @@ INSTALL_ROOT=$RPM_BUILD_ROOT make install
 #############################################################################
 
 %package input-hid
-Requires: qlc
+Requires: qlc >= %{version}
 Group: Other
 Summary: Input support for HID (Human Interface Devices)
 %description input-hid
@@ -66,7 +68,7 @@ HID-compliant devices (for example joysticks, mice and keyboards).
 #############################################################################
 
 %package input-enttec-wing
-Requires: qlc
+Requires: qlc >= %{version}
 Group: Other
 Summary: Input support for Enttec wing hardware
 %description input-enttec-wing
@@ -82,7 +84,7 @@ ENTTEC Shortcut, Playback and Program wings.
 #############################################################################
 
 %package input-midi
-Requires: qlc alsa-lib
+Requires: qlc >= %{version}, alsa-lib >= 1.0.23
 Group: Other
 Summary: Input support for MIDI devices
 %description input-midi
@@ -98,7 +100,7 @@ MIDI controller devices (such as Behringer BCF2000).
 #############################################################################
 
 %package output-dmx4linux
-Requires: qlc
+Requires: qlc >= %{version}
 Group: Other
 Summary: DMX output support for DMX4Linux driver suite
 %description output-dmx4linux
@@ -114,7 +116,7 @@ devices supported by the DMX4Linux driver suite (http://llg.cubic.org/)
 #############################################################################
 
 %package output-enttec-dmxusb
-Requires: qlc
+Requires: qlc >= %{version}, libftdi >= 0.17
 Group: Other
 Summary: DMX output support for Enttec DMX USB dongles (D2XX interface)
 %description output-enttec-dmxusb
@@ -127,28 +129,11 @@ ENTTEC Open DMX USB and DMX USB Pro dongles, using the legacy D2XX interface.
 /etc/udev/rules.d/z65-enttec-dmxusb.rules
 
 #############################################################################
-# ENTTEC DMX USB Pro output plugin sub-package
-#############################################################################
-
-%package output-enttec-dmxusbpro
-Requires: qlc
-Group: Other
-Summary: DMX output support for Enttec DMX USB Pro dongle (new VCP interface)
-%description output-enttec-dmxusbpro
-Output plugin for Q Light Controller that enables DMX output support for the
-ENTTEC DMX USB Pro dongle, using the new VCP (Virtual Communications Port)
-interface.
-
-%files output-enttec-dmxusbpro
-%defattr(-,root,root) 
-/usr/lib/qlc/output/libenttecdmxusbproout.so
-
-#############################################################################
 # Anyma uDMX output plugin sub-package
 #############################################################################
 
 %package output-udmx
-Requires: qlc libusb
+Requires: qlc >= %{version}, libusb >= 0.1.12
 Group: Other
 Summary: DMX output support for Anyma uDMX devices
 %description output-udmx
@@ -165,7 +150,7 @@ Peperoni USB devices (Rodin, USBDMX21, XSwitch).
 #############################################################################
 
 %package output-peperoni
-Requires: qlc libusb
+Requires: qlc >= %{version}, libusb >= 0.1.12
 Group: Other
 Summary: DMX output support for Peperoni USB devices (Rodin, USBDMX21, XSwitch)
 %description output-peperoni
@@ -182,7 +167,7 @@ Peperoni USB devices (Rodin, USBDMX21, XSwitch).
 #############################################################################
 
 %package output-midi
-Requires: qlc alsa-lib
+Requires: qlc >= %{version}, alsa-lib >= 1.0.23
 Group: Other
 Summary: DMX output support for MIDI devices
 %description output-midi
