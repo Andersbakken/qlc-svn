@@ -167,7 +167,8 @@ SOURCES += aboutbox.cpp \
 
 # Just a hack to force qmake to create all .qm files (along with _fi_FI.qm)
 i18n.target = qlc_fi_FI.qm
-i18n.commands += lrelease-qt4 src.pro
+unix:!macx:i18n.commands += lrelease-qt4 src.pro
+macx:i18n.commands += lrelease src.pro
 QMAKE_EXTRA_TARGETS += i18n
 PRE_TARGETDEPS += qlc_fi_FI.qm
 
