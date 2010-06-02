@@ -16,6 +16,7 @@ macx:CONFIG	-= app_bundle
 INCLUDEPATH 	+= ../../libs/common
 DEPENDPATH 	+= ../../libs/common
 unix:LIBS	+= ../../libs/common/libqlccommon.a
+unix:!macx:LIBS += -lX11
 win32:{
 	CONFIG(release, debug|release) LIBS += ../../libs/common/release/libqlccommon.a
 	CONFIG(debug, debug|release) LIBS += ../../libs/common/debug/libqlccommon.a
@@ -166,7 +167,7 @@ SOURCES += aboutbox.cpp \
 
 # Just a hack to force qmake to create all .qm files (along with _fi_FI.qm)
 i18n.target = qlc_fi_FI.qm
-i18n.commands += lrelease src.pro
+i18n.commands += lrelease-qt4 src.pro
 QMAKE_EXTRA_TARGETS += i18n
 PRE_TARGETDEPS += qlc_fi_FI.qm
 
