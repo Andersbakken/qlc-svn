@@ -26,13 +26,13 @@ HEADERS += bus.h \
            efxfixture.h \
            fixture.h \
            function.h \
-	   intelligentintensitygenerator.h \
-	   intelligentpalettegenerator.h \
            inputmap.h \
            inputpatch.h \
+	   intensitygenerator.h \
            mastertimer.h \
            outputmap.h \
            outputpatch.h \
+	   palettegenerator.h \
            scene.h
 
 SOURCES += bus.cpp \
@@ -44,12 +44,12 @@ SOURCES += bus.cpp \
            efxfixture.cpp \
            fixture.cpp \
            function.cpp \
-	   intelligentintensitygenerator.cpp \
-	   intelligentpalettegenerator.cpp \
            inputmap.cpp \
            inputpatch.cpp \
+	   intensitygenerator.cpp \
            mastertimer.cpp \
            outputmap.cpp \
            outputpatch.cpp \
+	   palettegenerator.cpp \
            scene.cpp
 

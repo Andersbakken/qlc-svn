@@ -25,8 +25,8 @@
 
 #include <cstdlib>
 
-#include "intelligentintensitygenerator.h"
-#include "intelligentpalettegenerator.h"
+#include "intensitygenerator.h"
+#include "palettegenerator.h"
 #include "fixtureselection.h"
 #include "functionwizard.h"
 #include "fixture.h"
@@ -73,7 +73,7 @@ void FunctionWizard::slotRemoveClicked()
 
 void FunctionWizard::accept()
 {
-	IntelligentPaletteGenerator pal(_app->doc(), fixtures());
+	PaletteGenerator pal(_app->doc(), fixtures());
 
 	if (m_coloursCheck->isChecked() == true)
 		pal.createColours();
@@ -84,7 +84,7 @@ void FunctionWizard::accept()
 
 	if (m_intensityCheck->isChecked() == true)
 	{
-		IntelligentIntensityGenerator gen(_app->doc(), fixtures());
+		IntensityGenerator gen(_app->doc(), fixtures());
 		gen.createOddEvenChaser();
 		gen.createFullZeroChaser();
 		gen.createSequenceChasers();
@@ -108,25 +108,25 @@ void FunctionWizard::addFixture(t_fixture_id fxi_id)
 	item->setData(KColumnID, Qt::UserRole, fxi_id);
 
 	QStringList caps;
-	if (IntelligentIntensityGenerator::findChannels(fxi,
+	if (IntensityGenerator::findChannels(fxi,
 				KQLCChannelGroupColour).isEmpty() == false)
 	{
 		caps << KQLCChannelGroupColour;
 	}
 
-	if (IntelligentIntensityGenerator::findChannels(fxi,
+	if (IntensityGenerator::findChannels(fxi,
 				KQLCChannelGroupGobo).isEmpty() == false)
 	{
 		caps << KQLCChannelGroupGobo;
 	}
 
-	if (IntelligentIntensityGenerator::findChannels(fxi,
+	if (IntensityGenerator::findChannels(fxi,
 				KQLCChannelGroupShutter).isEmpty() == false)
 	{
 		caps << KQLCChannelGroupShutter;
 	}
 
-	if (IntelligentIntensityGenerator::findChannels(fxi,
+	if (IntensityGenerator::findChannels(fxi,
 				KQLCChannelGroupIntensity).isEmpty() == false)
 	{
 		caps << KQLCChannelGroupIntensity;

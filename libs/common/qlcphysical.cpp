@@ -187,3 +187,22 @@ bool QLCPhysical::saveXML(QDomDocument* doc, QDomElement* root)
 
 	return true;
 }
+
+int QLCPhysical::powerConsumption() const
+{
+	if (m_powerConsumption != 0)
+	{
+		return m_powerConsumption;
+	}
+	else
+	{
+		/* If power consumption value is missing, return bulb watts
+		 * plus a guesstimate 100W, since there's usually other
+	 	 * electronics consuming power as well. */
+		int bulbWatts = bulbType().remove(QRegExp("[A-Z]")).toInt();
+		if (bulbWatts > 0)
+			return bulbWatts + 100;
+		else
+			return 0;
+	}
+}

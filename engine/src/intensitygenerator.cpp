@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  intelligentintensitygenerator.cpp
+  intensitygenerator.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -24,14 +24,13 @@
 #include "qlccapability.h"
 #include "qlcchannel.h"
 
-#include "intelligentintensitygenerator.h"
+#include "intensitygenerator.h"
 #include "fixture.h"
 #include "chaser.h"
 #include "scene.h"
 #include "doc.h"
 
-IntelligentIntensityGenerator::IntelligentIntensityGenerator(Doc* doc,
-                                      const QList <Fixture*>& fxiList)
+IntensityGenerator::IntensityGenerator(Doc* doc, const QList <Fixture*>& fxiList)
 	: m_doc(doc)
 	, m_fixtures(fxiList)
 	, m_odd(NULL)
@@ -49,7 +48,7 @@ IntelligentIntensityGenerator::IntelligentIntensityGenerator(Doc* doc,
 	createScenes();
 }
 
-IntelligentIntensityGenerator::~IntelligentIntensityGenerator()
+IntensityGenerator::~IntensityGenerator()
 {
 	// Destroy all functions that have NOT been added to Doc
 	if (m_doc->function(m_odd->id()) == NULL)
@@ -87,7 +86,7 @@ IntelligentIntensityGenerator::~IntelligentIntensityGenerator()
 	m_random.clear();
 }
 
-bool IntelligentIntensityGenerator::createOddEvenChaser()
+bool IntensityGenerator::createOddEvenChaser()
 {
 	if (m_odd == NULL || m_even == NULL)
 		return false;
@@ -127,7 +126,7 @@ bool IntelligentIntensityGenerator::createOddEvenChaser()
 	}
 }
 
-bool IntelligentIntensityGenerator::createFullZeroChaser()
+bool IntensityGenerator::createFullZeroChaser()
 {
  	if (m_full == NULL || m_zero == NULL)
 		return false;
@@ -166,7 +165,7 @@ bool IntelligentIntensityGenerator::createFullZeroChaser()
 	}
 }
 
-bool IntelligentIntensityGenerator::createSequenceChasers()
+bool IntensityGenerator::createSequenceChasers()
 {
 	if (m_sequence.size() == 0)
 		return false;
@@ -195,7 +194,7 @@ bool IntelligentIntensityGenerator::createSequenceChasers()
 	return true;
 }
 
-bool IntelligentIntensityGenerator::createRandomChaser()
+bool IntensityGenerator::createRandomChaser()
 {
 	if (m_random.size() == 0)
 		return false;
@@ -229,7 +228,7 @@ bool IntelligentIntensityGenerator::createRandomChaser()
 	}
 }
 
-void IntelligentIntensityGenerator::createScenes()
+void IntensityGenerator::createScenes()
 {
 	m_odd = new Scene(m_doc);
 	m_odd->setName("Intensity - Odd");
@@ -326,7 +325,7 @@ void IntelligentIntensityGenerator::createScenes()
 	}
 }
 
-bool IntelligentIntensityGenerator::createSequenceChaser(bool forward)
+bool IntensityGenerator::createSequenceChaser(bool forward)
 {
 	// Create a sequence chaser
 	Chaser* chaser = new Chaser(m_doc);
@@ -355,8 +354,8 @@ bool IntelligentIntensityGenerator::createSequenceChaser(bool forward)
 	}
 }
 
-bool IntelligentIntensityGenerator::findMinMax(const QLCChannel* channel,
-						t_value* min, t_value* max)
+bool IntensityGenerator::findMinMax(const QLCChannel* channel, t_value* min,
+				    t_value* max) const
 {
 	Q_ASSERT(channel != NULL);
 	Q_ASSERT(min != NULL);
@@ -388,8 +387,8 @@ bool IntelligentIntensityGenerator::findMinMax(const QLCChannel* channel,
 	return false;
 }
 
-QList <t_channel> IntelligentIntensityGenerator::findChannels(
-			const Fixture* fixture, const QString& group)
+QList <t_channel> IntensityGenerator::findChannels(const Fixture* fixture,
+						   const QString& group)
 {
 	QList <t_channel> channels;
 

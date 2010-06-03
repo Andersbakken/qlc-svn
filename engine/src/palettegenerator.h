@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  intelligentpalettegenerator.h
+  palettegenerator.h
 
   Copyright (C) Heikki Junnila
 
@@ -19,8 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef INTELLIGENTPALETTEGENERATOR_H
-#define INTELLIGENTPALETTEGENERATOR_H
+#ifndef PALETTEGENERATOR_H
+#define PALETTEGENERATOR_H
 
 #include <QString>
 #include <QList>
@@ -35,19 +35,19 @@ class Doc;
  * to automatically generate functions for their capabilities (color, gobo..)
  * for easy and quick initial setup.
  */
-class IntelligentPaletteGenerator
+class PaletteGenerator
 {
 public:
 	/**
-	 * Create a new generator.
+	 * Create a new PaletteGenerator instance.
 	 *
 	 * @param doc The Doc object that takes all generated functions
 	 * @param fxiList List of fixtures to create functions for
 	 */
-	IntelligentPaletteGenerator(Doc* doc, const QList <Fixture*>& fxiList);
+	PaletteGenerator(Doc* doc, const QList <Fixture*>& fxiList);
 
 	/** Destructor */
-	~IntelligentPaletteGenerator();
+	~PaletteGenerator();
 
 	/** Create colour macros for each fixture's colour capabilities */
 	void createColours();

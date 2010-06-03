@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  intelligentpalettegenerator.cpp
+  palettegenerator.cpp
 
   Copyright (C) Heikki Junnila
 
@@ -24,24 +24,23 @@
 #include "qlccapability.h"
 #include "qlcchannel.h"
 
-#include "intelligentpalettegenerator.h"
+#include "palettegenerator.h"
 #include "fixture.h"
 #include "scene.h"
 #include "doc.h"
 
-IntelligentPaletteGenerator::IntelligentPaletteGenerator(Doc* doc,
-						const QList <Fixture*>& fxiList)
+PaletteGenerator::PaletteGenerator(Doc* doc, const QList <Fixture*>& fxiList)
 	: m_doc(doc)
 	, m_fixtures(fxiList)
 {
 }
 
-IntelligentPaletteGenerator::~IntelligentPaletteGenerator()
+PaletteGenerator::~PaletteGenerator()
 {
 	purgeScenes();
 }
 
-void IntelligentPaletteGenerator::createColours()
+void PaletteGenerator::createColours()
 {
 	purgeScenes();
 
@@ -58,7 +57,7 @@ void IntelligentPaletteGenerator::createColours()
 	addScenesToDoc();
 }
 
-void IntelligentPaletteGenerator::createGobos()
+void PaletteGenerator::createGobos()
 {
 	purgeScenes();
 
@@ -75,7 +74,7 @@ void IntelligentPaletteGenerator::createGobos()
 	addScenesToDoc();
 }
 
-void IntelligentPaletteGenerator::createShutters()
+void PaletteGenerator::createShutters()
 {
 	purgeScenes();
 
@@ -92,8 +91,7 @@ void IntelligentPaletteGenerator::createShutters()
 	addScenesToDoc();
 }
 
-void IntelligentPaletteGenerator::createGroupScenes(const Fixture* fxi,
-						    const QString& group)
+void PaletteGenerator::createGroupScenes(const Fixture* fxi, const QString& group)
 {
 	Q_ASSERT(fxi != NULL);
 	Q_ASSERT(group.isEmpty() == false);
@@ -146,8 +144,8 @@ void IntelligentPaletteGenerator::createGroupScenes(const Fixture* fxi,
 	}
 }
 
-QList <t_channel> IntelligentPaletteGenerator::findChannels(
-			const Fixture* fixture, const QString& group) const
+QList <t_channel> PaletteGenerator::findChannels(const Fixture* fixture,
+						 const QString& group) const
 {
 	QList <t_channel> channels;
 
@@ -163,7 +161,7 @@ QList <t_channel> IntelligentPaletteGenerator::findChannels(
 	return channels;
 }
 
-void IntelligentPaletteGenerator::purgeScenes()
+void PaletteGenerator::purgeScenes()
 {
 	QHashIterator <QString,Scene*> it(m_scenes);
 	while (it.hasNext() == true)
@@ -175,7 +173,7 @@ void IntelligentPaletteGenerator::purgeScenes()
 	m_scenes.clear();
 }
 
-void IntelligentPaletteGenerator::addScenesToDoc()
+void PaletteGenerator::addScenesToDoc()
 {
 	QHashIterator <QString,Scene*> it(m_scenes);
 	while (it.hasNext() == true)

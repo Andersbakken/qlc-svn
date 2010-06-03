@@ -110,7 +110,7 @@ public:
 	int focusTiltMax() const { return m_focusTiltMax; }
 
 	void setPowerConsumption(const int watt) { m_powerConsumption = watt; }
-	int powerConsumption() const { return m_powerConsumption; }
+	int powerConsumption() const;
 
 	void setDmxConnector(const QString& type) { m_dmxConnector = type; }
 	QString dmxConnector() const { return m_dmxConnector; }
