@@ -31,14 +31,6 @@ win32:{
 	CONFIG(debug, debug|release) LIBS += ../../engine/src/debug/libqlcengine.a
 }
 
-# Translation sources files
-TRANSLATIONS	+= qlc_fi_FI.ts
-
-# Translation object files
-translations.files += qlc_fi_FI.qm
-translations.path = $$INSTALLROOT/$$TRANSLATIONDIR
-INSTALLS	+= translations
-
 # Resources
 RESOURCES 	+= main.qrc
 win32:RC_FILE	= main.rc
@@ -165,14 +157,8 @@ SOURCES += aboutbox.cpp \
            vcxypadproperties.cpp \
            virtualconsole.cpp
 
-# Force qmake to create all .qm files
-i18n.target = qlc_fi_FI.qm
-unix:!macx:i18n.commands += lrelease-qt4 src.pro
-macx:i18n.commands += lrelease src.pro
-QMAKE_EXTRA_TARGETS += i18n
-PRE_TARGETDEPS += qlc_fi_FI.qm
-QMAKE_CLEAN += qlc_fi_FI.qm
-QMAKE_DISTCLEAN += qlc_fi_FI.qm
+# Internationalization
+include(src-i18n.pri)
 
 macx {
 	# This must be after "TARGET = " and before target installation so that
