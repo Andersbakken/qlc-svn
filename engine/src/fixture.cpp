@@ -535,7 +535,7 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 		text = doc->createTextNode(m_fixtureMode->name());
 	else
 		text = doc->createTextNode(KXMLFixtureGeneric);
-		
+
 	tag.appendChild(text);
 
 	/* ID */
@@ -581,333 +581,128 @@ bool Fixture::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
 QString Fixture::status()
 {
-	QPalette pal;
 	QString info;
 	QString t;
 
+	QPalette pal;
+	QColor hlBack(pal.color(QPalette::Highlight));
+	QColor hlText(pal.color(QPalette::HighlightedText));
+
+	QString title("<TR><TD CLASS='hilite' COLSPAN='3'>%1</TD></TR>");
+	QString subTitle("<TR><TD CLASS='subhi' COLSPAN='3'>%1</TD></TR>");
+	QString genInfo("<TR><TD CLASS='emphasis' COLSPAN='2'>%1</TD><TD>%2</TD></TR>");
+
 	// HTML header
-	info += QString("<HTML>");
-	info += QString("<HEAD>");
-	info += QString("<TITLE>Fixture Information</TITLE>");
-	info += QString("</HEAD>");
-	info += QString("<BODY>");
+	info += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">";
+	info += "<HTML><HEAD></HEAD><STYLE>";
+	info += QString(".hilite {" \
+			"	background-color: %1;" \
+			"	color: %2;" \
+			"	font-size: x-large;" \
+			"}").arg(hlBack.name()).arg(hlText.name());
+	info += QString(".subhi {" \
+			"	background-color: %1;" \
+			"	color: %2;" \
+			"	font-weight: bold;" \
+			"}").arg(hlBack.name()).arg(hlText.name());
+	info += QString(".emphasis {" \
+			"	font-weight: bold;" \
+			"}");
+	info += "</STYLE><BODY>";
+
+	/********************************************************************
+	 * General info
+	 ********************************************************************/
+
+	info += "<TABLE COLS='3' WIDTH='100%'>";
 
 	// Fixture title
-	info += QString("<TABLE COLS=\"1\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD BGCOLOR=\"");
-	info += pal.color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += pal.color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"5\">");
-	info += name();
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
+	info += title.arg(name());
 
 	// Manufacturer
-	info += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Manufacturer</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-
-	if (m_fixtureDef != NULL)
-		info += m_fixtureDef->manufacturer();
+	if (isDimmer() == false)
+	{
+		info += genInfo.arg(tr("Manufacturer")).arg(m_fixtureDef->manufacturer());
+		info += genInfo.arg(tr("Model")).arg(m_fixtureDef->model());
+		info += genInfo.arg(tr("Mode")).arg(m_fixtureMode->name());
+		info += genInfo.arg(tr("Type")).arg(m_fixtureDef->type());
+	}
 	else
-		info += KXMLFixtureGeneric;
-
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	// Model
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Model</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-
-	if (m_fixtureDef != NULL)
-		info += m_fixtureDef->model();
-	else
-		info += KXMLFixtureGeneric;
-
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	// Mode
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Mode</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-
-	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
-		info += m_fixtureMode->name();
-	else
-		info += KXMLFixtureGeneric;
-
-	info += QString("</TD>");
-	info += QString("</TR>");
-
-	// Type
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Type</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-
-	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
-		info += m_fixtureDef->type();
-	else
-		info += KXMLFixtureDimmer;
-
-	info += QString("</TD>");
-	info += QString("</TR>");
+	{
+		info += genInfo.arg(tr("Type")).arg(tr("Generic Dimmer"));
+	}
 
 	// Universe
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Universe</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-	if (isDMXZeroBased() == true)
-		info += t.sprintf("%d", universe());
-	else
-		info += t.sprintf("%d", universe() + 1);
-	info += QString("</TD>");
-	info += QString("</TR>");
+	info += genInfo.arg(tr("Universe")).arg(universe() + 1);
 
 	// Address
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Address space</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-	if (isDMXZeroBased() == true)
-		info += t.sprintf("%d - %d", address(), address() + channels() - 1);
-	else
-		info += t.sprintf("%d - %d", address() + 1, address() + channels());
-	info += QString("</TD>");
-	info += QString("</TR>");
+	info += genInfo.arg(tr("Address")).arg(address() + channels());
 
 	// Binary address
-	info += QString("<TR>");
-	info += QString("<TD>");
-	info += QString("<B>Binary address (DIP)</B>");
-	info += QString("</TD>");
-	info += QString("<TD>");
-	if (isDMXZeroBased() == true)
-		info += QString("%1").arg(address(), 9, 2, QChar('0'));
-	else
-		info += QString("%1").arg(address() + 1, 9, 2, QChar('0'));
-	info += QString("</TD>");
-	info += QString("</TR>");
-	info += QString("</TABLE>");
+	info += genInfo.arg(tr("Binary Address (DIP)"))
+			.arg(QString("%1").arg(address() + 1, 9, 2, QChar('0')));
 
-	//
-	// Channels
-	//
-	info += QString("<TABLE COLS=\"3\" WIDTH=\"100%\">");
-	info += QString("<TR>");
+	/********************************************************************
+	 * Channels
+	 ********************************************************************/
 
-	// Relative channel column title
-	info += QString("<TD BGCOLOR=\"");
-	info += pal.color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += pal.color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("<B>Channel</B>");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	// DMX channel column title
-	info += QString("<TD BGCOLOR=\"");
-	info += pal.color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += pal.color(QPalette::HighlightedText).name();
-	info += QString("\">");
-	info += QString("<B>DMX</B>");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-
-	// Channel name column title
-	info += QString("<TD BGCOLOR=\"");
-	info += pal.color(QPalette::Highlight).name();
-	info += QString("\">");
-	info += QString("<FONT COLOR=\"");
-	info += pal.color(QPalette::HighlightedText).name();
-	info += QString("\" SIZE=\"3\">");
-	info += QString("<B>Name</B>");
-	info += QString("</FONT>");
-	info += QString("</TD>");
-	info += QString("</TR>");
+	// Title row
+	info += QString("<TR><TD CLASS='subhi'>%1</TD>").arg(tr("Channel"));
+	info += QString("<TD CLASS='subhi'>%1</TD>").arg(tr("DMX"));
+	info += QString("<TD CLASS='subhi'>%1</TD></TR>").arg(tr("Name"));
 
 	// Fill table with the fixture's channels
 	for (t_channel ch = 0; ch < channels();	ch++)
 	{
-		info += QString("<TR>");
-
-		// Relative channel
-		info += QString("<TD>");
-		info += t.setNum(ch + 1);
-		info += QString("</TD>");
-
-		// DMX channel
-		info += QString("<TD>");
-		if (isDMXZeroBased() == true)
-			info += t.setNum(address() + ch);
-		else
-			info += t.setNum(address() + ch + 1);
-		info += QString("</TD>");
-
-		// Channel name
-		info += QString("<TD>");
-
-		if (m_fixtureDef != NULL && m_fixtureMode != NULL)
-			info += channel(ch)->name();
-		else
-			info += "Level";
-
-		info += QString("</TD>");
+		QString chInfo("<TR><TD>%1</TD><TD>%2</TD><TD>%3</TD></TR>");
+		info += chInfo.arg(ch + 1).arg(address() + ch + 1)
+					  .arg(channel(ch)->name());
 	}
 
-	info += QString("</TR>");
-	info += QString("</TABLE>");
+	/********************************************************************
+	 * Extended device information for non-dimmers
+	 ********************************************************************/
 
-	// Extended Device Information
-	// @TODO better move this to QLCPhysical?
-	if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+	if (isDimmer() == false)
 	{
 		QLCPhysical physical = m_fixtureMode->physical();
-		info += QString("<BR><TABLE WIDTH=\"100%\">");
-		info += QString("<TR>");
-		info += QString("<TD BGCOLOR=\"");
-		info += pal.color(QPalette::Highlight).name();
-		info += QString("\" COLSPAN=\"2\">");
-		info += QString("<FONT COLOR=\"");
-		info += pal.color(QPalette::HighlightedText).name();
-		info += QString("\" SIZE=\"3\">");
-		info += tr("<B>Physical information</B>");
-		info += QString("</FONT></TD></TR>");
-		info += tr("<TR><TD><B>Width</B></TD><TD>");
-		info += tr("%1mm").arg(physical.width());
-		info += QString("</TD></TR>");
-		info += tr("<TR><TD><B>Height</B></TD><TD>");
-		info += tr("%1mm").arg(physical.height());
-		info += QString("</TD></TR>");
-		info += tr("<TR><TD><B>Depth</B></TD><TD>");
-		info += tr("%1mm").arg(physical.depth());
-		info += QString("</TD></TR>");
-		info += tr("<TR><TD><B>Weight</B></TD><TD>");
-		info += tr("%1kg").arg(physical.weight());
-		info += QString("</TD></TR>");
-		if(physical.powerConsumption() > 0)
-		{
-			info += tr("<TR><TD><B>Power Consumption</B></TD><TD>");
-			info += QString("%1W").arg(physical.powerConsumption());
-			info += QString("</TD></TR>");
-		}
-		info += tr("<TR><TD><B>DMX Connector</B></TD><TD>");
-		info += physical.dmxConnector();
-		info += QString("</TD></TR>");
+		info += title.arg(tr("Physical"));
 
-		// @TODO types should be compared against constants
-		// @TODO more flexibel physicals for different types in general
-		if (m_fixtureDef->type() != "Dimmer" || m_fixtureDef->type() != "Fan"
-		    || m_fixtureDef->type() != "Hazer" || m_fixtureDef->type() != "Smoke")
-		{
-			// Bulb
-			info += QString("<TR>");
-			info += QString("<TD BGCOLOR=\"");
-			info += pal.color(QPalette::Highlight).name();
-			info += QString("\" COLSPAN=\"2\">");
-			info += QString("<FONT COLOR=\"");
-			info += pal.color(QPalette::HighlightedText).name();
-			info += QString("\" SIZE=\"3\">");
-			info += tr("<B>Bulb</B>");
-			info += QString("</FONT></TD></TR>");
+		QString mm("%1mm");
+		QString W("%1W");
+		info += genInfo.arg(tr("Width")).arg(mm.arg(physical.width()));
+		info += genInfo.arg(tr("Height")).arg(mm.arg(physical.height()));
+		info += genInfo.arg(tr("Depth")).arg(mm.arg(physical.depth()));
+		info += genInfo.arg(tr("Weight")).arg(mm.arg(physical.weight()));
+		info += genInfo.arg(tr("Power consumption")).arg(W.arg(physical.powerConsumption()));
+		info += genInfo.arg(tr("DMX Connector")).arg(physical.dmxConnector());
 
-			info += tr("<TR><TD><B>Type</B></TD><TD>");
-			info += QString("%1").arg(physical.bulbType());
-			info += QString("</TD></TR>");
-			if (physical.bulbLumens() > 0)
-			{
-				info += tr("<TR><TD><B>Lumens</B></TD><TD>");
-				info += QString("%1").arg(physical.bulbLumens());
-				info += QString("</TD></TR>");
-			}
-			if (physical.bulbColourTemperature() > 0)
-			{
-				info += tr("<TR><TD><B>Colour Temperature (K)</B></TD><TD>");
-				info += QString("%1").arg(physical.bulbColourTemperature());
-				info += QString("</TD></TR>");
-			}
+		// Bulb
+		QString K("%1K");
+		QString lm("%1lm");
+		info += subTitle.arg(tr("Bulb"));
+		info += genInfo.arg(tr("Type")).arg(physical.bulbType());
+		info += genInfo.arg(tr("Luminous Flux")).arg(lm.arg(physical.bulbLumens()));
+		info += genInfo.arg(tr("Colour Temperature")).arg(K.arg(physical.bulbColourTemperature()));
 
-			// Lens
-			info += QString("<TR>");
-			info += QString("<TD BGCOLOR=\"");
-			info += pal.color(QPalette::Highlight).name();
-			info += QString("\" COLSPAN=\"2\">");
-			info += QString("<FONT COLOR=\"");
-			info += pal.color(QPalette::HighlightedText).name();
-			info += QString("\" SIZE=\"3\">");
-			info += tr("<B>Lens</B>");
-			info += QString("</FONT></TD></TR>");
+		// Lens
+		QString angle("%1&deg; - %2&deg;");
+		info += subTitle.arg(tr("Lens"));
+		info += genInfo.arg(tr("Name")).arg(physical.lensName());
+		info += genInfo.arg(tr("Beam Angle"))
+			.arg(angle.arg(physical.lensDegreesMin())
+				  .arg(physical.lensDegreesMax()));
 
-			info += tr("<TR><TD><B>Name</B></TD><TD>");
-			info += QString("%1").arg(physical.lensName());
-			info += QString("</TD></TR>");
-			if (physical.lensDegreesMin() > 0)
-			{
-				info += tr("<TR><TD><B>Min Degrees</B></TD><TD>");
-				info += QString("%1").arg(physical.lensDegreesMin());
-				info += QString("</TD></TR>");
-			}
-			if (physical.lensDegreesMax() > 0)
-			{
-				info += tr("<TR><TD><B>Max Degrees</B></TD><TD>");
-				info += QString("%1").arg(physical.lensDegreesMax());
-				info += QString("</TD></TR>");
-			}
-
-			// Focus
-			info += QString("<TR>");
-			info += QString("<TD BGCOLOR=\"");
-			info += pal.color(QPalette::Highlight).name();
-			info += QString("\" COLSPAN=\"2\">");
-			info += QString("<FONT COLOR=\"");
-			info += pal.color(QPalette::HighlightedText).name();
-			info += QString("\" SIZE=\"3\">");
-			info += tr("<B>Focus</B>");
-			info += QString("</FONT></TD></TR>");
-
-			info += tr("<TR><TD><B>Type</B></TD><TD>");
-			info += QString("%1").arg(physical.focusType());
-			info += QString("</TD></TR>");
-			if (physical.focusPanMax() > 0)
-			{
-				info += tr("<TR><TD><B>Pan Max Degrees</B></TD><TD>");
-				info += QString("%1").arg(physical.focusPanMax());
-				info += QString("</TD></TR>");
-			}
-			if (physical.focusTiltMax() > 0)
-			{
-				info += tr("<TR><TD><B>Tilt Max Degrees</B></TD><TD>");
-				info += QString("%1").arg(physical.focusTiltMax());
-				info += QString("</TD></TR>");
-			}
-		}
-		info += QString("</TABLE>");
+		// Focus
+		QString range("%1&deg;");
+		info += subTitle.arg(tr("Focus"));
+		info += genInfo.arg(tr("Type")).arg(physical.focusType());
+		info += genInfo.arg(tr("Pan Range")).arg(range.arg(physical.focusPanMax()));
+		info += genInfo.arg(tr("Tilt Range")).arg(range.arg(physical.focusTiltMax()));
 	}
 
-	info += QString("</BODY>");
-	info += QString("</HTML>");
+	// HTML document & table closure
+	info += "</TABLE></BODY></HTML>";
 
 	return info;
 }
