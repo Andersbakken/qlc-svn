@@ -50,7 +50,6 @@ Doc::Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache)
 	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
 		m_fixtureArray[i] = NULL;
 	m_fixtureAllocation = 0;
-	m_totalPowerConsumption = 0;
 
 	// Allocate function array
 	m_functionArray = (Function**) malloc(sizeof(Function*) *
@@ -96,7 +95,6 @@ Doc::~Doc()
 	}
 	delete [] m_fixtureArray;
 	m_fixtureAllocation = 0;
-	m_totalPowerConsumption = 0;
 }
 
 void Doc::setModified()
@@ -193,14 +191,6 @@ bool Doc::deleteFixture(t_fixture_id id)
 
 	if (m_fixtureArray[id] != NULL)
 	{
-		// generic dimmer has no mode and physical
-		if (m_fixtureArray[id]->fixtureMode() != NULL)
-		{
-			QLCPhysical phys = m_fixtureArray[id]->fixtureMode()->physical();
-			m_totalPowerConsumption = totalPowerConsumption()
-					- phys.powerConsumption();
-		}
-
 		delete m_fixtureArray[id];
 		m_fixtureArray[id] = NULL;
 		m_fixtureAllocation--;
@@ -275,6 +265,36 @@ t_channel Doc::findAddress(int universe, t_channel numChannels) const
 	return KChannelInvalid;
 }
 
+int Doc::totalPowerConsumption(int& fuzzy) const
+{
+	int totalPowerConsumption = 0;
+
+	// Make sure fuzzy starts from zero
+	fuzzy = 0;
+
+	for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+	{
+		if (m_fixtureArray[i] == NULL)
+			continue;
+
+		// Generic dimmer has no mode and physical
+		if (m_fixtureArray[i]->isDimmer() == false)
+		{
+			QLCPhysical phys = m_fixtureArray[i]->fixtureMode()->physical();
+			if (phys.powerConsumption() > 0)
+				totalPowerConsumption += phys.powerConsumption();
+			else
+				fuzzy++;
+		}
+		else
+		{
+			fuzzy++;
+		}
+	}
+
+	return totalPowerConsumption;
+}
+
 void Doc::assignFixture(Fixture* fixture, t_fixture_id id)
 {
 	Q_ASSERT(fixture != NULL);
@@ -283,14 +303,6 @@ void Doc::assignFixture(Fixture* fixture, t_fixture_id id)
 	/* Patch fixture change signals thru Doc */
 	connect(fixture, SIGNAL(changed(t_fixture_id)),
 		this, SLOT(slotFixtureChanged(t_fixture_id)));
-
-	// generic dimmer has no mode and physical
-	if (fixture->fixtureMode() != NULL)
-	{
-		QLCPhysical phys = fixture->fixtureMode()->physical();
-		m_totalPowerConsumption = totalPowerConsumption() +
-				phys.powerConsumption();
-	}
 
 	m_fixtureArray[id] = fixture;
 	fixture->setID(id);

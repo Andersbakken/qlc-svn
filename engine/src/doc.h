@@ -164,11 +164,13 @@ public:
 	int fixtures() const { return m_fixtureAllocation; }
 
 	/**
-	 * Get the total power consumption of all fixtures in this workspace.
+	 * Get the total power consumption of all fixtures in the current
+	 * workspace.
 	 *
+	 * @param[out] fuzzy Number of fixtures without power consumption value
 	 * @return Total power consumption
 	 */
-	int totalPowerConsumption() const { return m_totalPowerConsumption; }
+	int totalPowerConsumption(int& fuzzy) const;
 
 protected:
 	/**
@@ -208,9 +210,6 @@ protected:
 
 	/** Number of allocated fixtures in fixture array */
 	int m_fixtureAllocation;
-
-	/** Total power consumption of all fixtures in this workspace **/
-	int m_totalPowerConsumption;
 
 	/*********************************************************************
 	 * Functions

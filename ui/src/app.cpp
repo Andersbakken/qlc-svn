@@ -408,6 +408,8 @@ void App::initDoc()
 void App::slotDocModified(bool state)
 {
 	QString caption(App::longName());
+	QString msg = "";
+	int fuzzy = 0;
 
 	if (fileName() != QString::null)
 	{
@@ -424,14 +426,23 @@ void App::slotDocModified(bool state)
 	else
 		setWindowTitle(caption);
 
+	int totalPowerConsumption = m_doc->totalPowerConsumption(fuzzy);
+
+	// Fixtures without power consumption values
+	if (fuzzy > 0)
+	{
+		msg += "\n";
+		msg += tr("(%n fixture(s) have no power consumption defined)", "", fuzzy);
+	}
+
 	/* Update fixture & function allocation status */
 	m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2 (%3W)")
 		.arg(m_doc->fixtures()).arg(KFixtureArraySize)
-		.arg(m_doc->totalPowerConsumption()));
+		.arg(totalPowerConsumption));
 	m_fixtureAllocationIndicator->setToolTip(
 			tr("Space left for %n fixtures. Currently consuming %1 watts total.", "",
 					KFixtureArraySize - m_doc->fixtures())
-					.arg(m_doc->totalPowerConsumption()));
+					.arg(totalPowerConsumption) + msg);
 
 	m_functionAllocationIndicator->setText(tr("Functions: %1/%2")
 		.arg(m_doc->functions()).arg(KFunctionArraySize));

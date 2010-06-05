@@ -29,6 +29,9 @@
 #include "scene.h"
 #include "efx.h"
 #include "bus.h"
+#include "qlcphysical.h"
+#include "qlcfixturemode.h"
+#include "qlcfixturedef.h"
 
 #include "doc_test.h"
 #define protected public
@@ -38,6 +41,11 @@
 void Doc_Test::initTestCase()
 {
     Bus::init(this);
+#ifdef WIN32
+	QVERIFY(m_fixtureDefCache.load("../../../fixtures/") == true);
+#else
+	QVERIFY(m_fixtureDefCache.load("../../fixtures/") == true);
+#endif
 }
 
 void Doc_Test::defaults()
@@ -279,6 +287,70 @@ void Doc_Test::findAddress()
 
 	/* findAddress() must not affect modified state */
 	QVERIFY(doc.isModified() == false);
+}
+
+void Doc_Test::totalPowerConsumption()
+{
+	Doc doc(this, m_fixtureDefCache);
+	int fuzzy = 0;
+
+	/* Load Showtec - MiniMax 250 with 250W power consumption */
+	const QLCFixtureDef* fixtureDef;
+	fixtureDef = m_fixtureDefCache.fixtureDef("Showtec", "MiniMax 250");
+	Q_ASSERT(fixtureDef != NULL);
+	const QLCFixtureMode* fixtureMode;
+	fixtureMode = fixtureDef->modes().at(0);
+	Q_ASSERT(fixtureMode != NULL);
+
+	/* Add a new fixture */
+	Fixture* f1 = new Fixture(&doc);
+	f1->setName("250W (total 250W)");
+	f1->setChannels(6);
+	f1->setAddress(0);
+	f1->setUniverse(0);
+	f1->setFixtureDefinition(fixtureDef, fixtureMode);
+	QVERIFY(f1->fixtureDef() == fixtureDef);
+	QVERIFY(f1->fixtureMode() == fixtureMode);
+	QVERIFY(f1->fixtureMode()->physical().powerConsumption() == 250);
+	QVERIFY(doc.addFixture(f1) == true);
+	QVERIFY(doc.totalPowerConsumption(fuzzy) == 250);
+	QVERIFY(fuzzy == 0);
+
+	/* Add the same fixture once more */
+	Fixture* f2 = new Fixture(&doc);
+	f2->setName("250W (total 500W)");
+	f2->setChannels(6);
+	f2->setAddress(10);
+	f2->setUniverse(0);
+	f2->setFixtureDefinition(fixtureDef, fixtureMode);
+	QVERIFY(f2->fixtureDef() == fixtureDef);
+	QVERIFY(f2->fixtureMode() == fixtureMode);
+	QVERIFY(f2->fixtureMode()->physical().powerConsumption() == 250);
+	QVERIFY(doc.addFixture(f2) == true);
+	QVERIFY(doc.totalPowerConsumption(fuzzy) == 500);
+	QVERIFY(fuzzy == 0);
+
+	/* Test generic dimmer and fuzzy */
+	Fixture* f3 = new Fixture(&doc);
+	f3->setName("Generic Dimmer");
+	f3->setChannels(6);
+	f3->setAddress(20);
+	f3->setUniverse(0);
+	QVERIFY(doc.addFixture(f3) == true);
+	QVERIFY(doc.totalPowerConsumption(fuzzy) == 500);
+	QVERIFY(fuzzy == 1);
+	// reset fuzzy count
+	fuzzy = 0;
+
+	/* Test fuzzy count */
+	Fixture* f4 = new Fixture(&doc);
+	f4->setName("Generic Dimmer 2");
+	f4->setChannels(6);
+	f4->setAddress(30);
+	f4->setUniverse(0);
+	QVERIFY(doc.addFixture(f4) == true);
+	QVERIFY(doc.totalPowerConsumption(fuzzy) == 500);
+	QVERIFY(fuzzy == 2);
 }
 
 void Doc_Test::addFunction()

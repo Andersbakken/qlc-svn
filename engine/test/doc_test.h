@@ -41,6 +41,7 @@ private slots:
 	void fixtureLimits();
 	void fixture();
 	void findAddress();
+	void totalPowerConsumption();
 
 	void addFunction();
 	void deleteFunction();
@@ -49,7 +50,7 @@ private slots:
 
 	void load();
 	void loadWrongRoot();
-        void save();
+	void save();
 
 private:
 	QDomElement createFixtureNode(QDomDocument& doc, t_fixture_id id);
@@ -57,7 +58,7 @@ private:
 	QDomElement createBusNode(QDomDocument& doc, quint32 id, quint32 value);
 
 private:
-        QLCFixtureDefCache m_fixtureDefCache;
+	QLCFixtureDefCache m_fixtureDefCache;
 };
 
 #endif
