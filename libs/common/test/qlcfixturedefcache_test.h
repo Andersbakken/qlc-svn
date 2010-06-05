@@ -11,6 +11,7 @@ private slots:
 	void add();
 	void fixtureDef();
 	void load();
+	void clear();
 };
 
 #endif

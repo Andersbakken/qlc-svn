@@ -102,6 +102,12 @@ public:
 	 */
 	bool load(const QString& fixturePath);
 
+	/**
+	 * Cleans the contents of the fixture definition cache, deleting
+	 * all fixture definitions.
+	 */
+	void clear();
+
 protected:
 	/** Map of manufacturers (key) and their models (value) */
 	QMap <QString, QMap <QString,QLCFixtureDef*> > m_models;

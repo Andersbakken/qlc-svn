@@ -32,20 +32,7 @@ QLCFixtureDefCache::QLCFixtureDefCache()
 
 QLCFixtureDefCache::~QLCFixtureDefCache()
 {
-	QMutableMapIterator
-		<QString, QMap <QString, QLCFixtureDef*> > it(m_models);
-	while (it.hasNext() == true)
-	{
-		it.next();
-
-		QMutableMapIterator <QString, QLCFixtureDef*> mit(it.value());
-		while (mit.hasNext() == true)
-		{
-			mit.next();
-			delete mit.value();
-			mit.remove();
-		}
-	}
+	clear();
 }
 
 const QLCFixtureDef* QLCFixtureDefCache::fixtureDef(
@@ -145,4 +132,23 @@ bool QLCFixtureDefCache::load(const QString& fixturePath)
 	}
 
 	return true;
+}
+
+void QLCFixtureDefCache::clear()
+{
+	QMutableMapIterator <QString, QMap <QString, QLCFixtureDef*> > it(m_models);
+	while (it.hasNext() == true)
+	{
+		it.next();
+
+		QMutableMapIterator <QString, QLCFixtureDef*> mit(it.value());
+		while (mit.hasNext() == true)
+		{
+			mit.next();
+			delete mit.value();
+			mit.remove();
+		}
+
+		it.remove();
+	}
 }

@@ -134,3 +134,13 @@ void QLCFixtureDefCache_Test::load()
 	QVERIFY(cache.manufacturers().contains("Robe") == true);
 	QVERIFY(cache.manufacturers().contains("SGM") == true);
 }
+
+void QLCFixtureDefCache_Test::clear()
+{
+	QLCFixtureDefCache cache;
+	QVERIFY(cache.load(INTERNAL_FIXTUREDIR) == true);
+
+	QVERIFY(cache.manufacturers().isEmpty() == false);
+	cache.clear();
+	QVERIFY(cache.manufacturers().isEmpty() == true);
+}
