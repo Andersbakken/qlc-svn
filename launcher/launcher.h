@@ -1,7 +1,9 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
+#include <QStringList>
 #include <QWidget>
+#include <QEvent>
 
 /**
  * Launcher is a very simple dialog for choosing whether to execute the main
@@ -18,13 +20,11 @@ class Launcher : public QWidget
 
 public:
 	/**
-	 * Create a new launcher widget, with the given list of
-	 * command line arguments and parent.
+	 * Create a new launcher widget with a parent object.
 	 *
-	 * @param argv List of command line arguments (must not be deleted)
 	 * @param parent Owning parent widget (optional)
 	 */
-	Launcher(char* const* argv, QWidget* parent = 0);
+	Launcher(QWidget* parent = 0);
 
 	/** Destructor */
 	~Launcher();
@@ -37,8 +37,15 @@ private slots:
 	void slotQLCClicked();
 
 private:
-	/** Command line arguments */
-	char* const* m_argv;
+	/** Launch Fixture Editor with given additional arguments */
+	void launchFXED(const QStringList& arguments = QStringList());
+
+	/** Launch Q Light Controller with given additional arguments */
+	void launchQLC(const QStringList& arguments = QStringList());
+
+protected:
+	/** Acts as QApplication's event filter for QFileOpen events */
+	bool eventFilter(QObject* object, QEvent* event);
 };
 
 #endif

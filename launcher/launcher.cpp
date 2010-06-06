@@ -1,19 +1,21 @@
+#include <QFileOpenEvent>
 #include <QApplication>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QMessageBox>
-#include <QByteArray>
+#include <QProcess>
 #include <QPixmap>
 #include <QLabel>
+#include <QUrl>
+
 #include <unistd.h>
 
 #include "qlcconfig.h"
 #include "qlctypes.h"
+#include "qlcfile.h"
+
 #include "launcher.h"
 
-Launcher::Launcher(char* const* argv, QWidget* parent)
-	: QWidget(parent)
-	, m_argv(argv)
+Launcher::Launcher(QWidget* parent) : QWidget(parent)
 {
 	QGridLayout* lay;
 	lay = new QGridLayout(this);
@@ -46,20 +48,72 @@ Launcher::~Launcher()
 
 void Launcher::slotFXEDClicked()
 {
+	launchFXED(QApplication::arguments());
+}
+
+void Launcher::slotQLCClicked()
+{
+	launchQLC(QApplication::arguments());
+}
+
+void Launcher::launchFXED(const QStringList& arguments)
+{
 	QString path(QApplication::applicationDirPath());
 	if (path.endsWith(QString("/")) == false)
 		path += QString("/");
 	path += QString("qlc-fixtureeditor");
-	::execv(path.toAscii().constData(), m_argv);
+	QProcess::startDetached(path, arguments);
 	QApplication::exit();
 }
 
-void Launcher::slotQLCClicked()
+void Launcher::launchQLC(const QStringList& arguments)
 {
 	QString path(QApplication::applicationDirPath());
 	if (path.endsWith(QString("/")) == false)
 		path += QString("/");
 	path += QString("qlc");
-	::execv(path.toAscii().constData(), m_argv);
+	QProcess::startDetached(path, arguments);
 	QApplication::exit();
+}
+
+bool Launcher::eventFilter(QObject* object, QEvent* event)
+{
+	bool retval = false;
+
+	// Not interested in other objects' events
+	if (object != QApplication::instance())
+		return false;
+
+	if (event->type() == QEvent::FileOpen)
+	{
+		QFileOpenEvent* fileOpenEvent(static_cast<QFileOpenEvent*>(event));
+		QString path(fileOpenEvent->url().path());
+		if (path.isEmpty() == true)
+		{
+			path = fileOpenEvent->file();
+			if (path.isEmpty() == true)
+			{
+				// Nothing to open
+				event->ignore();
+				return false;
+			}
+		}
+
+		if (path.endsWith(KExtWorkspace, Qt::CaseInsensitive) == true)
+		{
+			launchQLC(QApplication::arguments() << "--open" << path);
+			retval = true;
+		}
+		else if (path.endsWith(KExtFixture, Qt::CaseInsensitive) == true)
+		{
+			launchFXED(QApplication::arguments() << "--open" << path);
+			retval = true;
+		}
+	}
+
+	if (retval == true)
+		event->accept();
+	else
+		event->ignore();
+	return retval;
 }

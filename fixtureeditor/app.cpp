@@ -51,8 +51,12 @@
 
 #define KSettingsGeometry "workspace/geometry"
 
+App* _app;
+
 App::App(QWidget* parent) : QMainWindow(parent)
 {
+	_app = this;
+
 	m_fileMenu = NULL;
 	m_helpMenu = NULL;
 	m_toolBar = NULL;
@@ -83,6 +87,9 @@ App::~App()
 	settings.setValue(KSettingsGeometry, saveGeometry());
 
 	setCopyChannel(NULL);
+
+	// Remove the reference to the application
+	_app = NULL;
 }
 
 QString App::longName()
@@ -93,6 +100,37 @@ QString App::longName()
 QString App::version()
 {
 	return QString("Version %1").arg(APPVERSION);
+}
+
+void App::loadFixtureDefinition(const QString& path)
+{
+	/* Attempt to create a fixture definition from the selected file */
+	QLCFixtureDef* fixtureDef = new QLCFixtureDef();
+	QFile::FileError error = fixtureDef->loadXML(path);
+	if (error == QFile::NoError)
+	{
+		QLCFixtureEditor* editor;
+		QMdiSubWindow* sub;
+
+		/* Create a new sub window and put a fixture editor widget
+		   in that sub window with the newly-created fixture def */
+		sub = new QMdiSubWindow(centralWidget());
+		editor = new QLCFixtureEditor(sub, fixtureDef, path);
+
+		sub->setWidget(editor);
+		sub->setAttribute(Qt::WA_DeleteOnClose);
+		qobject_cast<QMdiArea*> (centralWidget())->addSubWindow(sub);
+
+		editor->show();
+		sub->show();
+	}
+	else
+	{
+		delete fixtureDef;
+		QMessageBox::warning(this, tr("Fixture loading failed"),
+			tr("Unable to load fixture definition: ") +
+			QLCFile::errorString(error));
+	}
 }
 
 void App::closeEvent(QCloseEvent* e)
@@ -258,7 +296,6 @@ void App::slotFileNew()
 
 void App::slotFileOpen()
 {
-	QLCFixtureDef* fixtureDef;	
 	QString path;
 	
 	/* Create a file open dialog */
@@ -298,36 +335,8 @@ void App::slotFileOpen()
 
 	/* Get a file name */
 	path = dialog.selectedFiles().first();
-	if (path == QString::null)
-		return;
-
-	/* Attempt to create a fixture definition from the selected file */
-	fixtureDef = new QLCFixtureDef();
-	QFile::FileError error = fixtureDef->loadXML(path);
-	if (error == QFile::NoError)
-	{
-		QLCFixtureEditor* editor;
-		QMdiSubWindow* sub;
-
-		/* Create a new sub window and put a fixture editor widget
-		   in that sub window with the newly-created fixture def */
-		sub = new QMdiSubWindow(centralWidget());
-		editor = new QLCFixtureEditor(sub, fixtureDef, path);
-		
-		sub->setWidget(editor);
-		sub->setAttribute(Qt::WA_DeleteOnClose);
-		qobject_cast<QMdiArea*> (centralWidget())->addSubWindow(sub);
-		
-		editor->show();
-		sub->show();
-	}
-	else
-	{
-		delete fixtureDef;
-		QMessageBox::warning(this, tr("Fixture loading failed"),
-			tr("Unable to load fixture definition: ") +
-			QLCFile::errorString(error));
-	}
+	if (path.isEmpty() == false)
+		loadFixtureDefinition(path);
 }
 
 void App::slotFileSave()

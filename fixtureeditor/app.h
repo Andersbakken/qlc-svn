@@ -37,11 +37,19 @@ class App : public QMainWindow
 	Q_OBJECT
 
 public:
-	App(QWidget* parent);
+	App(QWidget* parent = 0);
 	~App();
 
 	static QString longName();
 	static QString version();
+
+	/**
+	 * Load a fixture definition from the given path and open it in
+	 * a new editor window.
+	 *
+	 * @param path The file path to open
+	 */
+	void loadFixtureDefinition(const QString& path);
 
 protected:
 	void closeEvent(QCloseEvent*);

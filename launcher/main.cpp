@@ -34,8 +34,9 @@ int main(int argc, char* const* argv)
 
 	loadTranslation(QLocale::system().name(), app);
 
-	Launcher launcher(argv);
-	launcher.show();
+	Launcher launcher;
+	app.installEventFilter(&launcher);
 
+	launcher.show();
 	return app.exec();
 }
