@@ -172,37 +172,21 @@ void FixtureManager::slotDocumentChanged(Doc* doc)
 
 void FixtureManager::slotFixtureAdded(t_fixture_id id)
 {
-	Fixture* fxi;
-
-	fxi = _app->doc()->fixture(id);
+	Fixture* fxi = _app->doc()->fixture(id);
 	if (fxi != NULL)
 	{
-		// Create a new list view item
+		// Create a new list view item and fill it with fixture info
 		QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
-
-		// Fill fixture information to the item
 		updateItem(item, fxi);
-
-		/* Select the item (fixtures can be added only manually,
-		   so if this signal comes, a fixture was added with
-		   the fixture manager) */
-		m_tree->setCurrentItem(item);
 	}
 }
 
 void FixtureManager::slotFixtureRemoved(t_fixture_id id)
 {
-	QTreeWidgetItemIterator it(m_tree);
-	while (*it != NULL)
-	{
-		if ((*it)->text(KColumnID).toInt() == id)
-		{
-			delete (*it);
-			break;
-		}
-	}
-
-	slotSelectionChanged();
+	// Find a matching fixture item and destroy it
+	QTreeWidgetItem* item = fixtureItem(id);
+	if (item != NULL)
+		delete item;
 }
 
 void FixtureManager::slotModeChanged(Doc::Mode mode)
@@ -295,6 +279,18 @@ void FixtureManager::updateView()
 	/* Select the first fixture unless something else is wanted */
 	if (currentId == Fixture::invalidId())
 		m_tree->setCurrentItem(m_tree->topLevelItem(0));
+}
+
+QTreeWidgetItem* FixtureManager::fixtureItem(t_fixture_id id) const
+{
+	QTreeWidgetItemIterator it(m_tree);
+	while (*it != NULL)
+	{
+		if ((*it)->text(KColumnID).toInt() == id)
+			return (*it);
+		++it;
+	}
+	return NULL;
 }
 
 void FixtureManager::updateItem(QTreeWidgetItem* item, Fixture* fxi)
@@ -485,6 +481,8 @@ void FixtureManager::slotAdd()
 	if (af.exec() == QDialog::Rejected)
 		return;
 
+	t_fixture_id latestFxi = Fixture::invalidId();
+
 	QString name = af.name();
 	t_channel address = af.address();
 	t_channel universe = af.universe();
@@ -537,6 +535,10 @@ void FixtureManager::slotAdd()
 		fxi = NULL;
 		return;
 	}
+	else
+	{
+		latestFxi = fxi->id();
+	}
 
 	/* Add the rest (if any) WITH address gap */
 	for (int i = 1; i < af.amount(); i++)
@@ -574,7 +576,15 @@ void FixtureManager::slotAdd()
 			fxi = NULL;
 			break;
 		}
+		else
+		{
+			latestFxi = fxi->id();
+		}
 	}
+
+	QTreeWidgetItem* selectItem = fixtureItem(latestFxi);
+	if (selectItem != NULL)
+		m_tree->setCurrentItem(selectItem);
 }
 
 void FixtureManager::addFixtureErrorMessage()

@@ -90,6 +90,9 @@ public:
 	void updateView();
 
 protected:
+	/** Get a QTreeWidgetItem whose fixture ID is $id */
+	QTreeWidgetItem* fixtureItem(t_fixture_id id) const;
+
 	/** Construct the list view and data view */
 	void initDataView();
 
