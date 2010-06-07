@@ -84,9 +84,9 @@ void printUsage()
 	cout << "Usage:";
 	cout << "  qlc [options]" << endl;
 	cout << "Options:" << endl;
-	cout << "  -o <file> or --open <file>\tOpen the specified workspace file" << endl;
+	cout << "  -o or --open <file>\t\tOpen the specified workspace file" << endl;
 	cout << "  -p or --operate\t\tStart in operate mode" << endl;
-	cout << "  -l <locale> or --locale <locale>\tForce QLC to use the given locale for translation" << endl;
+	cout << "  -l or --locale <locale>\tForce a locale for translation" << endl;
 	cout << "  -h or --help\t\t\tPrint this help" << endl;
 	cout << "  -v or --version\t\tPrint version information" << endl;
 	cout << endl;
