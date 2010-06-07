@@ -71,8 +71,8 @@ void printUsage()
 	cout << "Usage:";
 	cout << "  qlc-fixtureeditor [options]" << endl;
 	cout << "Options:" << endl;
-	cout << "  -o <file> or --open <file>\tOpen the specified workspace file" << endl;
-	cout << "  -l <locale> or --locale <locale>\tForce Fixture Editor to use the given locale for translation" << endl;
+	cout << "  -o or --open <file>\t\tOpen the specified fixture definition file" << endl;
+	cout << "  -l or --locale <locale>\tForce a locale for translation" << endl;
 	cout << "  -h or --help\t\t\tPrint this help" << endl;
 	cout << "  -v or --version\t\tPrint version information" << endl;
 	cout << endl;
