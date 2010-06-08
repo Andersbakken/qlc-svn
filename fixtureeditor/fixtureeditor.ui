@@ -99,62 +99,62 @@
            </property>
            <item>
             <property name="text" >
-             <string>Color Changer</string>
+             <string notr="true">Color Changer</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Dimmer</string>
+             <string notr="true">Dimmer</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Effect</string>
+             <string notr="true">Effect</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Fan</string>
+             <string notr="true">Fan</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Flower</string>
+             <string notr="true">Flower</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Hazer</string>
+             <string notr="true">Hazer</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Laser</string>
+             <string notr="true">Laser</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Moving Head</string>
+             <string notr="true">Moving Head</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Other</string>
+             <string notr="true">Other</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Scanner</string>
+             <string notr="true">Scanner</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Smoke</string>
+             <string notr="true">Smoke</string>
             </property>
            </item>
            <item>
             <property name="text" >
-             <string>Strobe</string>
+             <string notr="true">Strobe</string>
             </property>
            </item>
           </widget>

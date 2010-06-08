@@ -54,10 +54,10 @@ EditChannel::EditChannel(QWidget* parent, QLCChannel* channel) : QDialog(parent)
 	setupUi(this);
 	init();
 
-        QSettings settings;
-        QVariant var = settings.value(KSettingsGeometry);
-        if (var.isValid() == true)
-                restoreGeometry(var.toByteArray());
+	QSettings settings;
+	QVariant var = settings.value(KSettingsGeometry);
+	if (var.isValid() == true)
+		restoreGeometry(var.toByteArray());
 }
 
 EditChannel::~EditChannel()
