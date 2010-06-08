@@ -35,6 +35,7 @@ AboutBox::AboutBox(QWidget* parent) : QDialog (parent)
 	m_websiteLabel->setText(tr("Website: %1").arg("<A HREF=\"http://www.sf.net/projects/qlc\">http://www.sf.net/projects/qlc</a>"));
 
 	m_contributors->clear();
+	m_contributors->addItem("Klaus Weidenbach");
 	m_contributors->addItem("Stefan Krumm");
 	m_contributors->addItem(QByteArray::fromPercentEncoding("Christian S%fchs"));
 	m_contributors->addItem("Simon Newton");
