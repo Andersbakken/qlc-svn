@@ -61,7 +61,7 @@ Requirements - Windows
 * Enttec DMX USB Output plugin: No additional requirements
 * HID Input plugin: Not available
 * MIDI Input plugin: No additional requirements
-* ENTTEC Wing Input plugin: No additional requirements
+* ENTTEC Wing Input plugin: D2XX driver & development package (http://www.ftdichip.com/Drivers/D2XX.htm)
 * MIDI Output plugin: No additional requirements
 * LLA Output plugin: Not available for Windows
 * uDMX Output plugin: No additional requirements
@@ -70,7 +70,7 @@ Requirements - Windows
 Requirements - Mac OS X
 -----------------------
 * XCode (http://developer.apple.com/technologies/tools/xcode.html)
-* Qt SDK (http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x)
+* Qt SDK >= 4.6 (http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x)
 
 * Enttec DMX USB Output plugin: macports, libftdi-dev, pkg-config
 * HID Input plugin: Not available
