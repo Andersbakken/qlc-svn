@@ -135,6 +135,9 @@ protected:
 	/** Find the next free address space for current fixture selection,
 	    amount and address gap. Sets the address to address spin. */
 	void findAddress();
+	
+	/** Update the maximum amount of fixtures for the universe */
+	void updateMaximumAmount();
 
 	/*********************************************************************
 	 * Slots

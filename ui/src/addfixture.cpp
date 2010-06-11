@@ -250,6 +250,12 @@ void AddFixture::findAddress()
 	}
 }
 
+void AddFixture::updateMaximumAmount()
+{
+	m_amountSpin->setRange(1, (512 - m_addressSpin->value()) /
+		(m_channelsSpin->value() + m_gapSpin->value()));
+}
+
 /*****************************************************************************
  * Slots
  *****************************************************************************/
@@ -315,6 +321,9 @@ void AddFixture::slotAddressChanged(int value)
 		m_addressValue = value;
 	else
 		m_addressValue = value - 1;
+
+	/* Set the maximum number of fixtures */
+	updateMaximumAmount();
 }
 
 void AddFixture::slotChannelsChanged(int value)
@@ -327,6 +336,9 @@ void AddFixture::slotChannelsChanged(int value)
 		m_addressSpin->setRange(0, 512 - value);
 	else
 		m_addressSpin->setRange(1, 513 - value);
+
+	/* Set the maximum number of fixtures */
+	updateMaximumAmount();
 }
 
 void AddFixture::slotNameEdited(const QString &text)
@@ -348,6 +360,9 @@ void AddFixture::slotAmountSpinChanged(int value)
 void AddFixture::slotGapSpinChanged(int value)
 {
 	m_gapValue = value;
+
+	/* Set the maximum number of fixtures */
+	updateMaximumAmount();
 }
 
 void AddFixture::slotSelectionChanged()
@@ -421,6 +436,9 @@ void AddFixture::slotSelectionChanged()
 		m_nameEdit->setEnabled(true);
 	}
 
+	/* Set the maximum number of fixtures */
+	updateMaximumAmount();
+
 	/* Guide the user to edit the friendly name field */
 	m_nameEdit->setSelection(0, m_nameEdit->text().length());
 	m_nameEdit->setFocus();
@@ -443,4 +461,3 @@ void AddFixture::slotTreeDoubleClicked(QTreeWidgetItem* item)
 	if (item != NULL && item->parent() != NULL)
 		accept();
 }
-
