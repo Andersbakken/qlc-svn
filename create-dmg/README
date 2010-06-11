@@ -11,3 +11,11 @@ To create an apple .dmg package, you need to:
 3. Run the .dmg creation script in this directory
    * cd create-dmg
    * ./create-qlc-dmg
+
+#############################################################################
+
+create-dmg.sh is licensed under GNU GPL by YourSway LLC.
+Find more info at http://www.yoursway.com/free/#createdmg
+
+AdiumAppleScriptRunner is licensed under GNU GPLv2 by Adium team.
+Find more info at http://adium.im/
