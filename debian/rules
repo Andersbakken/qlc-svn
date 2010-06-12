@@ -34,7 +34,6 @@ major=`ls lib/unix/.libs/lib*.so.* | \
 
 build:
 	qmake
-	lrelease qlc.pro
 	$(MAKE)
 
 clean:
