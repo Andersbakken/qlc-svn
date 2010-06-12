@@ -5,15 +5,23 @@ TARGET		= icons
 
 # Linux
 unix:!macx {
-	desktop.path	= /usr/share/applications/
-	desktop.files	+= qlc.desktop \
-			   qlc-fixtureeditor.desktop
+	desktop.path	= $$INSTALLROOT/share/applications/
+	desktop.files	+= qlc.desktop qlc-fixtureeditor.desktop
+	INSTALLS	+= desktop
 
-	icons.path	= /usr/share/pixmaps/
-	icons.files	+= ../gfx/qlc.png \
-			   ../gfx/qlc-fixtureeditor.png
+	icons.path	= $$INSTALLROOT/share/pixmaps/
+	icons.files	+= ../gfx/qlc.png ../gfx/qlc-fixtureeditor.png
+	INSTALLS	+= icons
 
-	INSTALLS	+= icons desktop
+	mime.path	= $$INSTALLROOT/share/mime/packages
+	mime.files	+= qlc.xml
+	INSTALLS	+= mime
+
+	# This is nowadays run by dpkg (TODO: rpm)
+	#MIMEUPDATE	= $$system("which update-mime-database")
+	#mimeupdate.commands = $$MIMEUPDATE /usr/share/mime
+	#mimeupdate.path = /usr/share/mime
+	#INSTALLS += mimeupdate
 }
 
 # Mac OSX

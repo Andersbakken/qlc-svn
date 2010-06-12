@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Heikki Junnila <hjunnila@users.sf.net>
 Build-Depends: debhelper (>= 7.0.0), libqt4-dev (>= 4.3.0),
 		libasound2-dev (>= 1.0.16), libusb-dev (>= 2:0.1.12),
-		libftdi-dev (>= 0.17)
+		libftdi-dev (>= 0.17), shared-mime-info (>= 0.71)
 Standards-Version: 3.6.0
 
 Package: qlc
@@ -13,7 +13,8 @@ Architecture: i386 amd64
 Replaces: qlc-fixtures, qlc-input-profiles
 Conflicts: qlc-fixtures, qlc-input-profiles
 Provides: qlc-fixtures, qlc-input-profiles
-Depends: libqt4-core (>= 4.3.0), libqt4-xml (>= 4.3.0), libqt4-gui (>= 4.3.0)
+Depends: libqt4-core (>= 4.3.0), libqt4-xml (>= 4.3.0), libqt4-gui (>= 4.3.0),
+	 shared-mime-info (>= 0.71)
 Description: Software DMX lighting desk
   Q Light Controller - The Linux DMX lighting desk. Includes also fixture
   definitions and input profiles. In order to get access to real DMX hardware,
