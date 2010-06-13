@@ -2,6 +2,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QDebug>
+#include <QTimer>
 
 #include "qlcconfig.h"
 #include "launcher.h"
@@ -37,6 +38,13 @@ int main(int argc, char* const* argv)
 	Launcher launcher;
 	app.installEventFilter(&launcher);
 
-	launcher.show();
+	// If launcher is started by the system after user has activated
+	// either a .qxf or .qxw file, we don't need to show the dialog
+	// at all. Since this "mime-open" comes as an event, we won't know
+	// about it until app.exec() has been called. So, give some grace
+	// time before actually showing the launcher dialog, in case the
+	// event arrives and we can destroy the dialog before actually
+	// showing it.
+	QTimer::singleShot(100, &launcher, SLOT(show()));
 	return app.exec();
 }
