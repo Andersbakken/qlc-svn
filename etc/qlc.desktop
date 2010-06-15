@@ -2,9 +2,9 @@
 Type=Application
 Name=Q Light Controller
 GenericName=Lighting control
-GenericName[de]=Licht steuerung
+GenericName[de]=Lichtsteuerung
 GenericName[fi]=Valojen ohjaus
 Exec=qlc --open %f
 Icon=qlc
-MimeType=text/x-qlc-workspace;
-Categories=Lighting;Art;Qt;
+MimeType=application/x-qlc-workspace;
+Categories=Lighting;Art;Qt;AudioVideo;

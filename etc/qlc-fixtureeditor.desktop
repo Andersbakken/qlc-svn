@@ -2,9 +2,9 @@
 Type=Application
 Name=QLC Fixture Editor
 GenericName=Edit fixtures
-GenericName[de]=Lichtgeräte bearbeiten
+GenericName[de]=Gerätedefinitionen bearbeiten
 GenericName[fi]=Muokkaa valaisimia
 Exec=qlc-fixtureeditor --open %f
 Icon=qlc-fixtureeditor
-MimeType=text/x-qlc-fixture;
-Categories=Lighting;Art;Qt
+MimeType=application/x-qlc-fixture;
+Categories=Lighting;Art;Qt;AudioVideo;

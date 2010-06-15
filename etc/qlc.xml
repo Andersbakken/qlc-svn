@@ -1,13 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-    <mime-type type="text/x-qlc-workspace">
-        <glob pattern="*.qxw"/>
-	<comment xml:lang="en">QLC workspace</comment>
-	<comment xml:lang="fi">QLC työtila</comment>
-    </mime-type>
-    <mime-type type="text/x-qlc-fixture">
-        <glob pattern="*.qxf"/>
-	<comment xml:lang="en">QLC fixture definition</comment>
-	<comment xml:lang="fi">QLC valaisinmääritys</comment>
-    </mime-type>
+	<mime-type type="application/x-qlc-workspace">
+		<magic priority="50">
+			<match type="string" offset="0" value="DOCTYPE Workspace"/>
+		</magic>
+		<glob pattern="*.qxw"/>
+		<comment xml:lang="de">QLC Arbeitsbereich</comment>
+		<comment xml:lang="en">QLC workspace</comment>
+		<comment xml:lang="fi">QLC työtila</comment>
+	</mime-type>
+	<mime-type type="application/x-qlc-fixture">
+		<magic priority="50">
+			<match type="string" offset="0" value="DOCTYPE FixtureDefinition"/>
+		</magic>
+		<glob pattern="*.qxf"/>
+		<comment xml:lang="de">QLC Gerätedefinition</comment>
+		<comment xml:lang="en">QLC fixture definition</comment>
+		<comment xml:lang="fi">QLC valaisinmääritys</comment>
+	</mime-type>
 </mime-info>
