@@ -4,3 +4,4 @@ usr/share/applications/*
 usr/share/pixmaps/*
 usr/share/qlc/fixtures/*
 usr/share/qlc/inputprofiles/*
+usr/share/mime/packages/qlc.xml
