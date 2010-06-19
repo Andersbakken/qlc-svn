@@ -44,6 +44,9 @@ class QDomElement;
 
 class InputPatch : public QObject
 {
+	Q_OBJECT
+	Q_DISABLE_COPY(InputPatch);
+
 	/********************************************************************
 	 * Initialization
 	 ********************************************************************/
@@ -51,14 +54,12 @@ public:
 	InputPatch(QObject* parent);
 	virtual ~InputPatch();
 
-private:
-	Q_DISABLE_COPY(InputPatch);
-
 	/********************************************************************
 	 * Properties
 	 ********************************************************************/
 public:
-	void set(QLCInPlugin* plugin, t_input input, QLCInputProfile* profile);
+	void set(QLCInPlugin* plugin, t_input input, bool enableFeedback,
+		 QLCInputProfile* profile);
 
 	QLCInPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
@@ -69,10 +70,13 @@ public:
 	QLCInputProfile* profile() const { return m_profile; }
 	QString profileName() const;
 
+	bool feedbackEnabled() const { return m_feedbackEnabled; }
+
 protected:
 	QLCInPlugin* m_plugin;
 	t_input m_input;
 	QLCInputProfile* m_profile;
+	bool m_feedbackEnabled;
 };
 
 #endif

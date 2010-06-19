@@ -123,7 +123,7 @@ bool InputMap::feedBack(t_input_universe universe, t_input_channel channel,
 	InputPatch* patch = m_patch[universe];
 	Q_ASSERT(patch != NULL);
 
-	if (patch->plugin() != NULL)
+	if (patch->plugin() != NULL && patch->feedbackEnabled() == true)
 	{
 		patch->plugin()->feedBack(patch->input(), channel, value);
 		return true;
@@ -144,8 +144,8 @@ void InputMap::initPatch()
 		m_patch.insert(i, new InputPatch(this));
 }
 
-bool InputMap::setPatch(t_input_universe universe,
-			const QString& pluginName, t_input input,
+bool InputMap::setPatch(t_input_universe universe, const QString& pluginName,
+			t_input input, bool enableFeedback,
 			const QString& profileName)
 {
 	/* Check that the universe that we're doing mapping for is valid */
@@ -157,7 +157,8 @@ bool InputMap::setPatch(t_input_universe universe,
 
 	/* Don't care if plugin or profile is NULL. It must be possible to
 	   clear the patch completely. */
-	m_patch[universe]->set(plugin(pluginName), input, profile(profileName));
+	m_patch[universe]->set(plugin(pluginName), input, enableFeedback,
+				profile(profileName));
 
 	return true;
 }
@@ -435,6 +436,7 @@ bool InputMap::removeProfile(const QString& name)
 
 void InputMap::loadDefaults()
 {
+	bool feedbackEnabled;
 	QString profileName;
 	QSettings settings;
 	QString plugin;
@@ -462,6 +464,13 @@ void InputMap::loadDefaults()
 		key = QString("/inputmap/universe%2/profile/").arg(i);
 		profileName = settings.value(key).toString();
 
+		/* Feedback enable */
+		key = QString("/inputmap/universe%2/feedbackEnabled/").arg(i);
+		if (settings.value(key).isValid() == true)
+			feedbackEnabled = settings.value(key).toBool();
+		else
+			feedbackEnabled = true;
+
 		/* Do the mapping */
 		if (plugin.length() > 0 && input.length() > 0)
 		{
@@ -469,7 +478,10 @@ void InputMap::loadDefaults()
 			   to more than one universe at a time. */
 			int m = mapping(plugin, input.toInt());
 			if (m == -1 || m == i)
-				setPatch(i, plugin, input.toInt(), profileName);
+			{
+				setPatch(i, plugin, input.toInt(),
+					 feedbackEnabled, profileName);
+			}
 		}
 	}
 }
@@ -502,6 +514,10 @@ void InputMap::saveDefaults()
 			/* Input profile */
 			key = QString("/inputmap/universe%2/profile/").arg(i);
 			settings.setValue(key, pat->profileName());
+
+			/* Feedback enable */
+			key = QString("/inputmap/universe%2/feedbackEnabled/").arg(i);
+			settings.setValue(key, pat->feedbackEnabled());
 		}
 		else
 		{
@@ -516,6 +532,10 @@ void InputMap::saveDefaults()
 			/* Input profile */
 			key = QString("/inputmap/universe%2/profile/").arg(i);
 			settings.setValue(key, "");
+
+			/* Feedback enable */
+			key = QString("/inputmap/universe%2/feedbackEnabled/").arg(i);
+			settings.setValue(key, true);
 		}
 	}
 }

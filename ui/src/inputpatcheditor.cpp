@@ -74,6 +74,9 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 	m_originalProfileName = inputPatch->profileName();
 	m_currentProfileName = inputPatch->profileName();
 
+	m_originalFeedbackEnabled = inputPatch->feedbackEnabled();
+	m_currentFeedbackEnabled = inputPatch->feedbackEnabled();
+
 	/* Setup UI controls */
 	setupMappingPage();
 	setupProfilePage();
@@ -89,7 +92,8 @@ InputPatchEditor::~InputPatchEditor()
 void InputPatchEditor::reject()
 {
 	_app->inputMap()->setPatch(m_universe, m_originalPluginName,
-				   m_originalInput, m_originalProfileName);
+				   m_originalInput, m_originalFeedbackEnabled,
+				   m_originalProfileName);
 
 	QDialog::reject();
 }
@@ -123,6 +127,8 @@ void InputPatchEditor::setupMappingPage()
 	/* Prevent the editor uni radio button from being unchecked manually */
 	QButtonGroup* group = new QButtonGroup(this);
 	group->addButton(m_editorUniverseRadio);
+
+	m_feedbackEnabledCheck->setChecked(m_currentFeedbackEnabled);
 
 	/* Set checked if the current universe is also the editor universe */
 	if (_app->inputMap()->editorUniverse() == m_universe)
@@ -320,7 +326,8 @@ void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
 	/* Apply the patch immediately so that input data can be used in the
 	   input profile editor */
 	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
-				   m_currentInput, m_currentProfileName);
+				   m_currentInput, m_currentFeedbackEnabled,
+				   m_currentProfileName);
 }
 
 void InputPatchEditor::slotConfigureInputClicked()
@@ -342,6 +349,17 @@ void InputPatchEditor::slotConfigureInputClicked()
 
 	/* Refill the mapping tree in case configuration changed something */
 	fillMappingTree();
+}
+
+void InputPatchEditor::slotFeedbackToggled(bool enable)
+{
+	m_currentFeedbackEnabled = enable;
+
+	/* Apply the patch immediately so that input data can be used in the
+	   input profile editor */
+	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
+				   m_currentInput, m_currentFeedbackEnabled,
+				   m_currentProfileName);
 }
 
 /****************************************************************************
@@ -441,7 +459,8 @@ void InputPatchEditor::slotProfileItemChanged(QTreeWidgetItem* item)
 
 	/* Apply the patch immediately */
 	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
-				   m_currentInput, m_currentProfileName);
+				   m_currentInput, m_currentFeedbackEnabled,
+				   m_currentProfileName);
 }
 
 void InputPatchEditor::slotAddProfileClicked()

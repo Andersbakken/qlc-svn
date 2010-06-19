@@ -23,8 +23,8 @@
       <attribute name="title">
        <string>Mapping</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" colspan="2">
         <widget class="QTreeWidget" name="m_mapTree">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -39,62 +39,54 @@
          </column>
         </widget>
        </item>
-       <item>
-        <widget class="QGroupBox" name="m_infoGroup">
+       <item row="1" column="0" rowspan="2">
+        <widget class="QTextBrowser" name="m_infoBrowser">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title">
-          <string>Input Information</string>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QToolButton" name="m_configureButton">
+         <property name="text">
+          <string>...</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="1">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Expanding</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>54</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0" rowspan="2">
-           <widget class="QTextBrowser" name="m_infoBrowser">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QToolButton" name="m_configureButton">
-            <property name="text">
-             <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset resource="main.qrc">
-              <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>26</width>
-              <height>26</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <property name="icon">
+          <iconset resource="main.qrc">
+           <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>109</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="m_feedbackEnabledCheck">
+         <property name="toolTip">
+          <string>Send feedback data to the input universe for moving e.g. motorized sliders.</string>
+         </property>
+         <property name="text">
+          <string>Feedback enabled</string>
+         </property>
         </widget>
        </item>
       </layout>
@@ -232,8 +224,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>266</x>
-     <y>335</y>
+     <x>427</x>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -248,8 +240,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>334</x>
-     <y>335</y>
+     <x>427</x>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -273,5 +265,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_feedbackEnabledCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>InputPatchEditor</receiver>
+   <slot>slotFeedbackToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>82</x>
+     <y>389</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>162</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>slotFeedbackToggled(bool)</slot>
+ </slots>
 </ui>

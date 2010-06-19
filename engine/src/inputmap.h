@@ -110,11 +110,12 @@ public:
 	 * @param universe The input universe to patch
 	 * @param pluginName The name of the plugin to patch to the universe
 	 * @param input An input universe provided by the plugin to patch to
+	 * @param enableFeedback enable/disable feedback data sending
 	 * @param profileName The name of an input profile
 	 * @return true if successful, otherwise false
 	 */
-	bool setPatch(t_input_universe universe,
-		      const QString& pluginName, t_input input,
+	bool setPatch(t_input_universe universe, const QString& pluginName,
+		      t_input input, bool enableFeedback,
 		      const QString& profileName = QString::null);
 
 	/**

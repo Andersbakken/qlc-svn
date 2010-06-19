@@ -66,6 +66,9 @@ protected:
 	QString m_originalProfileName;
 	QString m_currentProfileName;
 
+	bool m_originalFeedbackEnabled;
+	bool m_currentFeedbackEnabled;
+
 	/********************************************************************
 	 * Mapping page
 	 ********************************************************************/
@@ -77,6 +80,7 @@ protected slots:
 	void slotMapCurrentItemChanged(QTreeWidgetItem* item);
 	void slotMapItemChanged(QTreeWidgetItem* item);
 	void slotConfigureInputClicked();
+	void slotFeedbackToggled(bool enable);
 
 	/********************************************************************
 	 * Profile page

@@ -172,69 +172,85 @@ void InputMap_Test::setPatch()
 	QVERIFY(im.patch(0)->plugin() == NULL);
 	QVERIFY(im.patch(0)->input() == KInputInvalid);
 	QVERIFY(im.patch(0)->profile() == NULL);
+	QVERIFY(im.patch(0)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(1)->plugin() == NULL);
 	QVERIFY(im.patch(1)->input() == KInputInvalid);
 	QVERIFY(im.patch(1)->profile() == NULL);
+	QVERIFY(im.patch(1)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(2)->plugin() == NULL);
 	QVERIFY(im.patch(2)->input() == KInputInvalid);
 	QVERIFY(im.patch(2)->profile() == NULL);
+	QVERIFY(im.patch(2)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(3)->plugin() == NULL);
 	QVERIFY(im.patch(3)->input() == KInputInvalid);
 	QVERIFY(im.patch(3)->profile() == NULL);
+	QVERIFY(im.patch(3)->feedbackEnabled() == true);
 
-	QVERIFY(im.setPatch(0, "Foobar", 0, prof->name()) == true);
+	QVERIFY(im.setPatch(0, "Foobar", 0, false, prof->name()) == true);
 	QVERIFY(im.patch(0)->plugin() == NULL);
 	QVERIFY(im.patch(0)->input() == KInputInvalid);
 	QVERIFY(im.patch(0)->profile() == prof);
+	QVERIFY(im.patch(0)->feedbackEnabled() == false);
 
 	QVERIFY(im.patch(1)->plugin() == NULL);
 	QVERIFY(im.patch(1)->input() == KInputInvalid);
 	QVERIFY(im.patch(1)->profile() == NULL);
+	QVERIFY(im.patch(1)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(2)->plugin() == NULL);
 	QVERIFY(im.patch(2)->input() == KInputInvalid);
 	QVERIFY(im.patch(2)->profile() == NULL);
+	QVERIFY(im.patch(2)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(3)->plugin() == NULL);
 	QVERIFY(im.patch(3)->input() == KInputInvalid);
 	QVERIFY(im.patch(3)->profile() == NULL);
+	QVERIFY(im.patch(3)->feedbackEnabled() == true);
 
-	QVERIFY(im.setPatch(0, stub->name(), 0) == true);
+	QVERIFY(im.setPatch(0, stub->name(), 0, true) == true);
 	QVERIFY(im.patch(0)->plugin() == stub);
 	QVERIFY(im.patch(0)->input() == 0);
 	QVERIFY(im.patch(0)->profile() == NULL);
+	QVERIFY(im.patch(0)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(1)->plugin() == NULL);
 	QVERIFY(im.patch(1)->input() == KInputInvalid);
 	QVERIFY(im.patch(1)->profile() == NULL);
+	QVERIFY(im.patch(1)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(2)->plugin() == NULL);
 	QVERIFY(im.patch(2)->input() == KInputInvalid);
 	QVERIFY(im.patch(2)->profile() == NULL);
+	QVERIFY(im.patch(2)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(3)->plugin() == NULL);
 	QVERIFY(im.patch(3)->input() == KInputInvalid);
 	QVERIFY(im.patch(3)->profile() == NULL);
+	QVERIFY(im.patch(3)->feedbackEnabled() == true);
 
-	QVERIFY(im.setPatch(2, stub->name(), 3, prof->name()) == true);
+	QVERIFY(im.setPatch(2, stub->name(), 3, false, prof->name()) == true);
 	QVERIFY(im.patch(0)->plugin() == stub);
 	QVERIFY(im.patch(0)->input() == 0);
 	QVERIFY(im.patch(0)->profile() == NULL);
+	QVERIFY(im.patch(0)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(1)->plugin() == NULL);
 	QVERIFY(im.patch(1)->input() == KInputInvalid);
 	QVERIFY(im.patch(1)->profile() == NULL);
+	QVERIFY(im.patch(1)->feedbackEnabled() == true);
 
 	QVERIFY(im.patch(2)->plugin() == stub);
 	QVERIFY(im.patch(2)->input() == 3);
 	QVERIFY(im.patch(2)->profile() == prof);
+	QVERIFY(im.patch(2)->feedbackEnabled() == false);
 
 	QVERIFY(im.patch(3)->plugin() == NULL);
 	QVERIFY(im.patch(3)->input() == KInputInvalid);
 	QVERIFY(im.patch(3)->profile() == NULL);
+	QVERIFY(im.patch(3)->feedbackEnabled() == true);
 }
 
 void InputMap_Test::feedBack()
@@ -243,7 +259,7 @@ void InputMap_Test::feedBack()
 
 	InputPluginStub* stub = new InputPluginStub();
 	im.appendPlugin(stub);
-	im.setPatch(0, stub->name(), 0);
+	im.setPatch(0, stub->name(), 0, true);
 
 	QVERIFY(im.feedBack(0, 39, 42) == true);
 	QVERIFY(stub->m_feedBackInput == 0);
@@ -261,6 +277,13 @@ void InputMap_Test::feedBack()
 	QVERIFY(stub->m_feedBackValue == 42);
 
 	QVERIFY(im.feedBack(0, 2, 3) == true);
+	QVERIFY(stub->m_feedBackInput == 0);
+	QVERIFY(stub->m_feedBackChannel == 2);
+	QVERIFY(stub->m_feedBackValue == 3);
+
+	// Disable feedback
+	im.setPatch(0, stub->name(), 0, false);
+	QVERIFY(im.feedBack(0, 54, 12) == false);
 	QVERIFY(stub->m_feedBackInput == 0);
 	QVERIFY(stub->m_feedBackChannel == 2);
 	QVERIFY(stub->m_feedBackValue == 3);

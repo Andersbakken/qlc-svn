@@ -40,6 +40,7 @@ InputPatch::InputPatch(QObject* parent) : QObject(parent)
 	m_plugin = NULL;
 	m_input = KInputInvalid;
 	m_profile = NULL;
+	m_feedbackEnabled = true;
 }
 
 InputPatch::~InputPatch()
@@ -52,7 +53,7 @@ InputPatch::~InputPatch()
  * Properties
  *****************************************************************************/
 
-void InputPatch::set(QLCInPlugin* plugin, t_input input,
+void InputPatch::set(QLCInPlugin* plugin, t_input input, bool enableFeedback,
 		     QLCInputProfile* profile)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
@@ -63,6 +64,7 @@ void InputPatch::set(QLCInPlugin* plugin, t_input input,
 	m_plugin = plugin;
 	m_input = input;
 	m_profile = profile;
+	m_feedbackEnabled = enableFeedback;
 
 	/* Open the assigned plugin input */
 	if (m_plugin != NULL && input != KInputInvalid)
