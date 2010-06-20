@@ -25,7 +25,7 @@ qtnametool.commands = $$LIBQTCORE_INSTALL_NAME_TOOL \
 qtnametool.commands += && $$LIBQTCORE_INSTALL_NAME_TOOL \
 	$$INSTALLROOT/Frameworks/$$LIBQTXML_DIR/$$LIBQTXML_FILE
 qtnametool.commands += && $$LIBQTCORE_INSTALL_NAME_TOOL \
-	$$INSTALLROOT/Frameworks/$$LIBQTXML_DIR/$$LIBQTXML_FILE
+	$$INSTALLROOT/Frameworks/$$LIBQTNETWORK_DIR/$$LIBQTNETWORK_FILE
 
 include(imageformats-nametool.pri)
 INSTALLS += imageformats
