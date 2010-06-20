@@ -33,7 +33,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_channels">
       <attribute name="title">
        <string>Channels</string>
       </attribute>
@@ -151,7 +151,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_physical">
       <attribute name="title">
        <string>Physical</string>
       </attribute>

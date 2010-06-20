@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0" >
  <class>VCButtonProperties</class>
  <widget class="QDialog" name="VCButtonProperties" >
@@ -18,7 +19,7 @@
      <property name="title" >
       <string>General</string>
      </property>
-     <layout class="QGridLayout" >
+     <layout class="QGridLayout" name="gridLayoutGeneral" >
       <item row="0" column="0" >
        <widget class="QLabel" name="m_nameLabel" >
         <property name="text" >
@@ -164,7 +165,7 @@
      <property name="title" >
       <string>External Input</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout" >
+     <layout class="QGridLayout" name="gridLayoutExternalInput" >
       <item row="0" column="0" >
        <widget class="QLabel" name="label_4" >
         <property name="text" >
@@ -290,7 +291,6 @@
   <zorder>groupBox</zorder>
   <zorder>groupBox_2</zorder>
   <zorder>groupBox_3</zorder>
-  <zorder>groupBox_5</zorder>
   <zorder>m_buttonBox</zorder>
   <zorder>groupBox_4</zorder>
  </widget>
