@@ -21,6 +21,7 @@ include(libqtgui-nametool.pri)
 include(libqtxml-nametool.pri)
 include(libqtcore-nametool.pri)
 include(libqtnetwork-nametool.pri)
+include(imageformats-nametool.pri)
 
 # The contents of nametool.path don't matter; it only needs to be non-empty
 nametool.path     = $$INSTALLROOT

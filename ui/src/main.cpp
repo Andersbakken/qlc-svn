@@ -27,6 +27,7 @@
 #include <QString>
 #include <QDebug>
 #include <QHash>
+#include <QDir>
 
 #include "qlcconfig.h"
 #include "qlctypes.h"
@@ -175,15 +176,23 @@ void loadTranslation(const QString& locale, QApplication& app)
  */
 int main(int argc, char** argv)
 {
+	/* Create the Qt core application object */
+	QApplication qapp(argc, argv);
+
+#ifdef __APPLE__
+	/* Load plugins from within the bundle ONLY */
+	QDir dir(QApplication::applicationDirPath());
+	dir.cdUp();
+	dir.cd("plugins");
+	QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+#endif
+
 	/* Let the world know... */
 	printVersion();
 
 	/* Parse command-line arguments */
 	if (parseArgs(argc, argv) == false)
 		return 0;
-
-	/* Create the Qt core application object */
-	QApplication qapp(argc, argv);
 
 	/* Load translation for current locale */
 	loadTranslation(QLocale::system().name(), qapp);

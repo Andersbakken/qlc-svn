@@ -3,6 +3,7 @@
 #include <QLocale>
 #include <QDebug>
 #include <QTimer>
+#include <QDir>
 
 #include "qlcconfig.h"
 #include "launcher.h"
@@ -29,9 +30,15 @@ void loadTranslation(const QString& locale, QApplication& app)
 	}
 }
 
-int main(int argc, char* const* argv)
+int main(int argc, char** argv)
 {
-	QApplication app(argc, (char**) argv);
+	QApplication app(argc, argv);
+
+	/* Load plugins from within the bundle ONLY */
+	QDir dir(QApplication::applicationDirPath());
+	dir.cdUp();
+	dir.cd("PlugIns");
+	QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 
 	loadTranslation(QLocale::system().name(), app);
 

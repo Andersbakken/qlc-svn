@@ -14,5 +14,11 @@ contains(QT, core) {
         nametool.commands += $$LIBQTCORE_INSTALL_NAME_TOOL $$OUTFILE
 }
 
-LIBQTCORE.path   = $$INSTALLROOT/$$LIBSDIR
+LIBQTCORE.path   = $$INSTALLROOT/$$LIBSDIR/$$LIBQTCORE_DIR
 LIBQTCORE.files += /Library/Frameworks/$$LIBQTCORE_FILEPATH
+
+LIBQTCORE_INSTALL_NAME_TOOL_ID = install_name_tool -id @executable_path/../Frameworks/$$LIBQTCORE_DIR/$$LIBQTCORE_FILE \
+                        $$INSTALLROOT/Frameworks/$$LIBQTCORE_DIR/$$LIBQTCORE_FILE
+LIBQTCORE_ID.path = $$INSTALLROOT/$$LIBSDIR/$$LIBQTCORE_DIR
+LIBQTCORE_ID.commands = $$LIBQTCORE_INSTALL_NAME_TOOL_ID
+

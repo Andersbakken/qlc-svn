@@ -2,6 +2,9 @@
 APPNAME			= Q Light Controller
 FXEDNAME		= Fixture Definition Editor
 
+# Supported image formats
+QTPLUGIN		= qjpeg qgif
+
 # This is so depressing...
 win32:APPVERSION	= 3.0.4
 unix:APPVERSION		= $$system("head -1 debian/changelog | sed \'s/.*(\\(.*\\)).*/\\1/\'")
