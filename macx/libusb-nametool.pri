@@ -8,9 +8,9 @@ LIBUSB0_FILEPATH = $$LIBUSB0_DIR/$$LIBUSB0_FILE
 LIBUSB1_FILEPATH = $$LIBUSB0_DIR/$$LIBUSB1_FILE
 
 LIBUSB0_INSTALL_NAME_TOOL = install_name_tool -change $$LIBUSB0_FILEPATH \
-				@executable_path/../Frameworks/$$LIBUSB0_FILE
+				@executable_path/../$$LIBSDIR/$$LIBUSB0_FILE
 LIBUSB1_INSTALL_NAME_TOOL = install_name_tool -change $$LIBUSB1_FILEPATH \
-				@executable_path/../Frameworks/$$LIBUSB1_FILE
+				@executable_path/../$$LIBSDIR/$$LIBUSB1_FILE
 
 contains(PKGCONFIG, libusb) {
 	isEmpty(nametool.commands) {
