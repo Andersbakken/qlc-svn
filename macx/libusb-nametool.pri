@@ -2,7 +2,7 @@ LIBUSB0_DIR = $$system("pkg-config --variable libdir libusb")
 LIBUSB1_DIR = $$system("pkg-config --variable libdir libusb-1.0")
 
 LIBUSB0_FILE = libusb-0.1.4.dylib
-LIBUSB1_FILE = libusb-1.0.dylib
+LIBUSB1_FILE = libusb-1.0.0.dylib
 
 LIBUSB0_FILEPATH = $$LIBUSB0_DIR/$$LIBUSB0_FILE
 LIBUSB1_FILEPATH = $$LIBUSB0_DIR/$$LIBUSB1_FILE
@@ -25,3 +25,10 @@ contains(PKGCONFIG, libusb) {
 LIBUSB.path     = $$INSTALLROOT/$$LIBSDIR
 LIBUSB.files    += $$LIBUSB0_FILEPATH
 LIBUSB.files    += $$LIBUSB1_FILEPATH
+
+LIBUSB0_INSTALL_NAME_TOOL_ID = install_name_tool -id @executable_path/../$$LIBSDIR/$$LIBUSB0_FILE \
+				$$INSTALLROOT/$$LIBSDIR/$$LIBUSB0_FILE
+LIBUSB1_INSTALL_NAME_TOOL_ID = install_name_tool -id @executable_path/../$$LIBSDIR/$$LIBUSB1_FILE \
+				$$INSTALLROOT/$$LIBSDIR/$$LIBUSB1_FILE
+LIBUSB_ID.path = $$INSTALLROOT/$$LIBSDIR
+LIBUSB_ID.commands = $$LIBUSB0_INSTALL_NAME_TOOL_ID && $$LIBUSB1_INSTALL_NAME_TOOL_ID
