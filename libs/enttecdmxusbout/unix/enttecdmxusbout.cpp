@@ -120,14 +120,14 @@ bool EnttecDMXUSBOut::rescanWidgets()
 				     name, sizeof(name),
 				     serial, sizeof(serial));
 
-		if (QString(vendor).toUpper() == QString("FTDI"))
-		{
-			m_widgets.append(new EnttecDMXUSBOpen(this,
-					 QString(name), QString(serial)));
-		}
-		else if (QString(vendor).toUpper() == QString("ENTTEC"))
+		if (QString(vendor).toUpper() == QString("ENTTEC"))
 		{
 			m_widgets.append(new EnttecDMXUSBPro(this,
+					 QString(name), QString(serial)));
+		}
+		else
+		{
+			m_widgets.append(new EnttecDMXUSBOpen(this,
 					 QString(name), QString(serial)));
 		}
 
