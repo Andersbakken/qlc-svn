@@ -130,11 +130,9 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	resize(VCSlider::defaultSize);
 
 	/* Initialize to bus mode by default */
+	setInvertedAppearance(true);
 	setBus(Bus::defaultFade());
 	setSliderMode(Bus);
-	setSliderValue(0);
-	slotSliderMoved(0);
-	setInvertedAppearance(true);
 
 	/* Update the slider according to current mode */
 	slotModeChanged(mode());
@@ -368,7 +366,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 		/* Set the slider range */
 		m_slider->setRange(busLowLimit() * KFrequency,
 				   busHighLimit() * KFrequency);
-		setSliderValue(busLowLimit() * KFrequency);
+		setSliderValue(Bus::instance()->value(bus()));
 		slotSliderMoved(sliderValue());
 
 		/* Reconnect to bus emitter */
