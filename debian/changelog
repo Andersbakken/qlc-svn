@@ -1,3 +1,29 @@
+qlc (3.0.5) stable; urgency=low
+
+  * Changed Enttec plugin to treat any FTDI-based device as an Open DMX USB,
+    except Enttec DMX USB Pro.
+  * Completely rewoite the Enttec DMX USB plugin using open source libftdi on
+    Linux and OSX.
+  * Enttec plugin no longer grants access to DMX start code.
+  * Fixed OSX application bundle to work without additional Qt installation.
+  * Made it possible to disable feedback for each input universe.
+  * Added MIME type registration of .qxw and .qxf files on OSX & Linux.
+  * Created a launcher app that can launch either QLC or fixture editor.
+  * Performance was boosted in Fixture Manager when adding/removing multiple
+    fixtures at the same time.
+  * Removed proprietary FTDI-owned files from VCS to make the code 100% FLOSS.
+  * Total power consumption (estimate) of fixtures is shown in the status bar.
+  * Created finnish translation.
+  * Automatic function generator has been added to Function Manager.
+  * Automatic button & slider creators have been added to Virtual Console.
+  * Button title is set automatically from attached function name.
+  * Plugin API&ABI change: use QByteArrays instead of const char* arrays.
+  * Windows & OSX plugins are included with the main application package.
+  * Lots of usability improvements.
+  * Some new fixture definitions.
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Thu, 08 Jul 2010 23:28:45 +0300
+
 qlc (3.0.4) stable; urgency=high
 
   * OSX support for MIDI Input, MIDI output, Enttec Open/Pro and Peperoni
