@@ -383,9 +383,10 @@ void VCSlider::setSliderMode(SliderMode mode)
 	else if (mode == Level)
 	{
 		/* Set the slider range */
+		t_value level = levelValue();
 		m_slider->setRange(levelLowLimit(), levelHighLimit());
-		setSliderValue(levelLowLimit());
-		slotSliderMoved(sliderValue());
+		setSliderValue(level);
+		slotSliderMoved(level);
 
 		m_bottomLabel->show();
 		m_tapButton->hide();
@@ -541,6 +542,11 @@ void VCSlider::setLevelValue(t_value value)
 	m_levelValueMutex.lock();
 	m_levelValue = value;
 	m_levelValueMutex.unlock();
+}
+
+t_value VCSlider::levelValue() const
+{
+	return m_levelValue;
 }
 
 /*********************************************************************
@@ -880,6 +886,10 @@ bool VCSlider::loadXMLLevel(const QDomElement* level_root)
 	str = level_root->attribute(KXMLQLCVCSliderLevelHighLimit);
 	setLevelHighLimit(str.toInt());
 
+	/* Level value */
+	str = level_root->attribute(KXMLQLCVCSliderLevelValue);
+	setLevelValue(str.toInt());
+
 	/* Children */
 	node = level_root->firstChild();
 	while (node.isNull() == false)
@@ -976,6 +986,10 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	/* Level high limit */
 	str.setNum(levelHighLimit());
 	tag.setAttribute(KXMLQLCVCSliderLevelHighLimit, str);
+
+	/* Level value */
+	str.setNum(levelValue());
+	tag.setAttribute(KXMLQLCVCSliderLevelValue, str);
 
 	/* Level channels */
 	QListIterator <int> it(m_levelChannels);

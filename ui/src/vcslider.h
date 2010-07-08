@@ -55,6 +55,7 @@ class VCSliderProperties;
 #define KXMLQLCVCSliderLevel "Level"
 #define KXMLQLCVCSliderLevelLowLimit "LowLimit"
 #define KXMLQLCVCSliderLevelHighLimit "HighLimit"
+#define KXMLQLCVCSliderLevelValue "Value"
 
 #define KXMLQLCVCSliderChannel "Channel"
 #define KXMLQLCVCSliderChannelFixture "Fixture"
@@ -333,10 +334,19 @@ protected:
 	 */
 	void setLevelValue(t_value value);
 
+	/**
+	 * Get the current "level" mode value
+	 */
+	t_value levelValue() const;
+
 protected:
 	QList <int> m_levelChannels;
 	t_value m_levelLowLimit;
 	t_value m_levelHighLimit;
+
+	QMutex m_levelValueMutex;
+	t_value m_levelValue;
+	t_value m_lastWrittenLevelValue;
 
 	/*********************************************************************
 	 * DMXSource
@@ -344,11 +354,6 @@ protected:
 public:
 	/** @reimpl */
 	void writeDMX(MasterTimer* timer, QByteArray* universes);
-
-protected:
-	QMutex m_levelValueMutex;
-	t_value m_levelValue;
-	t_value m_lastWrittenLevelValue;
 
 	/*********************************************************************
 	 * Top label

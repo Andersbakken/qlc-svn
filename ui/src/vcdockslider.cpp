@@ -72,10 +72,13 @@ VCDockSlider::VCDockSlider(QWidget* parent, quint32 bus) : QFrame(parent)
 	connect(m_tapButton, SIGNAL(clicked()),
 		this, SLOT(slotTapButtonClicked()));
 
+	/* Property refresh has effect on bus value, store it now and restore below */
+	quint32 busValue = Bus::instance()->value(m_bus);
+
 	/* Read slider's properties */
 	refreshProperties();
 
-	slotBusValueChanged(m_bus, Bus::instance()->value(m_bus));
+	slotBusValueChanged(m_bus, busValue);
 	slotBusNameChanged(m_bus, Bus::instance()->name(m_bus));
 
 	m_time.start();
@@ -108,7 +111,7 @@ void VCDockSlider::refreshProperties()
 
 	Q_ASSERT(m_slider != NULL);
 	m_slider->setRange(low * KFrequency, high * KFrequency);
-	
+
 	/* Send feedback to the bus & possible external input profile */
 	slotSliderValueChanged(m_slider->value());
 }
