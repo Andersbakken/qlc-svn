@@ -12,10 +12,10 @@ SUBDIRS		+= etc
 SUBDIRS		+= docs
 macx:SUBDIRS	+= launcher
 
-DEBIAN_CLEAN	+= debian/*.substvars debian/*.log debian/*.debhelper
-DEBIAN_CLEAN	+= debian/files debian/dirs
-QMAKE_CLEAN	+= $$DEBIAN_CLEAN
-QMAKE_DISTCLEAN += $$DEBIAN_CLEAN
+unix:!macx:DEBIAN_CLEAN	+= debian/*.substvars debian/*.log debian/*.debhelper
+unix:!macx:DEBIAN_CLEAN	+= debian/files debian/dirs
+unix:!macx:QMAKE_CLEAN	+= $$DEBIAN_CLEAN
+unix:!macx:QMAKE_DISTCLEAN += $$DEBIAN_CLEAN
 
 unittests.target = test
 QMAKE_EXTRA_TARGETS += unittests
