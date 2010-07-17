@@ -6,16 +6,12 @@ FXEDNAME		= Fixture Definition Editor
 macx:QTPLUGIN		= qjpeg qgif
 
 # This is so depressing...
-win32:APPVERSION	= 3.0.4
+win32:APPVERSION	= 3.0.5
 unix:APPVERSION		= $$system("head -1 debian/changelog | sed \'s/.*(\\(.*\\)).*/\\1/\'")
 
 # Uncomment these two lines when making a release
 CONFIG			+= release
 CONFIG			-= debug
-
-# Enable both for Mac OS 10.6 Snow Leopard (PPC no longer supported)
-# macx:CONFIG		+= x86_64
-# macx:CONFIG		+= x86
 
 # Enable to build universal binaries on Mac OS 10.5
 # macx:CONFIG		+= x86 ppc

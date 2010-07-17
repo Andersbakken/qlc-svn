@@ -1,5 +1,5 @@
 Name "Q Light Controller"
-OutFile "qlc-3.0.4.exe"
+OutFile "qlc-3.0.5.exe"
 InstallDir C:\QLC
 RequestExecutionLevel user
 ;--------------------------------
@@ -40,6 +40,18 @@ Section
 		CreateShortCut '$SMPROGRAMS\$R0\Fixture Definition Editor.lnk' $INSTDIR\qlc-fixtureeditor.exe
 
 	skip:
+SectionEnd
+
+Section
+	WriteRegStr HKCR ".qxw" "" "QLightController.Document"
+	WriteRegStr HKCR "QLightController.Document" "" "Q Light Controller Workspace"
+	WriteRegStr HKCR "QLightController.Document\DefaultIcon" "" "$INSTDIR\qlc.exe,0"
+	WriteRegStr HKCR "QLightController.Document\shell\open\command" "" '"$INSTDIR\qlc.exe" "--open %1"'
+
+	WriteRegStr HKCR ".qxf" "" "QLightControllerFixture.Document"
+	WriteRegStr HKCR "QLightControllerFixture.Document" "" "Q Light Controller Fixture"
+	WriteRegStr HKCR "QLightControllerFixture.Document\DefaultIcon" "" "$INSTDIR\qlc-fixtureeditor.exe,0"
+	WriteRegStr HKCR "QLightControllerFixture.Document\shell\open\command" "" '"$INSTDIR\qlc-fixtureeditor.exe" "--open %1"'
 SectionEnd
 
 ;--------------------------------
