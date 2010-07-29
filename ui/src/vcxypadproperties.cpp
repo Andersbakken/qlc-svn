@@ -152,6 +152,7 @@ void VCXYPadProperties::slotAddClicked()
 		QVariant var((*twit)->data(KColumnFixture, Qt::UserRole));
 		VCXYPadFixture fxi(var);
 		disabled << fxi.fixture();
+		++twit;
 	}
 
 	/* Disable all fixtures that don't have pan OR tilt channels */
