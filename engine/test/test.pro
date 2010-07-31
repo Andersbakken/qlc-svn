@@ -8,6 +8,7 @@ QMAKE_CXXFLAGS -= -Werror
 CONFIG 	+= qtestlib
 CONFIG 	-= app_bundle
 QT 	+= xml
+QTPLUGIN =
 
 INCLUDEPATH += ../src
 INCLUDEPATH += ../../libs/common
