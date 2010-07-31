@@ -6,6 +6,7 @@ TARGET   = test_common
 
 CONFIG	-= app_bundle
 QT 	+= testlib xml
+QTPLUGIN =
 
 unix:DEFINES += INTERNAL_FIXTUREDIR=\\\"../../../fixtures/\\\"
 win32:DEFINES += INTERNAL_FIXTUREDIR=\\\"../../../../fixtures/\\\"
