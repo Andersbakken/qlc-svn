@@ -7,6 +7,7 @@ TARGET   = test_ewing
 QT 	+= network testlib
 CONFIG 	-= app_bundle
 INCLUDEPATH += ../../common
+QTPLUGIN =
 
 SOURCES = testeplaybackwing.cpp \
 	  testeprogramwing.cpp \
