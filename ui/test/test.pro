@@ -9,6 +9,7 @@ CONFIG		+= qtestlib
 macx:CONFIG	-= app_bundle
 QT 		+= xml
 QT		+= gui
+QTPLUGIN	 =
 
 INCLUDEPATH += ../src
 INCLUDEPATH += ../../libs/common
