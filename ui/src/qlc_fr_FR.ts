@@ -3190,12 +3190,12 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="virtualconsole.cpp" line="488"/>
         <source>&amp;Background</source>
-        <translation>&amp;arrière plan</translation>
+        <translation>&amp;Arrière plan</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="496"/>
         <source>&amp;Foreground</source>
-        <translation>&amp;avant plan</translation>
+        <translation>&amp;Avant plan</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="503"/>
