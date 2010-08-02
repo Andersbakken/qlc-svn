@@ -3,7 +3,7 @@ qlc (3.0.6) stable; urgency=high
   * Fixed a freezing problem in XYPad properties dialog.
   * Added french translation.
 
- -- Heikki Junnila <hjunnila@joanvb.avaya.ath.cx>  Mon, 02 Aug 2010 22:42:03 +0300
+ -- Heikki Junnila <hjunnila@users.sf.net>  Mon, 02 Aug 2010 22:42:03 +0300
 
 qlc (3.0.5) stable; urgency=low
 
