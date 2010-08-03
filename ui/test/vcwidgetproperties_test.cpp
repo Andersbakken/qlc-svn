@@ -38,22 +38,22 @@ void VCWidgetProperties_Test::stateAndVisibility()
 
 	w.showMinimized();
 	p.store(&w);
-	QVERIFY(p.state() == Qt::WindowMinimized);
+	QVERIFY(p.state() & Qt::WindowMinimized);
 	QVERIFY(p.visible() == true);
 
 	w.showMaximized();
 	p.store(&w);
-	QVERIFY(p.state() == Qt::WindowMaximized);
+	QVERIFY(p.state() & Qt::WindowMaximized);
 	QVERIFY(p.visible() == true);
 
 	w.showFullScreen();
 	p.store(&w);
-	QVERIFY(p.state() == Qt::WindowFullScreen);
+	QVERIFY(p.state() & Qt::WindowFullScreen);
 	QVERIFY(p.visible() == true);
 
 	w.hide();
 	p.store(&w);
-	QVERIFY(p.state() == Qt::WindowFullScreen);
+	QVERIFY(p.state() & Qt::WindowFullScreen);
 	QVERIFY(p.visible() == false);
 }
 

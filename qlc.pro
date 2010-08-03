@@ -20,9 +20,9 @@ unix:!macx:QMAKE_DISTCLEAN += $$DEBIAN_CLEAN
 unittests.target = test
 QMAKE_EXTRA_TARGETS += unittests
 
-unix:unittests.commands += cd libs/common/test ; ./test_common ; \
-                      cd ../../ewinginput/test ; ./test_ewing ; \
-                      cd ../../../engine/test ; ./test_engine
+unix {
+	unittests.commands += ./unittest.sh
+}
 
 win32 {
 	# *sigh*.. Mr Ballmer's shell is just so utterly depressing
