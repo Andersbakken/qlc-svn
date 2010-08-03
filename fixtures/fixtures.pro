@@ -75,6 +75,7 @@ fixtures.files += GLP-YPOCColor575.qxf
 fixtures.files += GLP-YPOCBasic250.qxf
 fixtures.files += GLP-YPOCBasicColor.qxf
 fixtures.files += GLP-YPOCColor.qxf
+fixtures.files += i-Pix-BB4.qxf
 fixtures.files += JB-Lighting-Varyscan-2.qxf
 fixtures.files += JB-Lighting-Varyscan-3-Special.qxf
 fixtures.files += JB-Lighting-Varyscan-3-SpecialPlus.qxf
