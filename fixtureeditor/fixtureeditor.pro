@@ -53,6 +53,9 @@ SOURCES += ../ui/src/aboutbox.cpp \
            fixtureeditor.cpp \
            main.cpp
 
+# Internationalization
+include(fixtureeditor-i18n.pri)
+
 macx {
 	# This must be after "TARGET = " and before target installation so that
 	# install_name_tool can be run before target installation
