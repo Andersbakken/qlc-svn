@@ -4,7 +4,7 @@ TRANSLATIONS    += qlc_fr_FR.ts
 
 # Force qmake to create all .qm files
 i18n.path = 
-PRE_TARGETDEPS += i18n
+POST_TARGETDEPS += i18n
 
 # Translations installation
 translations.path   = $$INSTALLROOT/$$TRANSLATIONDIR
