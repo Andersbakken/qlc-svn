@@ -41,6 +41,7 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent, const QString& name,
 	, m_running(false)
 	, m_universe(QByteArray(513, 0))
 {
+	bzero(&m_context, sizeof(struct ftdi_context));
 	ftdi_init(&m_context);
 }
 
