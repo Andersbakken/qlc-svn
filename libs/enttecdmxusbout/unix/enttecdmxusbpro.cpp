@@ -33,6 +33,7 @@ EnttecDMXUSBPro::EnttecDMXUSBPro(QObject* parent, const QString& name,
 	, m_serial(serial)
 	, m_enttecSerial(serial)
 {
+	bzero(&m_context, sizeof(struct ftdi_context));
 	ftdi_init(&m_context);
 	extractEnttecSerial(); // Opens and closes the device by itself
 }
