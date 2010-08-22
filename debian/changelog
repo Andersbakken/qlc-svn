@@ -2,8 +2,11 @@ qlc (3.0.6) stable; urgency=high
 
   * Fixed a freezing problem in XYPad properties dialog.
   * Added french translation.
+  * Added finnish translation to Fixture Editor
+  * Fixed translation installation
+  * Added i-Pix BB4 fixture definition
 
- -- Heikki Junnila <hjunnila@users.sf.net>  Mon, 02 Aug 2010 22:42:03 +0300
+ -- Heikki Junnila <hjunnila@users.sf.net>  Sun, 22 Aug 2010 19:14:53 +0300
 
 qlc (3.0.5) stable; urgency=low
 
