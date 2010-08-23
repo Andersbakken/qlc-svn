@@ -5,8 +5,9 @@ RequestExecutionLevel user
 ;--------------------------------
 ; Pages
 Page directory
-
 Page custom StartMenuGroupSelect "" ": Start Menu Folder"
+Page instfiles
+
 Function StartMenuGroupSelect
 	Push $R1
 
@@ -26,7 +27,6 @@ Function StartMenuGroupSelect
 	Pop $R1
 FunctionEnd
 
-Page instfiles
 Section
 	SetOutPath $INSTDIR
 
@@ -39,10 +39,28 @@ Section
 		CreateDirectory $SMPROGRAMS\$R0
 		CreateShortCut '$SMPROGRAMS\$R0\Fixture Definition Editor.lnk' $INSTDIR\qlc-fixtureeditor.exe
 
+		CreateDirectory $SMPROGRAMS\$R0
+		CreateShortCut '$SMPROGRAMS\$R0\Uninstall.lnk' $INSTDIR\uninstall.exe
+
 	skip:
 SectionEnd
 
 Section
+	File mingwm10.dll
+	File libgcc_s_dw2-1.dll
+	File qlc.exe
+	File qlc-fixtureeditor.exe
+	File QtCore4.dll
+	File QtGui4.dll
+	File QtXml4.dll
+	File QtNetwork4.dll
+	File Sample.qxw
+	File *.qm
+	File /r Documents
+	File /r Fixtures
+	File /r InputProfiles
+	File /r Plugins
+
 	WriteRegStr HKCR ".qxw" "" "QLightController.Document"
 	WriteRegStr HKCR "QLightController.Document" "" "Q Light Controller Workspace"
 	WriteRegStr HKCR "QLightController.Document\DefaultIcon" "" "$INSTDIR\qlc.exe,0"
@@ -52,22 +70,37 @@ Section
 	WriteRegStr HKCR "QLightControllerFixture.Document" "" "Q Light Controller Fixture"
 	WriteRegStr HKCR "QLightControllerFixture.Document\DefaultIcon" "" "$INSTDIR\qlc-fixtureeditor.exe,0"
 	WriteRegStr HKCR "QLightControllerFixture.Document\shell\open\command" "" '"$INSTDIR\qlc-fixtureeditor.exe" "--open %1"'
+
+	WriteUninstaller $INSTDIR\uninstall.exe
 SectionEnd
 
 ;--------------------------------
-Section ""
-  File mingwm10.dll
-  File libgcc_s_dw2-1.dll
-  File qlc.exe
-  File qlc-fixtureeditor.exe
-  File QtCore4.dll
-  File QtGui4.dll
-  File QtXml4.dll
-  File QtNetwork4.dll
-  File Sample.qxw
-  File *.qm
-  File /r Documents
-  File /r Fixtures
-  File /r InputProfiles
-  File /r Plugins
+; Uninstallation
+
+UninstPage uninstConfirm
+UninstPage instfiles
+Section "Uninstall"
+	Delete $INSTDIR\uninstall.exe
+	Delete $INSTDIR\qlc.exe
+	Delete $INSTDIR\qlc-fixtureeditor.exe
+	Delete $INSTDIR\mingwm10.dll
+	Delete $INSTDIR\libgcc_s_dw2-1.dll
+	Delete $INSTDIR\QtCore4.dll
+	Delete $INSTDIR\QtGui4.dll
+	Delete $INSTDIR\QtXml4.dll
+	Delete $INSTDIR\QtNetwork4.dll
+	Delete $INSTDIR\Sample.qxw
+	Delete $INSTDIR\*.qm
+	RMDir /r $INSTDIR\Documents
+	RMDir /r $INSTDIR\Fixtures
+	RMDir /r $INSTDIR\InputProfiles
+	RMDir /r $INSTDIR\Plugins
+
+	RMDir $INSTDIR
+
+	DeleteRegKey HKCR ".qxw"
+	DeleteRegKey HKCR "QLightController.Document"
+
+	DeleteRegKey HKCR ".qxf"
+	DeleteRegKey HKCR "QLightControllerFixture.Document"
 SectionEnd
