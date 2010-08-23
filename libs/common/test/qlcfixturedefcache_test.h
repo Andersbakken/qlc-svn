@@ -23,16 +23,22 @@
 #define QLCFIXTUREDEFCACHE_TEST_H
 
 #include <QObject>
+#include "../qlcfixturedefcache.h"
 
 class QLCFixtureDefCache_Test : public QObject
 {
 	Q_OBJECT
 
 private slots:
+	void init();
+	void cleanup();
+
 	void add();
 	void fixtureDef();
 	void load();
-	void clear();
+
+private:
+	QLCFixtureDefCache cache;
 };
 
 #endif

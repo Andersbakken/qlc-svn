@@ -27,10 +27,20 @@
 #include "../qlcfixturedef.h"
 #include "../qlcfile.h"
 
+void QLCFixtureDefCache_Test::init()
+{
+	QVERIFY(cache.load(INTERNAL_FIXTUREDIR) == true);
+}
+
+void QLCFixtureDefCache_Test::cleanup()
+{
+	cache.clear();
+}
+
 void QLCFixtureDefCache_Test::add()
 {
-	QLCFixtureDefCache cache;
-
+	QVERIFY(cache.manufacturers().count() != 0);
+	cache.clear();
 	QVERIFY(cache.manufacturers().count() == 0);
 
 	/* Add the first fixtureDef */
@@ -102,7 +112,7 @@ void QLCFixtureDefCache_Test::add()
 
 void QLCFixtureDefCache_Test::fixtureDef()
 {
-	QLCFixtureDefCache cache;
+	cache.clear();
 
 	QLCFixtureDef* def1 = new QLCFixtureDef();
 	def1->setManufacturer("Martin");
@@ -136,10 +146,6 @@ void QLCFixtureDefCache_Test::fixtureDef()
 
 void QLCFixtureDefCache_Test::load()
 {
-	QLCFixtureDefCache cache;
-
-	QVERIFY(cache.load(INTERNAL_FIXTUREDIR) == true);
-
 	/* Test only that all available files get loaded properly. Actual
 	   contents of fixtureDefs should be tested in QLCFixtureDef_Test. */
 	QDir dir(INTERNAL_FIXTUREDIR, QString("*%1").arg(KExtFixture));
@@ -154,14 +160,4 @@ void QLCFixtureDefCache_Test::load()
 	QVERIFY(cache.manufacturers().contains("Martin") == true);
 	QVERIFY(cache.manufacturers().contains("Robe") == true);
 	QVERIFY(cache.manufacturers().contains("SGM") == true);
-}
-
-void QLCFixtureDefCache_Test::clear()
-{
-	QLCFixtureDefCache cache;
-	QVERIFY(cache.load(INTERNAL_FIXTUREDIR) == true);
-
-	QVERIFY(cache.manufacturers().isEmpty() == false);
-	cache.clear();
-	QVERIFY(cache.manufacturers().isEmpty() == true);
 }
