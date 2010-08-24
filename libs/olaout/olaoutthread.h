@@ -75,8 +75,8 @@ public:
   bool start(Priority priority=InheritPriority);
   void stop();
   int write_dmx(unsigned int universe, const QByteArray& data);
-  int new_pipe_data();
-  int pipe_closed();
+  void new_pipe_data();
+  void pipe_closed();
 
 protected:
   bool setup_client(ola::network::ConnectedSocket *socket);

@@ -110,30 +110,28 @@ int OlaOutThread::write_dmx(unsigned int universe, const QByteArray& data)
 /*
  * Called when the pipe used to communicate between QLC and OLA is closed
  */
-int OlaOutThread::pipe_closed() {
+void OlaOutThread::pipe_closed() {
   // We don't need to delete the socket here because that gets done in the
   // Destructor.
   m_ss->Terminate();
-  return 0;
 }
 
 
 /*
  * Called when there is data to be read on the pipe socket.
  */
-int OlaOutThread::new_pipe_data() {
+void OlaOutThread::new_pipe_data() {
   dmx_data data;
   unsigned int data_read;
   int ret = m_pipe->Receive((uint8_t*) &data, sizeof(data), data_read);
   if (ret < 0)
   {
     qCritical() << "olaout: socket receive failed";
-    return 0;
+    return;
   }
   m_buffer.Set(data.data, data_read - sizeof(data.universe));
   if (!m_client->SendDmx(data.universe, m_buffer))
     qWarning() << "olaout:: SendDmx() failed";
-  return 0;
 }
 
 
