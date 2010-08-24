@@ -54,7 +54,10 @@ SOURCES += ../ui/src/aboutbox.cpp \
            main.cpp
 
 # Internationalization
-include(fixtureeditor-i18n.pri)
+PRO_FILE      = fixtureeditor.pro
+TRANSLATIONS += fixtureeditor_fi_FI.ts   
+TRANSLATIONS += fixtureeditor_fr_FR.ts  
+include(../i18n.pri)
 
 macx {
 	# This must be after "TARGET = " and before target installation so that

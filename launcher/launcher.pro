@@ -13,7 +13,10 @@ HEADERS += launcher.h
 SOURCES += launcher.cpp main.cpp
 
 # Translations
-include(launcher-i18n.pri)
+# Internationalization
+PRO_FILE      = launcher.pro
+TRANSLATIONS += launcher_fi_FI.ts   
+include(../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
