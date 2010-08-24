@@ -158,7 +158,10 @@ SOURCES += aboutbox.cpp \
            virtualconsole.cpp
 
 # Internationalization
-include(src-i18n.pri)
+PRO_FILE      = src.pro
+TRANSLATIONS += qlc_fi_FI.ts
+TRANSLATIONS += qlc_fr_FR.ts
+include(i18n.pri)
 
 macx {
 	# This must be after "TARGET = " and before target installation so that
