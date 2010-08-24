@@ -161,7 +161,7 @@ SOURCES += aboutbox.cpp \
 PRO_FILE      = src.pro
 TRANSLATIONS += qlc_fi_FI.ts
 TRANSLATIONS += qlc_fr_FR.ts
-include($$IN_PWD/i18n.pri)
+include(../../i18n.pri)
 
 macx {
 	# This must be after "TARGET = " and before target installation so that
