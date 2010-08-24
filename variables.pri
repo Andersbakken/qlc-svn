@@ -5,9 +5,8 @@ FXEDNAME		= Fixture Definition Editor
 # Supported image formats for OSX
 macx:QTPLUGIN		= qjpeg qgif
 
-# This is so depressing...
-win32:APPVERSION	= 3.0.6
-unix:APPVERSION		= $$system("head -1 debian/changelog | sed \'s/.*(\\(.*\\)).*/\\1/\'")
+# Current application version (not an sh script because of Win-duhs)
+APPVERSION		= 3.0.6
 
 # Uncomment these two lines when making a release
 CONFIG			+= release
