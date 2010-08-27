@@ -28,9 +28,9 @@
 
 #include "qlcinplugin.h"
 #include "qlctypes.h"
+#include "ewing.h"
 
 class QUdpSocket;
-class EWing;
 
 /*****************************************************************************
  * EWingInput
@@ -73,7 +73,7 @@ protected:
 	 * Devices
 	 *********************************************************************/
 protected:
-	EWing* device(const QHostAddress& address);
+	EWing* device(const QHostAddress& address, EWing::Type type);
 	EWing* device(int index);
 
 	void addDevice(EWing* device);

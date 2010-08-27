@@ -77,7 +77,7 @@ void EWingInput::slotReadSocket()
 		m_socket->readDatagram(data.data(), data.size(), &sender);
 
 		/* Check, whether we already have a device from this address */
-		wing = device(sender);
+		wing = device(sender, EWing::resolveType(data));
 		if (wing == NULL)
 		{
 			/* New address. Create a new device. */
@@ -126,13 +126,13 @@ EWing* EWingInput::createWing(QObject* parent, const QHostAddress& address,
  * Devices
  *****************************************************************************/
 
-EWing* EWingInput::device(const QHostAddress& address)
+EWing* EWingInput::device(const QHostAddress& address, EWing::Type type)
 {
 	QListIterator <EWing*> it(m_devices);
 	while (it.hasNext() == true)
 	{
 		EWing* dev = it.next();
-		if (dev->address() == address)
+		if (dev->address() == address && dev->type() == type)
 			return dev;
 	}
 
