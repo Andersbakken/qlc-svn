@@ -169,8 +169,9 @@ void HIDInput::addDevice(HIDDevice* device)
 	Q_ASSERT(device != NULL);
 
 	m_devices.append(device);
-
 	emit deviceAdded(device);
+
+	emit configurationChanged();
 }
 
 void HIDInput::removeDevice(HIDDevice* device)
@@ -182,6 +183,8 @@ void HIDInput::removeDevice(HIDDevice* device)
 
 	emit deviceRemoved(device);
 	delete device;
+
+	emit configurationChanged();
 }
 
 /*****************************************************************************
@@ -309,6 +312,9 @@ void HIDInput::connectInputData(QObject* listener)
 		listener,
 		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
 				      t_input_value)));
+
+	connect(this, SIGNAL(configurationChanged()),
+		listener, SLOT(slotConfigurationChanged()));
 }
 
 void HIDInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,

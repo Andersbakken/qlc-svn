@@ -87,6 +87,7 @@ protected:
 signals:
 	void deviceAdded(HIDDevice* device);
 	void deviceRemoved(HIDDevice* device);
+	void configurationChanged();
 
 protected:
 	QList <HIDDevice*> m_devices;
