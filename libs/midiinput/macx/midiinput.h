@@ -81,6 +81,7 @@ public:
 signals:
 	void deviceAdded(MIDIDevice* device);
 	void deviceRemoved(MIDIDevice* device);
+	void configurationChanged();
 
 protected:
 	QList <MIDIDevice*> m_devices;

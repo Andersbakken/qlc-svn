@@ -102,6 +102,7 @@ public:
 signals:
 	void deviceAdded(MIDIDevice* device);
 	void deviceRemoved(MIDIDevice* device);
+	void configurationChanged();
 
 protected:
 	/** The list of available MIDI devices */

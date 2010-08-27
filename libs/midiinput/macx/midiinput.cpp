@@ -182,6 +182,8 @@ void MIDIInput::addDevice(MIDIDevice* device)
 	m_devices.append(device);
 	device->loadSettings();
 	emit deviceAdded(device);
+
+	emit configurationChanged();
 }
 
 void MIDIInput::removeDevice(MIDIDevice* device)
@@ -191,6 +193,8 @@ void MIDIInput::removeDevice(MIDIDevice* device)
 	m_devices.removeAll(device);
 	emit deviceRemoved(device);
 	delete device;
+
+	emit configurationChanged();
 }
 
 /*****************************************************************************
@@ -296,6 +300,9 @@ void MIDIInput::connectInputData(QObject* listener)
 		listener,
 		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
 				      t_input_value)));
+
+	connect(this, SIGNAL(configurationChanged()),
+		listener, SLOT(slotConfigurationChanged()));
 }
 
 void MIDIInput::feedBack(t_input input, t_input_channel channel,
