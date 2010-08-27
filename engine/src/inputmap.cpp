@@ -134,6 +134,14 @@ bool InputMap::feedBack(t_input_universe universe, t_input_channel channel,
 	}
 }
 
+void InputMap::slotConfigurationChanged()
+{
+	QLCInPlugin* plugin = qobject_cast<QLCInPlugin*> (QObject::sender());
+	Q_ASSERT(plugin != NULL);
+qDebug() << Q_FUNC_INFO;
+	emit pluginConfigurationChanged(plugin->name());
+}
+
 /*****************************************************************************
  * Patch
  *****************************************************************************/

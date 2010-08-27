@@ -75,12 +75,15 @@ protected:
 protected:
 	void setupMappingPage();
 	void fillMappingTree();
+	void fillPluginItem(const QString& pluginName, QTreeWidgetItem* item);
+	QTreeWidgetItem* pluginItem(const QString& pluginName);
 
 protected slots:
 	void slotMapCurrentItemChanged(QTreeWidgetItem* item);
 	void slotMapItemChanged(QTreeWidgetItem* item);
 	void slotConfigureInputClicked();
 	void slotFeedbackToggled(bool enable);
+	void slotPluginConfigurationChanged(const QString& pluginName);
 
 	/********************************************************************
 	 * Profile page

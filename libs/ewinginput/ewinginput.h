@@ -79,14 +79,10 @@ protected:
 	void addDevice(EWing* device);
 	void removeDevice(EWing* device);
 
-signals:
-	void deviceAdded(EWing* device);
-	void deviceRemoved(EWing* device);
-
 protected:
 	QList <EWing*> m_devices;
 	QUdpSocket* m_socket;
-	
+
 	/*********************************************************************
 	 * Name
 	 *********************************************************************/
@@ -120,6 +116,8 @@ protected slots:
 signals:
 	void valueChanged(QLCInPlugin* plugin, t_input line,
 			  t_input_channel channel, t_input_value value);
+
+	void configurationChanged();
 
 public:
 	void connectInputData(QObject* listener);

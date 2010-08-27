@@ -83,6 +83,11 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
 
 	/* Select the top-most "None" item */
 	m_mapTree->setCurrentItem(m_mapTree->topLevelItem(0));
+
+	/* Listen to plugin configuration changes */
+	connect(_app->inputMap(),
+		SIGNAL(pluginConfigurationChanged(const QString&)),
+		this, SLOT(slotPluginConfigurationChanged(const QString&)));
 }
 
 InputPatchEditor::~InputPatchEditor()
@@ -137,11 +142,6 @@ void InputPatchEditor::setupMappingPage()
 
 void InputPatchEditor::fillMappingTree()
 {
-	QTreeWidgetItem* iitem = NULL;
-	QTreeWidgetItem* pitem = NULL;
-	QString pluginName;
-	int i;
-
 	/* Disable check state change tracking when the tree is filled */
 	disconnect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 		   this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
@@ -150,7 +150,7 @@ void InputPatchEditor::fillMappingTree()
 
 	/* Add an empty item so that user can choose not to assign any plugin
 	   to an input universe */
-	pitem = new QTreeWidgetItem(m_mapTree);
+	QTreeWidgetItem* pitem = new QTreeWidgetItem(m_mapTree);
 	pitem->setText(KMapColumnName, KInputNone);
 	pitem->setText(KMapColumnInput, QString("%1").arg(KInputInvalid));
 	pitem->setFlags(pitem->flags() | Qt::ItemIsUserCheckable);
@@ -164,79 +164,74 @@ void InputPatchEditor::fillMappingTree()
 	/* Go thru available plugins and put them as the tree's root nodes. */
 	QStringListIterator pit(_app->inputMap()->pluginNames());
 	while (pit.hasNext() == true)
-	{
-		i = 0;
-
-		pluginName = pit.next();
-		pitem = new QTreeWidgetItem(m_mapTree);
-		pitem->setText(KMapColumnName, pluginName);
-		pitem->setText(KMapColumnInput, QString("%1")
-							.arg(KInputInvalid));
-
-		/* Go thru available inputs provided by each plugin and put
-		   them as their parent plugin's leaf nodes. */
-		QStringListIterator iit(
-			_app->inputMap()->pluginInputs(pluginName));
-		while (iit.hasNext() == true)
-		{
-			iitem = new QTreeWidgetItem(pitem);
-			iitem->setText(KMapColumnName, iit.next());
-			iitem->setText(KMapColumnInput, QString("%1").arg(i));
-			iitem->setFlags(iitem->flags() |
-					Qt::ItemIsUserCheckable);
-
-			/* Select the currently mapped plugin input and expand
-			   its parent node. */
-			if (m_currentPluginName == pluginName &&
-			    m_currentInput == i)
-			{
-				iitem->setCheckState(KMapColumnName,
-						     Qt::Checked);
-				pitem->setExpanded(true);
-			}
-			else
-			{
-				int uni;
-
-				iitem->setCheckState(KMapColumnName,
-						     Qt::Unchecked);
-				uni = _app->inputMap()->mapping(pluginName, i);
-				if (uni != -1)
-				{
-					/* If a mapping exists for this plugin
-					   and output, make it impossible to
-					   map it to another universe. */
-					iitem->setFlags(iitem->flags()
-							& (!Qt::ItemIsEnabled));
-					iitem->setText(KMapColumnName,
-						iitem->text(KMapColumnName) +
-						QString(" (Mapped to universe %1)")
-							.arg(uni + 1));
-				}
-
-
-			}
-
-			i++;
-		}
-
-		/* If no inputs were appended to the plugin node, put a
-		   "Nothing" node there. */
-		if (i == 0)
-		{
-			iitem = new QTreeWidgetItem(pitem);
-			iitem->setText(KMapColumnName, KInputNone);
-			iitem->setText(KMapColumnInput,
-				       QString("%1").arg(KInputInvalid));
-			iitem->setFlags(iitem->flags() & ~Qt::ItemIsEnabled);
-			iitem->setFlags(iitem->flags() & ~Qt::ItemIsSelectable);
-			iitem->setCheckState(KMapColumnName, Qt::Unchecked);
-		}
-	}
+		fillPluginItem(pit.next(), new QTreeWidgetItem(m_mapTree));
 
 	/* Enable check state change tracking after the tree has been filled */
 	connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
 		this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
+}
+
+void InputPatchEditor::fillPluginItem(const QString& pluginName, QTreeWidgetItem* pitem)
+{
+	QTreeWidgetItem* iitem = NULL;
+
+	Q_ASSERT(pitem != NULL);
+
+	/* Get rid of any existing children */
+	while (pitem->childCount() > 0)
+		delete pitem->child(0);
+
+	pitem->setText(KMapColumnName, pluginName);
+	pitem->setText(KMapColumnInput, QString("%1").arg(KInputInvalid));
+
+	/* Go thru available inputs provided by each plugin and put
+	   them as their parent plugin's leaf nodes. */
+	int i = 0;
+	QStringListIterator iit(_app->inputMap()->pluginInputs(pluginName));
+	while (iit.hasNext() == true)
+	{
+		iitem = new QTreeWidgetItem(pitem);
+		iitem->setText(KMapColumnName, iit.next());
+		iitem->setText(KMapColumnInput, QString("%1").arg(i));
+		iitem->setFlags(iitem->flags() | Qt::ItemIsUserCheckable);
+
+		/* Select the currently mapped plugin input and expand
+		   its parent node. */
+		if (m_currentPluginName == pluginName && m_currentInput == i)
+		{
+			iitem->setCheckState(KMapColumnName, Qt::Checked);
+			pitem->setExpanded(true);
+		}
+		else
+		{
+			iitem->setCheckState(KMapColumnName, Qt::Unchecked);
+			int uni = _app->inputMap()->mapping(pluginName, i);
+			if (uni != -1)
+			{
+				/* If a mapping exists for this plugin and
+				   output, make it impossible to map it to
+				   another universe. */
+				iitem->setFlags(iitem->flags() & (!Qt::ItemIsEnabled));
+				QString name = iitem->text(KMapColumnName);
+				name += QString(" (Mapped to universe %1)").arg(uni + 1);
+				iitem->setText(KMapColumnName, name);
+			}
+		}
+
+		i++;
+	}
+
+	/* If no inputs were appended to the plugin node, put a
+	   "Nothing" node there. */
+	if (i == 0)
+	{
+		iitem = new QTreeWidgetItem(pitem);
+		iitem->setText(KMapColumnName, KInputNone);
+		iitem->setText(KMapColumnInput, QString("%1").arg(KInputInvalid));
+		iitem->setFlags(iitem->flags() & ~Qt::ItemIsEnabled);
+		iitem->setFlags(iitem->flags() & ~Qt::ItemIsSelectable);
+		iitem->setCheckState(KMapColumnName, Qt::Unchecked);
+	}
 }
 
 void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
@@ -360,6 +355,36 @@ void InputPatchEditor::slotFeedbackToggled(bool enable)
 	_app->inputMap()->setPatch(m_universe, m_currentPluginName,
 				   m_currentInput, m_currentFeedbackEnabled,
 				   m_currentProfileName);
+}
+
+void InputPatchEditor::slotPluginConfigurationChanged(const QString& pluginName)
+{
+	QTreeWidgetItem* item = pluginItem(pluginName);
+	if (item == NULL)
+		return;
+
+	/* Disable check state tracking while the item is being filled */
+	disconnect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		   this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
+
+	/* Re-fill the children for the plugin that's been changed */
+	fillPluginItem(pluginName, pluginItem(pluginName));
+
+	/* Enable check state tracking after the item has been filled */
+	connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+		this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));
+}
+
+QTreeWidgetItem* InputPatchEditor::pluginItem(const QString& pluginName)
+{
+	for (int i = 0; i < m_mapTree->topLevelItemCount(); i++)
+	{
+		QTreeWidgetItem* item = m_mapTree->topLevelItem(i);
+		if (item->text(KMapColumnName) == pluginName)
+			return item;
+	}
+
+	return NULL;
 }
 
 /****************************************************************************

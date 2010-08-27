@@ -163,20 +163,21 @@ void EWingInput::addDevice(EWing* device)
 	m_devices.append(device);
 
 	/* To maintain some persistency with the indices of multiple devices
-	   between sessions they need to be sorted according to some 
+	   between sessions they need to be sorted according to some
 	   (semi-)permanent criteria. Their addresses shouldn't change too
 	   often, so let's use that. */
 	qSort(m_devices.begin(), m_devices.end(), ewing_device_sort);
-	
-	emit deviceAdded(device);
+
+	emit configurationChanged();
 }
 
 void EWingInput::removeDevice(EWing* device)
 {
 	Q_ASSERT(device != NULL);
 	m_devices.removeAll(device);
-	emit deviceRemoved(device);
 	delete device;
+
+	emit configurationChanged();
 }
 
 /*****************************************************************************
@@ -209,8 +210,13 @@ QStringList EWingInput::inputs()
 
 void EWingInput::configure()
 {
-	QMessageBox::information(NULL, name(),
-				tr("This plugin has no configurable options."));
+	/* There's no REAL rescanning here. Just command the plugin manager
+	   to re-read this plugin's children */
+        int r = QMessageBox::question(NULL, name(),
+                                tr("Do you wish to re-scan your hardware?"),
+                                QMessageBox::Yes, QMessageBox::No);
+	if (r == QMessageBox::Yes)
+		emit configurationChanged();
 }
 
 /*****************************************************************************
@@ -235,7 +241,7 @@ QString EWingInput::infoText(t_input input)
 		   information. */
 		str += QString("<P>This plugin provides input support for ");
 		str += QString("ENTTEC Playback and Shortcut Wings.</P>");
-		
+
 		if (m_socket->state() != QAbstractSocket::BoundState)
 		{
 			str += QString("<P>Unable to bind to UDP port %1</P>")
@@ -282,6 +288,8 @@ void EWingInput::connectInputData(QObject* listener)
 					  t_input_value)),
 		listener, SLOT(slotValueChanged(QLCInPlugin*,t_input,
 					t_input_channel, t_input_value)));
+	connect(this, SIGNAL(configurationChanged()),
+		listener, SLOT(slotConfigurationChanged()));
 }
 
 void EWingInput::feedBack(t_input input, t_input_channel channel,

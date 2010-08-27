@@ -74,6 +74,9 @@ public slots:
 	void slotValueChanged(QLCInPlugin* plugin, t_input input,
 			      t_input_channel channel, t_input_value value);
 
+	/** Slot that catches plugin configuration change notifications */
+	void slotConfigurationChanged();
+
 public:
 	/** Send feedback value to the input profile e.g. to move a motorized
 	    sliders & knobs, set indicator leds etc. */
@@ -84,6 +87,9 @@ signals:
 	/** Everyone interested in input data should connect to this signal */
 	void inputValueChanged(t_input_universe universe,
 			       t_input_channel channel, t_input_value value);
+
+	/** Notifies (InputManager) of plugin configuration changes */
+	void pluginConfigurationChanged(const QString& pluginName);
 
 	/*********************************************************************
 	 * Patch

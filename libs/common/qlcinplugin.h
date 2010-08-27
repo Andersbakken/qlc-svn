@@ -167,15 +167,17 @@ public:
 	 *
 	 * Each input plugin implementation must:
 	 *    1. Inherit QObject and QLCInPlugin
-	 *    2. Re-implement this method and connect the plugin's signal:
+	 *    2. Re-implement this method and connect the plugin's signals:
 	 *
-	 *         valueChanged(QLCInPlugin* plugin, t_input line,
-	 *                      t_input_channel ch, t_input_value val);
+	 *         - valueChanged(QLCInPlugin* plugin, t_input line,
+	 *                        t_input_channel ch, t_input_value val);
+     *         - configurationChanged();
 	 *
-	 * to the given listener object's slot:
+	 * to the given listener object's slots:
 	 *
-	 *         slotValueChanged(QLCInPlugin* plugin, t_input line,
-	 *                          t_input_channel ch, t_input_value val);
+	 *         - slotValueChanged(QLCInPlugin* plugin, t_input line,
+	 *                            t_input_channel ch, t_input_value val);
+     *         - slotConfigurationChanged();
 	 *
 	 * With this approach, input plugins can use the signal-slot mechanism
 	 * just as if QLCInPlugin inherited QObject directly.

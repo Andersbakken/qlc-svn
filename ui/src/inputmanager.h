@@ -79,9 +79,12 @@ protected:
 			t_input_universe universe);
 
 protected slots:
+	/** Listens to input data and displays a small icon to indicate a
+	    working connection between a plugin and an input device. */
 	void slotInputValueChanged(t_input_universe universe,
 				   t_input_channel channel,
 				   t_input_value value);
+	/** Hides the small icon after a while ^^ */
 	void slotTimerTimeout();
 
 protected:
