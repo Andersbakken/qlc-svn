@@ -20,6 +20,10 @@ SOURCES     += ../unix/enttecdmxusbout.cpp \
                ../unix/enttecdmxusbpro.cpp \
                ../unix/enttecdmxusbopen.cpp
 
+PRO_FILE = macx.pro
+TRANSLATIONS += ../unix/enttec_fi_FI.ts
+include(../../../i18n.pri)
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 include(../../../macx/nametool.pri)

@@ -212,23 +212,24 @@ QString EnttecDMXUSBOut::infoText(t_output output)
 		str += QString("<H3>%1</H3>").arg(name());
 		if (m_widgets.size() == 0)
 		{
-			str += QString("<P>");
-			str += QString("<B>No devices available/detected</B>. ");
-			str += QString("</P>");
+			str += QString("<P><B>");
+			str += tr("No devices available.");
+			str += QString("</B></P>");
 		}
 
 		str += QString("<P>");
-		str += QString("This plugin provides DMX output support for ");
-		str += QString("ENTTEC Open/Pro DMX USB, using the open source ");
-		str += QString("libftdi library. See <a href=\"http://www.enttec.com\">");
-		str += QString("http://www.enttec.com</a> for more information.");
+		str += tr("This plugin provides DMX output support for "
+			  "ENTTEC Open/Pro DMX USB, using the open source "
+			  "libftdi library. See %1 for more information.")
+			  .arg("<a href=\"http://www.enttec.com\">"
+			       "http://www.enttec.com</a>");
 		str += QString("</P>");
 	}
 	else if (output < m_widgets.size())
 	{
 		str += QString("<H3>%1</H3>").arg(outputs()[output]);
 		str += QString("<P>");
-		str += QString("Device is operating correctly.");
+		str += tr("Device is operating correctly.");
 		str += QString("</P>");
 	}
 
