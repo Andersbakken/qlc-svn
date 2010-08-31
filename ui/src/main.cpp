@@ -31,6 +31,7 @@
 
 #include "qlcconfig.h"
 #include "qlctypes.h"
+#include "qlci18n.h"
 
 #include "app.h"
 #include "doc.h"
@@ -53,11 +54,6 @@ namespace QLCArgs
 	 * has been done, but before switching to operate mode (if applicable)
 	 */
 	QString workspace;
-
-	/**
-	 * Specifies a locale for forced translation
-	 */
-	QString locale;
 }
 
 /**
@@ -134,38 +130,11 @@ bool parseArgs(int argc, char **argv)
 		else if (::strcmp(argv[i], "-l") == 0 ||
 			 ::strcmp(argv[i], "--locale") == 0)
 		{
-			QLCArgs::locale = QString(argv[++i]);
+			QLCi18n::setDefaultLocale(QString(argv[++i]));
 		}
 	}
 
 	return true;
-}
-
-void loadTranslation(const QString& locale, QApplication& app)
-{
-	QString lc;
-	if (QLCArgs::locale.isEmpty() == true)
-		lc = locale;
-	else
-		lc = QLCArgs::locale;
-	QString file(QString("qlc_%1").arg(lc));
-
-#ifdef __APPLE__
-	QString path(QString("%1/../%2").arg(QApplication::applicationDirPath())
-					.arg(TRANSLATIONDIR));
-#else
-	QString path(TRANSLATIONDIR);
-#endif
-	QTranslator* translator = new QTranslator(&app);
-	if (translator->load(file, path) == true)
-	{
-		qDebug() << "Using translation for" << lc;
-		QCoreApplication::installTranslator(translator);
-	}
-	else
-	{
-		qDebug() << "Unable to find translation for" << lc;
-	}
 }
 
 /**
@@ -194,8 +163,8 @@ int main(int argc, char** argv)
 	if (parseArgs(argc, argv) == false)
 		return 0;
 
-	/* Load translation for current locale */
-	loadTranslation(QLocale::system().name(), qapp);
+	/* Load translation for main application */
+	QLCi18n::loadTranslation("qlc");
 
 	/* Registering needed to pass signals with these types between
 	   different contexts (threads) */
