@@ -128,6 +128,8 @@ signals:
 	void valueChanged(QLCInPlugin* plugin, t_input line,
 			  t_input_channel channel, t_input_value value);
 
+	void configurationChanged();
+
 public:
 	/** \reimp */
 	void connectInputData(QObject* listener);
