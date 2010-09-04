@@ -229,7 +229,7 @@ void EnttecDMXUSBOpen::run()
 		sleep(8);
 
 		m_mutex.lock();
-		if (ftdi_write_data(&m_context, (unsigned char*) m_universe.data(),
+		if (ftdi_write_data(&m_context, (uchar*) m_universe.data(),
 				    m_universe.size()) < 0)
 		{
 			qWarning() << "Unable to write DMX data to"

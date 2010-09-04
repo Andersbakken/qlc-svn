@@ -71,13 +71,17 @@ void EnttecDMXUSBOut::close(t_output output)
 #ifdef DBUS_ENABLED
 void EnttecDMXUSBOut::slotDeviceAdded(const QString& name)
 {
-	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_"))
+	QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
+	re.setPatternSyntax(QRegExp::Wildcard);
+	if (name.contains(re) == true)
 		rescanWidgets();
 }
 
 void EnttecDMXUSBOut::slotDeviceRemoved(const QString& name)
 {
-	if (name.contains("/org/freedesktop/Hal/devices/usb_device_403_"))
+	QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
+	re.setPatternSyntax(QRegExp::Wildcard);
+	if (name.contains(re) == true)
 		rescanWidgets();
 }
 #endif
