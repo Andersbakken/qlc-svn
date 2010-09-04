@@ -22,7 +22,8 @@ for(tsfile, TRANSLATIONS) {
 	IROOT=$$(INSTALL_ROOT)
 	isEmpty(IROOT) {
 		# Install normally
-		i18n.commands += $$QMAKE_COPY $$replace(tsfile, ts, qm) $$i18n.path
+		unix:i18n.commands += $$QMAKE_COPY $$replace(tsfile, ts, qm) $$i18n.path
+		win32:i18n.commands += $$QMAKE_COPY $$replace(tsfile, ts, qm) $$replace(i18n.path, /, \\)
 	} else {
 		# Install to a Debian tmp directory
 		i18n.commands += $$QMAKE_COPY $$replace(tsfile, ts, qm) $$(INSTALL_ROOT)/$$i18n.path
