@@ -132,9 +132,6 @@ protected:
 	/** Sleep for $ms milliseconds */
 	void sleep(quint32 ms);
 
-	/** Stop the writer thread */
-	void stop();
-
 	/** DMX writer thread */
 	void run();
 

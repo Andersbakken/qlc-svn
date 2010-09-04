@@ -47,7 +47,8 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent, const QString& name,
 
 EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
 {
-	close();
+	if (isOpen() == true)
+		close();
 	ftdi_deinit(&m_context);
 }
 
@@ -116,9 +117,12 @@ bool EnttecDMXUSBOpen::close()
 {
 	if (isOpen() == true)
 	{
-		/* Stop the writer thread */
-		if (isRunning() == true)
-			stop();
+		/* Force-stop the thread */
+		while (isRunning() == true)
+		{
+			m_running = false;
+			wait(10);
+		}
 
 		if (ftdi_usb_close(&m_context) < 0)
 		{
@@ -190,15 +194,6 @@ void EnttecDMXUSBOpen::sleep(quint32 ms)
 #else
 	usleep(ms);
 #endif
-}
-
-void EnttecDMXUSBOpen::stop()
-{
-	if (isRunning() == true)
-	{
-		m_running = false;
-		wait();
-	}
 }
 
 void EnttecDMXUSBOpen::run()
