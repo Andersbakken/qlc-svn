@@ -21,6 +21,7 @@
 
 #include <QMapIterator>
 #include <linux/input.h>
+#include <errno.h>
 #include <QDebug>
 #include <QMap>
 
@@ -151,11 +152,10 @@ void HIDPoller::run()
 		r = poll(fds, num, KPollTimeout);
 		m_mutex.lock();
 
-		if (r < 0)
+		if (r < 0 && errno != EINTR)
 		{
-			/* Error occurred */
+			/* Print abnormal errors. EINTR may happen often. */
 			perror("poll");
-			return;
 		}
 		else if (r != 0)
 		{

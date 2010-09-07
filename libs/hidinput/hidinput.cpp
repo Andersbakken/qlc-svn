@@ -317,9 +317,12 @@ void HIDInput::connectInputData(QObject* listener)
 		listener, SLOT(slotConfigurationChanged()));
 }
 
-void HIDInput::feedBack(t_input /*input*/, t_input_channel /*channel*/,
-			t_input_value /*value*/)
+void HIDInput::feedBack(t_input input, t_input_channel channel,
+			t_input_value value)
 {
+	Q_UNUSED(input);
+	Q_UNUSED(channel);
+	Q_UNUSED(value);
 }
 
 /*****************************************************************************
