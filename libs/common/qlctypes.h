@@ -268,30 +268,6 @@ const uchar KInputValueMin ( 0 );
 const uchar KInputValueMax ( UCHAR_MAX );
 
 /*****************************************************************************
- * Axes
- *****************************************************************************/
-
-/**
- * Axis type
- */
-typedef unsigned char t_axis;
-
-/**
- * X Axis
- */
-const t_axis KAxisX ( 0 );
-
-/**
- * Y Axis
- */
-const t_axis KAxisY ( 1 );
-
-/**
- * Z Axis (you never know...)
- */
-const t_axis KAxisZ ( 2 );
-
-/*****************************************************************************
  * Function consumer engine
  *****************************************************************************/
 
