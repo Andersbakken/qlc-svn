@@ -42,7 +42,7 @@ class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 	 * Initialization
 	 ********************************************************************/
 public:
-	InputPatchEditor(QWidget* parent, t_input_universe universe,
+	InputPatchEditor(QWidget* parent, quint32 universe,
 			 const InputPatch* patch);
 	~InputPatchEditor();
 
@@ -55,13 +55,13 @@ protected slots:
 
 protected:
 	/** The input universe that is being edited */
-	t_input_universe m_universe;
+	quint32 m_universe;
 
 	QString m_originalPluginName;
 	QString m_currentPluginName;
 
-	t_input m_originalInput;
-	t_input m_currentInput;
+	quint32 m_originalInput;
+	quint32 m_currentInput;
 
 	QString m_originalProfileName;
 	QString m_currentProfileName;

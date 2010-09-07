@@ -76,14 +76,14 @@ public:
 protected:
 	/** Update the contents of an input patch to an item */
 	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
-			t_input_universe universe);
+			quint32 universe);
 
 protected slots:
 	/** Listens to input data and displays a small icon to indicate a
 	    working connection between a plugin and an input device. */
-	void slotInputValueChanged(t_input_universe universe,
-				   t_input_channel channel,
-				   t_input_value value);
+	void slotInputValueChanged(quint32 universe,
+				   quint32 channel,
+				   uchar value);
 	/** Hides the small icon after a while ^^ */
 	void slotTimerTimeout();
 

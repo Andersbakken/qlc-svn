@@ -35,13 +35,13 @@ void InputPluginStub::init()
 {
 }
 
-void InputPluginStub::open(t_input input)
+void InputPluginStub::open(quint32 input)
 {
 	if (m_openLines.contains(input) == false && input < KInputUniverseCount)
 		m_openLines.append(input);
 }
 
-void InputPluginStub::close(t_input input)
+void InputPluginStub::close(quint32 input)
 {
 	m_openLines.removeAll(input);
 }
@@ -61,7 +61,7 @@ void InputPluginStub::configure()
 	m_configureCalled++;
 }
 
-QString InputPluginStub::infoText(t_input input)
+QString InputPluginStub::infoText(quint32 input)
 {
 	return QString("%1: This is a plugin stub for testing.").arg(input);
 }
@@ -76,8 +76,8 @@ void InputPluginStub::connectInputData(QObject* listener)
 	Q_UNUSED(listener);
 }
 
-void InputPluginStub::feedBack(t_input input, t_input_channel channel,
-			t_input_value value)
+void InputPluginStub::feedBack(quint32 input, quint32 channel,
+			uchar value)
 {
 	m_feedBackInput = input;
 	m_feedBackChannel = channel;

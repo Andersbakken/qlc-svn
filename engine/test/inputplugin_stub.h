@@ -53,8 +53,8 @@ public:
 	 * Inputs
 	 *********************************************************************/
 public:
-	void open(t_input input = 0);
-	void close(t_input input = 0);
+	void open(quint32 input = 0);
+	void close(quint32 input = 0);
 	QStringList inputs();
 
 	QList <t_output> m_openLines;
@@ -78,7 +78,7 @@ public:
 	 * Status
 	 *********************************************************************/
 public:
-	QString infoText(t_input input = KInputInvalid);
+	QString infoText(quint32 input = KInputInvalid);
 
 	/*********************************************************************
 	 * Input data listener
@@ -90,12 +90,12 @@ public:
 	 * Feedback
 	 *********************************************************************/
 public:
-	void feedBack(t_input input, t_input_channel channel,
-			t_input_value value);
+	void feedBack(quint32 input, quint32 channel,
+			uchar value);
 
-	t_input m_feedBackInput;
-	t_input_channel m_feedBackChannel;
-	t_input_value m_feedBackValue;
+	quint32 m_feedBackInput;
+	quint32 m_feedBackChannel;
+	uchar m_feedBackValue;
 };
 
 #endif

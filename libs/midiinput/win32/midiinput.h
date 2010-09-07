@@ -1,19 +1,19 @@
 /*
   Q Light Controller
   midiinput.h
-  
+
   Copyright (C) Heikki Junnila
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -52,10 +52,10 @@ public:
 	virtual ~MIDIInput();
 
 	/** \reimp */
-	void open(t_input input = 0);
+	void open(quint32 input = 0);
 
 	/** \reimp */
-	void close(t_input input = 0);
+	void close(quint32 input = 0);
 
 	/*********************************************************************
 	 * Devices
@@ -65,7 +65,7 @@ public:
 	void rescanDevices();
 
 	/** Get a device by its index number */
-	MIDIDevice* device(unsigned int index);
+	MIDIDevice* device(quint32 index);
 
 	/** Add a new device (as a result of rescanDevices) */
 	void addDevice(MIDIDevice* device);
@@ -112,21 +112,19 @@ public:
 	 *********************************************************************/
 public:
 	/** \reimp */
-	QString infoText(t_input input = KInputInvalid);
+	QString infoText(quint32 input = KInputInvalid);
 
 	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
 protected slots:
 	/** Catches input events from MidiInProc */
-	void slotDeviceValueChanged(MIDIDevice* device,
-				    t_input_channel channel,
-				    t_input_value value);
+	void slotDeviceValueChanged(MIDIDevice* device, quint32 channel, uchar value);
 
 signals:
 	/** \reimp */
-	void valueChanged(QLCInPlugin* plugin, t_input line,
-			  t_input_channel channel, t_input_value value);
+	void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
+			  uchar value);
 
 	void configurationChanged();
 
@@ -135,8 +133,7 @@ public:
 	void connectInputData(QObject* listener);
 
 	/** \reimp */
-	void feedBack(t_input input, t_input_channel channel,
-		      t_input_value value);
+	void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

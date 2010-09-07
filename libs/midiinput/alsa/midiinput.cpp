@@ -66,7 +66,7 @@ void MIDIInput::init()
 	rescanDevices();
 }
 
-void MIDIInput::open(t_input input)
+void MIDIInput::open(quint32 input)
 {
 	MIDIDevice* dev = device(input);
 	if (dev != NULL)
@@ -75,7 +75,7 @@ void MIDIInput::open(t_input input)
 		qDebug() << name() << "has no input number:" << input;
 }
 
-void MIDIInput::close(t_input input)
+void MIDIInput::close(quint32 input)
 {
 	MIDIDevice* dev = device(input);
 	if (dev != NULL)
@@ -219,9 +219,9 @@ MIDIDevice* MIDIInput::device(const snd_seq_addr_t* address)
 	return NULL;
 }
 
-MIDIDevice* MIDIInput::device(unsigned int index)
+MIDIDevice* MIDIInput::device(quint32 index)
 {
-	if (index < static_cast<unsigned int>(m_devices.size()))
+	if (index < static_cast<quint32>(m_devices.size()))
 		return m_devices.at(index);
 	else
 		return NULL;
@@ -286,7 +286,7 @@ void MIDIInput::configure()
  * Status
  *****************************************************************************/
 
-QString MIDIInput::infoText(t_input input)
+QString MIDIInput::infoText(quint32 input)
 {
 	QString str;
 
@@ -352,13 +352,12 @@ void MIDIInput::customEvent(QEvent* event)
 	if (event->type() == MIDIInputEvent::eventType)
 	{
 		MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
-		int index;
 
 		Q_ASSERT(event != NULL);
-		index = m_devices.indexOf(e->m_device);
+		int index = m_devices.indexOf(e->m_device);
 		if (index != -1)
 		{
-			emit valueChanged(this, t_input(index), e->m_channel,
+			emit valueChanged(this, quint32(index), e->m_channel,
 					  e->m_value);
 			event->accept();
 		}
@@ -369,22 +368,17 @@ void MIDIInput::connectInputData(QObject* listener)
 {
 	Q_ASSERT(listener != NULL);
 
-	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
-					  t_input_value)),
+	connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,uchar)),
 		listener,
-		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
-				      t_input_value)));
+		SLOT(slotValueChanged(QLCInPlugin*,quint32,quint32,uchar)));
 
 	connect(this, SIGNAL(configurationChanged()),
 		listener, SLOT(slotConfigurationChanged()));
 }
 
-void MIDIInput::feedBack(t_input input, t_input_channel channel,
-			 t_input_value value)
+void MIDIInput::feedBack(quint32 input, quint32 channel, uchar value)
 {
-	MIDIDevice* dev;
-
-	dev = device(input);
+	MIDIDevice* dev = device(input);
 	if (dev == NULL)
 		return;
 	else

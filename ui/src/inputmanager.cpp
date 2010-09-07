@@ -94,11 +94,11 @@ InputManager::InputManager(QWidget* parent, Qt::WindowFlags flags)
 
 	/* Listen to input map's input data signals */
 	connect(_app->inputMap(),
-		SIGNAL(inputValueChanged(t_input_universe, t_input_channel,
-					 t_input_value)),
+		SIGNAL(inputValueChanged(quint32, quint32,
+					 uchar)),
 		this,
-		SLOT(slotInputValueChanged(t_input_universe, t_input_channel,
-					   t_input_value)));
+		SLOT(slotInputValueChanged(quint32, quint32,
+					   uchar)));
 
 	/* Listen to document changes */
 	connect(_app, SIGNAL(documentChanged(Doc*)),
@@ -187,7 +187,7 @@ void InputManager::slotDocumentChanged(Doc* doc)
 void InputManager::updateTree()
 {
 	m_tree->clear();
-	for (t_input_universe i = 0; i < _app->inputMap()->universes(); i++)
+	for (quint32 i = 0; i < _app->inputMap()->universes(); i++)
 	{
 		InputPatch* inputPatch;
 		QTreeWidgetItem* item;
@@ -201,7 +201,7 @@ void InputManager::updateTree()
 }
 
 void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
-			      t_input_universe universe)
+			      quint32 universe)
 {
 	Q_ASSERT(item != NULL);
 	Q_ASSERT(ip != NULL);
@@ -218,9 +218,9 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
 	item->setText(KColumnInputNum, QString("%1").arg(ip->input() + 1));
 }
 
-void InputManager::slotInputValueChanged(t_input_universe universe,
-					 t_input_channel channel,
-					 t_input_value value)
+void InputManager::slotInputValueChanged(quint32 universe,
+					 quint32 channel,
+					 uchar value)
 {
 	QTreeWidgetItem* item;
 
@@ -255,7 +255,7 @@ void InputManager::slotTimerTimeout()
 
 void InputManager::slotEditClicked()
 {
-	t_input_universe universe;
+	quint32 universe;
 	QTreeWidgetItem* item;
 	InputPatch* patch;
 

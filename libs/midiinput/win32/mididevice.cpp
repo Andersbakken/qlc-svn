@@ -106,13 +106,13 @@ void MIDIDevice::saveSettings()
 
 static void postEvent(MIDIDevice* self, BYTE data1, BYTE data2)
 {
-	t_input_channel channel = 0;
-	t_input_value value = 0;
+	quint32 channel = 0;
+	uchar value = 0;
 
 	Q_ASSERT(self != NULL);
 
-	channel = static_cast<t_input_channel> (data1);
-	value = t_input_value(SCALE(double(data2),
+	channel = static_cast<quint32> (data1);
+	value = uchar(SCALE(double(data2),
 				    double(0),
 				    double(127),
 				    double(0),
@@ -425,7 +425,7 @@ QStringList MIDIDevice::feedBackNames()
 	return list;
 }
 
-void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
+void MIDIDevice::feedBack(quint32 channel, uchar value)
 {
 	/* Attempt to open the same line for feedback output as well */
 	if (m_feedBackId != UINT_MAX && m_feedBackHandle == NULL)

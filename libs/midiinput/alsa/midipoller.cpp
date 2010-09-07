@@ -239,7 +239,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 	do
 	{
 		snd_seq_event_t* ev = NULL;
-		t_input_value value;
+		uchar value;
 		MIDIDevice* device;
 		MIDIInputEvent* e;
 		quint64 hash;
@@ -271,7 +271,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 				continue;
 
 			/* Scale the value from [0-127] to [0-255] */
-			value = t_input_value(
+			value = uchar(
 				SCALE(double(ev->data.control.value),
 				      double(0), double(127),
 				      double(0), double(255)));
@@ -288,7 +288,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 				continue;
 
 			/* Scale the value from [0-127] to [0-255] */
-			value = t_input_value(
+			value = uchar(
 				SCALE(double(ev->data.note.velocity),
 				      double(0), double(127),
 				      double(0), double(255)));

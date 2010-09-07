@@ -39,7 +39,7 @@
  */
 #define test_bit(bit, array)    (array[bit / 8] & (1 << (bit % 8)))
 
-HIDEventDevice::HIDEventDevice(HIDInput* parent, t_input line,
+HIDEventDevice::HIDEventDevice(HIDInput* parent, quint32 line,
 			       const QString& path)
 	: HIDDevice(parent, line, path)
 {
@@ -246,7 +246,7 @@ bool HIDEventDevice::readEvent()
 	r = read(m_file.handle(), &ev, sizeof(struct input_event));
 	if (r > 0)
 	{
-		t_input_value val;
+		uchar val;
 
 		/* Accept only these kinds of events */
 		if (ev.type != EV_ABS && ev.type != EV_REL &&
@@ -333,8 +333,8 @@ QString HIDEventDevice::infoText()
  * Input data
  *****************************************************************************/
 
-void HIDEventDevice::feedBack(t_input_channel /*channel*/,
-			      t_input_value /*value*/)
+void HIDEventDevice::feedBack(quint32 /*channel*/,
+			      uchar /*value*/)
 {
 }
 

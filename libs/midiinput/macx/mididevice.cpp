@@ -153,11 +153,11 @@ void MIDIDevice::saveSettings()
 
 static void postEvent(MIDIDevice* self, MIDIPacket packet)
 {
-	t_input_channel channel;
-	t_input_value value;
+	quint32 channel;
+	uchar value;
 
-	channel = static_cast<t_input_channel> (packet.data[1]);
-	value = t_input_value(SCALE(double(packet.data[2]),
+	channel = static_cast<quint32> (packet.data[1]);
+	value = uchar(SCALE(double(packet.data[2]),
 				    double(0),
 				    double(127),
 				    double(0),
@@ -385,7 +385,7 @@ void MIDIDevice::customEvent(QEvent* event)
  * Feedback
  *****************************************************************************/
 
-void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
+void MIDIDevice::feedBack(quint32 channel, uchar value)
 {
 	Byte cmd[3];
 

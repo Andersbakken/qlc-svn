@@ -50,7 +50,7 @@ private:
 	 * Properties
 	 ********************************************************************/
 public:
-	t_input_channel channel() const { return m_channel; }
+	quint32 channel() const { return m_channel; }
 	QString name() const { return m_name; }
 	QLCInputChannel::Type type() const { return m_type; }
 
@@ -60,7 +60,7 @@ protected slots:
 	void slotTypeActivated(const QString& text);
 
 protected:
-	t_input_channel m_channel;
+	quint32 m_channel;
 	QString m_name;
 	QLCInputChannel::Type m_type;
 };

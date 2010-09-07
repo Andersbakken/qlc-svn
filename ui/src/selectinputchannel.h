@@ -54,14 +54,14 @@ protected slots:
 	 ********************************************************************/
 public:
 	/** Get the selected universe */
-	t_input_universe universe() const { return m_universe; }
+	quint32 universe() const { return m_universe; }
 
 	/** Get the selected channel within the selected universe */
-	t_input_channel channel() const { return m_channel; }
+	quint32 channel() const { return m_channel; }
 
 protected:
-	t_input_universe m_universe;
-	t_input_channel m_channel;
+	quint32 m_universe;
+	quint32 m_channel;
 
 	/********************************************************************
 	 * Tree widget
@@ -72,12 +72,12 @@ protected:
 
 	/** Update the contents of a universe item */
 	void updateUniverseItem(QTreeWidgetItem* item,
-				t_input_universe uni,
+				quint32 uni,
 				InputPatch* patch);
 
 	/** Update the contents of a channel item */
 	void updateChannelItem(QTreeWidgetItem* item,
-			       t_input_universe universe,
+			       quint32 universe,
 			       const QLCInputChannel* channel,
 			       const QLCInputProfile* profile);
 

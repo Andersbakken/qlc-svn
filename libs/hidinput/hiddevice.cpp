@@ -27,7 +27,7 @@
 #include "hiddevice.h"
 #include "hidinput.h"
 
-HIDDevice::HIDDevice(HIDInput* parent, t_input line, const QString& path) 
+HIDDevice::HIDDevice(HIDInput* parent, quint32 line, const QString& path) 
 	: QObject(parent)
 {
 	Q_ASSERT(path.length() > 0);
@@ -81,6 +81,6 @@ QString HIDDevice::name()
  * Input data
  *****************************************************************************/
 
-void HIDDevice::feedBack(t_input_channel /*channel*/, t_input_value /*value*/)
+void HIDDevice::feedBack(quint32 /*channel*/, uchar /*value*/)
 {
 }

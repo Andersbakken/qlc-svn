@@ -732,9 +732,9 @@ void VCSlider::slotTapButtonClicked()
  * External input
  *****************************************************************************/
 
-void VCSlider::slotInputValueChanged(t_input_universe universe,
-				     t_input_channel channel,
-				     t_input_value value)
+void VCSlider::slotInputValueChanged(quint32 universe,
+				     quint32 channel,
+				     uchar value)
 {
 	/* Don't let input data thru in design mode */
 	if (mode() == Doc::Design)

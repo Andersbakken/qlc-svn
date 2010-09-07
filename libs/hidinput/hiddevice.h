@@ -41,7 +41,7 @@ class HIDDevice : public QObject
 	Q_OBJECT
 		
 public:
-	HIDDevice(HIDInput* parent, t_input line, const QString& path);
+	HIDDevice(HIDInput* parent, quint32 line, const QString& path);
 	virtual ~HIDDevice();
 
 	/*********************************************************************
@@ -83,10 +83,10 @@ protected:
 	 * Line
 	 *********************************************************************/
 public:
-	t_input line() const { return m_line; }
+	quint32 line() const { return m_line; }
 
 protected:
-	t_input m_line;
+	quint32 m_line;
 
 	/*********************************************************************
 	 * Device info
@@ -116,15 +116,15 @@ signals:
 	 * @param channel The channel whose value has changed
 	 * @param value The changed value
 	 */
-	void valueChanged(HIDDevice* device, t_input_channel channel,
-			  t_input_value value);
+	void valueChanged(HIDDevice* device, quint32 channel,
+			  uchar value);
 
 public:
 	/**
 	 * Send an input value back the HID device to move motorized sliders
 	 * and such.
 	 */
-	virtual void feedBack(t_input_channel channel, t_input_value value);
+	virtual void feedBack(quint32 channel, uchar value);
 };
 
 #endif

@@ -59,7 +59,7 @@ QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
  * Channel number
  ****************************************************************************/
 /*
-void QLCInputChannel::setChannel(t_input_channel channel)
+void QLCInputChannel::setChannel(quint32 channel)
 {
 	m_channel = channel;
 }
@@ -172,7 +172,7 @@ bool QLCInputChannel::loadXML(const QDomElement* root)
 }
 
 bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root,
-			      t_input_channel channelNumber) const
+			      quint32 channelNumber) const
 {
 	QDomElement subtag;
 	QDomElement tag;

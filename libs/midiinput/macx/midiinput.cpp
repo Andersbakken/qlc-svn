@@ -51,17 +51,15 @@ MIDIInput::~MIDIInput()
 		delete m_devices.takeFirst();
 }
 
-void MIDIInput::open(t_input input)
+void MIDIInput::open(quint32 input)
 {
 	MIDIDevice* dev = device(input);
 	if (dev != NULL)
 	{
-		connect(dev, SIGNAL(valueChanged(MIDIDevice*,
-						 t_input_channel,
-						 t_input_value)),
+		connect(dev, SIGNAL(valueChanged(MIDIDevice*,quint32,uchar)),
 			this, SLOT(slotDeviceValueChanged(MIDIDevice*,
-							  t_input_channel,
-							  t_input_value)));
+							  quint32,
+							  uchar)));
 
 		dev->open();
 	}
@@ -71,17 +69,17 @@ void MIDIInput::open(t_input input)
 	}
 }
 
-void MIDIInput::close(t_input input)
+void MIDIInput::close(quint32 input)
 {
 	MIDIDevice* dev = device(input);
 	if (dev != NULL)
 	{
 		disconnect(dev, SIGNAL(valueChanged(MIDIDevice*,
-						    t_input_channel,
-						    t_input_value)),
+						    quint32,
+						    uchar)),
 			this, SLOT(slotDeviceValueChanged(MIDIDevice*,
-							  t_input_channel,
-							  t_input_value)));
+							  quint32,
+							  uchar)));
 
 		dev->close();
 	}
@@ -167,7 +165,7 @@ MIDIDevice* MIDIInput::deviceByUID(SInt32 uid)
 	return NULL;
 }
 
-MIDIDevice* MIDIInput::device(t_input input)
+MIDIDevice* MIDIInput::device(quint32 input)
 {
 	if (input < m_devices.size())
 		return m_devices.at(input);
@@ -235,7 +233,7 @@ void MIDIInput::configure()
  * Status
  *****************************************************************************/
 
-QString MIDIInput::infoText(t_input input)
+QString MIDIInput::infoText(quint32 input)
 {
 	QString str;
 
@@ -281,10 +279,10 @@ QString MIDIInput::infoText(t_input input)
  *****************************************************************************/
 
 void MIDIInput::slotDeviceValueChanged(MIDIDevice* device,
-				       t_input_channel channel,
-				       t_input_value value)
+				       quint32 channel,
+				       uchar value)
 {
-	t_input input;
+	quint32 input;
 
 	Q_ASSERT(device != NULL);
 
@@ -295,18 +293,18 @@ void MIDIInput::slotDeviceValueChanged(MIDIDevice* device,
 void MIDIInput::connectInputData(QObject* listener)
 {
 	Q_ASSERT(listener != NULL);
-	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
-					  t_input_value)),
+	connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,
+					  uchar)),
 		listener,
-		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
-				      t_input_value)));
+		SLOT(slotValueChanged(QLCInPlugin*,quint32,quint32,
+				      uchar)));
 
 	connect(this, SIGNAL(configurationChanged()),
 		listener, SLOT(slotConfigurationChanged()));
 }
 
-void MIDIInput::feedBack(t_input input, t_input_channel channel,
-			 t_input_value value)
+void MIDIInput::feedBack(quint32 input, quint32 channel,
+			 uchar value)
 {
 	MIDIDevice* dev = device(input);
 	if (dev != NULL)

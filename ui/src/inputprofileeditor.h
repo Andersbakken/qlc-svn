@@ -64,9 +64,9 @@ protected slots:
 	void slotEditClicked();
 	void slotWizardClicked(bool checked);
 
-	void slotInputValueChanged(t_input_universe universe,
-				   t_input_channel channel,
-				   t_input_value value);
+	void slotInputValueChanged(quint32 universe,
+				   quint32 channel,
+				   uchar value);
 
 	/********************************************************************
 	 * Profile

@@ -54,10 +54,10 @@ public:
 	virtual ~MIDIInput();
 
 	/** \reimp */
-	void open(t_input input = 0);
+	void open(quint32 input = 0);
 
 	/** \reimp */
-	void close(t_input input = 0);
+	void close(quint32 input = 0);
 
 	const MIDIClientRef client() const { return m_client; }
 
@@ -71,7 +71,7 @@ public:
 	void rescanDevices();
 
 	MIDIDevice* deviceByUID(SInt32 uid);
-	MIDIDevice* device(t_input input);
+	MIDIDevice* device(quint32 input);
 
 	void addDevice(MIDIDevice* device);
 	void removeDevice(MIDIDevice* device);
@@ -112,29 +112,26 @@ public:
 	 *********************************************************************/
 public:
 	/** \reimp */
-	QString infoText(t_input input = KInputInvalid);
+	QString infoText(quint32 input = KInputInvalid);
 
 	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
 protected slots:
 	/** Receives MIDI input data from MIDIDevices */
-	void slotDeviceValueChanged(MIDIDevice* device,
-				    t_input_channel channel,
-				    t_input_value value);
+	void slotDeviceValueChanged(MIDIDevice* device, quint32 channel, uchar value);
 
 signals:
 	/** \reimp */
-	void valueChanged(QLCInPlugin* plugin, t_input line,
-			  t_input_channel channel, t_input_value value);
+	void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
+			  uchar value);
 
 public:
 	/** \reimp */
 	void connectInputData(QObject* listener);
 
 	/** \reimp */
-	void feedBack(t_input input, t_input_channel channel,
-		      t_input_value value);
+	void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

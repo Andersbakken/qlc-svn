@@ -196,7 +196,7 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
  * Input data
  *****************************************************************************/
 
-void MIDIDevice::feedBack(t_input_channel channel, t_input_value value)
+void MIDIDevice::feedBack(quint32 channel, uchar value)
 {
 	/* MIDI devices can have only 128 notes or controllers */
 	if (channel < 128)

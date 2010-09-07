@@ -50,14 +50,14 @@ EWingInput::~EWingInput()
 		delete m_devices.takeFirst();
 }
 
-void EWingInput::open(t_input input)
+void EWingInput::open(quint32 input)
 {
 	EWing* dev = device(input);
 	if (dev == NULL)
 		qDebug() << name() << "has no input number:" << input;
 }
 
-void EWingInput::close(t_input input)
+void EWingInput::close(quint32 input)
 {
 	EWing* dev = device(input);
 	if (dev == NULL)
@@ -139,9 +139,9 @@ EWing* EWingInput::device(const QHostAddress& address, EWing::Type type)
 	return NULL;
 }
 
-EWing* EWingInput::device(int index)
+EWing* EWingInput::device(quint32 index)
 {
-	if (index > m_devices.count())
+	if (index > quint32(m_devices.count()))
 		return NULL;
 	else
 		return m_devices.at(index);
@@ -157,8 +157,8 @@ void EWingInput::addDevice(EWing* device)
 {
 	Q_ASSERT(device != NULL);
 
-	connect(device, SIGNAL(valueChanged(t_input_channel,t_input_value)),
-		this, SLOT(slotValueChanged(t_input_channel,t_input_value)));
+	connect(device, SIGNAL(valueChanged(quint32,uchar)),
+		this, SLOT(slotValueChanged(quint32,uchar)));
 
 	m_devices.append(device);
 
@@ -223,7 +223,7 @@ void EWingInput::configure()
  * Status
  *****************************************************************************/
 
-QString EWingInput::infoText(t_input input)
+QString EWingInput::infoText(quint32 input)
 {
 	QString str;
 
@@ -274,7 +274,7 @@ QString EWingInput::infoText(t_input input)
  * Input data
  *****************************************************************************/
 
-void EWingInput::slotValueChanged(t_input_channel channel, t_input_value value)
+void EWingInput::slotValueChanged(quint32 channel, uchar value)
 {
 	EWing* wing = qobject_cast<EWing*> (QObject::sender());
 	emit valueChanged(this, m_devices.indexOf(wing), channel, value);
@@ -284,16 +284,15 @@ void EWingInput::connectInputData(QObject* listener)
 {
 	Q_ASSERT(listener != NULL);
 
-	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
-					  t_input_value)),
-		listener, SLOT(slotValueChanged(QLCInPlugin*,t_input,
-					t_input_channel, t_input_value)));
+	connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,
+					  uchar)),
+		listener, SLOT(slotValueChanged(QLCInPlugin*,quint32,
+					quint32, uchar)));
 	connect(this, SIGNAL(configurationChanged()),
 		listener, SLOT(slotConfigurationChanged()));
 }
 
-void EWingInput::feedBack(t_input input, t_input_channel channel,
-			  t_input_value value)
+void EWingInput::feedBack(quint32 input, quint32 channel, uchar value)
 {
 	EWing* ewing = device(input);
 	if (ewing != NULL)

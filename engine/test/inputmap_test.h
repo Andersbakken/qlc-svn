@@ -39,7 +39,7 @@ private slots:
 	void profiles();
 	void setPatch();
 	void feedBack();
-	//void slotValueChanged();
+	void slotValueChanged();
 };
 
 #endif

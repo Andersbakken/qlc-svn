@@ -59,7 +59,7 @@ public:
 	 * universes.
 	 */
 	InputMap(QObject* parent,
-		 t_input_universe universes = KInputUniverseCount);
+		 quint32 universes = KInputUniverseCount);
 
 	/**
 	 * Destroy an InputMap object
@@ -71,8 +71,8 @@ public:
 	 *********************************************************************/
 public slots:
 	/** Slot that catches input plugins' value changes */
-	void slotValueChanged(QLCInPlugin* plugin, t_input input,
-			      t_input_channel channel, t_input_value value);
+	void slotValueChanged(QLCInPlugin* plugin, quint32 input,
+			      quint32 channel, uchar value);
 
 	/** Slot that catches plugin configuration change notifications */
 	void slotConfigurationChanged();
@@ -80,13 +80,13 @@ public slots:
 public:
 	/** Send feedback value to the input profile e.g. to move a motorized
 	    sliders & knobs, set indicator leds etc. */
-	bool feedBack(t_input_universe universe, t_input_channel channel,
-		      t_input_value value);
+	bool feedBack(quint32 universe, quint32 channel,
+		      uchar value);
 
 signals:
 	/** Everyone interested in input data should connect to this signal */
-	void inputValueChanged(t_input_universe universe,
-			       t_input_channel channel, t_input_value value);
+	void inputValueChanged(quint32 universe,
+			       quint32 channel, uchar value);
 
 	/** Notifies (InputManager) of plugin configuration changes */
 	void pluginConfigurationChanged(const QString& pluginName);
@@ -98,17 +98,17 @@ public:
 	/**
 	 * Get the number of supported input universes
 	 */
-	t_input_universe universes() const;
+	quint32 universes() const;
 
 	/**
 	 * Get the universe that is used for editing functions etc.
 	 */
-	t_input_universe editorUniverse() const;
+	quint32 editorUniverse() const;
 
 	/**
 	 * Set the universe that is used for editing functions etc.
 	 */
-	void setEditorUniverse(t_input_universe uni);
+	void setEditorUniverse(quint32 uni);
 
 	/**
 	 * Patch the given universe to go thru the given plugin
@@ -120,8 +120,8 @@ public:
 	 * @param profileName The name of an input profile
 	 * @return true if successful, otherwise false
 	 */
-	bool setPatch(t_input_universe universe, const QString& pluginName,
-		      t_input input, bool enableFeedback,
+	bool setPatch(quint32 universe, const QString& pluginName,
+		      quint32 input, bool enableFeedback,
 		      const QString& profileName = QString::null);
 
 	/**
@@ -129,7 +129,7 @@ public:
 	 *
 	 * @param universe The internal input universe to get mapping for
 	 */
-	InputPatch* patch(t_input_universe universe) const;
+	InputPatch* patch(quint32 universe) const;
 
 	/**
 	 * Check, whether a certain input in a certain plugin has been mapped
@@ -140,7 +140,7 @@ public:
 	 * @param input The particular input to check for
 	 * @return Mapped universe number or -1 if not mapped
 	 */
-	int mapping(const QString& pluginName, t_input input) const;
+	quint32 mapping(const QString& pluginName, quint32 input) const;
 
 protected:
 	/** Initialize the patch table */
@@ -152,10 +152,10 @@ protected:
 	QVector <InputPatch*> m_patch;
 
 	/** Total number of supported input universes */
-	t_input_universe m_universes;
+	quint32 m_universes;
 
 	/** The universe used to edit functions etc. */
-	t_input_universe m_editorUniverse;
+	quint32 m_editorUniverse;
 
 	/*********************************************************************
 	 * Plugins
@@ -197,7 +197,7 @@ public:
 	 * @param input A specific input identifier
 	 */
 	QString pluginStatus(const QString& pluginName = QString::null,
-			     t_input input = KInputInvalid);
+			     quint32 input = KInputInvalid);
 
 	/**
 	 * Append the given plugin to our list of plugins. Will fail if

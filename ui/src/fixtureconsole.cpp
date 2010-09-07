@@ -210,31 +210,31 @@ void FixtureConsole::enableExternalInput(bool enable)
 	if (enable == true && m_externalInputEnabled == false)
 	{
 		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)),
-			this, SLOT(slotInputValueChanged(t_input_universe,
-							 t_input_channel,
-							 t_input_value)));
+			SIGNAL(inputValueChanged(quint32,
+						 quint32,
+						 uchar)),
+			this, SLOT(slotInputValueChanged(quint32,
+							 quint32,
+							 uchar)));
 		m_externalInputEnabled = true;
 	}
 	else if (enable == false && m_externalInputEnabled == true)
 	{
 		disconnect(_app->inputMap(),
-			   SIGNAL(inputValueChanged(t_input_universe,
-						    t_input_channel,
-						    t_input_value)),
+			   SIGNAL(inputValueChanged(quint32,
+						    quint32,
+						    uchar)),
 			   this,
-			   SLOT(slotInputValueChanged(t_input_universe,
-						      t_input_channel,
-						      t_input_value)));
+			   SLOT(slotInputValueChanged(quint32,
+						      quint32,
+						      uchar)));
 		m_externalInputEnabled = false;
 	}
 }
 
-void FixtureConsole::slotInputValueChanged(t_input_universe uni,
-					   t_input_channel ch,
-					   t_input_value value)
+void FixtureConsole::slotInputValueChanged(quint32 uni,
+					   quint32 ch,
+					   uchar value)
 {
 	if (uni == _app->inputMap()->editorUniverse())
 	{

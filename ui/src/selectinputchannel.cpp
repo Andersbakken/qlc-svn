@@ -78,7 +78,7 @@ void SelectInputChannel::fillTree()
 	QTreeWidgetItem* uniItem;
 	QTreeWidgetItem* chItem;
 	QLCInputProfile* profile;
-	t_input_universe uni;
+	quint32 uni;
 	InputPatch* patch;
 
 	/* Add an option to select no input at all */
@@ -110,7 +110,7 @@ void SelectInputChannel::fillTree()
 		profile = patch->profile();
 		if (profile != NULL)
 		{
-			QMapIterator <t_input_channel, QLCInputChannel*>
+			QMapIterator <quint32, QLCInputChannel*>
 				it(profile->channels());
 			while (it.hasNext() == true)
 			{
@@ -132,7 +132,7 @@ void SelectInputChannel::fillTree()
 }
 
 void SelectInputChannel::updateChannelItem(QTreeWidgetItem* item,
-					   t_input_universe universe,
+					   quint32 universe,
 					   const QLCInputChannel* channel,
 					   const QLCInputProfile* profile)
 {
@@ -167,7 +167,7 @@ void SelectInputChannel::updateChannelItem(QTreeWidgetItem* item,
 }
 
 void SelectInputChannel::updateUniverseItem(QTreeWidgetItem* item,
-					    t_input_universe universe,
+					    quint32 universe,
 					    InputPatch* patch)
 {
 	QString name;
@@ -205,7 +205,7 @@ void SelectInputChannel::updateUniverseItem(QTreeWidgetItem* item,
 
 void SelectInputChannel::slotItemChanged(QTreeWidgetItem* item, int column)
 {
-	t_input_channel channel;
+	quint32 channel;
 
 	Q_ASSERT(item != NULL);
 	if (column != KColumnName)

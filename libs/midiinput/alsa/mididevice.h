@@ -134,15 +134,15 @@ signals:
 	 * @param channel The channel whose value has changed
 	 * @param value The changed value
 	 */
-	void valueChanged(MIDIDevice* device, t_input_channel channel,
-			  t_input_value value);
+	void valueChanged(MIDIDevice* device, quint32 channel,
+			  uchar value);
 
 public:
 	/**
 	 * Send an input value back the device to move motorized sliders
 	 * and such.
 	 */
-	void feedBack(t_input_channel channel, t_input_value value);
+	void feedBack(quint32 channel, uchar value);
 };
 
 #endif

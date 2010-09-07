@@ -107,7 +107,7 @@ public:
 	 *
 	 * @param input The input line to open
 	 */
-	virtual void open(t_input input = 0) = 0;
+	virtual void open(quint32 input = 0) = 0;
 
 	/**
 	 * Close the specified input line so that the plugin can stop
@@ -115,7 +115,7 @@ public:
 	 *
 	 * @param input The input line to close
 	 */
-	virtual void close(t_input input = 0) = 0;
+	virtual void close(quint32 input = 0) = 0;
 
 	/**
 	 * Invoke a configuration dialog for the plugin
@@ -134,7 +134,7 @@ public:
 	 * @param input If specified, information for the given input line is
 	 *              expected. Otherwise provides information for the plugin
 	 */
-	virtual QString infoText(t_input input = KInputInvalid) = 0;
+	virtual QString infoText(quint32 input = KInputInvalid) = 0;
 
 	/**
 	 * Get the plugin's name
@@ -169,14 +169,14 @@ public:
 	 *    1. Inherit QObject and QLCInPlugin
 	 *    2. Re-implement this method and connect the plugin's signals:
 	 *
-	 *         - valueChanged(QLCInPlugin* plugin, t_input line,
-	 *                        t_input_channel ch, t_input_value val);
+	 *         - valueChanged(QLCInPlugin* plugin, quint32 line,
+	 *                        quint32 ch, uchar val);
      *         - configurationChanged();
 	 *
 	 * to the given listener object's slots:
 	 *
-	 *         - slotValueChanged(QLCInPlugin* plugin, t_input line,
-	 *                            t_input_channel ch, t_input_value val);
+	 *         - slotValueChanged(QLCInPlugin* plugin, quint32 line,
+	 *                            quint32 ch, uchar val);
      *         - slotConfigurationChanged();
 	 *
 	 * With this approach, input plugins can use the signal-slot mechanism
@@ -198,8 +198,8 @@ public:
 	 * @param channel A channel in the input line to send feedback to
 	 * @param value An input value to send back to the input channel
 	 */
-	virtual void feedBack(t_input input, t_input_channel channel,
-			      t_input_value value) = 0;
+	virtual void feedBack(quint32 input, quint32 channel,
+			      uchar value) = 0;
 };
 
 Q_DECLARE_INTERFACE(QLCInPlugin, "QLCInPlugin")

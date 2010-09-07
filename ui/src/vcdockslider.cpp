@@ -57,12 +57,12 @@ VCDockSlider::VCDockSlider(QWidget* parent, quint32 bus) : QFrame(parent)
 		this, SLOT(slotBusValueChanged(quint32, quint32)));
 
 	/* External input connection */
-	connect(_app->inputMap(), SIGNAL(inputValueChanged(t_input_universe,
-							   t_input_channel,
-							   t_input_value)),
-		this, SLOT(slotInputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)));
+	connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32,
+							   quint32,
+							   uchar)),
+		this, SLOT(slotInputValueChanged(quint32,
+						 quint32,
+						 uchar)));
 
 	/* Slider connections */
 	connect(m_slider, SIGNAL(valueChanged(int)),
@@ -143,8 +143,8 @@ void VCDockSlider::slotBusValueChanged(quint32 bus, quint32 value)
 
 void VCDockSlider::slotSliderValueChanged(int value)
 {
-	t_input_universe uni;
-	t_input_channel ch;
+	quint32 uni;
+	quint32 ch;
 	QString num;
 
 	/* Set changed value to bus */
@@ -196,12 +196,12 @@ void VCDockSlider::slotTapButtonClicked()
  * External input
  *****************************************************************************/
 
-void VCDockSlider::slotInputValueChanged(t_input_universe universe,
-					 t_input_channel channel,
-					 t_input_value value)
+void VCDockSlider::slotInputValueChanged(quint32 universe,
+					 quint32 channel,
+					 uchar value)
 {
-	t_input_universe uni;
-	t_input_channel ch;
+	quint32 uni;
+	quint32 ch;
 
 	/* Find out this slider's input source */
 	if (m_bus == Bus::defaultFade())

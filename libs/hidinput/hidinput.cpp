@@ -37,8 +37,8 @@
 static const QEvent::Type _HIDInputEventType = static_cast<QEvent::Type>
 	(QEvent::registerEventType());
 
-HIDInputEvent::HIDInputEvent(HIDDevice* device, t_input input,
-			     t_input_channel channel, t_input_value value,
+HIDInputEvent::HIDInputEvent(HIDDevice* device, quint32 input,
+			     quint32 channel, uchar value,
 			     bool alive) : QEvent(_HIDInputEventType)
 {
 	m_device = device;
@@ -71,7 +71,7 @@ HIDInput::~HIDInput()
 	delete m_poller;
 }
 
-void HIDInput::open(t_input input)
+void HIDInput::open(quint32 input)
 {
 	HIDDevice* dev = device(input);
 	if (dev != NULL)
@@ -80,7 +80,7 @@ void HIDInput::open(t_input input)
 		qDebug() << name() << "has no input number:" << input;
 }
 
-void HIDInput::close(t_input input)
+void HIDInput::close(quint32 input)
 {
 	HIDDevice* dev = device(input);
 	if (dev != NULL)
@@ -95,7 +95,7 @@ void HIDInput::close(t_input input)
 
 void HIDInput::rescanDevices()
 {
-	t_input line = 0;
+	quint32 line = 0;
 
 	/* Copy the pointers from our devices list into a list of devices
 	   to destroy in case some of them have disappeared. */
@@ -225,7 +225,7 @@ void HIDInput::configure()
  * Status
  *****************************************************************************/
 
-QString HIDInput::infoText(t_input input)
+QString HIDInput::infoText(quint32 input)
 {
 	QString str;
 
@@ -307,18 +307,18 @@ void HIDInput::connectInputData(QObject* listener)
 {
 	Q_ASSERT(listener != NULL);
 
-	connect(this, SIGNAL(valueChanged(QLCInPlugin*,t_input,t_input_channel,
-					  t_input_value)),
+	connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,
+					  uchar)),
 		listener,
-		SLOT(slotValueChanged(QLCInPlugin*,t_input,t_input_channel,
-				      t_input_value)));
+		SLOT(slotValueChanged(QLCInPlugin*,quint32,quint32,
+				      uchar)));
 
 	connect(this, SIGNAL(configurationChanged()),
 		listener, SLOT(slotConfigurationChanged()));
 }
 
-void HIDInput::feedBack(t_input input, t_input_channel channel,
-			t_input_value value)
+void HIDInput::feedBack(quint32 input, quint32 channel,
+			uchar value)
 {
 	Q_UNUSED(input);
 	Q_UNUSED(channel);

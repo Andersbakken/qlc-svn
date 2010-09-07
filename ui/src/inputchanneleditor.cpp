@@ -64,7 +64,7 @@ InputChannelEditor::InputChannelEditor(QWidget* parent,
 	if (channel != NULL && profile != NULL)
 	{
 		QString type;
-		t_input_channel num;
+		quint32 num;
 		
 		/* Channel number */
 		num = profile->channelNumber(channel);

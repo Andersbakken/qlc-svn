@@ -38,14 +38,14 @@
 class HIDInputEvent : public QEvent
 {
 public:
-	HIDInputEvent(HIDDevice* device, t_input input, t_input_channel channel,
-		      t_input_value value, bool alive);
+	HIDInputEvent(HIDDevice* device, quint32 input, quint32 channel,
+		      uchar value, bool alive);
 	~HIDInputEvent();
 
 	HIDDevice* m_device;
-	t_input m_input;
-	t_input_channel m_channel;
-	t_input_value m_value;
+	quint32 m_input;
+	quint32 m_channel;
+	uchar m_value;
 	bool m_alive;
 };
 
@@ -68,8 +68,8 @@ public:
 	void init();
 	~HIDInput();
 
-	void open(t_input input = 0);
-	void close(t_input input = 0);
+	void open(quint32 input = 0);
+	void close(quint32 input = 0);
 
 	/*********************************************************************
 	 * Devices
@@ -114,7 +114,7 @@ public:
 	 * Status
 	 *********************************************************************/
 public:
-	QString infoText(t_input input = KInputInvalid);
+	QString infoText(quint32 input = KInputInvalid);
 
 	/*********************************************************************
 	 * Device poller
@@ -133,14 +133,14 @@ protected:
 	void customEvent(QEvent* event);
 
 signals:
-	void valueChanged(QLCInPlugin* plugin, t_input line,
-			  t_input_channel channel, t_input_value value);
+	void valueChanged(QLCInPlugin* plugin, quint32 line,
+			  quint32 channel, uchar value);
 
 public:
 	void connectInputData(QObject* listener);
 
-	void feedBack(t_input input, t_input_channel channel,
-		      t_input_value value);
+	void feedBack(quint32 input, quint32 channel,
+		      uchar value);
 };
 
 #endif

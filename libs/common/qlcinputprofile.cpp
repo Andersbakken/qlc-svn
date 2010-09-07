@@ -44,7 +44,7 @@ QLCInputProfile::QLCInputProfile(const QLCInputProfile& profile)
 QLCInputProfile::~QLCInputProfile()
 {
 	/* Delete existing channels but leave the pointers there */
-	QMutableMapIterator <t_input_channel,QLCInputChannel*> it(m_channels);
+	QMutableMapIterator <quint32,QLCInputChannel*> it(m_channels);
 	while (it.hasNext() == true)
 		delete it.next().value();
 
@@ -61,7 +61,7 @@ QLCInputProfile& QLCInputProfile::operator=(const QLCInputProfile& profile)
 		m_path = profile.m_path;
 
 		/* Delete existing channels */
-		QMutableMapIterator <t_input_channel,QLCInputChannel*>
+		QMutableMapIterator <quint32,QLCInputChannel*>
 			old_it(m_channels);
 		while (old_it.hasNext() == true)
 			delete old_it.next().value();
@@ -70,13 +70,13 @@ QLCInputProfile& QLCInputProfile::operator=(const QLCInputProfile& profile)
 		m_channels.clear();
 
 		/* Copy the other profile's channels */
-		QMapIterator <t_input_channel,QLCInputChannel*>
+		QMapIterator <quint32,QLCInputChannel*>
 			it(profile.m_channels);
 		while (it.hasNext() == true)
 		{
 			it.next();
 
-			t_input_channel number = it.key();
+			quint32 number = it.key();
 			QLCInputChannel* ich = it.value();
 
 			insertChannel(number, new QLCInputChannel(*ich));
@@ -114,7 +114,7 @@ QString QLCInputProfile::path() const
  * Channels
  ****************************************************************************/
 
-bool QLCInputProfile::insertChannel(t_input_channel channel,
+bool QLCInputProfile::insertChannel(quint32 channel,
 				    QLCInputChannel* ich)
 {
 	if (ich != NULL && m_channels.contains(channel) == false)
@@ -128,7 +128,7 @@ bool QLCInputProfile::insertChannel(t_input_channel channel,
 	}
 }
 
-bool QLCInputProfile::removeChannel(t_input_channel channel)
+bool QLCInputProfile::removeChannel(quint32 channel)
 {
 	if (m_channels.contains(channel) == true)
 	{
@@ -143,12 +143,12 @@ bool QLCInputProfile::removeChannel(t_input_channel channel)
 	}
 }
 
-bool QLCInputProfile::remapChannel(QLCInputChannel* ich, t_input_channel number)
+bool QLCInputProfile::remapChannel(QLCInputChannel* ich, quint32 number)
 {
 	if (ich == NULL)
 		return false;
 
-	t_input_channel old = channelNumber(ich);
+	quint32 old = channelNumber(ich);
 	if (old != KInputChannelInvalid && m_channels.contains(number) == false)
 	{
 		m_channels.take(old);
@@ -161,7 +161,7 @@ bool QLCInputProfile::remapChannel(QLCInputChannel* ich, t_input_channel number)
 	}
 }
 
-QLCInputChannel* QLCInputProfile::channel(t_input_channel channel) const
+QLCInputChannel* QLCInputProfile::channel(quint32 channel) const
 {
 	if (m_channels.contains(channel) == true)
 		return m_channels[channel];
@@ -169,13 +169,13 @@ QLCInputChannel* QLCInputProfile::channel(t_input_channel channel) const
 		return NULL;
 }
 
-t_input_channel QLCInputProfile::channelNumber(
+quint32 QLCInputProfile::channelNumber(
 					const QLCInputChannel* channel) const
 {
 	if (channel == NULL)
 		return KInputChannelInvalid;
 
-	QMapIterator <t_input_channel,QLCInputChannel*> it(m_channels);
+	QMapIterator <quint32,QLCInputChannel*> it(m_channels);
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -216,7 +216,7 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
 bool QLCInputProfile::loadXML(const QDomDocument* doc)
 {
 	QLCInputChannel* ich;
-	t_input_channel ch;
+	quint32 ch;
 	QDomElement root;
 	QDomElement tag;
 	QDomNode node;
@@ -301,7 +301,7 @@ bool QLCInputProfile::saveXML(const QString& fileName)
 		tag.appendChild(text);
 
 		/* Write channels to the document */
-		QMapIterator <t_input_channel, QLCInputChannel*> it(m_channels);
+		QMapIterator <quint32, QLCInputChannel*> it(m_channels);
 		while (it.hasNext() == true)
 		{
 			it.next();

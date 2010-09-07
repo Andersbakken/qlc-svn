@@ -53,7 +53,7 @@ InputPatch::~InputPatch()
  * Properties
  *****************************************************************************/
 
-void InputPatch::set(QLCInPlugin* plugin, t_input input, bool enableFeedback,
+void InputPatch::set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
 		     QLCInputProfile* profile)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
@@ -79,9 +79,9 @@ QString InputPatch::pluginName() const
 		return KInputNone;
 }
 
-t_input InputPatch::input() const
+quint32 InputPatch::input() const
 {
-	if (m_plugin != NULL && m_input < m_plugin->inputs().count())
+	if (m_plugin != NULL && m_input < quint32(m_plugin->inputs().count()))
 		return m_input;
 	else
 		return KInputInvalid;
@@ -90,7 +90,7 @@ t_input InputPatch::input() const
 QString InputPatch::inputName() const
 {
 	if (m_plugin != NULL && m_input != KInputInvalid &&
-	    m_input < m_plugin->inputs().count())
+	    m_input < quint32(m_plugin->inputs().count()))
 		return m_plugin->inputs()[m_input];
 	else
 		return KInputNone;

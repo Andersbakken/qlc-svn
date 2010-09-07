@@ -91,7 +91,7 @@ public:
 	 * @param ich The input channel to add.
 	 * @return true if the channel was inserted, otherwise false.
 	 */
-	bool insertChannel(t_input_channel channel, QLCInputChannel* ich);
+	bool insertChannel(quint32 channel, QLCInputChannel* ich);
 
 	/**
 	 * Remove the given channel mapping from this profile. Also deletes the
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @param channel The channel number to remove & delete.
 	 */
-	bool removeChannel(t_input_channel channel);
+	bool removeChannel(quint32 channel);
 
 	/**
 	 * Re-map the given channel to a different channel number. If another
@@ -110,7 +110,7 @@ public:
 	 * @param number The new channel number to re-map to.
 	 * @return true if successful, otherwise false.
 	 */
-	bool remapChannel(QLCInputChannel* ich, t_input_channel number);
+	bool remapChannel(QLCInputChannel* ich, quint32 number);
 
 	/**
 	 * Get a channel object by a channel number.
@@ -118,7 +118,7 @@ public:
 	 * @param channel The number of the channel to get.
 	 * @return A QLCInputChannel* or NULL if not found.
 	 */
-	QLCInputChannel* channel(t_input_channel channel) const;
+	QLCInputChannel* channel(quint32 channel) const;
 
 	/**
 	 * Get the channel number for the given input channel.
@@ -126,18 +126,18 @@ public:
 	 * @param channel The channel whose number to get
 	 * @return Channel number or KInputChannelInvalid if not found
 	 */
-	t_input_channel channelNumber(const QLCInputChannel* channel) const;
+	quint32 channelNumber(const QLCInputChannel* channel) const;
 
 	/**
 	 * Get available channels in a non-modifiable map
 	 */
-	const QMap <t_input_channel, QLCInputChannel*> channels() const
+	const QMap <quint32, QLCInputChannel*> channels() const
 		{ return m_channels; }
 
 protected:
 	/** Channel objects present in this profile. This is a QMap and not a
 	    QList because not all channels might be present. */
-	QMap <t_input_channel, QLCInputChannel*> m_channels;
+	QMap <quint32, QLCInputChannel*> m_channels;
 
 	/********************************************************************
 	 * Load & Save

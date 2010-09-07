@@ -189,7 +189,7 @@ public:
 	 * @param channel The channel to send feedback data to
 	 * @param value The feedback value to set to the given channel
 	 */
-	virtual void feedBack(t_input_channel channel, t_input_value value);
+	virtual void feedBack(quint32 channel, uchar value);
 
 	/**
 	 * Get the cached value of the given channel.
@@ -216,7 +216,7 @@ signals:
 	 * @param channel The number of the changed channel
 	 * @param value The new value for the channel
 	 */
-	void valueChanged(t_input_channel channel, t_input_value value);
+	void valueChanged(quint32 channel, uchar value);
 
 protected:
 	QByteArray m_values;

@@ -289,7 +289,6 @@ void InputMap_Test::feedBack()
 	QVERIFY(stub->m_feedBackValue == 3);
 }
 
-#if 0
 void InputMap_Test::slotValueChanged()
 {
 	InputMap im(this);
@@ -297,13 +296,11 @@ void InputMap_Test::slotValueChanged()
 	InputPluginStub* stub = new InputPluginStub();
 	im.appendPlugin(stub);
 
-	QVERIFY(im.setPatch(0, stub->name(), 0) == true);
+	QVERIFY(im.setPatch(0, stub->name(), 0, false) == true);
 	QVERIFY(im.patch(0)->plugin() == stub);
 	QVERIFY(im.patch(0)->input() == 0);
 
-	QSignalSpy spy(&im, SIGNAL(inputValueChanged(t_input_universe,
-						     t_input_channel,
-						     t_input_value)));
+	QSignalSpy spy(&im, SIGNAL(inputValueChanged(quint32, quint32, uchar)));
 	im.slotValueChanged(stub, 0, 15, 255);
 	QVERIFY(spy.size() == 1);
 	QVERIFY(spy.at(0).at(0) == 0);
@@ -333,4 +330,3 @@ void InputMap_Test::slotValueChanged()
 	QVERIFY(spy.at(1).at(1) == 5);
 	QVERIFY(spy.at(1).at(2) == 127);
 }
-#endif

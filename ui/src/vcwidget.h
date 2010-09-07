@@ -207,23 +207,23 @@ public:
 	 *********************************************************************/
 public:
 	/** Set external input universe & channel number to listen to */
-	void setInputSource(t_input_universe uni, t_input_channel ch);
+	void setInputSource(quint32 uni, quint32 ch);
 
 	/** Get the assigned external input universe */
-	t_input_universe inputUniverse() const { return m_inputUniverse; }
+	quint32 inputUniverse() const { return m_inputUniverse; }
 
 	/** Get the assigned external input channel within inputUniverse() */
-	t_input_channel inputChannel() const { return m_inputChannel; }
+	quint32 inputChannel() const { return m_inputChannel; }
 
 protected slots:
 	/** Slot that receives external input data */
-	virtual void slotInputValueChanged(t_input_universe universe,
-					   t_input_channel channel,
-					   t_input_value value);
+	virtual void slotInputValueChanged(quint32 universe,
+					   quint32 channel,
+					   uchar value);
 
 protected:
-	t_input_universe m_inputUniverse;
-	t_input_channel m_inputChannel;
+	quint32 m_inputUniverse;
+	quint32 m_inputChannel;
 
 	/*********************************************************************
 	 * Key sequence handler

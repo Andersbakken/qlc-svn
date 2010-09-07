@@ -48,8 +48,8 @@ public:
 	void init();
 	~EWingInput();
 
-	void open(t_input input = 0);
-	void close(t_input input = 0);
+	void open(quint32 input = 0);
+	void close(quint32 input = 0);
 
 protected slots:
 	void slotReadSocket();
@@ -74,7 +74,7 @@ protected:
 	 *********************************************************************/
 protected:
 	EWing* device(const QHostAddress& address, EWing::Type type);
-	EWing* device(int index);
+	EWing* device(quint32 index);
 
 	void addDevice(EWing* device);
 	void removeDevice(EWing* device);
@@ -105,25 +105,24 @@ public:
 	 * Status
 	 *********************************************************************/
 public:
-	QString infoText(t_input input = KInputInvalid);
+	QString infoText(quint32 input = KInputInvalid);
 
 	/*********************************************************************
 	 * Input data
 	 *********************************************************************/
 protected slots:
-	void slotValueChanged(t_input_channel channel, t_input_value value);
+	void slotValueChanged(quint32 channel, uchar value);
 
 signals:
-	void valueChanged(QLCInPlugin* plugin, t_input line,
-			  t_input_channel channel, t_input_value value);
+	void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
+			  uchar value);
 
 	void configurationChanged();
 
 public:
 	void connectInputData(QObject* listener);
 
-	void feedBack(t_input input, t_input_channel channel,
-		      t_input_value value);
+	void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

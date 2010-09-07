@@ -34,8 +34,8 @@ const QEvent::Type MIDIInputEvent::eventType =
  * Initialization
  *****************************************************************************/
 
-MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, t_input_channel channel,
-		t_input_value value) : QEvent(MIDIInputEvent::eventType)
+MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, quint32 channel,
+		uchar value) : QEvent(MIDIInputEvent::eventType)
 {
 	m_device = device;
 	m_channel = channel;

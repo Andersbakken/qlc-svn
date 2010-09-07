@@ -342,8 +342,8 @@ bool VCProperties::loadProperties(const QDomElement* root)
 		{
 			quint32 low = 0;
 			quint32 high = 10;
-			t_input_universe universe = KInputUniverseInvalid;
-			t_input_channel channel = KInputChannelInvalid;
+			quint32 universe = KInputUniverseInvalid;
+			quint32 channel = KInputChannelInvalid;
 			QDomElement subtag;
 
 			/* Bus low limit */

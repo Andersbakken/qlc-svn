@@ -107,8 +107,8 @@ public:
 	void enableExternalInput(bool enable);
 
 protected slots:
-	void slotInputValueChanged(t_input_universe uni, t_input_channel ch,
-				   t_input_value value);
+	void slotInputValueChanged(quint32 uni, quint32 ch,
+				   uchar value);
 
 protected:
 	bool m_externalInputEnabled;

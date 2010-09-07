@@ -49,7 +49,7 @@
  * Initialization
  *****************************************************************************/
 
-InputMap::InputMap(QObject*parent, t_input_universe universes) : QObject(parent)
+InputMap::InputMap(QObject*parent, quint32 universes) : QObject(parent)
 {
 	m_universes = universes;
 	m_editorUniverse = 0;
@@ -62,7 +62,7 @@ InputMap::~InputMap()
 	/* Clear patching table so that when it gets out of scope AFTER this
 	   destructor is run, it won't attempt to do close() on already-deleted
 	   plugin pointers. */
-	for (t_input_universe i = 0; i < m_universes; i++)
+	for (quint32 i = 0; i < m_universes; i++)
 	{
 		delete m_patch[i];
 		m_patch[i] = NULL;
@@ -79,17 +79,17 @@ InputMap::~InputMap()
  * Universes
  *****************************************************************************/
 
-t_input_universe InputMap::universes() const
+quint32 InputMap::universes() const
 {
 	return m_universes;
 }
 
-t_input_universe InputMap::editorUniverse() const
+quint32 InputMap::editorUniverse() const
 {
 	return m_editorUniverse;
 }
 
-void InputMap::setEditorUniverse(t_input_universe uni)
+void InputMap::setEditorUniverse(quint32 uni)
 {
 	if (uni < universes())
 		m_editorUniverse = uni;
@@ -101,10 +101,10 @@ void InputMap::setEditorUniverse(t_input_universe uni)
  * Input data
  *****************************************************************************/
 
-void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
-				t_input_channel channel, t_input_value value)
+void InputMap::slotValueChanged(QLCInPlugin* plugin, quint32 input,
+				quint32 channel, uchar value)
 {
-	for (t_input_universe i = 0; i < m_universes; i++)
+	for (quint32 i = 0; i < m_universes; i++)
 	{
 		if (m_patch[i]->plugin() == plugin &&
 		    m_patch[i]->input() == input)
@@ -114,10 +114,10 @@ void InputMap::slotValueChanged(QLCInPlugin* plugin, t_input input,
 	}
 }
 
-bool InputMap::feedBack(t_input_universe universe, t_input_channel channel,
-			t_input_value value)
+bool InputMap::feedBack(quint32 universe, quint32 channel,
+			uchar value)
 {
-	if (universe >= m_patch.size())
+	if (universe >= quint32(m_patch.size()))
 		return false;
 
 	InputPatch* patch = m_patch[universe];
@@ -138,7 +138,6 @@ void InputMap::slotConfigurationChanged()
 {
 	QLCInPlugin* plugin = qobject_cast<QLCInPlugin*> (QObject::sender());
 	Q_ASSERT(plugin != NULL);
-qDebug() << Q_FUNC_INFO;
 	emit pluginConfigurationChanged(plugin->name());
 }
 
@@ -148,12 +147,12 @@ qDebug() << Q_FUNC_INFO;
 
 void InputMap::initPatch()
 {
-	for (t_input_universe i = 0; i < m_universes; i++)
+	for (quint32 i = 0; i < m_universes; i++)
 		m_patch.insert(i, new InputPatch(this));
 }
 
-bool InputMap::setPatch(t_input_universe universe, const QString& pluginName,
-			t_input input, bool enableFeedback,
+bool InputMap::setPatch(quint32 universe, const QString& pluginName,
+			quint32 input, bool enableFeedback,
 			const QString& profileName)
 {
 	/* Check that the universe that we're doing mapping for is valid */
@@ -171,7 +170,7 @@ bool InputMap::setPatch(t_input_universe universe, const QString& pluginName,
 	return true;
 }
 
-InputPatch* InputMap::patch(t_input_universe universe) const
+InputPatch* InputMap::patch(quint32 universe) const
 {
 	if (universe < m_universes)
 		return m_patch[universe];
@@ -179,16 +178,16 @@ InputPatch* InputMap::patch(t_input_universe universe) const
 		return NULL;
 }
 
-int InputMap::mapping(const QString& pluginName, t_input input) const
+quint32 InputMap::mapping(const QString& pluginName, quint32 input) const
 {
-	for (int uni = 0; uni < universes(); uni++)
+	for (quint32 uni = 0; uni < universes(); uni++)
 	{
 		const InputPatch* p = patch(uni);
 		if (p->pluginName() == pluginName && p->input() == input)
 			return uni;
 	}
 
-	return -1;
+	return KInputUniverseInvalid;
 }
 
 /*****************************************************************************
@@ -282,7 +281,7 @@ void InputMap::configurePlugin(const QString& pluginName)
 		inputPlugin->configure();
 }
 
-QString InputMap::pluginStatus(const QString& pluginName, t_input input)
+QString InputMap::pluginStatus(const QString& pluginName, quint32 input)
 {
 	QLCInPlugin* inputPlugin = NULL;
 	QString info;
@@ -458,7 +457,7 @@ void InputMap::loadDefaults()
 	if (value.isValid() == true)
 		setEditorUniverse(value.toInt());
 
-	for (t_input_universe i = 0; i < m_universes; i++)
+	for (quint32 i = 0; i < m_universes; i++)
 	{
 		/* Plugin name */
 		key = QString("/inputmap/universe%2/plugin/").arg(i);
@@ -484,8 +483,8 @@ void InputMap::loadDefaults()
 		{
 			/* Check that the same plugin & input are not mapped
 			   to more than one universe at a time. */
-			int m = mapping(plugin, input.toInt());
-			if (m == -1 || m == i)
+			quint32 m = mapping(plugin, input.toInt());
+			if (m == KInputUniverseInvalid || m == i)
 			{
 				setPatch(i, plugin, input.toInt(),
 					 feedbackEnabled, profileName);
@@ -500,7 +499,7 @@ void InputMap::saveDefaults()
 	QString key;
 	QString str;
 
-	for (t_input_universe i = 0; i < m_universes; i++)
+	for (quint32 i = 0; i < m_universes; i++)
 	{
 		InputPatch* pat = patch(i);
 		Q_ASSERT(pat != NULL);

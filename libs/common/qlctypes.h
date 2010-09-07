@@ -206,86 +206,66 @@ const t_value KChannelValueMax ( UCHAR_MAX );
  *****************************************************************************/
 
 /**
- * Input universe type
- */
-typedef unsigned short t_input_universe;
-
-/**
  * Number of input universes
  */
-const t_input_universe KInputUniverseCount ( 4 );
+const quint32 KInputUniverseCount ( 4 );
 
 /**
  * Invalid input universe
  */
-const t_input_universe KInputUniverseInvalid ( USHRT_MAX );
+const quint32 KInputUniverseInvalid ( UINT_MAX );
 
 /*****************************************************************************
  * Input lines
  *****************************************************************************/
 
 /**
- * Input line type
- */
-typedef unsigned short t_input;
-
-/**
  * Smallest input line number
  */
-const t_input KInputMin ( 0 );
+const quint32 KInputMin ( 0 );
 
 /**
  * Largest input line number
  */
-const t_input KInputMax ( USHRT_MAX - 1 );
+const quint32 KInputMax ( UINT_MAX - 1 );
 
 /**
  * Invalid input line number
  */
-const t_input KInputInvalid ( USHRT_MAX );
+const quint32 KInputInvalid ( UINT_MAX );
 
 /*****************************************************************************
  * Input channels
  *****************************************************************************/
 
 /**
- * Input channel type
- */
-typedef unsigned short t_input_channel;
-
-/**
  * Smallest input channel
  */
-const t_input_channel KInputChannelMin ( 0 );
+const quint32 KInputChannelMin ( 0 );
 
 /**
  * Largest input channel
  */
-const t_input_channel KInputChannelMax ( USHRT_MAX - 1);
+const quint32 KInputChannelMax ( UINT_MAX - 1);
 
 /**
  * Largest input channel
  */
-const t_input_channel KInputChannelInvalid ( USHRT_MAX );
+const quint32 KInputChannelInvalid ( UINT_MAX );
 
 /*****************************************************************************
  * Input values
  *****************************************************************************/
 
 /**
- * Input channel value type
- */
-typedef unsigned char t_input_value;
-
-/**
  * Smallest input channel value
  */
-const t_input_value KInputValueMin ( 0 );
+const uchar KInputValueMin ( 0 );
 
 /**
  * Largest input channel value
  */
-const t_input_value KInputValueMax ( UCHAR_MAX );
+const uchar KInputValueMax ( UCHAR_MAX );
 
 /*****************************************************************************
  * Axes

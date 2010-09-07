@@ -33,13 +33,13 @@ public:
 	static const QEvent::Type eventType;
 
 public:
-	MIDIInputEvent(MIDIDevice* device, t_input_channel channel,
-			t_input_value value);
+	MIDIInputEvent(MIDIDevice* device, quint32 channel,
+			uchar value);
 	~MIDIInputEvent();
 
 	MIDIDevice* m_device;
-	t_input_channel m_channel;
-	t_input_value m_value;
+	quint32 m_channel;
+	uchar m_value;
 };
 
 #endif

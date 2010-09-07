@@ -143,11 +143,11 @@ void EWing::setCacheValue(int channel, char value)
 	if (channel != EWING_INVALID_CHANNEL && m_values[channel] != value)
 	{
 		m_values[channel] = value;
-		emit valueChanged(channel, t_input_value(value));
+		emit valueChanged(channel, uchar(value));
 	}
 }
 
-void EWing::feedBack(t_input_channel channel, t_input_value value)
+void EWing::feedBack(quint32 channel, uchar value)
 {
 	Q_UNUSED(channel);
 	Q_UNUSED(value);

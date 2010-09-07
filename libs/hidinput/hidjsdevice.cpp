@@ -32,7 +32,7 @@
 #include "hidjsdevice.h"
 #include "hidinput.h"
 
-HIDJsDevice::HIDJsDevice(HIDInput* parent, t_input line, const QString& path)
+HIDJsDevice::HIDJsDevice(HIDInput* parent, quint32 line, const QString& path)
 	: HIDDevice(parent, line, path)
 {
 	init();
@@ -128,8 +128,8 @@ bool HIDJsDevice::readEvent()
 	r = read(m_file.handle(), &ev, sizeof(struct js_event));
 	if (r > 0)
 	{
-		t_input_channel ch;
-		t_input_value val;
+		quint32 ch;
+		uchar val;
 
 		/* Get the event type */
 		if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_BUTTON)
@@ -140,7 +140,7 @@ bool HIDJsDevice::readEvent()
 				val = 0;
 
 			/* Map button channels to start after axes */
-			ch = t_input_channel(m_axes + ev.number);
+			ch = quint32(m_axes + ev.number);
 
 			/* Generate and post an event */
 			e = new HIDInputEvent(this, m_line, ch, val, true);
@@ -151,7 +151,7 @@ bool HIDJsDevice::readEvent()
 			val = SCALE(double(ev.value),
 				    double(-32767), double(32768),
 				    double(0), double(255));
-			ch = t_input_channel(ev.number);
+			ch = quint32(ev.number);
 
 			e = new HIDInputEvent(this, m_line, ch, val, true);
 	                QApplication::postEvent(parent(), e);
@@ -192,7 +192,7 @@ QString HIDJsDevice::infoText()
  * Input data
  *****************************************************************************/
 
-void HIDJsDevice::feedBack(t_input_channel channel, t_input_value value)
+void HIDJsDevice::feedBack(quint32 channel, uchar value)
 {
 	/* HID devices don't (yet) support feedback */
 	Q_UNUSED(channel);

@@ -61,13 +61,13 @@ public:
 	 ********************************************************************/
 public:
 	/** Set the channel number that this object represents */
-	// void setChannel(t_input_channel channel);
+	// void setChannel(quint32 channel);
 
 	/** Get the channel number that this object represents */
-	// t_input_channel channel() const { return m_channel; }
+	// quint32 channel() const { return m_channel; }
 
 protected:
-	// t_input_channel m_channel;
+	// quint32 m_channel;
 
 	/********************************************************************
 	 * Type
@@ -134,7 +134,7 @@ public:
 	 * @return true if successful, otherwise false
 	 */
 	bool saveXML(QDomDocument* doc, QDomElement* root,
-		     t_input_channel channelNumber) const;
+		     quint32 channelNumber) const;
 };
 
 #endif

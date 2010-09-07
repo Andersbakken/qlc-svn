@@ -51,7 +51,7 @@ extern App* _app;
 /* Profile column structure */
 #define KProfileColumnName 0
 
-InputPatchEditor::InputPatchEditor(QWidget* parent, t_input_universe universe,
+InputPatchEditor::InputPatchEditor(QWidget* parent, quint32 universe,
 				   const InputPatch* inputPatch)
 	: QDialog(parent)
 {
@@ -186,7 +186,7 @@ void InputPatchEditor::fillPluginItem(const QString& pluginName, QTreeWidgetItem
 
 	/* Go thru available inputs provided by each plugin and put
 	   them as their parent plugin's leaf nodes. */
-	int i = 0;
+	quint32 i = 0;
 	QStringListIterator iit(_app->inputMap()->pluginInputs(pluginName));
 	while (iit.hasNext() == true)
 	{
@@ -245,7 +245,7 @@ void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
 	else
 	{
 		QString plugin;
-		t_input input;
+		quint32 input;
 
 		if (item->parent() != NULL)
 		{

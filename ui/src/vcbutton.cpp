@@ -515,9 +515,9 @@ void VCButton::slotKeyReleased(const QKeySequence& keySequence)
  * External input
  *****************************************************************************/
 
-void VCButton::slotInputValueChanged(t_input_universe universe,
-				     t_input_channel channel,
-				     t_input_value value)
+void VCButton::slotInputValueChanged(quint32 universe,
+				     quint32 channel,
+				     uchar value)
 {
 	Q_UNUSED(value);
 

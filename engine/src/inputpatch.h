@@ -58,13 +58,13 @@ public:
 	 * Properties
 	 ********************************************************************/
 public:
-	void set(QLCInPlugin* plugin, t_input input, bool enableFeedback,
+	void set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
 		 QLCInputProfile* profile);
 
 	QLCInPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
 
-	t_input input() const;
+	quint32 input() const;
 	QString inputName() const;
 
 	QLCInputProfile* profile() const { return m_profile; }
@@ -74,7 +74,7 @@ public:
 
 protected:
 	QLCInPlugin* m_plugin;
-	t_input m_input;
+	quint32 m_input;
 	QLCInputProfile* m_profile;
 	bool m_feedbackEnabled;
 };

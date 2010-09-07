@@ -136,8 +136,8 @@ protected:
 
 signals:
 	/** Signal that is emitted when an input channel's value is changed */
-	void valueChanged(MIDIDevice* device, t_input_channel channel,
-			  t_input_value value);
+	void valueChanged(MIDIDevice* device, quint32 channel,
+			  uchar value);
 
 	/*********************************************************************
 	 * Feedback
@@ -160,7 +160,7 @@ public:
 
 public:
 	/** Send input values back to the device to move motorized faders */
-	void feedBack(t_input_channel channel, t_input_value value);
+	void feedBack(quint32 channel, uchar value);
 
 protected:
 	UINT m_feedBackId;

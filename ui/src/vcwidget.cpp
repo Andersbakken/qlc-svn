@@ -307,7 +307,7 @@ void VCWidget::editProperties()
  * External input
  *****************************************************************************/
 
-void VCWidget::setInputSource(t_input_universe uni, t_input_channel ch)
+void VCWidget::setInputSource(quint32 uni, quint32 ch)
 {
 	if (uni == KInputUniverseInvalid || ch == KInputChannelInvalid)
 	{
@@ -320,12 +320,12 @@ void VCWidget::setInputSource(t_input_universe uni, t_input_channel ch)
 		/* Even though we might not be connected, it is safe to do a
 		   disconnect in any case. */
 		disconnect(_app->inputMap(),
-			   SIGNAL(inputValueChanged(t_input_universe,
-						    t_input_channel,
-						    t_input_value)),
-			   this, SLOT(slotInputValueChanged(t_input_universe,
-							    t_input_channel,
-							    t_input_value)));
+			   SIGNAL(inputValueChanged(quint32,
+						    quint32,
+						    uchar)),
+			   this, SLOT(slotInputValueChanged(quint32,
+							    quint32,
+							    uchar)));
 	}
 	else if (m_inputUniverse == KInputUniverseInvalid ||
 		 m_inputChannel == KInputChannelInvalid)
@@ -337,13 +337,13 @@ void VCWidget::setInputSource(t_input_universe uni, t_input_channel ch)
 		m_inputChannel = ch;
 
 		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)),
+			SIGNAL(inputValueChanged(quint32,
+						 quint32,
+						 uchar)),
 			this,
-			SLOT(slotInputValueChanged(t_input_universe,
-						   t_input_channel,
-						   t_input_value)));
+			SLOT(slotInputValueChanged(quint32,
+						   quint32,
+						   uchar)));
 	}
 	else
 	{
@@ -356,9 +356,9 @@ void VCWidget::setInputSource(t_input_universe uni, t_input_channel ch)
 	}
 }
 
-void VCWidget::slotInputValueChanged(t_input_universe universe,
-				     t_input_channel channel,
-				     t_input_value value)
+void VCWidget::slotInputValueChanged(quint32 universe,
+				     quint32 channel,
+				     uchar value)
 {
 	Q_UNUSED(universe);
 	Q_UNUSED(channel);
@@ -452,8 +452,8 @@ bool VCWidget::loadXMLInput(const QDomElement* root)
 	}
 	else
 	{
-		t_input_universe uni;
-		t_input_channel ch;
+		quint32 uni;
+		quint32 ch;
 
 		uni = root->attribute(KXMLQLCVCWidgetInputUniverse).toInt();
 		ch = root->attribute(KXMLQLCVCWidgetInputChannel).toInt();

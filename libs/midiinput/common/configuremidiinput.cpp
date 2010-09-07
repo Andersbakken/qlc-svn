@@ -150,7 +150,7 @@ void ConfigureMIDIInput::slotEditClicked()
 {
 	QTreeWidgetItem* item;
 	MIDIDevice* device;
-	t_input input;
+	quint32 input;
 
 	/* Get the currently selected tree widget item */
 	item = m_tree->currentItem();

@@ -45,7 +45,7 @@ class HIDJsDevice : public HIDDevice
 	Q_OBJECT
 
 public:
-	HIDJsDevice(HIDInput* parent, t_input line, const QString& path);
+	HIDJsDevice(HIDInput* parent, quint32 line, const QString& path);
 	virtual ~HIDJsDevice();
 
 protected:
@@ -100,7 +100,7 @@ public:
 	 * Send an input value back the HID device to move motorized sliders
 	 * and such.
 	 */
-	void feedBack(t_input_channel channel, t_input_value value);
+	void feedBack(quint32 channel, uchar value);
 };
 
 #endif

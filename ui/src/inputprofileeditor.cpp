@@ -103,7 +103,7 @@ void InputProfileEditor::fillTree()
 {
 	m_tree->clear();
 
-	QMapIterator <t_channel, QLCInputChannel*> it(m_profile->channels());
+	QMapIterator <quint32,QLCInputChannel*> it(m_profile->channels());
 	while (it.hasNext() == true)
 	{
 		it.next();
@@ -114,7 +114,7 @@ void InputProfileEditor::fillTree()
 void InputProfileEditor::updateChannelItem(QTreeWidgetItem* item,
 					   QLCInputChannel* ch)
 {
-	t_input_channel num;
+	quint32 num;
 
 	Q_ASSERT(item != NULL);
 	Q_ASSERT(ch != NULL);
@@ -206,7 +206,7 @@ void InputProfileEditor::slotRemoveClicked()
 {
 	QList <QTreeWidgetItem*> selected;
 	QTreeWidgetItem* next = NULL;
-	t_input_channel chnum;
+	quint32 chnum;
 
 	/* Ask for confirmation if we're deleting more than one channel */
 	selected = m_tree->selectedItems();
@@ -249,7 +249,7 @@ void InputProfileEditor::slotRemoveClicked()
 void InputProfileEditor::slotEditClicked()
 {
 	QLCInputChannel* channel;
-	t_input_channel chnum;
+	quint32 chnum;
 	QTreeWidgetItem* item;
 
 	if (m_tree->selectedItems().count() == 1)
@@ -344,33 +344,33 @@ void InputProfileEditor::slotWizardClicked(bool checked)
 		           "so you will have to do the change manually."));
 
 		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)),
+			SIGNAL(inputValueChanged(quint32,
+						 quint32,
+						 uchar)),
 			this,
-			SLOT(slotInputValueChanged(t_input_universe,
-						   t_input_channel,
-						   t_input_value)));
+			SLOT(slotInputValueChanged(quint32,
+						   quint32,
+						   uchar)));
 	}
 	else
 	{
 		disconnect(_app->inputMap(),
-			SIGNAL(inputValueChanged(t_input_universe,
-						 t_input_channel,
-						 t_input_value)),
+			SIGNAL(inputValueChanged(quint32,
+						 quint32,
+						 uchar)),
 			this,
-			SLOT(slotInputValueChanged(t_input_universe,
-						   t_input_channel,
-						   t_input_value)));
+			SLOT(slotInputValueChanged(quint32,
+						   quint32,
+						   uchar)));
 	}
 
 	m_buttonBox->setEnabled(!checked);
 	m_tab->setTabEnabled(0, !checked);
 }
 
-void InputProfileEditor::slotInputValueChanged(t_input_universe universe,
-						t_input_channel channel,
-						t_input_value value)
+void InputProfileEditor::slotInputValueChanged(quint32 universe,
+						quint32 channel,
+						uchar value)
 {
 	Q_UNUSED(universe);
 

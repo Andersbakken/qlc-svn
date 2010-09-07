@@ -59,8 +59,8 @@ protected:
 	void updateInputUniverseChannel();
 
 protected:
-	t_input_universe m_inputUniverse;
-	t_input_channel m_inputChannel;
+	quint32 m_inputUniverse;
+	quint32 m_inputChannel;
 	int m_sliderMode;
 
 	/*********************************************************************
