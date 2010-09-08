@@ -167,7 +167,7 @@ MIDIDevice* MIDIInput::deviceByUID(SInt32 uid)
 
 MIDIDevice* MIDIInput::device(quint32 input)
 {
-	if (input < m_devices.size())
+	if (input < quint32(m_devices.size()))
 		return m_devices.at(input);
 	else
 		return NULL;
