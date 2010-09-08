@@ -14,6 +14,18 @@ fi
 popd
 pushd .
 
+# Enttec DMXUSB tests
+cd libs/enttecdmxusbout/unix/test
+./test_enttec
+RESULT=$?
+if [ $RESULT != 0 ]; then
+	echo "Enttec DMXUSB unit test failed ($RESULT). Please fix before commit."
+	exit $RESULT
+fi
+
+popd
+pushd .
+
 # Enttec wing tests
 cd libs/ewinginput/test
 ./test_ewing

@@ -102,7 +102,10 @@ bool EnttecDMXUSBOpen::open()
 		}
 
 		if (isRunning() == false)
+		{
+			m_running = true;
 			start();
+		}
 
 		return true;
 	}
@@ -199,8 +202,6 @@ void EnttecDMXUSBOpen::sleep(quint32 ms)
 void EnttecDMXUSBOpen::run()
 {
 	ftdi_usb_purge_buffers(&m_context);
-
-	m_running = true;
 	while (m_running == true)
 	{
 		if (isOpen() == false)
