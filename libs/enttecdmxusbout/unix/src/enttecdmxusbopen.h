@@ -26,7 +26,7 @@
 #include <QThread>
 #include <QMutex>
 
-#include "../unix/enttecdmxusbwidget.h"
+#include "enttecdmxusbwidget.h"
 #include "ftdi.h"
 
 class EnttecDMXUSBOpen : public QThread, public EnttecDMXUSBWidget

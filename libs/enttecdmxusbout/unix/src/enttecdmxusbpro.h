@@ -25,7 +25,7 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "../unix/enttecdmxusbwidget.h"
+#include "enttecdmxusbwidget.h"
 #include "ftdi.h"
 
 class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget

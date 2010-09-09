@@ -27,7 +27,7 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#include "../unix/enttecdmxusbwidget.h"
+#include "enttecdmxusbwidget.h"
 #include "enttecdmxusbopen.h"
 #include "enttecdmxusbpro.h"
 #include "enttecdmxusbout.h"

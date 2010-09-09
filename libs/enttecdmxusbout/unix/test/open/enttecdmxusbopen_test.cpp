@@ -23,7 +23,7 @@
 #include "enttecdmxusbopen_test.h"
 
 #define protected public
-#include "../enttecdmxusbopen.h"
+#include "enttecdmxusbopen.h"
 #undef protected
 
 #define TEST_NAME "Foobar"
@@ -226,3 +226,5 @@ void EnttecDMXUSBOpen_Test::run()
 	QVERIFY(obj.isRunning() == false);
 	QVERIFY(obj.m_running == false);
 }
+
+QTEST_MAIN(EnttecDMXUSBOpen_Test)
