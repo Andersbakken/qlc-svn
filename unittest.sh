@@ -14,12 +14,24 @@ fi
 popd
 pushd .
 
-# Enttec DMXUSB tests
-cd libs/enttecdmxusbout/unix/test
-./test_enttec
+# Enttec DMXUSB Open test
+cd libs/enttecdmxusbout/unix/test/open
+./test_dmxusbopen
 RESULT=$?
 if [ $RESULT != 0 ]; then
-	echo "Enttec DMXUSB unit test failed ($RESULT). Please fix before commit."
+	echo "Enttec DMXUSB Open unit test failed ($RESULT). Please fix before commit."
+	exit $RESULT
+fi
+
+popd
+pushd .
+
+# Enttec DMXUSB Pro test
+cd libs/enttecdmxusbout/unix/test/pro
+./test_dmxusbpro
+RESULT=$?
+if [ $RESULT != 0 ]; then
+	echo "Enttec DMXUSB Pro unit test failed ($RESULT). Please fix before commit."
 	exit $RESULT
 fi
 

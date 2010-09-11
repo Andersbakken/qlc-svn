@@ -190,7 +190,7 @@ bool EnttecDMXUSBPro::extractEnttecSerial()
 		    reply[2] == 0x04 && reply[3] == 0x00 &&
 		    reply[8] == 0xe7)
 		{
-			m_enttecSerial.sprintf(" %x%.2x%.2x%.2x",
+			m_enttecSerial.sprintf("%x%.2x%.2x%.2x",
 				reply[7], reply[6], reply[5], reply[4]);
 			close();
 			return true;
