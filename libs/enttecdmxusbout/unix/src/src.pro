@@ -26,7 +26,7 @@ unix:!macx {
 
 	# Rules to make ENTTEC devices readable & writable by normal users
 	udev.path	= /etc/udev/rules.d
-	udev.files	= ../unix/z65-enttec-dmxusb.rules
+	udev.files	= z65-enttec-dmxusb.rules
 	INSTALLS	+= udev
 }
 
