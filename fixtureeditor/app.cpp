@@ -193,36 +193,37 @@ void App::initActions()
 	/* File actions */
 	m_fileNewAction = new QAction(QIcon(":/filenew.png"),
 				      tr("&New"), this);
-	m_fileNewAction->setShortcut(QKeySequence("CTRL+N"));
+	m_fileNewAction->setShortcut(QKeySequence(tr("CTRL+N", "File|New")));
 	connect(m_fileNewAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileNew()));
 
 	m_fileOpenAction = new QAction(QIcon(":/fileopen.png"),
 				       tr("&Open"), this);
-	m_fileOpenAction->setShortcut(QKeySequence("CTRL+O"));
+	m_fileOpenAction->setShortcut(QKeySequence(tr("CTRL+O", "File|Open")));
 	connect(m_fileOpenAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileOpen()));
 
 	m_fileSaveAction = new QAction(QIcon(":/filesave.png"),
 				       tr("&Save"), this);
-	m_fileSaveAction->setShortcut(QKeySequence("CTRL+S"));
+	m_fileSaveAction->setShortcut(QKeySequence(tr("CTRL+S", "File|Save")));
 	connect(m_fileSaveAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSave()));
 
-	m_fileSaveAsAction = new QAction(tr("Save &As"), this);
-	m_fileSaveAsAction->setShortcut(QKeySequence("CTRL+SHIFT+S"));
+	m_fileSaveAsAction = new QAction(tr("Save &As..."), this);
+	m_fileSaveAsAction->setShortcut(QKeySequence(tr("CTRL+SHIFT+S", "File|Save As...")));
 	connect(m_fileSaveAsAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileSaveAs()));
 
 	m_fileQuitAction = new QAction(QIcon(":/exit.png"),
 				       tr("&Quit"), this);
+	m_fileQuitAction->setShortcut(QKeySequence(tr("CTRL+Q", "File|Quit")));
 	connect(m_fileQuitAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotFileQuit()));
 
 	/* Help actions */
 	m_helpIndexAction = new QAction(QIcon(":/help.png"),
 					tr("Index"), this);
-	m_helpIndexAction->setShortcut(QKeySequence("SHIFT+F1"));
+	m_helpIndexAction->setShortcut(QKeySequence(tr("SHIFT+F1", "Help|Index")));
 	connect(m_helpIndexAction, SIGNAL(triggered(bool)),
 		this, SLOT(slotHelpIndex()));
 

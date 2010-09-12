@@ -186,8 +186,8 @@ void QLCFixtureEditor::closeEvent(QCloseEvent* e)
 	if (m_modified)
 	{
 		r = QMessageBox::information(this, tr("Close"),
-				"Do you want to save changes to fixture\n\""
-				+ m_fixtureDef->name() + "\"\nbefore closing?",
+				tr("Do you want to save changes to fixture\n\""
+					"%1\"\nbefore closing?").arg(m_fixtureDef->name()),
 				QMessageBox::Yes,
 				QMessageBox::No,
 				QMessageBox::Cancel);
@@ -214,20 +214,20 @@ bool QLCFixtureEditor::checkManufacturerModel()
 	   unique identification */
 	if (m_fixtureDef->manufacturer().length() == 0)
 	{
-		QMessageBox::warning(this, 
-				     "Missing important information",
-				     "Missing manufacturer name.\n" \
-				     "Unable to save fixture.");
+		QMessageBox::warning(this,
+				tr("Missing important information"),
+				tr("Missing manufacturer name.\n"
+					"Unable to save fixture."));
 		m_tab->setCurrentIndex(0);
 		m_manufacturerEdit->setFocus();
 		return false;
 	}
 	else if (m_fixtureDef->model().length() == 0)
 	{
-		QMessageBox::warning(this, 
-				     "Missing important information",
-				     "Missing fixture model name.\n" \
-				     "Unable to save fixture.");
+		QMessageBox::warning(this,
+				tr("Missing important information"),
+				tr("Missing fixture model name.\n"
+					"Unable to save fixture."));
 		m_tab->setCurrentIndex(0);
 		m_modelEdit->setFocus();
 		return false;
@@ -256,8 +256,8 @@ bool QLCFixtureEditor::save()
 		else
 		{
 			QMessageBox::critical(this, tr("Fixture saving failed"),
-				tr("Unable to save fixture definition: ") +
-				QLCFile::errorString(error));
+				tr("Unable to save fixture definition:\n%1")
+				.arg(QLCFile::errorString(error)));
 			return false;
 		}
 	}
@@ -348,8 +348,8 @@ bool QLCFixtureEditor::saveAs()
 		else
 		{
 			QMessageBox::critical(this, tr("Fixture saving failed"),
-				tr("Unable to save fixture definition: ") +
-				QLCFile::errorString(error));
+				tr("Unable to save fixture definition:\n%1")
+				.arg(QLCFile::errorString(error)));
 			return false;
 		}
 	}
@@ -366,7 +366,7 @@ void QLCFixtureEditor::setCaption()
 	
 	fileName = m_fileName;
 	if (fileName == QString::null)
-		fileName = QString("New Fixture");
+		fileName = tr("New Fixture");
 	
 	/* If the document is modified, append an asterisk after the
 	   filename. Otherwise the caption is just the current filename */
@@ -436,20 +436,17 @@ void QLCFixtureEditor::slotAddChannel()
 		{
 			if (m_fixtureDef->channel(ec.channel()->name()) != NULL)
 			{
-				QMessageBox::warning(this, 
-					QString("Channel already exists"),
-					QString("A channel by the name \"") + 
-					ec.channel()->name() + 
-					QString("\" already exists!"));
-				
+				QMessageBox::warning(this,
+						tr("Channel already exists"),
+						tr("A channel by the name \"%1\" already exists!")
+						.arg(ec.channel()->name()));
 				ok = false;
 			}
 			else if (ec.channel()->name().length() == 0)
 			{
-				QMessageBox::warning(this, 
-					QString("Channel has no name"),
-					QString("You must give the channel a descriptive name!"));
-				
+				QMessageBox::warning(this,
+						tr("Channel has no name"),
+						tr("You must give the channel a descriptive name!"));
 				ok = false;
 			}
 			else
@@ -483,7 +480,8 @@ void QLCFixtureEditor::slotRemoveChannel()
 	Q_ASSERT(channel != NULL);
 
 	if (QMessageBox::question(this, "Remove Channel",
-		QString("Are you sure you wish to remove channel: ") + channel->name(),
+			tr("Are you sure you wish to remove channel: %1")
+			.arg(channel->name()),
 			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 	{
 		QTreeWidgetItem* item;
@@ -574,7 +572,7 @@ void QLCFixtureEditor::refreshChannelList()
 	while (it.hasNext() == true)
 	{
 		updateChannelItem(it.next(),
-				  new QTreeWidgetItem(m_channelList));
+				new QTreeWidgetItem(m_channelList));
 	}
 
 	slotChannelListSelectionChanged(m_channelList->currentItem());
@@ -721,8 +719,7 @@ void QLCFixtureEditor::slotAddMode()
 		{
 			if (m_fixtureDef->mode(em.mode()->name()) != NULL)
 			{
-				QMessageBox::warning(
-					this, 
+				QMessageBox::warning(this,
 					tr("Unable to add mode"),
 					tr("Another mode by that name already exists"));
 				
@@ -731,11 +728,9 @@ void QLCFixtureEditor::slotAddMode()
 			}
 			else if (em.mode()->name().length() == 0)
 			{
-				QMessageBox::warning(
-					this, 
+				QMessageBox::warning(this,
 					tr("Unable to add mode"),
 					tr("You must give a name to the mode"));
-				
 				ok = false;
 			}
 			else
@@ -745,7 +740,7 @@ void QLCFixtureEditor::slotAddMode()
 				QLCFixtureMode* mode;
 
 				mode = new QLCFixtureMode(m_fixtureDef,
-							  em.mode());
+						em.mode());
 				item = new QTreeWidgetItem(m_modeList);
 
 				m_fixtureDef->addMode(mode);
@@ -768,8 +763,8 @@ void QLCFixtureEditor::slotRemoveMode()
 {
 	QLCFixtureMode* mode = currentMode();
 	
-	if (QMessageBox::question(this, "Remove Mode",
-		QString("Are you sure you wish to remove mode: ") + mode->name(),
+	if (QMessageBox::question(this, tr("Remove Mode"),
+			tr("Are you sure you wish to remove mode: %1").arg(mode->name()),
 			QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 	{
 		QTreeWidgetItem* item;
@@ -821,10 +816,10 @@ void QLCFixtureEditor::slotCloneMode()
 	while (1)
 	{
 		text = QInputDialog::getText(this, tr("Rename new mode"),
-					     tr("Give a unique name for the mode"),
-					     QLineEdit::Normal,
-					     "Copy of " + mode->name(),
-					     &ok);
+				tr("Give a unique name for the mode"),
+				QLineEdit::Normal,
+				tr("Copy of %1").arg(mode->name()),
+				&ok);
 
 		if (ok == true && text.isEmpty() == false)
 		{
@@ -832,8 +827,7 @@ void QLCFixtureEditor::slotCloneMode()
 			   the fixture definition -> again */
 			if (mode->fixtureDef()->mode(text) != NULL)
 			{
-				QMessageBox::information(
-					this,
+				QMessageBox::information(this,
 					tr("Invalid name"),
 					tr("Another mode by that name already exists."));
 				ok = false;
@@ -922,11 +916,11 @@ void QLCFixtureEditor::updateModeItem(const QLCFixtureMode* mode,
 	
 	item->setText(KModesColumnName, mode->name());
 	item->setText(KModesColumnChannels,
-		      QString("%1").arg(mode->channels().size()));
+			QString("%1").arg(mode->channels().size()));
 
 	/* Store the mode pointer to the list as a string */
 	item->setText(KModesColumnPointer,
-		      QString("%1").arg((unsigned long) mode));
+			QString("%1").arg((unsigned long) mode));
 
 	/* Destroy the existing list of children */
 	QList <QTreeWidgetItem*> children(item->takeChildren());
@@ -970,4 +964,3 @@ void QLCFixtureEditor::slotClipboardChanged()
 	else
 		m_pasteChannelButton->setEnabled(false);
 }
-

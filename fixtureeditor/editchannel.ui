@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>EditChannel</class>
- <widget class="QDialog" name="EditChannel" >
-  <property name="geometry" >
+ <widget class="QDialog" name="EditChannel">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,54 +10,54 @@
     <height>457</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Edit Channel</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <widget class="QLabel" name="m_nameLabel" >
-       <property name="text" >
+      <widget class="QLabel" name="m_nameLabel">
+       <property name="text">
         <string>Name</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="m_nameEdit" />
+      <widget class="QLineEdit" name="m_nameEdit"/>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <widget class="QLabel" name="m_groupLabel" >
-       <property name="text" >
+      <widget class="QLabel" name="m_groupLabel">
+       <property name="text">
         <string>Group</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="m_groupCombo" />
+      <widget class="QComboBox" name="m_groupCombo"/>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="m_controlByteGroup" >
-     <property name="title" >
+    <widget class="QGroupBox" name="m_controlByteGroup">
+     <property name="title">
       <string>Control Byte</string>
      </property>
-     <layout class="QHBoxLayout" >
+     <layout class="QHBoxLayout">
       <item>
-       <widget class="QRadioButton" name="m_msbRadio" >
-        <property name="text" >
+       <widget class="QRadioButton" name="m_msbRadio">
+        <property name="text">
          <string>Coarse (MSB)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="m_lsbRadio" >
-        <property name="text" >
+       <widget class="QRadioButton" name="m_lsbRadio">
+        <property name="text">
          <string>Fine (LSB)</string>
         </property>
        </widget>
@@ -65,54 +66,54 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
       <string>Capabilities</string>
      </property>
-     <layout class="QHBoxLayout" >
+     <layout class="QHBoxLayout">
       <item>
-       <widget class="QTreeWidget" name="m_capabilityList" >
-        <property name="alternatingRowColors" >
+       <widget class="QTreeWidget" name="m_capabilityList">
+        <property name="alternatingRowColors">
          <bool>true</bool>
         </property>
-        <property name="rootIsDecorated" >
+        <property name="rootIsDecorated">
          <bool>false</bool>
         </property>
-        <property name="itemsExpandable" >
+        <property name="itemsExpandable">
          <bool>false</bool>
         </property>
-        <property name="allColumnsShowFocus" >
+        <property name="allColumnsShowFocus">
          <bool>true</bool>
         </property>
         <column>
-         <property name="text" >
+         <property name="text">
           <string>Minimum value</string>
          </property>
         </column>
         <column>
-         <property name="text" >
+         <property name="text">
           <string>Maximum value</string>
          </property>
         </column>
         <column>
-         <property name="text" >
+         <property name="text">
           <string>Description</string>
          </property>
         </column>
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" >
+       <layout class="QVBoxLayout">
         <item>
-         <widget class="QToolButton" name="m_addCapabilityButton" >
-          <property name="text" >
-           <string>...</string>
+         <widget class="QToolButton" name="m_addCapabilityButton">
+          <property name="text">
+           <string notr="true">...</string>
           </property>
-          <property name="icon" >
-           <iconset resource="fixtureeditor.qrc" >
+          <property name="icon">
+           <iconset resource="fixtureeditor.qrc">
             <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
           </property>
-          <property name="iconSize" >
+          <property name="iconSize">
            <size>
             <width>26</width>
             <height>26</height>
@@ -121,15 +122,15 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="m_removeCapabilityButton" >
-          <property name="text" >
-           <string>...</string>
+         <widget class="QToolButton" name="m_removeCapabilityButton">
+          <property name="text">
+           <string notr="true">...</string>
           </property>
-          <property name="icon" >
-           <iconset resource="fixtureeditor.qrc" >
+          <property name="icon">
+           <iconset resource="fixtureeditor.qrc">
             <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
           </property>
-          <property name="iconSize" >
+          <property name="iconSize">
            <size>
             <width>26</width>
             <height>26</height>
@@ -138,15 +139,15 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="m_editCapabilityButton" >
-          <property name="text" >
-           <string>...</string>
+         <widget class="QToolButton" name="m_editCapabilityButton">
+          <property name="text">
+           <string notr="true">...</string>
           </property>
-          <property name="icon" >
-           <iconset resource="fixtureeditor.qrc" >
+          <property name="icon">
+           <iconset resource="fixtureeditor.qrc">
             <normaloff>:/edit.png</normaloff>:/edit.png</iconset>
           </property>
-          <property name="iconSize" >
+          <property name="iconSize">
            <size>
             <width>26</width>
             <height>26</height>
@@ -156,10 +157,10 @@
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <property name="sizeHint" stdset="0" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
             <height>40</height>
@@ -168,18 +169,18 @@
          </spacer>
         </item>
         <item>
-         <widget class="QToolButton" name="m_wizardButton" >
-          <property name="toolTip" >
+         <widget class="QToolButton" name="m_wizardButton">
+          <property name="toolTip">
            <string>Capability wizard</string>
           </property>
-          <property name="text" >
-           <string>...</string>
+          <property name="text">
+           <string notr="true">...</string>
           </property>
-          <property name="icon" >
-           <iconset resource="fixtureeditor.qrc" >
+          <property name="icon">
+           <iconset resource="fixtureeditor.qrc">
             <normaloff>:/wizard.png</normaloff>:/wizard.png</iconset>
           </property>
-          <property name="iconSize" >
+          <property name="iconSize">
            <size>
             <width>26</width>
             <height>26</height>
@@ -193,11 +194,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox" >
-     <property name="orientation" >
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -205,7 +206,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="fixtureeditor.qrc" />
+  <include location="fixtureeditor.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -214,11 +215,11 @@
    <receiver>EditChannel</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>257</x>
      <y>447</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -230,11 +231,11 @@
    <receiver>EditChannel</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>325</x>
      <y>447</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

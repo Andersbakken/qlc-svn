@@ -69,7 +69,7 @@
          <item>
           <widget class="QToolButton" name="m_addChannelButton">
            <property name="text">
-            <string>...</string>
+            <string notr="true">...</string>
            </property>
            <property name="icon">
             <iconset resource="fixtureeditor.qrc">
@@ -86,7 +86,7 @@
          <item>
           <widget class="QToolButton" name="m_removeChannelButton">
            <property name="text">
-            <string>...</string>
+            <string notr="true">...</string>
            </property>
            <property name="icon">
             <iconset resource="fixtureeditor.qrc">
@@ -103,7 +103,7 @@
          <item>
           <widget class="QToolButton" name="m_raiseChannelButton">
            <property name="text">
-            <string>...</string>
+            <string notr="true">...</string>
            </property>
            <property name="icon">
             <iconset resource="fixtureeditor.qrc">
@@ -120,7 +120,7 @@
          <item>
           <widget class="QToolButton" name="m_lowerChannelButton">
            <property name="text">
-            <string>...</string>
+            <string notr="true">...</string>
            </property>
            <property name="icon">
             <iconset resource="fixtureeditor.qrc">
