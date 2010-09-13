@@ -9,8 +9,8 @@ macx:QTPLUGIN		= qjpeg qgif
 APPVERSION		= 3.0.6
 
 # Uncomment these two lines when making a release
-CONFIG			-= release
-CONFIG			+= debug
+CONFIG			+= release
+CONFIG			-= debug
 
 # Enable to build universal binaries on Mac OS 10.5
 # macx:CONFIG		+= x86 ppc

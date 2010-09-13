@@ -10,7 +10,22 @@ QTPLUGIN =
 
 INCLUDEPATH += ../../common
 INCLUDEPATH += ../src
-LIBS += -L../src -lewinginput
+unix:LIBS += -L../src -lewinginput
 
-SOURCES += testeplaybackwing.cpp testeprogramwing.cpp testeshortcutwing.cpp main.cpp
-HEADERS += testeplaybackwing.h testeprogramwing.h testeshortcutwing.h
+SOURCES += testeplaybackwing.cpp \
+	   testeprogramwing.cpp \
+	   testeshortcutwing.cpp \
+	   main.cpp
+HEADERS += testeplaybackwing.h \
+	   testeprogramwing.h \
+	   testeshortcutwing.h
+
+# Hmm... Windows can't link to the plugin DLL
+win32:SOURCES += ../src/eplaybackwing.cpp \
+		 ../src/eshortcutwing.cpp \
+		 ../src/eprogramwing.cpp \
+		 ../src/ewing.cpp
+win32:HEADERS += ../src/eplaybackwing.h \
+		 ../src/eshortcutwing.h \
+		 ../src/eprogramwing.h \
+		 ../src/ewing.h
