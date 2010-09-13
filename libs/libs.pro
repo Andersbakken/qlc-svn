@@ -25,4 +25,3 @@ SUBDIRS			+= midiinput
 
 # Unit tests
 SUBDIRS			+= common/test
-SUBDIRS			+= ewinginput/test

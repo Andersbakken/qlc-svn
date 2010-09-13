@@ -3,7 +3,7 @@
 #include <QByteArray>
 #include <QtTest>
 
-#include "../eshortcutwing.h"
+#include "eshortcutwing.h"
 #include "testeshortcutwing.h"
 
 #define SHC_FIRMWARE 147

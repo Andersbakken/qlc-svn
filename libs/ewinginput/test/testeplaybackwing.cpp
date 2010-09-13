@@ -3,7 +3,7 @@
 #include <QByteArray>
 #include <QtTest>
 
-#include "../eplaybackwing.h"
+#include "eplaybackwing.h"
 #include "testeplaybackwing.h"
 
 #define PLB_FIRMWARE 192

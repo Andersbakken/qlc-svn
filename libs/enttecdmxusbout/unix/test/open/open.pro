@@ -1,3 +1,6 @@
+include(../../../../../variables.pri)
+include(../../../../../coverage.pri)
+
 TEMPLATE = app
 LANGUAGE = C++
 TARGET = test_dmxusbopen
@@ -9,15 +12,7 @@ CONFIG += link_pkgconfig
 CONFIG -= app_bundle
 
 PKGCONFIG += libftdi
+LIBS += -L../../src -lenttecdmxusbout
 
-HEADERS += enttecdmxusbopen_test.h ../../src/enttecdmxusbopen.h
-SOURCES += enttecdmxusbopen_test.cpp ../../src/enttecdmxusbopen.cpp
-
-# Coverage
-QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
-LIBS += -lgcov
-QMAKE_CLEAN += *.gcno *.gcov
-QMAKE_DISTCLEAN += *.gcno *.gcov
-QMAKE_EXTRA_TARGETS += coverage
-coverage.target = coverage
-coverage.commands += gcov *.cpp *.h
+HEADERS += enttecdmxusbopen_test.h
+SOURCES += enttecdmxusbopen_test.cpp

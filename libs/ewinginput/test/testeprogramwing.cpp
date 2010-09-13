@@ -3,7 +3,7 @@
 #include <QByteArray>
 #include <QTest>
 
-#include "../eprogramwing.h"
+#include "eprogramwing.h"
 #include "testeprogramwing.h"
 
 #define PRG_FIRMWARE 178
