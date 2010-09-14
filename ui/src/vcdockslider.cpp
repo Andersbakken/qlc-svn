@@ -30,6 +30,7 @@
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "vcdockslider.h"
+#include "mastertimer.h"
 #include "inputmap.h"
 #include "app.h"
 #include "doc.h"
@@ -110,7 +111,7 @@ void VCDockSlider::refreshProperties()
 	}
 
 	Q_ASSERT(m_slider != NULL);
-	m_slider->setRange(low * KFrequency, high * KFrequency);
+	m_slider->setRange(low * MasterTimer::frequency(), high * MasterTimer::frequency());
 
 	/* Send feedback to the bus & possible external input profile */
 	slotSliderValueChanged(m_slider->value());
@@ -151,7 +152,7 @@ void VCDockSlider::slotSliderValueChanged(int value)
 	Bus::instance()->setValue(m_bus, m_slider->value());
 
 	/* Set value to label */
-	num.sprintf("%.2fs", float(value) / float(KFrequency));
+	num.sprintf("%.2fs", float(value) / float(MasterTimer::frequency()));
 	m_valueLabel->setText(num);
 
 	/* Find out this slider's input universe & channel */
@@ -187,7 +188,7 @@ void VCDockSlider::slotSliderValueChanged(int value)
 void VCDockSlider::slotTapButtonClicked()
 {
 	int t = m_time.elapsed();
-	m_slider->setValue(static_cast<int> (t * 0.001 * KFrequency));
+	m_slider->setValue(static_cast<int> (t * 0.001 * MasterTimer::frequency()));
 	Bus::instance()->tap(m_bus);
 	m_time.restart();
 }

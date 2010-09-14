@@ -40,6 +40,9 @@
 #include "dmxsource.h"
 #include "function.h"
 
+/** The timer tick frequency in Hertz */
+const quint32 MasterTimer::s_frequency = 50;
+
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
@@ -132,7 +135,7 @@ void MasterTimer::start(Priority priority)
 void MasterTimer::run()
 {
 	/* How long to wait each loop */
-	int tickTime = 1000000 / KFrequency;
+	int tickTime = 1000000 / frequency();
 
 	/* Allocate this from stack here so that GCC doesn't have
 	   to do it everytime implicitly when gettimeofday() is called */
@@ -226,7 +229,7 @@ void MasterTimer::run()
 
 	/* Calculate the target time that should be waited before each event */
 	QueryPerformanceFrequency(&frequency);
-	target = frequency.QuadPart / KFrequency;
+	target = frequency.QuadPart / frequency();
 
 	while (m_running == true)
 	{

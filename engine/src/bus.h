@@ -43,9 +43,9 @@ class BusEntry;
 
 /**
  * Bus is used by functions to get information on their desired running time.
- * The values that bus uses are 1/KFrequency:ths of a second; If KFrequency is
- * 50, then a bus value of 25 means half a second, 50 a full second, 100 two
- * seconds etc...
+ * The values that bus uses are (1 / MasterTimer::frequency())'ths of a second;
+ * If frequency is 50, then a bus value of 25 means half a second, 50 a full
+ * second, 100 two seconds etc...
  *
  * Scene functions use bus values for fade time: how long it should take
  * for the channels to fade from their current values to the ones specified in

@@ -356,7 +356,7 @@ public:
 
 	/**
 	 * Write next values to universes. This method is called periodically
-	 * (once every 1/KFrequency:th of a second) by the MasterTimer that the
+	 * by the MasterTimer instance that the
 	 * function has been set to run in, to write the next values to the
 	 * given DMX universe buffer. This method is called for each function
 	 * in the order that they were set to run. When this method has been

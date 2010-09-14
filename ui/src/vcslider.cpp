@@ -103,8 +103,8 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_slider = new QSlider(this);
 	m_slider->setStyle(App::saneStyle());
 	m_hbox->addWidget(m_slider);
-	m_slider->setRange(KDefaultBusLowLimit * KFrequency,
-			   KDefaultBusHighLimit * KFrequency);
+	m_slider->setRange(KDefaultBusLowLimit * MasterTimer::frequency(),
+			   KDefaultBusHighLimit * MasterTimer::frequency());
 	m_slider->setPageStep(1);
 	m_slider->setInvertedAppearance(false);
 	connect(m_slider, SIGNAL(valueChanged(int)),
@@ -364,8 +364,8 @@ void VCSlider::setSliderMode(SliderMode mode)
 	if (mode == Bus)
 	{
 		/* Set the slider range */
-		m_slider->setRange(busLowLimit() * KFrequency,
-				   busHighLimit() * KFrequency);
+		m_slider->setRange(busLowLimit() * MasterTimer::frequency(),
+				   busHighLimit() * MasterTimer::frequency());
 		setSliderValue(Bus::instance()->value(bus()));
 		slotSliderMoved(sliderValue());
 
@@ -633,16 +633,16 @@ void VCSlider::slotSliderMoved(int value)
 		/* Set text for the top label */
 		if (valueDisplayStyle() == ExactValue)
 		{
-			num.sprintf("%.2fs", ((float) value / (float) KFrequency));
+			num.sprintf("%.2fs", ((float) value / (float) MasterTimer::frequency()));
 		}
 		else
 		{
 			/* Horrible code... */
 			num.sprintf("%.3d%%", static_cast<int>
-				(((float) ((m_busHighLimit * KFrequency)
+				(((float) ((m_busHighLimit * MasterTimer::frequency())
 				- value) / (float) ((m_busHighLimit
 							- m_busLowLimit) *
-				(float) KFrequency)) * 100.0));
+				(float) MasterTimer::frequency())) * 100.0));
 		}
 
 		setTopLabelText(num);
@@ -723,7 +723,7 @@ QString VCSlider::tapButtonText()
 void VCSlider::slotTapButtonClicked()
 {
 	int t = m_time->elapsed();
-	setSliderValue(static_cast<int> (t * 0.001 * KFrequency));
+	setSliderValue(static_cast<int> (t * 0.001 * MasterTimer::frequency()));
 	Bus::instance()->tap(m_bus);
 	m_time->restart();
 }

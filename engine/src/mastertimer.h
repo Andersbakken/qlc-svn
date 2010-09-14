@@ -52,6 +52,16 @@ public:
 	virtual ~MasterTimer();
 
 	/*********************************************************************
+	 * Timer frequency
+	 *********************************************************************/
+public:
+	/** Get the timer tick frequency in Hertz */
+	static quint32 frequency() { return s_frequency; }
+
+private:
+	static const quint32 s_frequency;
+
+	/*********************************************************************
 	 * OutputMap
 	 *********************************************************************/
 public:

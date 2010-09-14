@@ -248,10 +248,4 @@ const uchar KInputValueMin ( 0 );
  */
 const uchar KInputValueMax ( UCHAR_MAX );
 
-/*****************************************************************************
- * Function consumer engine
- *****************************************************************************/
-
-const int KFrequency ( 50 );
-
 #endif
