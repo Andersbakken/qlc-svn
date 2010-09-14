@@ -6,7 +6,7 @@ FXEDNAME		= Fixture Definition Editor
 macx:QTPLUGIN		= qjpeg qgif
 
 # Current application version (not an sh script because of Win-duhs)
-APPVERSION		= 3.0.6
+APPVERSION		= 3.0.7
 
 # Uncomment these two lines when making a release
 CONFIG			+= release

@@ -1,3 +1,11 @@
+qlc (3.0.7) stable; urgency=high
+  * Fixed crash bugs in MIDI Input, HID Input and Enttec Wing Input plugins
+  * Fixed a freezing bug in Enttec DMXUSB output and HIDInput plugins
+  * Added uninstallation script to win32 build
+  * Added input profiles for Enttec Shortcut and Playback wings
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Tue, 14 Sep 2010 23:12:08 +0300
+
 qlc (3.0.6) stable; urgency=high
 
   * Fixed a freezing problem in XYPad properties dialog.
