@@ -39,13 +39,13 @@ void EnttecDMXUSBOut::init()
 	rescanWidgets();
 }
 
-void EnttecDMXUSBOut::open(t_output output)
+void EnttecDMXUSBOut::open(quint32 output)
 {
 	if (output < m_widgets.size())
 		m_widgets.at(output)->open();
 }
 
-void EnttecDMXUSBOut::close(t_output output)
+void EnttecDMXUSBOut::close(quint32 output)
 {
 	if (output < m_widgets.size())
 		m_widgets.at(output)->close();
@@ -149,7 +149,7 @@ void EnttecDMXUSBOut::configure()
  * Plugin status
  ****************************************************************************/
 
-QString EnttecDMXUSBOut::infoText(t_output output)
+QString EnttecDMXUSBOut::infoText(quint32 output)
 {
 	QString str;
 
@@ -200,7 +200,7 @@ QString EnttecDMXUSBOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void EnttecDMXUSBOut::outputDMX(t_output output, const QByteArray& universe)
+void EnttecDMXUSBOut::outputDMX(quint32 output, const QByteArray& universe)
 {
 	if (output < m_widgets.size())
 		m_widgets.at(output)->sendDMX(universe);

@@ -46,11 +46,11 @@ public:
 	 * Open/close
 	 *********************************************************************/
 public:
-	void open(t_output output = 0);
-	void close(t_output output = 0);
+	void open(quint32 output = 0);
+	void close(quint32 output = 0);
 	QStringList outputs();
 
-	QList <t_output> m_openLines;
+	QList <quint32> m_openLines;
 
 	/*********************************************************************
 	 * Name
@@ -68,13 +68,13 @@ public:
 	 * Status
 	 *********************************************************************/
 public:
-	QString infoText(t_output output = KOutputInvalid);
+	QString infoText(quint32 output = KOutputInvalid);
 
 	/*********************************************************************
 	 * Value Read/Write
 	 *********************************************************************/
 public:
-	void outputDMX(t_output output, const QByteArray& universe);
+	void outputDMX(quint32 output, const QByteArray& universe);
 	QByteArray m_array;
 };
 

@@ -57,7 +57,7 @@ public:
 	void close(quint32 input = 0);
 	QStringList inputs();
 
-	QList <t_output> m_openLines;
+	QList <quint32> m_openLines;
 
 	/*********************************************************************
 	 * Name

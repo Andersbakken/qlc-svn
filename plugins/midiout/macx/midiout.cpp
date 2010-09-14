@@ -53,7 +53,7 @@ MIDIOut::~MIDIOut()
 		delete m_devices.takeFirst();
 }
 
-void MIDIOut::open(t_output output)
+void MIDIOut::open(quint32 output)
 {
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
@@ -62,7 +62,7 @@ void MIDIOut::open(t_output output)
 		qWarning() << name() << "has no output number:" << output;
 }
 
-void MIDIOut::close(t_output output)
+void MIDIOut::close(quint32 output)
 {
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)
@@ -147,7 +147,7 @@ MIDIDevice* MIDIOut::deviceByUID(SInt32 uid)
 	return NULL;
 }
 
-MIDIDevice* MIDIOut::device(t_output output)
+MIDIDevice* MIDIOut::device(quint32 output)
 {
 	if (output < m_devices.size())
 		return m_devices.at(output);
@@ -212,7 +212,7 @@ void MIDIOut::configure()
  * Status
  *****************************************************************************/
 
-QString MIDIOut::infoText(t_output output)
+QString MIDIOut::infoText(quint32 output)
 {
 	QString str;
 
@@ -257,7 +257,7 @@ QString MIDIOut::infoText(t_output output)
  * Value read/write methods
  *****************************************************************************/
 
-void MIDIOut::outputDMX(t_output output, const QByteArray& universe)
+void MIDIOut::outputDMX(quint32 output, const QByteArray& universe)
 {
 	MIDIDevice* dev = device(output);
 	if (dev != NULL)

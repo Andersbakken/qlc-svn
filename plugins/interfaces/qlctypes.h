@@ -163,24 +163,19 @@ const t_controlbyte KControl16MSB ( 1 );
  *****************************************************************************/
 
 /**
- * Output line type
- */
-typedef unsigned short t_output;
-
-/**
  * Smallest output line number
  */
-const t_output KOutputMin ( 0 );
+const quint32 KOutputMin ( 0 );
 
 /**
  * Largest output line number
  */
-const t_output KOutputMax ( USHRT_MAX - 1 );
+const quint32 KOutputMax ( UINT_MAX - 1 );
 
 /**
  * Invalid output line number
  */
-const t_output KOutputInvalid ( USHRT_MAX );
+const quint32 KOutputInvalid ( UINT_MAX );
 
 /*****************************************************************************
  * Input universes

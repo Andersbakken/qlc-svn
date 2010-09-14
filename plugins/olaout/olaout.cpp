@@ -112,7 +112,7 @@ void OLAOut::setServerEmbedded(bool embedServer)
  * Open a universe for output
  * @param output the universe id
  */
-void OLAOut::open(t_output output)
+void OLAOut::open(quint32 output)
 {
   if (output >= K_UNIVERSE_COUNT)
   {
@@ -126,7 +126,7 @@ void OLAOut::open(t_output output)
  * Close this universe.
  * @param output the universe id
  */
-void OLAOut::close(t_output output)
+void OLAOut::close(quint32 output)
 {
   if (output >= K_UNIVERSE_COUNT)
   {
@@ -181,7 +181,7 @@ void OLAOut::configure()
 /*
  * The plugin description.
  */
-QString OLAOut::infoText(t_output output)
+QString OLAOut::infoText(quint32 output)
 {
   QString str;
 
@@ -216,7 +216,7 @@ QString OLAOut::infoText(t_output output)
 }
 
 
-void OLAOut::outputDMX(t_output output, const QByteArray& universe)
+void OLAOut::outputDMX(quint32 output, const QByteArray& universe)
 {
   if (output > K_UNIVERSE_COUNT || !m_thread)
     return;
@@ -238,7 +238,7 @@ const OutputList OLAOut::outputMapping() const
  * @param output the id of the output to change
  * @param universe the OLA universe id
  */
-void OLAOut::setOutputUniverse(t_output output, unsigned int universe)
+void OLAOut::setOutputUniverse(quint32 output, unsigned int universe)
 {
   if (output > K_UNIVERSE_COUNT)
     return;

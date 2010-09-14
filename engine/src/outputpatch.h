@@ -53,17 +53,17 @@ public:
 	 * Plugin & output
 	 ********************************************************************/
 public:
-	void set(QLCOutPlugin* plugin, int output);
+	void set(QLCOutPlugin* plugin, quint32 output);
 
 	QLCOutPlugin* plugin() const { return m_plugin; }
 	QString pluginName() const;
 
-	int output() const { return m_output; }
+	quint32 output() const { return m_output; }
 	QString outputName() const;
 
 protected:
 	QLCOutPlugin* m_plugin;
-	t_output m_output;
+	quint32 m_output;
 
 	/********************************************************************
 	 * Value dump

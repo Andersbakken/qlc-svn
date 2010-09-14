@@ -225,7 +225,7 @@ public:
 	 * @param output The particular output to check for
 	 * @return Mapped universe number or -1 if not mapped
 	 */
-	int mapping(const QString& pluginName, t_output output) const;
+	int mapping(const QString& pluginName, quint32 output) const;
 
 protected:
 	/** Vector containing all active plugins */
@@ -266,7 +266,7 @@ public:
 	 * @param output Plugin's output line for getting more specific info
 	 */
 	QString pluginStatus(const QString& pluginName = QString::null,
-			     t_output output = KOutputInvalid);
+			     quint32 output = KOutputInvalid);
 
 	/**
 	 * Append the given plugin to our list of plugins. Will fail if

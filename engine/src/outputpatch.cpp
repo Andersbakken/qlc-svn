@@ -48,7 +48,7 @@ OutputPatch::~OutputPatch()
  * Plugin & Output
  ****************************************************************************/
 
-void OutputPatch::set(QLCOutPlugin* plugin, int output)
+void OutputPatch::set(QLCOutPlugin* plugin, quint32 output)
 {
 	/* TODO: This closes the plugin line always, regardless of whether
 	   the line has been assigned to more than one output universe */
@@ -73,7 +73,7 @@ QString OutputPatch::pluginName() const
 QString OutputPatch::outputName() const
 {
 	if (m_plugin != NULL && m_output != KOutputInvalid &&
-	    m_output < m_plugin->outputs().count())
+	    m_output < quint32(m_plugin->outputs().size()))
 		return m_plugin->outputs()[m_output];
 	else
 		return KOutputNone;

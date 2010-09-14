@@ -54,13 +54,13 @@ QString OutputPluginStub::name()
  * Open/close
  *****************************************************************************/
 
-void OutputPluginStub::open(t_output output)
+void OutputPluginStub::open(quint32 output)
 {
 	if (m_openLines.contains(output) == false && output < KUniverseCount)
 		m_openLines.append(output);
 }
 
-void OutputPluginStub::close(t_output output)
+void OutputPluginStub::close(quint32 output)
 {
 	m_openLines.removeAll(output);
 }
@@ -87,7 +87,7 @@ void OutputPluginStub::configure()
  * Status
  *****************************************************************************/
 
-QString OutputPluginStub::infoText(t_output output)
+QString OutputPluginStub::infoText(quint32 output)
 {
 	Q_UNUSED(output);
 	return QString("This is a plugin stub for testing.");
@@ -97,7 +97,7 @@ QString OutputPluginStub::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-void OutputPluginStub::outputDMX(t_output output, const QByteArray& universe)
+void OutputPluginStub::outputDMX(quint32 output, const QByteArray& universe)
 {
 	m_array = m_array.replace(output * 512, universe.size(), universe);
 }

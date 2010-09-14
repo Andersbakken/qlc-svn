@@ -112,7 +112,7 @@ void PeperoniOut::rescanDevices()
  * Plugin open/close
  *****************************************************************************/
 
-void PeperoniOut::open(t_output output)
+void PeperoniOut::open(quint32 output)
 {
 	if (m_usbdmx == NULL)
 		return;
@@ -121,7 +121,7 @@ void PeperoniOut::open(t_output output)
 		m_devices.at(output)->open();
 }
 
-void PeperoniOut::close(t_output output)
+void PeperoniOut::close(quint32 output)
 {
 	if (m_usbdmx == NULL)
 		return;
@@ -168,7 +168,7 @@ void PeperoniOut::configure()
  * Plugin status
  *****************************************************************************/
 
-QString PeperoniOut::infoText(t_output output)
+QString PeperoniOut::infoText(quint32 output)
 {
 	QString str;
 
@@ -217,7 +217,7 @@ QString PeperoniOut::infoText(t_output output)
  * Write
  *****************************************************************************/
 
-void PeperoniOut::outputDMX(t_output output, const QByteArray& universe)
+void PeperoniOut::outputDMX(quint32 output, const QByteArray& universe)
 {
 	if (output < m_devices.size())
 		m_devices.at(output)->outputDMX(universe);

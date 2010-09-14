@@ -49,15 +49,15 @@ void UDMXOut::init()
 	rescanDevices();
 }
 
-void UDMXOut::open(t_output output)
+void UDMXOut::open(quint32 output)
 {
-	if (output < m_devices.count())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->open();
 }
 
-void UDMXOut::close(t_output output)
+void UDMXOut::close(quint32 output)
 {
-	if (output < m_devices.count())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->close();
 }
 
@@ -166,7 +166,7 @@ void UDMXOut::configure()
  * Plugin status
  *****************************************************************************/
 
-QString UDMXOut::infoText(t_output output)
+QString UDMXOut::infoText(quint32 output)
 {
 	QString str;
 
@@ -186,7 +186,7 @@ QString UDMXOut::infoText(t_output output)
 		str += QString("http://www.anyma.ch</a> for more information.");
 		str += QString("</P>");
 	}
-	else if (output < m_devices.count())
+	else if (output < quint32(m_devices.size()))
 	{
 		str += m_devices.at(output)->infoText();
 	}
@@ -201,9 +201,9 @@ QString UDMXOut::infoText(t_output output)
  * Write
  *****************************************************************************/
 
-void UDMXOut::outputDMX(t_output output, const QByteArray& universe)
+void UDMXOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->outputDMX(universe);
 }
 

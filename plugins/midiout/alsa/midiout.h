@@ -57,10 +57,10 @@ public:
 	void init();
 	
 	/** Open the given output */
-	void open(t_output output = 0);
+	void open(quint32 output = 0);
 
 	/** Close the given output */
-	void close(t_output output = 0);
+	void close(quint32 output = 0);
 
 protected:
 	void subscribeDevice(MIDIDevice* device);
@@ -144,14 +144,14 @@ public:
 	 *********************************************************************/
 public:
 	/** Get a short information snippet on the given output's state */
-	QString infoText(t_output output = KOutputInvalid);
+	QString infoText(quint32 output = KOutputInvalid);
 
 	/*********************************************************************
 	 * Write
 	 *********************************************************************/
 public:
 	/** \reimp */
-	void outputDMX(t_output output, const QByteArray& universe);
+	void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

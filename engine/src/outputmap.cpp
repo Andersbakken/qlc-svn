@@ -314,7 +314,7 @@ void OutputMap::setDMXZeroBased(int universe, bool set)
 	settings.setValue(key, set);
 }
 
-int OutputMap::mapping(const QString& pluginName, t_output output) const
+int OutputMap::mapping(const QString& pluginName, quint32 output) const
 {
 	for (int uni = 0; uni < universes(); uni++)
 	{
@@ -359,7 +359,7 @@ void OutputMap::configurePlugin(const QString& pluginName)
 		outputPlugin->configure();
 }
 
-QString OutputMap::pluginStatus(const QString& pluginName, t_output output)
+QString OutputMap::pluginStatus(const QString& pluginName, quint32 output)
 {
 	QLCOutPlugin* outputPlugin = NULL;
 	QString info;

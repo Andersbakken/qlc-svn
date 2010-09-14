@@ -41,15 +41,15 @@ void PeperoniOut::init()
 	rescanDevices();
 }
 
-void PeperoniOut::open(t_output output)
+void PeperoniOut::open(quint32 output)
 {
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->open();
 }
 
-void PeperoniOut::close(t_output output)
+void PeperoniOut::close(quint32 output)
 {
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->close();
 }
 
@@ -156,7 +156,7 @@ void PeperoniOut::configure()
  * Plugin status
  *****************************************************************************/
 
-QString PeperoniOut::infoText(t_output output)
+QString PeperoniOut::infoText(quint32 output)
 {
 	QString str;
 
@@ -177,7 +177,7 @@ QString PeperoniOut::infoText(t_output output)
 		str += QString("information.");
 		str += QString("</P>");
 	}
-	else if (output < m_devices.size())
+	else if (output < quint32(m_devices.size()))
 	{
 		str += m_devices.at(output)->infoText();
 	}
@@ -192,9 +192,9 @@ QString PeperoniOut::infoText(t_output output)
  * Value Read/Write
  *****************************************************************************/
 
-void PeperoniOut::outputDMX(t_output output, const QByteArray& universe)
+void PeperoniOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->outputDMX(universe);
 }
 

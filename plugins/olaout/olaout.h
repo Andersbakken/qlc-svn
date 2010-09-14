@@ -49,17 +49,17 @@ public:
   OLAOut();
   ~OLAOut();
   void init();
-  void open(t_output output=0);
-  void close(t_output output=0);
+  void open(quint32 output=0);
+  void close(quint32 output=0);
   QStringList outputs();
   QString name();
   void configure();
-  QString infoText(t_output output = KOutputInvalid);
+  QString infoText(quint32 output = KOutputInvalid);
 
-  void outputDMX(t_output output, const QByteArray& universe);
+  void outputDMX(quint32 output, const QByteArray& universe);
 
   const OutputList outputMapping() const;
-  void setOutputUniverse(t_output output, unsigned int universe);
+  void setOutputUniverse(quint32 output, unsigned int universe);
   bool isServerEmbedded();
   void setServerEmbedded(bool embedServer);
 

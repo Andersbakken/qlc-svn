@@ -41,7 +41,7 @@ void DMX4LinuxOut::init()
  * Open/close
  *****************************************************************************/
 
-void DMX4LinuxOut::open(t_output output)
+void DMX4LinuxOut::open(quint32 output)
 {
 	if (output != 0)
 		return;
@@ -54,7 +54,7 @@ void DMX4LinuxOut::open(t_output output)
 	}
 }
 
-void DMX4LinuxOut::close(t_output output)
+void DMX4LinuxOut::close(quint32 output)
 {
 	if (output != 0)
 		return;
@@ -97,7 +97,7 @@ void DMX4LinuxOut::configure()
  * Status
  *****************************************************************************/
 
-QString DMX4LinuxOut::infoText(t_output output)
+QString DMX4LinuxOut::infoText(quint32 output)
 {
 	QString str;
 
@@ -132,7 +132,7 @@ QString DMX4LinuxOut::infoText(t_output output)
  * Value read/write
  *****************************************************************************/
 
-void DMX4LinuxOut::outputDMX(t_output output, const QByteArray& universe)
+void DMX4LinuxOut::outputDMX(quint32 output, const QByteArray& universe)
 {
 	if (output != 0 || m_file.isOpen() == false)
 		return;

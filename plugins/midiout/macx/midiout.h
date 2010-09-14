@@ -57,10 +57,10 @@ public:
 	~MIDIOut();
 
 	/** \reimp */
-	void open(t_output output = 0);
+	void open(quint32 output = 0);
 
 	/** \reimp */
-	void close(t_output output = 0);
+	void close(quint32 output = 0);
 
 	const MIDIClientRef client() const { return m_client; }
 
@@ -79,7 +79,7 @@ protected:
 	MIDIDevice* deviceByUID(SInt32 uid);
 
 	/** Get a MIDIDevice at the given output index or NULL if over limits */
-	MIDIDevice* device(t_output output);
+	MIDIDevice* device(quint32 output);
 
 	/** Add a new MIDIDevice and associate it with the given output */
 	void addDevice(MIDIDevice* device);
@@ -124,14 +124,14 @@ public:
 	 *********************************************************************/
 public:
 	/** \reimp */
-	QString infoText(t_output output = KOutputInvalid);
+	QString infoText(quint32 output = KOutputInvalid);
 
 	/*********************************************************************
 	 * Write
 	 *********************************************************************/
 public:
 	/** \reimp */
-	void outputDMX(t_output output, const QByteArray& universe);
+	void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

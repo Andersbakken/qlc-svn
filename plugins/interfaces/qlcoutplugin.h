@@ -97,7 +97,7 @@ public:
 	 *
 	 * @param output The output line to open
 	 */
-	virtual void open(t_output output = 0) = 0;
+	virtual void open(quint32 output = 0) = 0;
 
 	/**
 	 * Close the specified output line so that the plugin can stop
@@ -105,7 +105,7 @@ public:
 	 *
 	 * @param output The output line to close
 	 */
-	virtual void close(t_output output = 0) = 0;
+	virtual void close(quint32 output = 0) = 0;
 
 	/**
 	 * Invoke a configuration dialog for the plugin
@@ -126,7 +126,7 @@ public:
 	 *
 	 * @param output The output to get info from
 	 */
-	virtual QString infoText(t_output output = KOutputInvalid) = 0;
+	virtual QString infoText(quint32 output = KOutputInvalid) = 0;
 
 	/**
 	 * Get the plugin's name
@@ -152,7 +152,7 @@ public:
 	 * @param output The output universe to write to
 	 * @param universe The universe data to write
 	 */
-	virtual void outputDMX(t_output output, const QByteArray& universe) = 0;
+	virtual void outputDMX(quint32 output, const QByteArray& universe) = 0;
 };
 
 Q_DECLARE_INTERFACE(QLCOutPlugin, "QLCOutPlugin")

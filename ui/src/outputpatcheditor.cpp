@@ -104,7 +104,7 @@ void OutputPatchEditor::fillTree()
 	QTreeWidgetItem* pitem;
 	QTreeWidgetItem* oitem;
 	QString pluginName;
-	int i;
+	quint32 i = 0;
 
 	/* Disable check state change tracking when the tree is filled */
 	disconnect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
@@ -202,7 +202,7 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 	else
 	{
 		QString plugin;
-		t_output output;
+		quint32 output;
 
 		if (item->parent() != NULL)
 		{

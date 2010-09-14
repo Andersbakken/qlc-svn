@@ -72,7 +72,7 @@ protected:
 	 * Output
 	 *********************************************************************/
 public:
-	t_output output() const { return static_cast<t_output> (m_id); }
+	quint32 output() const { return static_cast<quint32> (m_id); }
 
 protected:
 	UINT m_id;

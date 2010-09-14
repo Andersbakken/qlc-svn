@@ -65,8 +65,8 @@ protected:
 
 	QString m_originalPluginName;
 	QString m_currentPluginName;
-	t_output m_originalOutput;
-	t_output m_currentOutput;
+	quint32 m_originalOutput;
+	quint32 m_currentOutput;
 	bool m_originalDMXZeroBasedSetting;
 };
 

@@ -46,8 +46,8 @@ public:
 	 * Open/close
 	 *********************************************************************/
 public:
-	void open(t_output output = 0);
-	void close(t_output output = 0);
+	void open(quint32 output = 0);
+	void close(quint32 output = 0);
 	QStringList outputs();
 
 	/*********************************************************************
@@ -66,13 +66,13 @@ public:
 	 * Status
 	 *********************************************************************/
 public:
-	QString infoText(t_output output = KOutputInvalid);
+	QString infoText(quint32 output = KOutputInvalid);
 
 	/*********************************************************************
 	 * Write
 	 *********************************************************************/
 public:
-	void outputDMX(t_output output, const QByteArray& universe);
+	void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

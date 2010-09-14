@@ -54,12 +54,12 @@ QString DummyOutPlugin::name()
  * Open/close
  *****************************************************************************/
 
-void DummyOutPlugin::open(t_output output)
+void DummyOutPlugin::open(quint32 output)
 {
 	Q_UNUSED(output);
 }
 
-void DummyOutPlugin::close(t_output output)
+void DummyOutPlugin::close(quint32 output)
 {
 	Q_UNUSED(output);
 }
@@ -86,7 +86,7 @@ void DummyOutPlugin::configure()
  * Status
  *****************************************************************************/
 
-QString DummyOutPlugin::infoText(t_output output)
+QString DummyOutPlugin::infoText(quint32 output)
 {
 	QString str;
 
@@ -121,7 +121,7 @@ QString DummyOutPlugin::infoText(t_output output)
  * Write
  *****************************************************************************/
 
-void DummyOutPlugin::outputDMX(t_output output, const QByteArray& universe)
+void DummyOutPlugin::outputDMX(quint32 output, const QByteArray& universe)
 {
 	Q_UNUSED(output);
 	Q_UNUSED(universe);
