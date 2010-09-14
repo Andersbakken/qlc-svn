@@ -107,12 +107,15 @@ protected slots:
 	void slotForwardClicked();
 	void slotBackwardClicked();
 
+protected:
+	void redrawPreview();
+
 	/*********************************************************************
 	 * Initialization page
 	 *********************************************************************/
 protected:
 	void fillSceneLists();
-	
+
 protected slots:
 	void slotStartSceneGroupToggled(bool);
 	void slotStopSceneGroupToggled(bool);
@@ -134,12 +137,11 @@ public:
 	~EFXPreviewArea();
 
 	/**
-	 * Get the pointer for the point array that is used
-	 * to draw the preview
+	 * Set an an array of X-Y points that can be used for drawing a preview
 	 *
-	 * @return The point array
+	 * @param points The point array
 	 */
-	QPolygon* points();
+	void setPoints(const QVector<QPoint>& points);
 
 	/**
 	 * Tell the preview area to draw the points
@@ -174,7 +176,7 @@ protected slots:
 
 protected:
 	/** Points that are drawn in the preview area */
-	QPolygon* m_points;
+	QPolygon m_points;
 
 	/** Animation timer */
 	QTimer m_timer;

@@ -19,13 +19,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QMdiSubWindow>
-#include <QMdiArea>
-#include <QPalette>
 #include <QString>
 #include <QDebug>
 #include <QtXml>
-#include <QIcon>
 
 #include "qlcfixturedefcache.h"
 #include "qlcfixturemode.h"
@@ -584,31 +580,9 @@ QString Fixture::status()
 	QString info;
 	QString t;
 
-	QPalette pal;
-	QColor hlBack(pal.color(QPalette::Highlight));
-	QColor hlText(pal.color(QPalette::HighlightedText));
-
 	QString title("<TR><TD CLASS='hilite' COLSPAN='3'>%1</TD></TR>");
 	QString subTitle("<TR><TD CLASS='subhi' COLSPAN='3'>%1</TD></TR>");
 	QString genInfo("<TR><TD CLASS='emphasis' COLSPAN='2'>%1</TD><TD>%2</TD></TR>");
-
-	// HTML header
-	info += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">";
-	info += "<HTML><HEAD></HEAD><STYLE>";
-	info += QString(".hilite {" \
-			"	background-color: %1;" \
-			"	color: %2;" \
-			"	font-size: x-large;" \
-			"}").arg(hlBack.name()).arg(hlText.name());
-	info += QString(".subhi {" \
-			"	background-color: %1;" \
-			"	color: %2;" \
-			"	font-weight: bold;" \
-			"}").arg(hlBack.name()).arg(hlText.name());
-	info += QString(".emphasis {" \
-			"	font-weight: bold;" \
-			"}");
-	info += "</STYLE><BODY>";
 
 	/********************************************************************
 	 * General info
@@ -702,7 +676,7 @@ QString Fixture::status()
 	}
 
 	// HTML document & table closure
-	info += "</TABLE></BODY></HTML>";
+	info += "</TABLE>";
 
 	return info;
 }

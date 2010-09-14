@@ -11,15 +11,9 @@ QT 		+= xml
 QT		+= gui
 QTPLUGIN	 =
 
+INCLUDEPATH += ../../plugins/interfaces
 INCLUDEPATH += ../src
-INCLUDEPATH += ../../libs/common
 DEPENDPATH  += ../src
-
-unix:LIBS   += ../../libs/common/libqlccommon.a
-win32:{
-	CONFIG(release, debug|release) LIBS += ../../libs/common/release/libqlccommon.a
-	CONFIG(debug, debug|release) LIBS += ../../libs/common/debug/libqlccommon.a
-}
 
 HEADERS = vcwidgetproperties_test.h \
 	  ../src/vcwidgetproperties.h

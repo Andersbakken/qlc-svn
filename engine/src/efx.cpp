@@ -19,9 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QByteArray>
-#include <QPolygon>
+#include <QVector>
 #include <QDebug>
 #include <QList>
 #include <QtXml>
@@ -183,11 +182,8 @@ bool EFX::copyFrom(const Function* function)
  * Preview
  *****************************************************************************/
 
-bool EFX::preview(QPolygon* polygon)
+bool EFX::preview(QVector <QPoint>& polygon)
 {
-	if (polygon == NULL)
-		return false;
-
 	bool retval = true;
 	int stepCount = 128;
 	int step = 0;
@@ -198,7 +194,7 @@ bool EFX::preview(QPolygon* polygon)
 	qreal y = 0;
 
 	/* Resize the array to contain stepCount points */
-	polygon->resize(stepCount);
+	polygon.resize(stepCount);
 
 	/* Since algorithm is identified by a string, we don't want to do N
 	   string comparisons on each for loop increment. So, it's a bit faster
@@ -209,7 +205,7 @@ bool EFX::preview(QPolygon* polygon)
 		for (step = 0; step < stepCount; step++)
 		{
 			circlePoint(this, i, &x, &y);
-			polygon->setPoint(step, int(x), int(y));
+			polygon[step] = QPoint(int(x), int(y));
 			i += stepSize;
 		}
 	}
@@ -219,7 +215,7 @@ bool EFX::preview(QPolygon* polygon)
 		for (step = 0; step < stepCount; step++)
 		{
 			eightPoint(this, i, &x, &y);
-			polygon->setPoint(step, int(x), int(y));
+			polygon[step] = QPoint(int(x), int(y));
 			i += stepSize;
 		}
 	}
@@ -229,7 +225,7 @@ bool EFX::preview(QPolygon* polygon)
 		for (step = 0; step < stepCount; step++)
 		{
 			linePoint(this, i, &x, &y);
-			polygon->setPoint(step, int(x), int(y));
+			polygon[step] = QPoint(int(x), int(y));
 			i += stepSize;
 		}
 	}
@@ -239,7 +235,7 @@ bool EFX::preview(QPolygon* polygon)
 		for (step = 0; step < stepCount; step++)
 		{
 			diamondPoint(this, i, &x, &y);
-			polygon->setPoint(step, int(x), int(y));
+			polygon[step] = QPoint(int(x), int(y));
 			i += stepSize;
 		}
 	}
@@ -249,7 +245,7 @@ bool EFX::preview(QPolygon* polygon)
 		for (step = 0; step < stepCount; step++)
 		{
 			trianglePoint(this, i, &x, &y);
-			polygon->setPoint(step, int(x), int(y));
+			polygon[step] = QPoint(int(x), int(y));
 			i += stepSize;
 		}
 	}
@@ -259,13 +255,13 @@ bool EFX::preview(QPolygon* polygon)
 		for (step = 0; step < stepCount; step++)
 		{
 			lissajousPoint(this, i, &x, &y);
-			polygon->setPoint(step, int(x), int(y));
+			polygon[step] = QPoint(int(x), int(y));
 			i += stepSize;
 		}
 	}
 	else
 	{
-		polygon->resize(0);
+		polygon.resize(0);
 		retval = false;
 	}
 

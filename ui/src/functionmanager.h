@@ -83,6 +83,9 @@ protected:
 	/** Update the item's contents from the given function */
 	void updateFunctionItem(QTreeWidgetItem* item, Function* function);
 
+	/** Get an icon that represents the given function's type */
+	QIcon functionIcon(const Function* function) const;
+
 	/** Delete all currently selected functions */
 	void deleteSelectedFunctions();
 

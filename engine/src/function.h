@@ -30,7 +30,6 @@
 
 class QDomDocument;
 class QDomElement;
-class QIcon;
 
 class MasterTimer;
 class Function;
@@ -177,11 +176,6 @@ public:
 	 * @param str The string to convert
 	 */
 	static Type stringToType(const QString& str);
-
-	/**
-	 * Get an icon (representing the function's type) to be used in lists
-	 */
-	virtual QIcon icon() const;
 
 	/*********************************************************************
 	 * Running order

@@ -113,6 +113,10 @@ protected slots:
 	void slotDoubleClicked(QTreeWidgetItem* item);
 
 protected:
+	/** Get a CSS style sheet & HTML header for fixture info */
+	QString fixtureInfoStyleSheetHeader();
+
+protected:
 	QSplitter* m_splitter;
 	QTreeWidget* m_tree;
 

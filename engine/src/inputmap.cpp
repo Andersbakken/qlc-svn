@@ -20,14 +20,16 @@
 */
 
 #include <QPluginLoader>
-#include <QApplication>
-#include <QMessageBox>
 #include <QStringList>
 #include <QSettings>
 #include <QDebug>
 #include <QList>
 #include <QtXml>
 #include <QDir>
+
+#ifdef __APPLE__
+#include <QCoreApplication>
+#endif
 
 #include "qlcinplugin.h"
 #include "qlcconfig.h"
@@ -199,7 +201,7 @@ void InputMap::loadPlugins()
 	QString path;
 
 #ifdef __APPLE__
-	path = QString("%1/../%2").arg(QApplication::applicationDirPath())
+	path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
 				  .arg(INPUTPLUGINDIR);
 #else
 	path = QString(INPUTPLUGINDIR);

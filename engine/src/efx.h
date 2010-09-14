@@ -22,6 +22,8 @@
 #ifndef EFX_H
 #define EFX_H
 
+#include <QVector>
+#include <QPoint>
 #include <QList>
 
 #include "qlctypes.h"
@@ -31,7 +33,6 @@
 
 class QDomDocument;
 class QDomElement;
-class QPolygon;
 class QString;
 class Fixture;
 
@@ -99,7 +100,7 @@ public:
 	 *
 	 * @param polygon The polygon to fill with preview points
 	 */
-	bool preview(QPolygon* polygon);
+	bool preview(QVector <QPoint>& polygon);
 
 	/*********************************************************************
 	 * Algorithm

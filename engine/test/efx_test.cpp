@@ -579,8 +579,8 @@ void EFX_Test::previewCircle()
 {
 	EFX e(m_doc);
 
-	QPolygon poly;
-	QVERIFY(e.preview(&poly) == true);
+	QVector <QPoint> poly;
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	QVERIFY(poly[0] == QPoint(127,254));
@@ -718,8 +718,8 @@ void EFX_Test::previewEight()
 	EFX e(m_doc);
 	e.setAlgorithm("Eight");
 
-	QPolygon poly;
-	QVERIFY(e.preview(&poly) == true);
+	QVector <QPoint> poly;
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	QVERIFY(poly[0] == QPoint(127,254));
@@ -857,8 +857,8 @@ void EFX_Test::previewLine()
 	EFX e(m_doc);
 	e.setAlgorithm("Line");
 
-	QPolygon poly;
-	QVERIFY(e.preview(&poly) == true);
+	QVector <QPoint> poly;
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	QVERIFY(poly[0] == QPoint(254,254));
@@ -1000,8 +1000,8 @@ void EFX_Test::previewDiamond()
 	EFX e(m_doc);
 	e.setAlgorithm("Diamond");
 
-	QPolygon poly;
-	QVERIFY(e.preview(&poly) == true);
+	QVector <QPoint> poly;
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	QVERIFY(poly[0] == QPoint(127,254));
@@ -1139,8 +1139,8 @@ void EFX_Test::previewLissajous()
 	EFX e(m_doc);
 	e.setAlgorithm("Lissajous");
 
-	QPolygon poly;
-	QVERIFY(e.preview(&poly) == true);
+	QVector <QPoint> poly;
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	QVERIFY(poly[0] == QPoint(127,254));
@@ -1279,38 +1279,38 @@ void EFX_Test::widthHeightOffset()
 	int i = 0;
 	int max = 0;
 
-	QPolygon poly;
-	QVERIFY(e.preview(&poly) == true);
+	QVector <QPoint> poly;
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	/* Check that width affects the pattern */
 	e.setWidth(50);
 	poly.clear();
-	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	/* Width of 50 means actually 50px left of center (127-50) and
 	   50px right of center (127+50). +1 because the bound coordinates
 	   are OUTSIDE the actual points. */
-	QVERIFY(poly.boundingRect().width() == 50 + 50 + 1);
-	QVERIFY(poly.boundingRect().height() == 255);
+	QVERIFY(QPolygon(poly).boundingRect().width() == 50 + 50 + 1);
+	QVERIFY(QPolygon(poly).boundingRect().height() == 255);
 
 	/* Check that height affects the pattern */
 	e.setHeight(87);
 	poly.clear();
-	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 
 	/* Height of 87 means actually 87px down of center (127-87) and
 	   87px up of center (127+87). And +1 because the bound coordinates
 	   are OUTSIDE the actual points. */
-	QVERIFY(poly.boundingRect().height() == 87 + 87 + 1);
-	QVERIFY(poly.boundingRect().width() == 100 + 1);
+	QVERIFY(QPolygon(poly).boundingRect().height() == 87 + 87 + 1);
+	QVERIFY(QPolygon(poly).boundingRect().width() == 100 + 1);
 
 	/* X Offset is at center */
 	max = 0;
 	poly.clear();
-	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 	for (i = 0;i < 128;i++)
 		if (poly[i].x() > max)
@@ -1321,7 +1321,7 @@ void EFX_Test::widthHeightOffset()
 	max = 0;
 	e.setXOffset(127 + 20);
 	poly.clear();
-	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 	for (i = 0;i < 128;i++)
 		if (poly[i].x() > max)
@@ -1331,7 +1331,7 @@ void EFX_Test::widthHeightOffset()
 	/* Y Offset is at center */
 	max = 0;
 	poly.clear();
-	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 	for (i = 0;i < 128;i++)
 		if (poly[i].y() > max)
@@ -1342,7 +1342,7 @@ void EFX_Test::widthHeightOffset()
 	max = 0;
 	e.setYOffset(127 - 25);
 	poly.clear();
-	QVERIFY(e.preview(&poly) == true);
+	QVERIFY(e.preview(poly) == true);
 	QVERIFY(poly.size() == 128);
 	for (i = 0;i < 128;i++)
 		if (poly[i].y() > max)

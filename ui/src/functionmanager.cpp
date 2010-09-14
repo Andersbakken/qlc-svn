@@ -36,6 +36,7 @@
 #include <QPixmap>
 #include <QMenu>
 #include <QList>
+#include <QIcon>
 
 #include "collectioneditor.h"
 #include "functionmanager.h"
@@ -588,9 +589,26 @@ void FunctionManager::updateFunctionItem(QTreeWidgetItem* item,
 	Q_ASSERT(function != NULL);
 
 	item->setText(KColumnName, function->name());
-	item->setIcon(KColumnName, function->icon());
+	item->setIcon(KColumnName, functionIcon(function));
 	item->setText(KColumnBus, Bus::instance()->idName(function->busID()));
 	item->setText(KColumnID, QString("%1").arg(function->id()));
+}
+
+QIcon FunctionManager::functionIcon(const Function* function) const
+{
+	switch (function->type())
+	{
+		case Function::Scene:
+			return QIcon(":/scene.png");
+		case Function::Chaser:
+			return QIcon(":/chaser.png");
+		case Function::EFX:
+			return QIcon(":/efx.png");
+		case Function::Collection:
+			return QIcon(":/collection.png");
+		default:
+			return QIcon(":/function.png");
+	}
 }
 
 void FunctionManager::deleteSelectedFunctions()

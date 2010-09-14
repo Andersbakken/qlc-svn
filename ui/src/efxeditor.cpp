@@ -223,9 +223,7 @@ void EFXEditor::initMovementPage()
 		break;
 	}
 
-	/* Draw the points */
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::initInitializationPage()
@@ -558,99 +556,70 @@ void EFXEditor::slotAlgorithmSelected(const QString &text)
 		m_yPhaseSpin->setEnabled(false);
 	}
 
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotWidthSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setWidth(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotHeightSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setHeight(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotRotationSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setRotation(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotXOffsetSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setXOffset(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotYOffsetSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setYOffset(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotXFrequencySpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setXFrequency(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotYFrequencySpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setYFrequency(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotXPhaseSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setXPhase(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 void EFXEditor::slotYPhaseSpinChanged(int value)
 {
 	Q_ASSERT(m_efx != NULL);
-
 	m_efx->setYPhase(value);
-
-	m_efx->preview(m_previewArea->points());
-	m_previewArea->draw();
+	redrawPreview();
 }
 
 /*****************************************************************************
@@ -697,6 +666,14 @@ void EFXEditor::slotBackwardClicked()
 	m_previewArea->draw();
 }
 
+void EFXEditor::redrawPreview()
+{
+	QVector <QPoint> points;
+	m_efx->preview(points);
+	m_previewArea->setPoints(points);
+	m_previewArea->draw();
+}
+
 /*****************************************************************************
  * Initialization page
  *****************************************************************************/
@@ -710,13 +687,13 @@ void EFXEditor::fillSceneLists()
 	QString s;
 
 	Q_ASSERT(m_efx != NULL);
-  
+
 	for (t_function_id id = 0; id < KFunctionArraySize; id++)
 	{
 		function = _app->doc()->function(id);
 		if (function == NULL)
 			continue;
-	
+
 		if (function->type() == Function::Scene)
 		{
 			/* Insert the function to start scene list */
@@ -812,7 +789,6 @@ void EFXEditor::slotStopSceneListSelectionChanged()
 EFXPreviewArea::EFXPreviewArea(QWidget* parent) : QFrame (parent), m_timer(this)
 {
 	QPalette p = palette();
-	m_points = new QPolygon();
 	m_reverse = false;
 
 	setAutoFillBackground(true);
@@ -828,14 +804,11 @@ EFXPreviewArea::EFXPreviewArea(QWidget* parent) : QFrame (parent), m_timer(this)
 EFXPreviewArea::~EFXPreviewArea()
 {
 	setUpdatesEnabled(false);
-
-	delete m_points;
-	m_points = NULL;
 }
 
-QPolygon* EFXPreviewArea::points()
+void EFXPreviewArea::setPoints(const QVector <QPoint>& points)
 {
-	return m_points;
+	m_points = QPolygon(points);
 }
 
 void EFXPreviewArea::draw()
@@ -843,7 +816,7 @@ void EFXPreviewArea::draw()
 	m_timer.stop();
 
 	if (m_reverse == true)
-		m_iter = m_points->size() - 1;
+		m_iter = m_points.size() - 1;
 	else
 		m_iter = 0;
 	m_timer.start(20);
@@ -878,15 +851,15 @@ void EFXPreviewArea::paintEvent(QPaintEvent* e)
 	color = palette().color(QPalette::Highlight);
 	pen.setColor(color);
 	painter.setPen(pen);
-	painter.drawPolygon(*m_points);
+	painter.drawPolygon(m_points);
 
 	// Draw the points from the point array
-	if (m_iter < m_points->size() && m_iter >= 0)
+	if (m_iter < m_points.size() && m_iter >= 0)
 	{
-		color = color.lighter(100 + (m_points->size() / 100));
+		color = color.lighter(100 + (m_points.size() / 100));
 		pen.setColor(color);
 		painter.setPen(pen);
-		point = m_points->point(m_iter);
+		point = m_points.point(m_iter);
 		painter.drawEllipse(point.x() - 4, point.y() - 4, 8, 8);
 	}
 	else

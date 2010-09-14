@@ -1,4 +1,5 @@
 include(../../variables.pri)
+include(../../coverage.pri)
 
 TEMPLATE = app
 LANGUAGE = C++
@@ -11,36 +12,29 @@ QT 	+= xml
 QTPLUGIN =
 
 INCLUDEPATH += ../src
-INCLUDEPATH += ../../libs/common
 DEPENDPATH  += ../src
 
-unix:LIBS	+= ../src/libqlcengine.a
-unix:LIBS	+= ../../libs/common/libqlccommon.a
-win32:{
-	CONFIG(release, debug|release) LIBS += ../../libs/common/release/libqlccommon.a
-	CONFIG(release, debug|release) LIBS += ../src/release/libqlcengine.a
+INCLUDEPATH += ../../plugins/interfaces
 
-	CONFIG(debug, debug|release) LIBS += ../../libs/common/debug/libqlccommon.a
+unix:LIBS	+= ../src/libqlcengine.a
+win32:{
+	CONFIG(release, debug|release) LIBS += ../src/release/libqlcengine.a
 	CONFIG(debug, debug|release) LIBS += ../src/debug/libqlcengine.a
 }
 
-STUBHEADERS += mastertimer_stub.h \
-		dmxsource_stub.h \
-		scene_stub.h \
-		outputplugin_stub.h \
-		inputplugin_stub.h \
-		outputmap_stub.h \
-		function_stub.h
+# Fixture metadata
+HEADERS += qlcphysical_test.h \
+	   qlcfixturemode_test.h \
+	   qlcchannel_test.h \
+	   qlccapability_test.h \
+	   qlcfixturedef_test.h \
+	   qlcfixturedefcache_test.h \
+	   qlcinputchannel_test.h \
+	   qlcinputprofile_test.h \
+	   qlcmacros_test.h
 
-STUBSOURCES += mastertimer_stub.cpp \
-		dmxsource_stub.cpp \
-		scene_stub.cpp \
-		outputplugin_stub.cpp \
-		inputplugin_stub.cpp \
-		outputmap_stub.cpp \
-		function_stub.cpp
-
-HEADERS = bus_test.h \
+# Engine
+HEADERS += bus_test.h \
 	  fixture_test.h \
 	  function_test.h \
 	  scene_test.h \
@@ -55,11 +49,29 @@ HEADERS = bus_test.h \
 	  outputmap_test.h \
 	  inputmap_test.h \
 	  mastertimer_test.h \
-	  doc_test.h \
-	  \
-	  $$STUBHEADERS
+	  doc_test.h
 
-SOURCES = bus_test.cpp \
+# Stubs
+HEADERS += mastertimer_stub.h \
+	   dmxsource_stub.h \
+	   scene_stub.h \
+	   outputplugin_stub.h \
+	   inputplugin_stub.h \
+	   outputmap_stub.h \
+	   function_stub.h
+
+# Fixture metadata
+SOURCES += qlcphysical_test.cpp \
+	   qlcfixturemode_test.cpp \
+	   qlcchannel_test.cpp \
+	   qlccapability_test.cpp \
+	   qlcfixturedef_test.cpp \
+	   qlcfixturedefcache_test.cpp \
+	   qlcinputchannel_test.cpp \
+	   qlcinputprofile_test.cpp \
+	   qlcmacros_test.cpp
+
+SOURCES += bus_test.cpp \
 	  fixture_test.cpp \
 	  function_test.cpp \
 	  scene_test.cpp \
@@ -75,8 +87,14 @@ SOURCES = bus_test.cpp \
 	  inputmap_test.cpp \
 	  mastertimer_test.cpp \
 	  doc_test.cpp \
-	  \
-	  test_engine.cpp \
-	  \
-	  $$STUBSOURCES
+	  test_engine.cpp
+
+# Stubs
+SOURCES += mastertimer_stub.cpp \
+	   dmxsource_stub.cpp \
+	   scene_stub.cpp \
+	   outputplugin_stub.cpp \
+	   inputplugin_stub.cpp \
+	   outputmap_stub.cpp \
+	   function_stub.cpp
 

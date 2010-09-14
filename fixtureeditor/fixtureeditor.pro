@@ -8,8 +8,7 @@ CONFIG          += qt
 macx:CONFIG	-= app_bundle
 QT 		+= xml
 
-INCLUDEPATH 	+= ../libs/common
-DEPENDPATH	+= ../libs/common
+INCLUDEPATH 	+= ../plugins/interfaces
 
 INCLUDEPATH	+= ../engine/src
 DEPENDPATH	+= ../engine/src
@@ -17,10 +16,10 @@ DEPENDPATH	+= ../engine/src
 INCLUDEPATH	+= ../ui/src
 DEPENDPATH	+= ../ui/src
 
-unix:LIBS	+= ../libs/common/libqlccommon.a
+unix:LIBS	+= ../engine/src/libqlcengine.a
 win32:{
-	CONFIG(release, debug|release) LIBS += ../libs/common/release/libqlccommon.a
-	CONFIG(debug, debug|release) LIBS += ../libs/common/debug/libqlccommon.a
+	CONFIG(release, debug|release) LIBS += ../engine/src/release/libqlcengine.a
+	CONFIG(debug, debug|release) LIBS += ../engine/src/debug/libqlcengine.a
 }
 
 # Sources

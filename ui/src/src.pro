@@ -12,16 +12,6 @@ QT 		+= xml
 macx:QT		+= network xml gui core
 macx:CONFIG	-= app_bundle
 
-# Common
-INCLUDEPATH 	+= ../../libs/common
-DEPENDPATH 	+= ../../libs/common
-unix:LIBS	+= ../../libs/common/libqlccommon.a
-unix:!macx:LIBS += -lX11
-win32:{
-	CONFIG(release, debug|release) LIBS += ../../libs/common/release/libqlccommon.a
-	CONFIG(debug, debug|release) LIBS += ../../libs/common/debug/libqlccommon.a
-}
-
 # Engine
 INCLUDEPATH	+= ../../engine/src
 DEPENDPATH	+= ../../engine/src
@@ -30,6 +20,9 @@ win32:{
 	CONFIG(release, debug|release) LIBS += ../../engine/src/release/libqlcengine.a
 	CONFIG(debug, debug|release) LIBS += ../../engine/src/debug/libqlcengine.a
 }
+
+# Types
+INCLUDEPATH	+= ../../plugins/interfaces
 
 # Resources
 RESOURCES 	+= main.qrc

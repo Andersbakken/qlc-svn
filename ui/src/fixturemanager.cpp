@@ -337,7 +337,9 @@ void FixtureManager::slotSelectionChanged()
 		id = item->text(KColumnID).toInt();
 		fxi = _app->doc()->fixture(id);
 		Q_ASSERT(fxi != NULL);
-		m_info->setText(fxi->status());
+		m_info->setText(QString("%1<BODY>%2</BODY></HTML>")
+				.arg(fixtureInfoStyleSheetHeader())
+				.arg(fxi->status()));
 
 		/* Mark the current tab widget page */
 		page = m_tab->currentIndex();
@@ -438,6 +440,33 @@ void FixtureManager::slotDoubleClicked(QTreeWidgetItem* item)
 {
 	if (item != NULL && _app->doc()->mode() != Doc::Operate)
 		slotProperties();
+}
+
+QString FixtureManager::fixtureInfoStyleSheetHeader()
+{
+	QString info;
+
+	QPalette pal;
+	QColor hlBack(pal.color(QPalette::Highlight));
+	QColor hlText(pal.color(QPalette::HighlightedText));
+
+	info += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">";
+	info += "<HTML><HEAD></HEAD><STYLE>";
+	info += QString(".hilite {" \
+			"	background-color: %1;" \
+			"	color: %2;" \
+			"	font-size: x-large;" \
+			"}").arg(hlBack.name()).arg(hlText.name());
+	info += QString(".subhi {" \
+			"	background-color: %1;" \
+			"	color: %2;" \
+			"	font-weight: bold;" \
+			"}").arg(hlBack.name()).arg(hlText.name());
+	info += QString(".emphasis {" \
+			"	font-weight: bold;" \
+			"}");
+	info += "</STYLE>";
+	return info;
 }
 
 /*****************************************************************************

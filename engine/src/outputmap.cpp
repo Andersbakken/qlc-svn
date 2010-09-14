@@ -20,7 +20,6 @@
 */
 
 #include <QPluginLoader>
-#include <QMessageBox>
 #include <QByteArray>
 #include <QSettings>
 #include <QString>

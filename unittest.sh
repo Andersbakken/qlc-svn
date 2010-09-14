@@ -2,21 +2,9 @@
 
 pushd .
 
-# Common library tests
-cd libs/common/test
-./test_common
-RESULT=$?
-if [ $RESULT != 0 ]; then
-	echo "Common library unit test failed ($RESULT). Please fix before commit."
-	exit $RESULT
-fi
-
-popd
-pushd .
-
 # Enttec DMXUSB Open test
-cd libs/enttecdmxusbout/unix/test/open
-./test_dmxusbopen
+cd plugins/enttecdmxusbout/unix/test/open
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbopen
 RESULT=$?
 if [ $RESULT != 0 ]; then
 	echo "Enttec DMXUSB Open unit test failed ($RESULT). Please fix before commit."
@@ -27,8 +15,8 @@ popd
 pushd .
 
 # Enttec DMXUSB Pro test
-cd libs/enttecdmxusbout/unix/test/pro
-./test_dmxusbpro
+cd plugins/enttecdmxusbout/unix/test/pro
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbpro
 RESULT=$?
 if [ $RESULT != 0 ]; then
 	echo "Enttec DMXUSB Pro unit test failed ($RESULT). Please fix before commit."
@@ -39,8 +27,8 @@ popd
 pushd .
 
 # Enttec wing tests
-cd libs/ewinginput/test
-./test_ewing
+cd plugins/ewinginput/test
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_ewing
 RESULT=$?
 if [ $RESULT != 0 ]; then
 	echo "Enttec wing unit test failed ($RESULT). Please fix before commit."

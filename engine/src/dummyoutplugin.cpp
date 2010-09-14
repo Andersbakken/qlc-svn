@@ -19,7 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QMessageBox>
+#include <QStringList>
 #include <QString>
 #include <QDebug>
 
@@ -80,9 +80,6 @@ QStringList DummyOutPlugin::outputs()
 
 void DummyOutPlugin::configure()
 {
-	QMessageBox::information(NULL,
-				 tr("Dummy output configuration"),
-				 tr("This plugin has no configurable options"));
 }
 
 /*****************************************************************************
@@ -109,6 +106,9 @@ QString DummyOutPlugin::infoText(t_output output)
 	str += QString("hardware installed. You can download output plugins from ");
 	str += QString("<A HREF=\"http://www.sf.net/projects/qlc/files\">");
 	str += QString("http://www.sf.net/projects/qlc/files</a>.");
+	str += QString("</P>");
+	str += QString("<P>");
+	str += QString("This plugin has no configurable options.");
 	str += QString("</P>");
 
 	str += QString("</BODY>");

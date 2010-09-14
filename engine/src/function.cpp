@@ -19,11 +19,8 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QMessageBox>
 #include <QString>
 #include <QDebug>
-#include <QIcon>
 #include <QtXml>
 
 #include "qlcfile.h"
@@ -157,23 +154,6 @@ Function::Type Function::stringToType(const QString& string)
 		return Collection;
 	else
 		return Undefined;
-}
-
-QIcon Function::icon() const
-{
-	switch (type())
-	{
-		case Scene:
-			return QIcon(":/scene.png");
-		case Chaser:
-			return QIcon(":/chaser.png");
-		case EFX:
-			return QIcon(":/efx.png");
-		case Collection:
-			return QIcon(":/collection.png");
-		default:
-			return QIcon(":/function.png");
-	}
 }
 
 /*****************************************************************************
