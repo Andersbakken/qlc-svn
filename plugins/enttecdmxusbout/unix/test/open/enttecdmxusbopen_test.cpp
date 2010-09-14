@@ -20,6 +20,7 @@
 */
 
 #include <QTest>
+#include <QDebug>
 #include "enttecdmxusbopen_test.h"
 
 #define protected public
@@ -52,6 +53,7 @@ static int _ftdi_write_data_called = 0;
 
 int ftdi_init(struct ftdi_context* ctx)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	_ftdi_init_called++;
 	return 0;
@@ -59,6 +61,7 @@ int ftdi_init(struct ftdi_context* ctx)
 
 void ftdi_deinit(struct ftdi_context* ctx)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	_ftdi_deinit_called++;
 }
@@ -66,6 +69,7 @@ void ftdi_deinit(struct ftdi_context* ctx)
 int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
 			const char* description, const char* serial)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(vendor == 0x0403);
 	UT_ASSERT(product == 0x6001);
@@ -80,6 +84,7 @@ int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
 
 int ftdi_usb_close(struct ftdi_context* ctx)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 
 	ctx->usb_dev = NULL;
@@ -90,6 +95,7 @@ int ftdi_usb_close(struct ftdi_context* ctx)
 
 int ftdi_usb_reset(struct ftdi_context* ctx)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
 	_ftdi_usb_reset_called++;
@@ -101,6 +107,7 @@ int ftdi_set_line_property(struct ftdi_context* ctx,
 			   enum ftdi_stopbits_type stop,
 			   enum ftdi_parity_type parity)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(bits == BITS_8);
 	UT_ASSERT(stop == STOP_BIT_2);
@@ -112,6 +119,7 @@ int ftdi_set_line_property(struct ftdi_context* ctx,
 
 int ftdi_set_baudrate(struct ftdi_context* ctx, int baudrate)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(baudrate == 250000);
 	UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
@@ -121,6 +129,7 @@ int ftdi_set_baudrate(struct ftdi_context* ctx, int baudrate)
 
 int ftdi_setrts(struct ftdi_context* ctx, int rts)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(rts == 0);
 	UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
@@ -130,6 +139,7 @@ int ftdi_setrts(struct ftdi_context* ctx, int rts)
 
 int ftdi_usb_purge_buffers(struct ftdi_context* ctx)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
 	_ftdi_usb_purge_buffers_called++;
@@ -142,6 +152,7 @@ int ftdi_set_line_property2(struct ftdi_context* ctx,
 			    enum ftdi_parity_type parity,
 			    enum ftdi_break_type brk)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(bits == BITS_8);
 	UT_ASSERT(stop == STOP_BIT_2);
@@ -155,6 +166,7 @@ int ftdi_set_line_property2(struct ftdi_context* ctx,
 
 int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
 {
+	qDebug() << Q_FUNC_INFO;
 	UT_ASSERT(ctx != NULL);
 	UT_ASSERT(buf != NULL);
 	UT_ASSERT(size == 513);
@@ -210,7 +222,7 @@ void EnttecDMXUSBOpen_Test::sendDMX()
 void EnttecDMXUSBOpen_Test::run()
 {
 	EnttecDMXUSBOpen obj(this, TEST_NAME, TEST_SRNO);
-	obj.open();
+	QVERIFY(obj.open() == true);
 	QVERIFY(obj.isOpen() == true);
 	QCOMPARE(_ftdi_usb_open_desc_called, 1);
 	QCOMPARE(_ftdi_usb_reset_called, 1);

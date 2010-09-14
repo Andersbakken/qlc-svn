@@ -149,7 +149,7 @@ MIDIDevice* MIDIOut::deviceByUID(SInt32 uid)
 
 MIDIDevice* MIDIOut::device(quint32 output)
 {
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		return m_devices.at(output);
 	else
 		return NULL;

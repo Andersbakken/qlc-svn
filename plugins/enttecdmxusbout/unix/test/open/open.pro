@@ -10,6 +10,7 @@ INCLUDEPATH += ../../src
 QT += core xml gui testlib
 CONFIG += link_pkgconfig
 CONFIG -= app_bundle
+PLUGINS =
 
 PKGCONFIG += libftdi
 LIBS += -L../../src -lenttecdmxusbout

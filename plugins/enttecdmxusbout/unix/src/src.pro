@@ -11,6 +11,7 @@ CONFIG		+= plugin
 CONFIG		+= link_pkgconfig
 PKGCONFIG	+= libftdi
 macx:PKGCONFIG  += libusb
+PLUGINS		 =
 
 HEADERS += enttecdmxusbwidget.h \
 	   enttecdmxusbout.h \

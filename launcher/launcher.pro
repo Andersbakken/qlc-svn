@@ -7,7 +7,9 @@ QT += gui
 CONFIG -= app_bundle
 
 RESOURCES += launcher.qrc
-INCLUDEPATH += ../libs/common
+
+INCLUDEPATH += ../plugins/interfaces
+INCLUDEPATH += ../engine/src
 
 HEADERS += launcher.h
 SOURCES += launcher.cpp main.cpp
