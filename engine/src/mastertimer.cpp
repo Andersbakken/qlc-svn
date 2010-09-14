@@ -222,14 +222,14 @@ void MasterTimer::run()
 {
 	/* This timer implementation requires 64bit support from compiler.
 	   (Not 64bit processor architecture, though.) */
-	LARGE_INTEGER frequency;
+	LARGE_INTEGER freq;
 	LARGE_INTEGER start;
 	LARGE_INTEGER lap;
 	LONGLONG target;
 
 	/* Calculate the target time that should be waited before each event */
-	QueryPerformanceFrequency(&frequency);
-	target = frequency.QuadPart / frequency();
+	QueryPerformanceFrequency(&freq);
+	target = freq.QuadPart / frequency();
 
 	while (m_running == true)
 	{

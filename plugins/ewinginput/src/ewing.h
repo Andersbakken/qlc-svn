@@ -56,7 +56,7 @@
  * EWing
  ****************************************************************************/
 
-class EWing : public QObject
+class QLC_DECLSPEC EWing : public QObject
 {
 	Q_OBJECT
 

@@ -32,7 +32,7 @@
  * EProgramWing
  ****************************************************************************/
 
-class EProgramWing : public EWing
+class QLC_DECLSPEC EProgramWing : public EWing
 {
 	Q_OBJECT
 

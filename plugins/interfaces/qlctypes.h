@@ -28,6 +28,13 @@
  * Utils
  *****************************************************************************/
 
+/** Win32 needs these in order to be able to link to dynamic libraries */
+#ifdef QLC_EXPORT
+#  define QLC_DECLSPEC Q_DECL_EXPORT
+#else
+#  define QLC_DECLSPEC Q_DECL_IMPORT
+#endif
+
 #ifdef CLAMP
 #undef CLAMP
 #endif

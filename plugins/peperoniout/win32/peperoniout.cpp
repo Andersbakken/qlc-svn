@@ -117,7 +117,7 @@ void PeperoniOut::open(quint32 output)
 	if (m_usbdmx == NULL)
 		return;
 
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->open();
 }
 
@@ -126,7 +126,7 @@ void PeperoniOut::close(quint32 output)
 	if (m_usbdmx == NULL)
 		return;
 
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->close();
 }
 
@@ -202,7 +202,7 @@ QString PeperoniOut::infoText(quint32 output)
 		str += QString("information. ");
 		str += QString("</P>");
 	}
-	else if (output < m_devices.size())
+	else if (output < quint32(m_devices.size()))
 	{
 		str += m_devices.at(output)->infoText();
 	}
@@ -219,7 +219,7 @@ QString PeperoniOut::infoText(quint32 output)
 
 void PeperoniOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output < m_devices.size())
+	if (output < quint32(m_devices.size()))
 		m_devices.at(output)->outputDMX(universe);
 }
 

@@ -41,13 +41,13 @@ void EnttecDMXUSBOut::init()
 
 void EnttecDMXUSBOut::open(quint32 output)
 {
-	if (output < m_widgets.size())
+	if (output < quint32(m_widgets.size()))
 		m_widgets.at(output)->open();
 }
 
 void EnttecDMXUSBOut::close(quint32 output)
 {
-	if (output < m_widgets.size())
+	if (output < quint32(m_widgets.size()))
 		m_widgets.at(output)->close();
 }
 
@@ -182,7 +182,7 @@ QString EnttecDMXUSBOut::infoText(quint32 output)
 		str += QString("http://www.enttec.com</a> for more information.");
 		str += QString("</P>");
 	}
-	else if (output < m_widgets.size())
+	else if (output < quint32(m_widgets.size()))
 	{
 		str += QString("<H3>%1</H3>").arg(outputs()[output]);
 		str += QString("<P>");
@@ -202,7 +202,7 @@ QString EnttecDMXUSBOut::infoText(quint32 output)
 
 void EnttecDMXUSBOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output < m_widgets.size())
+	if (output < quint32(m_widgets.size()))
 		m_widgets.at(output)->sendDMX(universe);
 }
 

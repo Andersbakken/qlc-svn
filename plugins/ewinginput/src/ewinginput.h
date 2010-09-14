@@ -36,7 +36,7 @@ class QUdpSocket;
  * EWingInput
  *****************************************************************************/
 
-class EWingInput : public QObject, public QLCInPlugin
+class QLC_DECLSPEC EWingInput : public QObject, public QLCInPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(QLCInPlugin)

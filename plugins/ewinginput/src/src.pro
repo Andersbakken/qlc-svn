@@ -8,6 +8,7 @@ TARGET 		= ewinginput
 INCLUDEPATH	+= ../../interfaces
 CONFIG          += plugin
 QT		+= network
+win32:DEFINES	+= QLC_EXPORT
 
 win32 {
 	# Qt Libraries

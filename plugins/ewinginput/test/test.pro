@@ -10,7 +10,12 @@ QTPLUGIN =
 
 INCLUDEPATH += ../../interfaces
 INCLUDEPATH += ../src
-LIBS += -L../src -lewinginput
+unix:LIBS += -L../src -lewinginput
+
+win32 {
+	CONFIG(release, debug|release) LIBS += -L../src/release -lewinginput
+	CONFIG(debug, debug|release) LIBS += -L../src/debug -lewinginput
+}
 
 SOURCES += testeplaybackwing.cpp testeprogramwing.cpp testeshortcutwing.cpp main.cpp
 HEADERS += testeplaybackwing.h testeprogramwing.h testeshortcutwing.h
