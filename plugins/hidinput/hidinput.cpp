@@ -156,12 +156,12 @@ HIDDevice* HIDInput::device(const QString& path)
 	return NULL;
 }
 
-HIDDevice* HIDInput::device(const unsigned int index)
+HIDDevice* HIDInput::device(quint32 index)
 {
-	if (index > static_cast<unsigned int> (m_devices.count()))
-		return NULL;
-	else
+	if (index < quint32(m_devices.count()))
 		return m_devices.at(index);
+	else
+		return NULL;
 }
 
 void HIDInput::addDevice(HIDDevice* device)

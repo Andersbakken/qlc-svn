@@ -141,10 +141,10 @@ EWing* EWingInput::device(const QHostAddress& address, EWing::Type type)
 
 EWing* EWingInput::device(quint32 index)
 {
-	if (index > quint32(m_devices.count()))
-		return NULL;
-	else
+	if (index < quint32(m_devices.count()))
 		return m_devices.at(index);
+	else
+		return NULL;
 }
 
 static bool ewing_device_sort(const EWing* d1, const EWing* d2)
