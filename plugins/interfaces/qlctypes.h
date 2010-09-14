@@ -183,25 +183,6 @@ const t_output KOutputMax ( USHRT_MAX - 1 );
 const t_output KOutputInvalid ( USHRT_MAX );
 
 /*****************************************************************************
- * Output values
- *****************************************************************************/
-
-/**
- * Channel value type
- */
-typedef unsigned char t_value;
-
-/**
- * Smallest channel value
- */
-const t_value KChannelValueMin ( 0 );
-
-/**
- * Largest channel value
- */
-const t_value KChannelValueMax ( UCHAR_MAX );
-
-/*****************************************************************************
  * Input universes
  *****************************************************************************/
 

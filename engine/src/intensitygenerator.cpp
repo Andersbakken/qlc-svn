@@ -277,8 +277,8 @@ void IntensityGenerator::createScenes()
 			const QLCChannel* channel = fxi->channel(ch);
 			Q_ASSERT(channel != NULL);
 
-			t_value min = 0;
-			t_value max = 255;
+			uchar min = 0;
+			uchar max = UCHAR_MAX;
 			int modulo = i;
 
 			// Find the minimum and maximum intensity values for
@@ -354,8 +354,8 @@ bool IntensityGenerator::createSequenceChaser(bool forward)
 	}
 }
 
-bool IntensityGenerator::findMinMax(const QLCChannel* channel, t_value* min,
-				    t_value* max) const
+bool IntensityGenerator::findMinMax(const QLCChannel* channel, uchar* min,
+				    uchar* max) const
 {
 	Q_ASSERT(channel != NULL);
 	Q_ASSERT(min != NULL);

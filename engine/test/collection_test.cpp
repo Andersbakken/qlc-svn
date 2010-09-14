@@ -335,8 +335,8 @@ void Collection_Test::armSuccess()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 	QVERIFY(s1->id() != Function::invalidId());
 
@@ -372,8 +372,8 @@ void Collection_Test::armMissingFunction()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -411,14 +411,14 @@ void Collection_Test::write()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
 	s2->setName("Scene2");
-	s2->setValue(fxi->id(), 2, 255);
-	s2->setValue(fxi->id(), 3, 255);
+	s2->setValue(fxi->id(), 2, UCHAR_MAX);
+	s2->setValue(fxi->id(), 3, UCHAR_MAX);
 	doc->addFunction(s2);
 
 	Collection* c = new Collection(doc);

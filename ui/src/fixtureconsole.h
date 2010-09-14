@@ -89,11 +89,11 @@ public:
 
 protected slots:
 	/** Slot that captures individual channel value changes */
-	void slotValueChanged(t_channel channel, t_value value, bool enabled);
+	void slotValueChanged(t_channel channel, uchar value, bool enabled);
 
 signals:
 	/** Signal telling one of this console's channels has changed value */
-	void valueChanged(t_fixture_id fxi, t_channel channel, t_value value,
+	void valueChanged(t_fixture_id fxi, t_channel channel, uchar value,
 			  bool enabled);
 
 protected:

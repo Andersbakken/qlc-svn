@@ -169,7 +169,7 @@ int main(int argc, char** argv)
 	/* Registering needed to pass signals with these types between
 	   different contexts (threads) */
 	qRegisterMetaType <t_function_id>("t_function_id");
-	qRegisterMetaType <QHash<t_channel,t_value> >("QHash<t_channel,t_value>");
+	qRegisterMetaType <QHash<t_channel,uchar> >("QHash<t_channel,uchar>");
 
 	/* Create and initialize the QLC application object */
 	App app;

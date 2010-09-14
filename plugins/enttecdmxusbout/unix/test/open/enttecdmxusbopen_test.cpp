@@ -198,12 +198,12 @@ void EnttecDMXUSBOpen_Test::sendDMX()
 	QCOMPARE((char)obj.m_universe[16], (char) 0);
 	QCOMPARE(obj.m_universe.size(), 513); // 512 + start code
 
-	obj.sendDMX(QByteArray(512, 255));
+	obj.sendDMX(QByteArray(512, UCHAR_MAX));
 	QCOMPARE((char)obj.m_universe[0], (char) 0); // Start code always 0
-	QCOMPARE((char)obj.m_universe[1], (char) 255);
-	QCOMPARE((char)obj.m_universe[15], (char) 255);
-	QCOMPARE((char)obj.m_universe[16], (char) 255);
-	QCOMPARE((char)obj.m_universe[511], (char) 255);
+	QCOMPARE((char)obj.m_universe[1], (char) UCHAR_MAX);
+	QCOMPARE((char)obj.m_universe[15], (char) UCHAR_MAX);
+	QCOMPARE((char)obj.m_universe[16], (char) UCHAR_MAX);
+	QCOMPARE((char)obj.m_universe[511], (char) UCHAR_MAX);
 	QCOMPARE(obj.m_universe.size(), 513); // 512 + start code
 }
 

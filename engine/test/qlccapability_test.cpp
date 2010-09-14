@@ -13,7 +13,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-        
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
@@ -28,25 +28,25 @@
 void QLCCapability_Test::initial()
 {
 	QLCCapability cap;
-	QVERIFY(cap.min() == KChannelValueMin);
-	QVERIFY(cap.max() == KChannelValueMax);
+	QVERIFY(cap.min() == 0);
+	QVERIFY(cap.max() == UCHAR_MAX);
 	QVERIFY(cap.name() == QString::null);
 }
 
 void QLCCapability_Test::min_data()
 {
-	QTest::addColumn<t_value> ("value");
-	for (t_value i = 0; i < KChannelValueMax; i++)
+	QTest::addColumn<uchar> ("value");
+	for (uchar i = 0; i < UCHAR_MAX; i++)
 		QTest::newRow("foo") << i;
-	QTest::newRow("foo") << t_value(255);
+	QTest::newRow("foo") << uchar(UCHAR_MAX);
 }
 
 void QLCCapability_Test::min()
 {
 	QLCCapability cap;
-	QVERIFY(cap.min() == KChannelValueMin);
+	QVERIFY(cap.min() == 0);
 
-	QFETCH(t_value, value);
+	QFETCH(uchar, value);
 
 	cap.setMin(value);
 	QCOMPARE(cap.min(), value);
@@ -54,18 +54,18 @@ void QLCCapability_Test::min()
 
 void QLCCapability_Test::max_data()
 {
-	QTest::addColumn<t_value> ("value");
-	for (t_value i = 0; i < KChannelValueMax; i++)
+	QTest::addColumn<uchar> ("value");
+	for (uchar i = 0; i < UCHAR_MAX; i++)
 		QTest::newRow("foo") << i;
-	QTest::newRow("foo") << t_value(255);
+	QTest::newRow("foo") << uchar(UCHAR_MAX);
 }
 
 void QLCCapability_Test::max()
 {
 	QLCCapability cap;
-	QVERIFY(cap.max() == KChannelValueMax);
+	QVERIFY(cap.max() == UCHAR_MAX);
 
-	QFETCH(t_value, value);
+	QFETCH(uchar, value);
 
 	cap.setMax(value);
 	QCOMPARE(cap.max(), value);
@@ -101,7 +101,7 @@ void QLCCapability_Test::overlaps()
 
 	/* cap2's min overlaps cap1 */
 	cap2.setMin(245);
-	cap2.setMax(255);
+	cap2.setMax(UCHAR_MAX);
 	QVERIFY(cap1.overlaps(cap2) == true);
 	QVERIFY(cap2.overlaps(cap1) == true);
 
@@ -120,8 +120,8 @@ void QLCCapability_Test::overlaps()
 void QLCCapability_Test::copy()
 {
 	QLCCapability cap1;
-	QVERIFY(cap1.min() == KChannelValueMin);
-	QVERIFY(cap1.max() == KChannelValueMax);
+	QVERIFY(cap1.min() == 0);
+	QVERIFY(cap1.max() == UCHAR_MAX);
 	QVERIFY(cap1.name() == QString::null);
 
 	cap1.setMin(5);
@@ -170,8 +170,8 @@ void QLCCapability_Test::loadWrongRoot()
 	QLCCapability cap;
 	QVERIFY(cap.loadXML(&root) == false);
 	QVERIFY(cap.name() == QString::null);
-	QVERIFY(cap.min() == KChannelValueMin);
-	QVERIFY(cap.max() == KChannelValueMax);
+	QVERIFY(cap.min() == 0);
+	QVERIFY(cap.max() == UCHAR_MAX);
 }
 
 void QLCCapability_Test::loadNoMin()
@@ -189,8 +189,8 @@ void QLCCapability_Test::loadNoMin()
 	QLCCapability cap;
 	QVERIFY(cap.loadXML(&root) == false);
 	QVERIFY(cap.name() == QString::null);
-	QVERIFY(cap.min() == KChannelValueMin);
-	QVERIFY(cap.max() == KChannelValueMax);
+	QVERIFY(cap.min() == 0);
+	QVERIFY(cap.max() == UCHAR_MAX);
 }
 
 void QLCCapability_Test::loadNoMax()
@@ -208,8 +208,8 @@ void QLCCapability_Test::loadNoMax()
 	QLCCapability cap;
 	QVERIFY(cap.loadXML(&root) == false);
 	QVERIFY(cap.name() == QString::null);
-	QVERIFY(cap.min() == KChannelValueMin);
-	QVERIFY(cap.max() == KChannelValueMax);
+	QVERIFY(cap.min() == 0);
+	QVERIFY(cap.max() == UCHAR_MAX);
 }
 
 void QLCCapability_Test::loadMinGreaterThanMax()
@@ -228,8 +228,8 @@ void QLCCapability_Test::loadMinGreaterThanMax()
 	QLCCapability cap;
 	QVERIFY(cap.loadXML(&root) == false);
 	QVERIFY(cap.name() == QString::null);
-	QVERIFY(cap.min() == KChannelValueMin);
-	QVERIFY(cap.max() == KChannelValueMax);
+	QVERIFY(cap.min() == 0);
+	QVERIFY(cap.max() == UCHAR_MAX);
 }
 
 void QLCCapability_Test::save()

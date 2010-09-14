@@ -114,7 +114,7 @@ protected:
 
 protected slots:
 	void slotValueChanged(t_fixture_id fxi_id, t_channel channel,
-			      t_value value, bool enabled);
+			      uchar value, bool enabled);
 
 protected:
 	int m_currentTab;

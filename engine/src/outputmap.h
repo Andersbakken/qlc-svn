@@ -146,7 +146,7 @@ public:
 	 * @param channel The channel to read the value from
 	 * @return The value of the channel (0 if channel is out of bounds)
 	 */
-	t_value value(t_channel channel) const;
+	uchar value(t_channel channel) const;
 
 protected:
 	/** The values of all universes */

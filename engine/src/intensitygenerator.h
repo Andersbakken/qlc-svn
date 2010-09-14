@@ -116,8 +116,8 @@ protected:
 	 * @param max The maximum intensity value
 	 * @return true if successful, otherwise false.
 	 */
-	bool findMinMax(const QLCChannel* channel, t_value* min,
-			t_value* max) const;
+	bool findMinMax(const QLCChannel* channel, uchar* min,
+			uchar* max) const;
 
 public:
 	/**

@@ -60,7 +60,7 @@ SceneChannel::~SceneChannel()
  * SceneValue
  *****************************************************************************/
 
-SceneValue::SceneValue(t_fixture_id id, t_channel ch, t_value val) :
+SceneValue::SceneValue(t_fixture_id id, t_channel ch, uchar val) :
 	fxi     ( id ),
 	channel ( ch ),
 	value   ( val )
@@ -132,7 +132,7 @@ bool SceneValue::loadXML(const QDomElement* tag)
 	if (channel >= KChannelMax)
 		return false;
 
-	value = t_value(tag->text().toUInt());
+	value = uchar(tag->text().toUInt());
 
 	return isValid();
 }
@@ -241,7 +241,7 @@ void Scene::setValue(const SceneValue& scv)
 	emit changed(m_id);
 }
 
-void Scene::setValue(t_fixture_id fxi, t_channel ch, t_value value)
+void Scene::setValue(t_fixture_id fxi, t_channel ch, uchar value)
 {
 	setValue(SceneValue(fxi, ch, value));
 }
@@ -252,7 +252,7 @@ void Scene::unsetValue(t_fixture_id fxi, t_channel ch)
 	emit changed(m_id);
 }
 
-t_value Scene::value(t_fixture_id fxi, t_channel ch)
+uchar Scene::value(t_fixture_id fxi, t_channel ch)
 {
 	SceneValue scv(fxi, ch, 0);
 	int index = m_values.indexOf(scv);
@@ -482,10 +482,10 @@ void Scene::write(MasterTimer* timer, QByteArray* universes)
 			SceneChannel sch = it.next();
 
 			/* Get the starting value from universes. Important
-			   to cast to t_value, since QByteArray handles signed
-			   char, whereas t_value is unsigned. Without cast,
+			   to cast to uchar, since QByteArray handles signed
+			   char, whereas uchar is unsigned. Without cast,
 			   this will result in negative values when x > 127 */
-			sch.start = t_value(universes->data()[sch.address]);
+			sch.start = uchar(universes->data()[sch.address]);
 			sch.current = sch.start;
 
 			/* Set the changed object back to the list */
@@ -562,7 +562,7 @@ void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
 	}
 }
 
-t_value Scene::nextValue(SceneChannel* sch)
+uchar Scene::nextValue(SceneChannel* sch)
 {
 	Q_ASSERT(sch != NULL);
 
@@ -581,5 +581,5 @@ t_value Scene::nextValue(SceneChannel* sch)
 	sch->current = int(qreal(sch->current) * timeScale);
 	sch->current += sch->start;
 
-	return t_value(sch->current);
+	return uchar(sch->current);
 }

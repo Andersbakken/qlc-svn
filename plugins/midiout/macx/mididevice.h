@@ -142,7 +142,7 @@ public:
 	void outputDMX(const QByteArray& universe);
 
 protected:
-	t_value m_values[MAX_MIDI_DMX_CHANNELS];
+	uchar m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

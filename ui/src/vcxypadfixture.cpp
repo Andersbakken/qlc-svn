@@ -247,17 +247,17 @@ void VCXYPadFixture::writeDMX(double xmul, double ymul, QByteArray* universes)
 	if (m_yReverse == true)
 		yMSB = m_yMax - yMSB;
 
-	(*universes)[m_xMSB] = char(xMSB * 255);
-	(*universes)[m_yMSB] = char(yMSB * 255);
+	(*universes)[m_xMSB] = char(xMSB * UCHAR_MAX);
+	(*universes)[m_yMSB] = char(yMSB * UCHAR_MAX);
 
 	if (m_xLSB != KChannelInvalid && m_yLSB != KChannelInvalid)
 	{
 		/* Leave only the fraction part from the value */
-		double xLSB = (xMSB * 255.0) - floor(xMSB * 255.0);
-		double yLSB = (yMSB * 255.0) - floor(yMSB * 255.0);
+		double xLSB = (xMSB * double(UCHAR_MAX)) - floor(xMSB * double(UCHAR_MAX));
+		double yLSB = (yMSB * double(UCHAR_MAX)) - floor(yMSB * double(UCHAR_MAX));
 
-		(*universes)[m_xLSB] = char(xLSB * 255);
-		(*universes)[m_yLSB] = char(yLSB * 255);
+		(*universes)[m_xLSB] = char(xLSB * UCHAR_MAX);
+		(*universes)[m_yLSB] = char(yLSB * UCHAR_MAX);
 	}
 }
 

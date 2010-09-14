@@ -78,8 +78,8 @@ void FixtureConsole::setFixture(t_fixture_id id)
 		cc->setCheckable(m_channelsCheckable);
 		layout()->addWidget(cc);
 
-		connect(cc, SIGNAL(valueChanged(t_channel,t_value,bool)),
-			this, SLOT(slotValueChanged(t_channel,t_value,bool)));
+		connect(cc, SIGNAL(valueChanged(t_channel,uchar,bool)),
+			this, SLOT(slotValueChanged(t_channel,uchar,bool)));
 
 		m_channels.append(cc);
 	}
@@ -141,7 +141,7 @@ void FixtureConsole::setSceneValue(const SceneValue& scv)
 	}
 }
 
-void FixtureConsole::slotValueChanged(t_channel channel, t_value value,
+void FixtureConsole::slotValueChanged(t_channel channel, uchar value,
 				      bool enabled)
 {
 	emit valueChanged(m_fixture, channel, value, enabled);

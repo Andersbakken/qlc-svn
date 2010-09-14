@@ -209,7 +209,7 @@ void OutputMap::dumpUniverses()
 	m_universeMutex.unlock();
 }
 
-t_value OutputMap::value(t_channel channel) const
+uchar OutputMap::value(t_channel channel) const
 {
 	if (channel < (m_universes * 512))
 		return (*m_universeArray)[channel];

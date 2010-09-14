@@ -135,7 +135,7 @@ bool HIDJsDevice::readEvent()
 		if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_BUTTON)
 		{
 			if (ev.value != 0)
-				val = 255;
+				val = UCHAR_MAX;
 			else
 				val = 0;
 
@@ -148,9 +148,10 @@ bool HIDJsDevice::readEvent()
 		}
 		else if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_AXIS)
 		{
+			/** @todo Use SHRT_MAX & SHRT_MIN */
 			val = SCALE(double(ev.value),
 				    double(-32767), double(32768),
-				    double(0), double(255));
+				    double(0), double(UCHAR_MAX));
 			ch = quint32(ev.number);
 
 			e = new HIDInputEvent(this, m_line, ch, val, true);

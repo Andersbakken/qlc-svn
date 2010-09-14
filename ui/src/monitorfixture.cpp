@@ -201,7 +201,7 @@ void MonitorFixture::slotFixtureRemoved(t_fixture_id fxi_id)
 void MonitorFixture::updateValues(const QByteArray& universes)
 {
 	QLabel* label;
-	t_value value;
+	uchar value;
 	Fixture* fxi;
 	QString str;
 	int i = 0;
@@ -221,7 +221,7 @@ void MonitorFixture::updateValues(const QByteArray& universes)
 		label = it.next();
 		Q_ASSERT(label != NULL);
 
-		value = t_value(universes[fxi->universeAddress() + i]);
+		value = uchar(universes[fxi->universeAddress() + i]);
 		i++;
 
 		/* Set the label's text to reflect the changed value */
@@ -233,7 +233,7 @@ void MonitorFixture::updateValues(const QByteArray& universes)
 		{
 			label->setText(str.sprintf("%.3d", int(
 				ceil(SCALE(double(value),
-					   double(0), double(255),
+					   double(0), double(UCHAR_MAX),
 					   double(0), double(100))))));
 		}
 	}
@@ -259,12 +259,12 @@ void MonitorFixture::slotValueStyleChanged(Monitor::ValueStyle style)
 		{
 			value = int(ceil(SCALE(double(value),
 						double(0), double(100),
-						double(0), double(255))));
+						double(0), double(UCHAR_MAX))));
 		}
 		else
 		{
 			value = int(ceil(SCALE(double(value),
-						double(0), double(255),
+						double(0), double(UCHAR_MAX),
 						double(0), double(100))));
 		}
 

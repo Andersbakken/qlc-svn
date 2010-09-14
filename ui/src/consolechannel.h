@@ -96,7 +96,7 @@ public:
 	void setOutputDMX(bool state);
 
 	/** Emulate the user dragging the value slider */
-	void setValue(t_value value);
+	void setValue(uchar value);
 
 public slots:
 	/** Value edit box was edited */
@@ -107,10 +107,10 @@ public slots:
 
 signals:
 	/** Slider value has changed */
-	void valueChanged(t_channel channel, t_value value, bool enabled);
+	void valueChanged(t_channel channel, uchar value, bool enabled);
 
 protected:
-	t_value m_value;
+	uchar m_value;
 	bool m_valueChanged;
 	QMutex m_valueChangedMutex;
 	bool m_outputDMX;

@@ -123,7 +123,7 @@ void ConsoleChannel::init()
 	m_valueEdit = new QLineEdit(this);
 	layout()->addWidget(m_valueEdit);
 	m_valueEdit->setAlignment(Qt::AlignCenter);
-	m_validator = new QIntValidator(0, 255, this);
+	m_validator = new QIntValidator(0, UCHAR_MAX, this);
 	m_valueEdit->setValidator(m_validator);
 	m_valueEdit->setMinimumSize(QSize(1, 1));
 
@@ -131,7 +131,7 @@ void ConsoleChannel::init()
 	m_valueSlider->setStyle(App::saneStyle());
 	layout()->addWidget(m_valueSlider);
 	m_valueSlider->setInvertedAppearance(false);
-	m_valueSlider->setRange(0, 255);
+	m_valueSlider->setRange(0, UCHAR_MAX);
 	m_valueSlider->setPageStep(1);
 	m_valueSlider->setSizePolicy(QSizePolicy::Preferred,
 				     QSizePolicy::Expanding);
@@ -420,7 +420,7 @@ int ConsoleChannel::sliderValue() const
 
 void ConsoleChannel::updateValue()
 {
-	t_value value = 0;
+	uchar value = 0;
 
 	Q_ASSERT(m_fixture != NULL);
 
@@ -436,7 +436,7 @@ void ConsoleChannel::setOutputDMX(bool state)
 	m_outputDMX = state;
 }
 
-void ConsoleChannel::setValue(t_value value)
+void ConsoleChannel::setValue(uchar value)
 {
 	m_valueSlider->setValue(static_cast<int> (value));
 }

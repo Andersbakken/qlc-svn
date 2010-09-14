@@ -304,26 +304,26 @@ public:
 	 *
 	 * @param value Low limit
 	 */
-	void setLevelLowLimit(t_value value);
+	void setLevelLowLimit(uchar value);
 
 	/**
 	 * Get low limit for levels set thru the slider
 	 *
 	 */
-	t_value levelLowLimit();
+	uchar levelLowLimit();
 
 	/**
 	 * Set high limit for levels set thru the slider
 	 *
 	 * @param value High limit
 	 */
-	void setLevelHighLimit(t_value value);
+	void setLevelHighLimit(uchar value);
 
 	/**
 	 * Get high limit for levels set thru the slider
 	 *
 	 */
-	t_value levelHighLimit();
+	uchar levelHighLimit();
 
 protected:
 	/**
@@ -332,21 +332,21 @@ protected:
 	 *
 	 * @param value DMX value
 	 */
-	void setLevelValue(t_value value);
+	void setLevelValue(uchar value);
 
 	/**
 	 * Get the current "level" mode value
 	 */
-	t_value levelValue() const;
+	uchar levelValue() const;
 
 protected:
 	QList <int> m_levelChannels;
-	t_value m_levelLowLimit;
-	t_value m_levelHighLimit;
+	uchar m_levelLowLimit;
+	uchar m_levelHighLimit;
 
 	QMutex m_levelValueMutex;
-	t_value m_levelValue;
-	t_value m_lastWrittenLevelValue;
+	uchar m_levelValue;
+	uchar m_lastWrittenLevelValue;
 
 	/*********************************************************************
 	 * DMXSource

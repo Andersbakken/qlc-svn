@@ -152,7 +152,7 @@ void Fixture_Test::dimmer()
 
 	QVERIFY(ch->capabilities().count() == 1);
 	QVERIFY(ch->capabilities().at(0)->min() == 0);
-	QVERIFY(ch->capabilities().at(0)->max() == 255);
+	QVERIFY(ch->capabilities().at(0)->max() == UCHAR_MAX);
 	QVERIFY(ch->capabilities().at(0)->name() == "Intensity");
 
 	/* Although the dimmer fixture HAS a channel with this name, it is

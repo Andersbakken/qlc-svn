@@ -61,8 +61,8 @@ void CapabilityWizard::slotCreateCapabilities()
 	int gap = m_gapSpin->value();
 	int amount = m_amountSpin->value();
 	QString name = m_nameEdit->text();
-	t_value min = start;
-	t_value max = min + gap;
+	uchar min = start;
+	uchar max = min + gap;
 	QLCCapability* cap;
 
 	/* Destroy existing capabilities */
@@ -82,7 +82,7 @@ void CapabilityWizard::slotCreateCapabilities()
 		m_caps << cap;
 
 		/* Bail out when the maximum DMX value has been reached */
-		if (max == 255)
+		if (max == UCHAR_MAX)
 			break;
 
 		/* Increment for the next round */

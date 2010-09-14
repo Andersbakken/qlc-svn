@@ -379,21 +379,21 @@ void EFXFixture::setPoint(QByteArray* universes)
 	Q_ASSERT(universes != NULL);
 
 	/* Write coarse point data to universes */
-	(*universes)[m_msbPanChannel] = static_cast <t_value> (m_panValue);
-	(*universes)[m_msbTiltChannel] = static_cast <t_value> (m_tiltValue);
+	(*universes)[m_msbPanChannel] = static_cast <uchar> (m_panValue);
+	(*universes)[m_msbTiltChannel] = static_cast <uchar> (m_tiltValue);
 
 	/* Write fine point data to universes if applicable */
 	if (m_lsbPanChannel != KChannelInvalid)
 	{
 		/* Leave only the fraction */
-		(*universes)[m_lsbPanChannel] = static_cast <t_value>
-			((m_panValue - floor(m_panValue)) * 255.0);
+		(*universes)[m_lsbPanChannel] = static_cast <uchar>
+			((m_panValue - floor(m_panValue)) * double(UCHAR_MAX));
 	}
 
 	if (m_lsbTiltChannel != KChannelInvalid)
 	{
 		/* Leave only the fraction */
-		(*universes)[m_lsbTiltChannel] = static_cast <t_value>
-			((m_tiltValue - floor(m_tiltValue)) * 255.0);
+		(*universes)[m_lsbTiltChannel] = static_cast <uchar>
+			((m_tiltValue - floor(m_tiltValue)) * double(UCHAR_MAX));
 	}
 }

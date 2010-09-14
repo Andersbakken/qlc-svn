@@ -561,7 +561,7 @@ void Scene_Test::writeBusZero()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
 	s1->setValue(fxi->id(), 1, 127);
 	s1->setValue(fxi->id(), 2, 0);
 	doc->addFunction(s1);
@@ -574,13 +574,13 @@ void Scene_Test::writeBusZero()
 	mts->startFunction(s1);
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
 	mts->stopFunction(s1);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
@@ -605,7 +605,7 @@ void Scene_Test::writeBusOne()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
 	s1->setValue(fxi->id(), 1, 127);
 	s1->setValue(fxi->id(), 2, 0);
 	doc->addFunction(s1);
@@ -631,13 +631,13 @@ void Scene_Test::writeBusOne()
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
 	mts->stopFunction(s1);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
@@ -662,7 +662,7 @@ void Scene_Test::writeBusTwo()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
 	s1->setValue(fxi->id(), 1, 127);
 	s1->setValue(fxi->id(), 2, 0);
 	doc->addFunction(s1);
@@ -696,13 +696,13 @@ void Scene_Test::writeBusTwo()
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
 	mts->stopFunction(s1);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
@@ -728,7 +728,7 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
 	s1->setValue(fxi->id(), 1, 127);
 	s1->setValue(fxi->id(), 2, 0);
 	doc->addFunction(s1);
@@ -763,13 +763,13 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
 	mts->stopFunction(s1);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
@@ -794,7 +794,7 @@ void Scene_Test::writeNonZeroStartingValues()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("First");
-	s1->setValue(fxi->id(), 0, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
 	s1->setValue(fxi->id(), 1, 127);
 	s1->setValue(fxi->id(), 2, 0);
 	doc->addFunction(s1);
@@ -809,7 +809,7 @@ void Scene_Test::writeNonZeroStartingValues()
 	QVERIFY(s1->stopped() == false);
 
 	uni[0] = (char) 100;
-	uni[1] = (char) 255;
+	uni[1] = (char) UCHAR_MAX;
 	uni[2] = (char) 3;
 
 	s1->write(mts, &uni);
@@ -828,13 +828,13 @@ void Scene_Test::writeNonZeroStartingValues()
 
 	s1->write(mts, &uni);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 
 	mts->stopFunction(s1);
 	QVERIFY(s1->stopped() == true);
-	QVERIFY(uni[0] == (char) 255);
+	QVERIFY(uni[0] == (char) UCHAR_MAX);
 	QVERIFY(uni[1] == (char) 127);
 	QVERIFY(uni[2] == (char) 0);
 

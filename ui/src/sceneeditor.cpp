@@ -596,9 +596,9 @@ void SceneEditor::addFixtureTab(Fixture* fixture)
 	console->enableAllChannels(false);
 
 	connect(console,
-		SIGNAL(valueChanged(t_fixture_id,t_channel,t_value,bool)),
+		SIGNAL(valueChanged(t_fixture_id,t_channel,uchar,bool)),
 		this,
-		SLOT(slotValueChanged(t_fixture_id,t_channel,t_value,bool)));
+		SLOT(slotValueChanged(t_fixture_id,t_channel,uchar,bool)));
 }
 
 void SceneEditor::removeFixtureTab(Fixture* fixture)
@@ -623,7 +623,7 @@ void SceneEditor::removeFixtureTab(Fixture* fixture)
 }
 
 void SceneEditor::slotValueChanged(t_fixture_id fxi_id, t_channel channel,
-				   t_value value, bool enabled)
+				   uchar value, bool enabled)
 {
 	/* Don't accept any changes during initialization */
 	if (m_initializing == true)

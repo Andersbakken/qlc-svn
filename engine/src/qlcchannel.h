@@ -126,7 +126,7 @@ public:
 	const QList <QLCCapability*> capabilities() const { return m_capabilities; }
 
 	/** Search for a particular capability by its channel value */
-	QLCCapability* searchCapability(t_value value) const;
+	QLCCapability* searchCapability(uchar value) const;
 
 	/**
 	 * Search for a particular capability by its name. If exactMatch = true,

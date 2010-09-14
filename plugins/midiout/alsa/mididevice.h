@@ -140,7 +140,7 @@ protected:
 	 * Cache values since MIDI is so slow that we need to send only those
 	 * channels that have actually changed.
 	 */
-	t_value m_values[MAX_MIDI_DMX_CHANNELS];
+	uchar m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

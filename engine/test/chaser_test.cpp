@@ -526,8 +526,8 @@ void Chaser_Test::armSuccess()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 	QVERIFY(s1->id() != Function::invalidId());
 
@@ -563,8 +563,8 @@ void Chaser_Test::armMissingFunction()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -602,8 +602,8 @@ void Chaser_Test::writeBusZeroLoopForward()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -704,8 +704,8 @@ void Chaser_Test::writeBusZeroLoopBackward()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -806,8 +806,8 @@ void Chaser_Test::writeBusZeroSingleShotForward()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -882,8 +882,8 @@ void Chaser_Test::writeBusZeroSingleShotBackward()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -956,8 +956,8 @@ void Chaser_Test::writeBusZeroPingPongForward()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);
@@ -1104,8 +1104,8 @@ void Chaser_Test::writeBusZeroPingPongBackward()
 
 	Scene* s1 = new Scene(doc);
 	s1->setName("Scene1");
-	s1->setValue(fxi->id(), 0, 255);
-	s1->setValue(fxi->id(), 1, 255);
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
 	doc->addFunction(s1);
 
 	Scene* s2 = new Scene(doc);

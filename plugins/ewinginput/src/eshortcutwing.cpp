@@ -140,7 +140,7 @@ void EShortcutWing::parseData(const QByteArray& data)
 
 			/* 0 = button down, 1 = button up */
 			if ((data[byte] & (1 << bit)) == 0)
-				value = 255;
+				value = UCHAR_MAX;
 			else
 				value = 0;
 

@@ -27,7 +27,7 @@
 #include "qlccapability.h"
 #include "qlctypes.h"
 
-QLCCapability::QLCCapability(t_value min, t_value max, const QString& name)
+QLCCapability::QLCCapability(uchar min, uchar max, const QString& name)
 {
 	m_min = min;
 	m_max = max;
@@ -36,8 +36,8 @@ QLCCapability::QLCCapability(t_value min, t_value max, const QString& name)
 
 QLCCapability::QLCCapability(const QLCCapability* capability)
 {
-	m_min = KChannelValueMin;
-	m_max = KChannelValueMax;
+	m_min = 0;
+	m_max = UCHAR_MAX;
 	m_name = QString::null;
 
 	if (capability != NULL)
@@ -112,8 +112,8 @@ bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 
 bool QLCCapability::loadXML(const QDomElement* root)
 {
-	t_value min;
-	t_value max;
+	uchar min;
+	uchar max;
 	QString str;
 
 	Q_ASSERT(root != NULL);
@@ -133,7 +133,7 @@ bool QLCCapability::loadXML(const QDomElement* root)
 	}
 	else
 	{
-		min = CLAMP(str.toInt(), 0, KChannelValueMax);
+		min = CLAMP(str.toInt(), 0, UCHAR_MAX);
 	}
 
 	/* Get high limit attribute (critical) */
@@ -145,7 +145,7 @@ bool QLCCapability::loadXML(const QDomElement* root)
 	}
 	else
 	{
-		max = CLAMP(str.toInt(), 0, KChannelValueMax);
+		max = CLAMP(str.toInt(), 0, UCHAR_MAX);
 	}
 
 	if (min <= max)

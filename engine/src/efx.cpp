@@ -351,7 +351,7 @@ int EFX::rotation() const
 
 void EFX::setXOffset(int offset)
 {
-	m_xOffset = static_cast<double> (CLAMP(offset, 0, 255));
+	m_xOffset = static_cast<double> (CLAMP(offset, 0, UCHAR_MAX));
 	emit changed(m_id);
 }
 
@@ -362,7 +362,7 @@ int EFX::xOffset() const
 
 void EFX::setYOffset(int offset)
 {
-	m_yOffset = static_cast<double> (CLAMP(offset, 0, 255));
+	m_yOffset = static_cast<double> (CLAMP(offset, 0, UCHAR_MAX));
 	emit changed(m_id);
 }
 

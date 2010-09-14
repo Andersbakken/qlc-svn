@@ -13,7 +13,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-        
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
@@ -54,5 +54,5 @@ void QLCMacros_Test::scale()
 {
 	QVERIFY(SCALE(5, 0, 10, 0, 20) == 10);
 	QVERIFY(SCALE(0, 0, 10, 0, 20000) == 0);
-	QVERIFY(SCALE(64, 0, 127, 0, 255) == 128);
+	QVERIFY(SCALE(64, 0, 127, 0, UCHAR_MAX) == 128);
 }

@@ -42,11 +42,11 @@ public:
 	SceneStub(Doc* doc);
 	~SceneStub();
 
-	void setValue(t_channel address, t_value value);
+	void setValue(t_channel address, uchar value);
 	void writeValues(QByteArray* universes,
 			 t_fixture_id fxi_id = Fixture::invalidId());
 
-	QMap <t_channel,t_value> m_values;
+	QMap <t_channel,uchar> m_values;
 };
 
 #endif

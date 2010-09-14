@@ -190,13 +190,13 @@ void EFX_Test::xOffset()
 	EFX e(m_doc);
 
 	e.setXOffset(300);
-	QVERIFY(e.xOffset() == 255);
+	QVERIFY(e.xOffset() == UCHAR_MAX);
 
 	e.setXOffset(0);
 	QVERIFY(e.xOffset() == 0);
 
 	e.setXOffset(256);
-	QVERIFY(e.xOffset() == 255);
+	QVERIFY(e.xOffset() == UCHAR_MAX);
 
 	e.setXOffset(12);
 	QVERIFY(e.xOffset() == 12);
@@ -210,13 +210,13 @@ void EFX_Test::yOffset()
 	EFX e(m_doc);
 
 	e.setYOffset(300);
-	QVERIFY(e.yOffset() == 255);
+	QVERIFY(e.yOffset() == UCHAR_MAX);
 
 	e.setYOffset(0);
 	QVERIFY(e.yOffset() == 0);
 
 	e.setYOffset(256);
-	QVERIFY(e.yOffset() == 255);
+	QVERIFY(e.yOffset() == UCHAR_MAX);
 
 	e.setYOffset(12);
 	QVERIFY(e.yOffset() == 12);
@@ -1293,7 +1293,7 @@ void EFX_Test::widthHeightOffset()
 	   50px right of center (127+50). +1 because the bound coordinates
 	   are OUTSIDE the actual points. */
 	QVERIFY(QPolygon(poly).boundingRect().width() == 50 + 50 + 1);
-	QVERIFY(QPolygon(poly).boundingRect().height() == 255);
+	QVERIFY(QPolygon(poly).boundingRect().height() == UCHAR_MAX);
 
 	/* Check that height affects the pattern */
 	e.setHeight(87);
@@ -1405,7 +1405,7 @@ void EFX_Test::rotateAndScale()
 	QVERIFY(floor(y + 0.5) == 126);
 
 	x = -0.125333;y = 0.992115;
-	EFX::rotateAndScale(&x, &y, 127, 127, 1, 255, 0);
+	EFX::rotateAndScale(&x, &y, 127, 127, 1, UCHAR_MAX, 0);
 	QVERIFY(floor(x + 0.5) == -15);
 	QVERIFY(floor(y + 0.5) == 381);
 

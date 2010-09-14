@@ -59,7 +59,7 @@ class QByteArray;
  * the SceneChannel is seen ready and won't be touched any longer (until the
  * rest of the channels are ready as well).
  *
- * Although t_value is an UNSIGNED char (0-255), these variables must be SIGNED
+ * Although uchar is an UNSIGNED char (0-255), these variables must be SIGNED
  * because the floating-point calculations that Scene does don't necessarily
  * stop exactly at 0.0 and 255.0, but might go slightly over/under. If these
  * variables were unsigned, an overflow would occur in some cases, resulting in
@@ -114,7 +114,7 @@ public:
 	/** Normal constructor */
 	SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
 		   t_channel channel = KChannelInvalid,
-		   t_value value = 0);
+		   uchar value = 0);
 
 	/** Copy constructor */
 	SceneValue(const SceneValue& scv);
@@ -140,7 +140,7 @@ public:
 public:
 	t_fixture_id fxi;
 	t_channel channel;
-	t_value value;
+	uchar value;
 };
 
 /*****************************************************************************
@@ -208,7 +208,7 @@ public:
 	/**
 	 * Set the value of one fixture channel, specify parameters separately
 	 */
-	void setValue(t_fixture_id fxi, t_channel ch, t_value value);
+	void setValue(t_fixture_id fxi, t_channel ch, uchar value);
 
 	/**
 	 * Clear the value of one fixture channel
@@ -218,7 +218,7 @@ public:
 	/**
 	 * Get the value of one fixture channel
 	 */
-	t_value value(t_fixture_id fxi, t_channel ch);
+	uchar value(t_fixture_id fxi, t_channel ch);
 
 	/**
 	 * Get a list of values in this scene
@@ -295,7 +295,7 @@ public:
 
 protected:
 	/** Calculate channel values for the next step. */
-	t_value nextValue(SceneChannel* sch);
+	uchar nextValue(SceneChannel* sch);
 
 protected:
 	QList <SceneChannel> m_armedChannels;

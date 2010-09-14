@@ -69,7 +69,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 	m_valueDisplayStyle = ExactValue;
 
 	m_levelLowLimit = 0;
-	m_levelHighLimit = 255;
+	m_levelHighLimit = UCHAR_MAX;
 
 	m_bus = Bus::defaultFade();
 	m_busLowLimit = KDefaultBusLowLimit;
@@ -383,7 +383,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 	else if (mode == Level)
 	{
 		/* Set the slider range */
-		t_value level = levelValue();
+		uchar level = levelValue();
 		m_slider->setRange(levelLowLimit(), levelHighLimit());
 		setSliderValue(level);
 		slotSliderMoved(level);
@@ -517,34 +517,34 @@ QList <int> VCSlider::levelChannels()
 	return m_levelChannels;
 }
 
-void VCSlider::setLevelLowLimit(t_value value)
+void VCSlider::setLevelLowLimit(uchar value)
 {
 	m_levelLowLimit = value;
 }
 
-t_value VCSlider::levelLowLimit()
+uchar VCSlider::levelLowLimit()
 {
 	return m_levelLowLimit;
 }
 
-void VCSlider::setLevelHighLimit(t_value value)
+void VCSlider::setLevelHighLimit(uchar value)
 {
 	m_levelHighLimit = value;
 }
 
-t_value VCSlider::levelHighLimit()
+uchar VCSlider::levelHighLimit()
 {
 	return m_levelHighLimit;
 }
 
-void VCSlider::setLevelValue(t_value value)
+void VCSlider::setLevelValue(uchar value)
 {
 	m_levelValueMutex.lock();
 	m_levelValue = value;
 	m_levelValueMutex.unlock();
 }
 
-t_value VCSlider::levelValue() const
+uchar VCSlider::levelValue() const
 {
 	return m_levelValue;
 }

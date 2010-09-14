@@ -51,9 +51,8 @@ class QLCCapability
 	 ********************************************************************/
 public:
 	/** Default constructor */
-	QLCCapability(t_value min = KChannelValueMin,
-		      t_value max = KChannelValueMax,
-		      const QString& name = QString::null);
+	QLCCapability(uchar min = 0, uchar max = UCHAR_MAX,
+		      const QString& name = QString());
 
 	/** Copy constructor */
 	QLCCapability(const QLCCapability* cap);
@@ -71,13 +70,13 @@ public:
 	 * Properties
 	 ********************************************************************/
 public:
-	t_value min() const { return m_min; }
-	void setMin(t_value value) { m_min = value; }
+	uchar min() const { return m_min; }
+	void setMin(uchar value) { m_min = value; }
 
-	t_value max() const { return m_max; }
-	void setMax(t_value value) { m_max = value; }
+	uchar max() const { return m_max; }
+	void setMax(uchar value) { m_max = value; }
 
-	t_value middle() const { return int((m_max + m_min) / 2); }
+	uchar middle() const { return int((m_max + m_min) / 2); }
 
 	QString name() const { return m_name; }
 	void setName(const QString& name) { m_name = name; }
@@ -86,8 +85,8 @@ public:
 	bool overlaps(const QLCCapability& cap);
 
 protected:
-	t_value m_min;
-	t_value m_max;
+	uchar m_min;
+	uchar m_max;
 	QString m_name;
 
 	/********************************************************************

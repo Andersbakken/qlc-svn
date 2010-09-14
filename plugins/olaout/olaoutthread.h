@@ -38,7 +38,7 @@ enum { K_UNIVERSE_SIZE = 512 };
 typedef struct
 {
   unsigned int universe;
-  t_value data[K_UNIVERSE_SIZE];
+  uchar data[K_UNIVERSE_SIZE];
 } dmx_data;
 
 

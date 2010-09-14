@@ -256,7 +256,7 @@ void Fixture::createGenericChannel()
 		Q_ASSERT(m_genericChannel != NULL);
 		m_genericChannel->setGroup(KQLCChannelGroupIntensity);
 		m_genericChannel->setName(KQLCChannelGroupIntensity);
-		m_genericChannel->addCapability(new QLCCapability(0, 255,
+		m_genericChannel->addCapability(new QLCCapability(0, UCHAR_MAX,
 						KQLCChannelGroupIntensity));
 	}
 }

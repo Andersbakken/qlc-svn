@@ -274,7 +274,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 			value = uchar(
 				SCALE(double(ev->data.control.value),
 				      double(0), double(127),
-				      double(0), double(255)));
+				      double(0), double(UCHAR_MAX)));
 
 			e = new MIDIInputEvent(device, ev->data.control.param,
 					       value);
@@ -291,7 +291,7 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 			value = uchar(
 				SCALE(double(ev->data.note.velocity),
 				      double(0), double(127),
-				      double(0), double(255)));
+				      double(0), double(UCHAR_MAX)));
 
 			e = new MIDIInputEvent(device, ev->data.note.note,
 					       value);
