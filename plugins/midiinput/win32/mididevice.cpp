@@ -247,12 +247,17 @@ QString MIDIDevice::infoText()
 
 	if (m_isOK == true)
 	{
+		QStringList fbNames(feedBackNames());
+
 		info += QString("<P>");
 		info += QString("Device is working correctly.");
 		info += QString("</P>");
 		info += QString("<P>");
-		info += QString("<B>Feedback Line: </B>%1<BR>")
-				.arg(feedBackNames()[feedBackId()]);
+		if (feedBackId() < quint32(fbNames.size()))
+			info += QString("<B>Feedback Line: </B>%1<BR>")
+					.arg(fbNames[feedBackId()]);
+		else
+			info += QString("<B>Feedback Line: </B>None<BR>");
 		info += QString("<B>MIDI Channel: </B>%1<BR>")
 				.arg(m_midiChannel + 1);
 		info += QString("<B>Mode: </B>%1")
