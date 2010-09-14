@@ -7,13 +7,13 @@
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
- 
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-        
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
@@ -26,6 +26,9 @@
 #define protected public
 #include "enttecdmxusbpro.h"
 #undef protected
+
+// Redefined Q_ASSERT because it is not present in release builds
+#define UT_ASSERT(cond) ((!(cond)) ? qt_assert(#cond,__FILE__,__LINE__) : qt_noop())
 
 #define TEST_NAME "Foobar"
 #define TEST_SRNO "1234567890"
@@ -53,25 +56,25 @@ static int _ftdi_read_data_expected_return_value = 0;
 
 int ftdi_init(struct ftdi_context* ctx)
 {
-        Q_ASSERT(ctx != NULL);
+        UT_ASSERT(ctx != NULL);
         _ftdi_init_called++;
         return 0;
 } 
 
 void ftdi_deinit(struct ftdi_context* ctx)
 {
-        Q_ASSERT(ctx != NULL);
+        UT_ASSERT(ctx != NULL);
         _ftdi_deinit_called++;
 }
 
 int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
                         const char* description, const char* serial)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(vendor == 0x0403);
-        Q_ASSERT(product == 0x6001);
-        Q_ASSERT(QString(description) == QString(TEST_NAME));
-        Q_ASSERT(QString(serial) == QString(TEST_SRNO));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(vendor == 0x0403);
+        UT_ASSERT(product == 0x6001);
+        UT_ASSERT(QString(description) == QString(TEST_NAME));
+        UT_ASSERT(QString(serial) == QString(TEST_SRNO));
 
         ctx->usb_dev = reinterpret_cast<usb_dev_handle*> (0xDEADBEEF);
 
@@ -81,7 +84,7 @@ int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
 
 int ftdi_usb_close(struct ftdi_context* ctx)
 {
-        Q_ASSERT(ctx != NULL);
+        UT_ASSERT(ctx != NULL);
 
         ctx->usb_dev = NULL;
 
@@ -91,8 +94,8 @@ int ftdi_usb_close(struct ftdi_context* ctx)
 
 int ftdi_usb_reset(struct ftdi_context* ctx)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
         _ftdi_usb_reset_called++;
         return 0;
 }
@@ -102,57 +105,57 @@ int ftdi_set_line_property(struct ftdi_context* ctx,
                            enum ftdi_stopbits_type stop,
                            enum ftdi_parity_type parity)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(bits == BITS_8);
-        Q_ASSERT(stop == STOP_BIT_2);
-        Q_ASSERT(parity == NONE);
-        Q_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(bits == BITS_8);
+        UT_ASSERT(stop == STOP_BIT_2);
+        UT_ASSERT(parity == NONE);
+        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
         _ftdi_set_line_property_called++;
         return 0;
 }
 
 int ftdi_set_baudrate(struct ftdi_context* ctx, int baudrate)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(baudrate == 250000);
-        Q_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(baudrate == 250000);
+        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
         _ftdi_set_baudrate_called++;
         return 0;
 }
 
 int ftdi_setrts(struct ftdi_context* ctx, int rts)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(rts == 0);
-        Q_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(rts == 0);
+        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
         _ftdi_setrts_called++;
         return 0;
 }
 
 int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(buf != NULL);
-        Q_ASSERT(size == _ftdi_write_data_expected_size);
-        Q_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(buf != NULL);
+        UT_ASSERT(size == _ftdi_write_data_expected_size);
+        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
 
 	if (size <= 5)
 	{
-		Q_ASSERT(buf[0] == 0x7e);
-		Q_ASSERT(buf[1] == 0x0a);
-		Q_ASSERT(buf[2] == 0x00);
-		Q_ASSERT(buf[3] == 0x00);
-		Q_ASSERT(buf[4] == 0xe7);
+		UT_ASSERT(buf[0] == 0x7e);
+		UT_ASSERT(buf[1] == 0x0a);
+		UT_ASSERT(buf[2] == 0x00);
+		UT_ASSERT(buf[3] == 0x00);
+		UT_ASSERT(buf[4] == 0xe7);
 	}
 	else
 	{
-		Q_ASSERT(size == 518);
-		Q_ASSERT(buf[0] == 0x7e);
-		Q_ASSERT(buf[1] == 0x06);
-		Q_ASSERT(buf[3] == int((513 >> 8) & 0xff));
-		Q_ASSERT(buf[2] == int(513 & 0xff));
-		Q_ASSERT(buf[4] == 0x00);
-		Q_ASSERT(buf[size - 1] == 0xe7);
+		UT_ASSERT(size == 518);
+		UT_ASSERT(buf[0] == 0x7e);
+		UT_ASSERT(buf[1] == 0x06);
+		UT_ASSERT(buf[3] == int((513 >> 8) & 0xff));
+		UT_ASSERT(buf[2] == int(513 & 0xff));
+		UT_ASSERT(buf[4] == 0x00);
+		UT_ASSERT(buf[size - 1] == 0xe7);
 	}
 
         _ftdi_write_data_called++;
@@ -161,10 +164,10 @@ int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
 
 int ftdi_read_data(struct ftdi_context* ctx, unsigned char* reply, int size)
 {
-        Q_ASSERT(ctx != NULL);
-        Q_ASSERT(reply != NULL);
-        Q_ASSERT(size == _ftdi_read_data_expected_size);
-        Q_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx != NULL);
+        UT_ASSERT(reply != NULL);
+        UT_ASSERT(size == _ftdi_read_data_expected_size);
+        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
 
 	reply[0] = 0x7e;
 	reply[1] = 0x0a;
