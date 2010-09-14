@@ -116,7 +116,7 @@ static void postEvent(MIDIDevice* self, BYTE data1, BYTE data2)
 				    double(0),
 				    double(127),
 				    double(0),
-				    double(KInputValueMax)));
+				    double(UCHAR_MAX)));
 
 	/* Create, post and forget. Qt takes care of event de-allocation. */
 	MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
@@ -437,7 +437,7 @@ void MIDIDevice::feedBack(quint32 channel, uchar value)
 
 	char scaled = static_cast <char> (SCALE(double(value),
 						double(0),
-						double(KInputValueMax),
+						double(UCHAR_MAX),
 						double(0),
 						double(127)));
 

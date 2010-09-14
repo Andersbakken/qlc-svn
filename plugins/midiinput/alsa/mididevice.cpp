@@ -217,7 +217,7 @@ void MIDIDevice::feedBack(quint32 channel, uchar value)
 
 		char scaled = static_cast <char> (SCALE(double(value),
 							double(0),
-							double(KInputValueMax),
+							double(UCHAR_MAX),
 							double(0),
 							double(127)));
 

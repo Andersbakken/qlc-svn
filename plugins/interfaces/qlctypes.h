@@ -234,18 +234,4 @@ const quint32 KInputChannelMax ( UINT_MAX - 1);
  */
 const quint32 KInputChannelInvalid ( UINT_MAX );
 
-/*****************************************************************************
- * Input values
- *****************************************************************************/
-
-/**
- * Smallest input channel value
- */
-const uchar KInputValueMin ( 0 );
-
-/**
- * Largest input channel value
- */
-const uchar KInputValueMax ( UCHAR_MAX );
-
 #endif

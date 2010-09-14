@@ -260,25 +260,25 @@ bool HIDEventDevice::readEvent()
 		{
 			/* Scaling data found, this is an abs/rel channel */
 			struct input_absinfo sc;
-			
+
 			sc = m_scales[ev.code];
-			
+
 			/* Scale the device's native value range to
-			   0 - KInputValueMax:
+			   0 - UCHAR_MAX:
 			   y = (x - from_min) * (to_max / from_range)
 			*/
 			val = (ev.value - sc.minimum);
-			val *= (KInputValueMax / (sc.maximum - sc.minimum));
+			val *= (UCHAR_MAX / (sc.maximum - sc.minimum));
 		}
 		else
 		{
 			/* Buttons are either fully on or fully off */
 			if (ev.value != 0)
-				val = KInputValueMax;
+				val = UCHAR_MAX;
 			else
 				val = 0;
 		}
-		
+
 		/* Post the event to the global event loop so
 		   that we can switch context away from the
 		   poller thread and into the main application
@@ -286,7 +286,7 @@ bool HIDEventDevice::readEvent()
 		   HIDInput::customEvent(). */
 		e = new HIDInputEvent(this, m_line, ev.code, val, true);
 		QApplication::postEvent(parent(), e);
-		
+
 		return true;
 	}
 	else

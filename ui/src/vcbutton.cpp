@@ -476,7 +476,7 @@ void VCButton::setOn(bool on)
 		{
 			_app->inputMap()->feedBack(m_inputUniverse,
 						   m_inputChannel,
-						   KInputValueMax);
+						   UCHAR_MAX);
 		}
 		else
 		{

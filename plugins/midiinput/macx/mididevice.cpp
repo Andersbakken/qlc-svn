@@ -161,7 +161,7 @@ static void postEvent(MIDIDevice* self, MIDIPacket packet)
 				    double(0),
 				    double(127),
 				    double(0),
-				    double(KInputValueMax)));
+				    double(UCHAR_MAX)));
 	MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
 	QApplication::postEvent(self, event);
 }
@@ -418,7 +418,7 @@ void MIDIDevice::feedBack(quint32 channel, uchar value)
 	cmd[1] = static_cast <Byte> (channel);
 	cmd[2] = static_cast <Byte> (SCALE(double(value),
 					   double(0),
-					   double(KInputValueMax),
+					   double(UCHAR_MAX),
 					   double(0),
 					   double(127)));
 

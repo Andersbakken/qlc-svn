@@ -175,7 +175,7 @@ void VCDockSlider::slotSliderValueChanged(int value)
 
 		float fb = SCALE(float(value), float(m_slider->minimum()),
 				 float(m_slider->maximum()), float(0),
-				 float(KInputValueMax));
+				 float(UCHAR_MAX));
 
 		_app->inputMap()->feedBack(uni, ch, int(fb));
 	}
@@ -220,7 +220,7 @@ void VCDockSlider::slotInputValueChanged(quint32 universe,
 	{
 		/* Scale the from input value range to this slider's range */
 		float val;
-		val = SCALE((float) value, (float) 0, (float) KInputValueMax,
+		val = SCALE((float) value, (float) 0, (float) UCHAR_MAX,
 			    (float) m_slider->minimum(),
 			    (float) m_slider->maximum());
 
