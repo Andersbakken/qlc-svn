@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QWidget>
 #include <QFile>
 #include <QtXml>
 
@@ -104,79 +103,6 @@ bool QLCFile::getXMLHeader(QString content, QDomDocument** doc)
 	subtag.appendChild(text);
 
 	return true;
-}
-
-bool QLCFile::saveXMLWindowState(QDomDocument* doc, QDomElement* root,
-				 QWidget* window)
-{
-	QDomElement tag;
-	QDomText text;
-	QString str;
-
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(window != NULL);
-
-	if (doc == NULL || root == NULL || window == NULL)
-		return false;
-
-	/* Window state tag */
-	tag = doc->createElement(KXMLQLCWindowState);
-	root->appendChild(tag);
-
-	/* Visible status */
-	if (window->isVisible() == true)
-		tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCTrue);
-	else
-		tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCFalse);
-
-	/* X Coordinate */
-	str.setNum(window->x());
-	tag.setAttribute(KXMLQLCWindowStateX, str);
-
-	/* Y Coordinate */
-	str.setNum(window->y());
-	tag.setAttribute(KXMLQLCWindowStateY, str);
-
-	/* Width */
-	str.setNum(window->width());
-	tag.setAttribute(KXMLQLCWindowStateWidth, str);
-
-	/* Height */
-	str.setNum(window->height());
-	tag.setAttribute(KXMLQLCWindowStateHeight, str);
-
-	return true;
-}
-
-bool QLCFile::loadXMLWindowState(const QDomElement* tag,
-				 int* x, int* y,
-				 int* w, int* h,
-				 bool* visible)
-{
-	if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL ||
-	    visible == NULL)
-		return false;
-
-	if (tag->tagName() == KXMLQLCWindowState)
-	{
-		*x = tag->attribute(KXMLQLCWindowStateX).toInt();
-		*y = tag->attribute(KXMLQLCWindowStateY).toInt();
-		*w = tag->attribute(KXMLQLCWindowStateWidth).toInt();
-		*h = tag->attribute(KXMLQLCWindowStateHeight).toInt();
-
-		if (tag->attribute(KXMLQLCWindowStateVisible) == KXMLQLCTrue)
-			*visible = true;
-		else
-			*visible = false;
-
-		return true;
-	}
-	else
-	{
-		qDebug() << "Window state not found!";
-		return false;
-	}
 }
 
 QString QLCFile::errorString(QFile::FileError error)

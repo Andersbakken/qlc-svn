@@ -7,7 +7,8 @@ TARGET 		= qlccommon
 
 CONFIG          += qt
 CONFIG          += staticlib
-QT 		+= xml
+QT 		+= xml core
+QT		-= gui
 win32:DEFINES 	+= QLC_EXPORT
 
 # Sources

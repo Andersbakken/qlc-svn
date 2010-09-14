@@ -256,6 +256,31 @@ protected:
 	bool saveXMLAppearance(QDomDocument* doc, QDomElement* widget_root);
 	bool saveXMLInput(QDomDocument* doc, QDomElement* root);
 
+	/**
+	 * Write this widget's geometry and visibility to an XML document.
+	 *
+	 * @param doc A QDomDocument to save the tag to
+	 * @param root A QDomElement under which to save the window state
+	 *
+	 * @return true if succesful, otherwise false
+	 */
+	bool saveXMLWindowState(QDomDocument* doc, QDomElement* root);
+
+	/**
+	 * Read this widget's geometry and visibility from an XML tag.
+	 *
+	 * @param tag A QDomElement under which the window state is saved
+	 * @param x Loaded x position
+	 * @param y Loaded y position
+	 * @param w Loaded w position
+	 * @param h Loaded h position
+	 * @param visible Loaded visible status
+	 *
+	 * @return true if succesful, otherwise false
+	 */
+	bool loadXMLWindowState(const QDomElement* tag, int* x, int* y,
+				int* w, int* h, bool* visible);
+
 	/*********************************************************************
 	 * QLC Mode change
 	 *********************************************************************/

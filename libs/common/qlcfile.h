@@ -76,36 +76,6 @@ public:
 	static bool getXMLHeader(QString content, QDomDocument** doc);
 
 	/**
-	 * Write generic window status (x, y, w, h, visible) to an XML document
-	 *
-	 * @param doc A QDomDocument to save the tag to
-	 * @param root A QDomElement under which to save the window state
-	 * @param window The window, whose state to save
-	 *
-	 * @return true if succesful, otherwise false
-	 */
-	static bool saveXMLWindowState(QDomDocument* doc, QDomElement* root,
-				       QWidget* window);
-
-
-	/**
-	 * Read generic window status (x, y, w, h, visible) from an XML tag
-	 *
-	 * @param tag A QDomElement under which the window state is saved
-	 * @param x Loaded x position
-	 * @param y Loaded y position
-	 * @param w Loaded w position
-	 * @param h Loaded h position
-	 * @param visible Loaded visible status
-	 *
-	 * @return true if succesful, otherwise false
-	 */
-	static bool loadXMLWindowState(const QDomElement* tag,
-				       int* x, int* y,
-				       int* w, int* h,
-				       bool* visible);
-
-	/**
 	 * Get a string that gives a textual description for the given file
 	 * error code.
 	 *

@@ -122,8 +122,7 @@ bool VCLabel::loadXML(const QDomElement* root)
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCWindowState)
 		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
+			loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
 			setGeometry(x, y, w, h);
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
@@ -159,7 +158,7 @@ bool VCLabel::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	root.setAttribute(KXMLQLCVCCaption, caption());
 
 	/* Window state */
-	QLCFile::saveXMLWindowState(doc, &root, this);
+	saveXMLWindowState(doc, &root);
 
 	/* Appearance */
 	saveXMLAppearance(doc, &root);

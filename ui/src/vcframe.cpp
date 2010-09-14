@@ -159,8 +159,7 @@ bool VCFrame::loadXML(const QDomElement* root)
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCWindowState)
 		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
+			loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
 			setGeometry(x, y, w, h);
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
@@ -224,7 +223,7 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 	/* Save widget proportions only for child frames */
 	if (isBottomFrame() == false)
-		QLCFile::saveXMLWindowState(doc, &root, this);
+		saveXMLWindowState(doc, &root);
 
 	/* Save children */
 	QListIterator <VCWidget*> it(findChildren<VCWidget*>());

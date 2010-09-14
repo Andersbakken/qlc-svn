@@ -6,7 +6,8 @@ LANGUAGE = C++
 TARGET   = test_common
 
 CONFIG	-= app_bundle
-QT 	+= testlib xml
+QT 	+= core xml testlib
+QT	-= gui
 QTPLUGIN =
 
 unix:DEFINES += INTERNAL_FIXTUREDIR=\\\"../../../fixtures/\\\"

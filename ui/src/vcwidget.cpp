@@ -549,6 +549,61 @@ bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
 	return true;
 }
 
+bool VCWidget::saveXMLWindowState(QDomDocument* doc, QDomElement* root)
+{
+	QDomElement tag;
+	QDomText text;
+	QString str;
+
+	if (doc == NULL || root == NULL)
+		return false;
+
+	/* Window state tag */
+	tag = doc->createElement(KXMLQLCWindowState);
+	root->appendChild(tag);
+
+	/* Visible status */
+	if (isVisible() == true)
+		tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCTrue);
+	else
+		tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCFalse);
+
+	tag.setAttribute(KXMLQLCWindowStateX, QString::number(x()));
+	tag.setAttribute(KXMLQLCWindowStateY, QString::number(y()));
+	tag.setAttribute(KXMLQLCWindowStateWidth, QString::number(width()));
+	tag.setAttribute(KXMLQLCWindowStateHeight, QString::number(height()));
+
+	return true;
+}
+
+bool VCWidget::loadXMLWindowState(const QDomElement* tag, int* x, int* y,
+				  int* w, int* h, bool* visible)
+{
+	if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL ||
+	    visible == NULL)
+		return false;
+
+	if (tag->tagName() == KXMLQLCWindowState)
+	{
+		*x = tag->attribute(KXMLQLCWindowStateX).toInt();
+		*y = tag->attribute(KXMLQLCWindowStateY).toInt();
+		*w = tag->attribute(KXMLQLCWindowStateWidth).toInt();
+		*h = tag->attribute(KXMLQLCWindowStateHeight).toInt();
+
+		if (tag->attribute(KXMLQLCWindowStateVisible) == KXMLQLCTrue)
+			*visible = true;
+		else
+			*visible = false;
+
+		return true;
+	}
+	else
+	{
+		qDebug() << "Window state not found!";
+		return false;
+	}
+}
+
 /*****************************************************************************
  * QLC Mode change
  *****************************************************************************/

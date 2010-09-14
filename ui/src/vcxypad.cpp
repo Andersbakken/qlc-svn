@@ -271,8 +271,7 @@ bool VCXYPad::loadXML(const QDomElement* root)
 		tag = node.toElement();
 		if (tag.tagName() == KXMLQLCWindowState)
 		{
-			QLCFile::loadXMLWindowState(&tag, &x, &y, &w, &h,
-						    &visible);
+			loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
 		}
 		else if (tag.tagName() == KXMLQLCVCAppearance)
 		{
@@ -339,7 +338,7 @@ bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 	root.appendChild(tag);
 
 	/* Window state */
-	QLCFile::saveXMLWindowState(doc, &root, this);
+	saveXMLWindowState(doc, &root);
 
 	/* Appearance */
 	saveXMLAppearance(doc, &root);
