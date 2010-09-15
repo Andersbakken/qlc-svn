@@ -161,8 +161,7 @@ bool EnttecDMXUSBPro::extractEnttecSerial()
 	unsigned char reply[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	/* Can't get the serial unless the widget is open */
-	if (isOpen() == false)
-		open();
+	open();
 
 	/* Write "Get Widget Serial Number Request" message */
 	if (ftdi_write_data(&m_context, request, sizeof(request)) < 0)
