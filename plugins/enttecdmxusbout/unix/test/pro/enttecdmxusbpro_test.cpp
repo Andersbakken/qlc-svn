@@ -33,155 +33,25 @@
 #define TEST_NAME "Foobar"
 #define TEST_SRNO "1234567890"
 
-static int _ftdi_init_called = 0;
-static int _ftdi_deinit_called = 0;
+extern int _ftdi_init_called;
+extern int _ftdi_deinit_called;
 
-static int _ftdi_usb_open_desc_called = 0;
-static int _ftdi_usb_close_called = 0;
-static int _ftdi_usb_reset_called = 0;
-static int _ftdi_set_line_property_called = 0;
-static int _ftdi_set_baudrate_called = 0;
-static int _ftdi_setrts_called = 0;
+extern int _ftdi_usb_open_desc_called;
+extern int _ftdi_usb_close_called;
+extern int _ftdi_usb_reset_called;
+extern int _ftdi_set_line_property_called;
+extern int _ftdi_set_baudrate_called;
+extern int _ftdi_setrts_called;
 
-static int _ftdi_write_data_called = 0;
-static int _ftdi_write_data_expected_size = 0;
-static int _ftdi_write_data_expected_return_value = 0;
-static int _ftdi_read_data_called = 0;
-static int _ftdi_read_data_expected_size = 0;
-static int _ftdi_read_data_expected_return_value = 0;
+extern int _ftdi_write_data_called;
+extern int _ftdi_write_data_expected_size;
+extern int _ftdi_write_data_expected_return_value;
+extern int _ftdi_read_data_called;
+extern int _ftdi_read_data_expected_size;
+extern int _ftdi_read_data_expected_return_value;
 
-/****************************************************************************
- * FTDI mock functions
- ****************************************************************************/
-
-int ftdi_init(struct ftdi_context* ctx)
-{
-        UT_ASSERT(ctx != NULL);
-        _ftdi_init_called++;
-        return 0;
-} 
-
-void ftdi_deinit(struct ftdi_context* ctx)
-{
-        UT_ASSERT(ctx != NULL);
-        _ftdi_deinit_called++;
-}
-
-int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
-                        const char* description, const char* serial)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(vendor == 0x0403);
-        UT_ASSERT(product == 0x6001);
-        UT_ASSERT(QString(description) == QString(TEST_NAME));
-        UT_ASSERT(QString(serial) == QString(TEST_SRNO));
-
-        ctx->usb_dev = reinterpret_cast<usb_dev_handle*> (0xDEADBEEF);
-
-        _ftdi_usb_open_desc_called++;
-        return 0;
-}
-
-int ftdi_usb_close(struct ftdi_context* ctx)
-{
-        UT_ASSERT(ctx != NULL);
-
-        ctx->usb_dev = NULL;
-
-        _ftdi_usb_close_called++;
-        return 0;
-}
-
-int ftdi_usb_reset(struct ftdi_context* ctx)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
-        _ftdi_usb_reset_called++;
-        return 0;
-}
-
-int ftdi_set_line_property(struct ftdi_context* ctx,
-                           enum ftdi_bits_type bits,
-                           enum ftdi_stopbits_type stop,
-                           enum ftdi_parity_type parity)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(bits == BITS_8);
-        UT_ASSERT(stop == STOP_BIT_2);
-        UT_ASSERT(parity == NONE);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
-        _ftdi_set_line_property_called++;
-        return 0;
-}
-
-int ftdi_set_baudrate(struct ftdi_context* ctx, int baudrate)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(baudrate == 250000);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
-        _ftdi_set_baudrate_called++;
-        return 0;
-}
-
-int ftdi_setrts(struct ftdi_context* ctx, int rts)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(rts == 0);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
-        _ftdi_setrts_called++;
-        return 0;
-}
-
-int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(buf != NULL);
-        UT_ASSERT(size == _ftdi_write_data_expected_size);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
-
-	if (size <= 5)
-	{
-		UT_ASSERT(buf[0] == 0x7e);
-		UT_ASSERT(buf[1] == 0x0a);
-		UT_ASSERT(buf[2] == 0x00);
-		UT_ASSERT(buf[3] == 0x00);
-		UT_ASSERT(buf[4] == 0xe7);
-	}
-	else
-	{
-		UT_ASSERT(size == 518);
-		UT_ASSERT(buf[0] == 0x7e);
-		UT_ASSERT(buf[1] == 0x06);
-		UT_ASSERT(buf[3] == int((513 >> 8) & 0xff));
-		UT_ASSERT(buf[2] == int(513 & 0xff));
-		UT_ASSERT(buf[4] == 0x00);
-		UT_ASSERT(buf[size - 1] == 0xe7);
-	}
-
-        _ftdi_write_data_called++;
-        return _ftdi_write_data_expected_return_value;
-}
-
-int ftdi_read_data(struct ftdi_context* ctx, unsigned char* reply, int size)
-{
-        UT_ASSERT(ctx != NULL);
-        UT_ASSERT(reply != NULL);
-        UT_ASSERT(size == _ftdi_read_data_expected_size);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
-
-	reply[0] = 0x7e;
-	reply[1] = 0x0a;
-	reply[2] = 0x04;
-	reply[3] = 0x00;
-	reply[4] = 0x11;
-	reply[5] = 0x22;
-	reply[6] = 0x33;
-	reply[7] = 0x44;
-	reply[8] = 0xe7;
-
-        _ftdi_read_data_called++;
-        return _ftdi_read_data_expected_return_value;
-}
+extern QString _ftdi_usb_open_desc_expected_description;
+extern QString _ftdi_usb_open_desc_expected_serial;
 
 /****************************************************************************
  * Unit test code
@@ -191,6 +61,8 @@ void EnttecDMXUSBPro_Test::construction()
 {
 	_ftdi_write_data_expected_size = 5;
 	_ftdi_read_data_expected_size = 9;
+	_ftdi_usb_open_desc_expected_description = TEST_NAME;
+	_ftdi_usb_open_desc_expected_serial = TEST_SRNO;
 	EnttecDMXUSBPro* obj = new EnttecDMXUSBPro(this, TEST_NAME, TEST_SRNO);
 
 	QCOMPARE(_ftdi_usb_open_desc_called, 1);

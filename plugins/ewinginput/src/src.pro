@@ -9,6 +9,7 @@ INCLUDEPATH	+= ../../interfaces
 CONFIG          += plugin
 QT		+= network
 win32:DEFINES	+= QLC_EXPORT
+QTPLUGIN	=
 
 win32 {
 	# Qt Libraries

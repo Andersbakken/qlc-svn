@@ -1,10 +1,9 @@
 #!/bin/bash
 
-pushd .
-
 #############################################################################
 # Engine tests
 #############################################################################
+pushd .
 cd engine/test
 ./test_engine
 RESULT=$?
@@ -12,71 +11,49 @@ if [ $RESULT != 0 ]; then
 	echo "Engine unit test failed ($RESULT). Please fix before commit."
 	exit $RESULT
 fi
-
 popd
-pushd .
 
 #############################################################################
 # UI tests
 #############################################################################
-cd ui/test
-./test_ui
+ui/test/test_ui
 RESULT=$?
 if [ $RESULT != 0 ]; then
 	echo "UI unit test failed ($RESULT). Please fix before commit."
 	exit $RESULT
 fi
 
-popd
-pushd .
-
-#############################################################################
-# Enttec DMXUSB Open test
-#############################################################################
-cd plugins/enttecdmxusbout/unix/test/open
-if [ `uname -s` != "Darwin" ]; then
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbopen
-else
-	DYLD_FALLBACK_LIBRARY_PATH=../../src:/Developer/Applications/Qt/plugins/imageformats \
-		./test_dmxusbopen
-fi
-RESULT=$?
-if [ $RESULT != 0 ]; then
-	echo "Enttec DMXUSB Open unit test failed ($RESULT). Please fix before commit."
-	exit $RESULT
-fi
-
-popd
-pushd .
-
 #############################################################################
 # Enttec DMXUSB Pro test
 #############################################################################
-cd plugins/enttecdmxusbout/unix/test/pro
-if [ `uname -s` != "Darwin" ]; then
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbpro
-else
-	DYLD_FALLBACK_LIBRARY_PATH=../../src:/Developer/Applications/Qt/plugins/imageformats \
-		./test_dmxusbpro
-fi
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:plugins/enttecdmxusbout/unix/src \
+	plugins/enttecdmxusbout/unix/test/pro/test_dmxusbpro
 RESULT=$?
 if [ $RESULT != 0 ]; then
 	echo "Enttec DMXUSB Pro unit test failed ($RESULT). Please fix before commit."
 	exit $RESULT
 fi
 
-popd
-pushd .
+#############################################################################
+# Enttec DMXUSB Open test
+#############################################################################
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:plugins/enttecdmxusbout/unix/src \
+	plugins/enttecdmxusbout/unix/test/open/test_dmxusbopen
+RESULT=$?
+if [ $RESULT != 0 ]; then
+	echo "Enttec DMXUSB Open unit test failed ($RESULT). Please fix before commit."
+	exit $RESULT
+fi
 
 #############################################################################
 # Enttec wing tests
 #############################################################################
-cd plugins/ewinginput/test
-if [ `uname -s` != "Darwin" ]; then
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_ewing
+if [ `uname -s` == "Darwin" ]; then
+	DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:plugins/ewinginput/src \
+		plugins/ewinginput/test/test_ewing
 else
-	DYLD_FALLBACK_LIBRARY_PATH=../../src:/Developer/Applications/Qt/plugins/imageformats \
-		./test_ewing
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:plugins/ewinginput/src \
+		plugins/ewinginput/test/test_ewing
 fi
 RESULT=$?
 if [ $RESULT != 0 ]; then
@@ -84,5 +61,8 @@ if [ $RESULT != 0 ]; then
 	exit $RESULT
 fi
 
-popd
+#############################################################################
+# Final judgment
+#############################################################################
+
 echo "Unit tests passed."
