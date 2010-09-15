@@ -37,6 +37,7 @@ INSTALL_ROOT=$RPM_BUILD_ROOT make install
 %files
 %defattr(-,root,root)
 /usr/bin/qlc
+/usr/lib/libqlcengine*
 /usr/share/qlc/translations/*.qm
 /usr/share/applications/qlc.desktop
 /usr/share/pixmaps/qlc.png
@@ -62,7 +63,7 @@ HID-compliant devices (for example joysticks, mice and keyboards).
 
 %files input-hid
 %defattr(-,root,root) 
-/usr/lib/qlc/input/libhidinput.so
+/usr/lib/qt4/plugins/qlc/input/libhidinput.so
 
 #############################################################################
 # Enttec Wing input plugin sub-package
@@ -78,7 +79,7 @@ ENTTEC Shortcut, Playback and Program wings.
 
 %files input-enttec-wing
 %defattr(-,root,root) 
-/usr/lib/qlc/input/libewinginput.so
+/usr/lib/qt4/plugins/qlc/input/libewinginput.so
 
 #############################################################################
 # MIDI input plugin sub-package
@@ -94,7 +95,7 @@ MIDI controller devices (such as Behringer BCF2000).
 
 %files input-midi
 %defattr(-,root,root) 
-/usr/lib/qlc/input/libmidiinput.so
+/usr/lib/qt4/plugins/qlc/input/libmidiinput.so
 
 #############################################################################
 # DMX4Linux output plugin sub-package
@@ -110,7 +111,7 @@ devices supported by the DMX4Linux driver suite (http://llg.cubic.org/)
 
 %files output-dmx4linux
 %defattr(-,root,root) 
-/usr/lib/qlc/output/libdmx4linuxout.so
+/usr/lib/qt4/plugins/qlc/output/libdmx4linuxout.so
 
 #############################################################################
 # ENTTEC DMX USB Open/Pro output plugin sub-package
@@ -126,7 +127,7 @@ ENTTEC Open DMX USB and DMX USB Pro dongles, using the legacy D2XX interface.
 
 %files output-enttec-dmxusb
 %defattr(-,root,root) 
-/usr/lib/qlc/output/libenttecdmxusbout.so
+/usr/lib/qt4/plugins/qlc/output/libenttecdmxusbout.so
 /etc/udev/rules.d/z65-enttec-dmxusb.rules
 
 #############################################################################
@@ -143,7 +144,7 @@ Peperoni USB devices (Rodin, USBDMX21, XSwitch).
 
 %files output-udmx
 %defattr(-,root,root)
-/usr/lib/qlc/output/libudmxout.so
+/usr/lib/qt4/plugins/qlc/output/libudmxout.so
 /etc/udev/rules.d/z65-anyma-udmx.rules
 
 #############################################################################
@@ -160,7 +161,7 @@ Peperoni USB devices (Rodin, USBDMX21, XSwitch).
 
 %files output-peperoni
 %defattr(-,root,root) 
-/usr/lib/qlc/output/libpeperoniout.so
+/usr/lib/qt4/plugins/qlc/output/libpeperoniout.so
 /etc/udev/rules.d/z65-peperoni.rules
 
 #############################################################################
@@ -177,4 +178,4 @@ MIDI-capable device.
 
 %files output-midi
 %defattr(-,root,root) 
-/usr/lib/qlc/output/libmidiout.so
+/usr/lib/qt4/plugins/qlc/output/libmidiout.so
