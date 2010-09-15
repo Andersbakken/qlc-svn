@@ -30,6 +30,7 @@ int _ftdi_deinit_called = 0;
 
 int _ftdi_usb_open_desc_called = 0;
 int _ftdi_usb_close_called = 0;
+int _ftdi_usb_close_expected_return_value = 0;
 int _ftdi_usb_reset_called = 0;
 int _ftdi_usb_purge_buffers_called = 0;
 int _ftdi_set_line_property_called = 0;
@@ -41,9 +42,12 @@ int _ftdi_get_error_string_called = 0;
 int _ftdi_write_data_called = 0;
 int _ftdi_write_data_expected_size = 0;
 int _ftdi_write_data_expected_return_value = 0;
+
 int _ftdi_read_data_called = 0;
 int _ftdi_read_data_expected_size = 0;
 int _ftdi_read_data_expected_return_value = 0;
+const char* _ftdi_read_data_expected_reply = NULL;
+
 int _ftdi_usb_get_strings_called = 0;
 
 QString _ftdi_usb_open_desc_expected_description;
@@ -58,7 +62,7 @@ int ftdi_init(struct ftdi_context* ctx)
         UT_ASSERT(ctx != NULL);
         _ftdi_init_called++;
         return 0;
-} 
+}
 
 void ftdi_deinit(struct ftdi_context* ctx)
 {
@@ -98,7 +102,7 @@ int ftdi_usb_close(struct ftdi_context* ctx)
         ctx->usb_dev = NULL;
 
         _ftdi_usb_close_called++;
-        return 0;
+        return _ftdi_usb_close_expected_return_value;
 }
 
 int ftdi_usb_reset(struct ftdi_context* ctx)
@@ -232,15 +236,7 @@ int ftdi_read_data(struct ftdi_context* ctx, unsigned char* reply, int size)
         UT_ASSERT(size == _ftdi_read_data_expected_size);
         UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
 
-	reply[0] = 0x7e;
-	reply[1] = 0x0a;
-	reply[2] = 0x04;
-	reply[3] = 0x00;
-	reply[4] = 0x11;
-	reply[5] = 0x22;
-	reply[6] = 0x33;
-	reply[7] = 0x44;
-	reply[8] = 0xe7;
+	memcpy(reply, _ftdi_read_data_expected_reply, _ftdi_read_data_expected_size);
 
         _ftdi_read_data_called++;
         return _ftdi_read_data_expected_return_value;
