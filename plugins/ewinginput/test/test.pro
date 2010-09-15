@@ -5,7 +5,6 @@ LANGUAGE = C++
 TARGET   = test_ewing
 
 QT 	+= core gui network testlib
-CONFIG 	-= app_bundle
 QTPLUGIN =
 
 INCLUDEPATH += ../../interfaces

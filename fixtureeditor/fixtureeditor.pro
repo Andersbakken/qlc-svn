@@ -5,7 +5,6 @@ LANGUAGE 	= C++
 TARGET 		= qlc-fixtureeditor
 
 CONFIG          += qt
-macx:CONFIG	-= app_bundle
 QT 		+= xml
 
 INCLUDEPATH 	+= ../plugins/interfaces

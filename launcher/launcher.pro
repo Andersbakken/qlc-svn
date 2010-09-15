@@ -3,8 +3,7 @@ include(../variables.pri)
 TEMPLATE = app
 TARGET = qlc-launcher
 
-QT += gui
-CONFIG -= app_bundle
+QT += core gui
 
 RESOURCES += launcher.qrc
 

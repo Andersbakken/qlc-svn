@@ -1,28 +1,31 @@
-# Application & version
+#############################################################################
+# Application name & version
+#############################################################################
+
 APPNAME			= Q Light Controller
 FXEDNAME		= Fixture Definition Editor
-
-# Supported image formats for OSX
-macx:QTPLUGIN		= qjpeg qgif
-
-# Current application version (not an sh script because of Win-duhs)
 APPVERSION		= 3.0.7
 
-# Uncomment these two lines when making a release
-CONFIG			+= release
-CONFIG			-= debug
+#############################################################################
+# Compiler & linker configuration
+#############################################################################
 
-# Enable to build universal binaries on Mac OS 10.5
-# macx:CONFIG		+= x86 ppc
-
-# Treat all compiler warnings as errors
 QMAKE_CXXFLAGS		+= -Werror
-
-# Compiler configuration
 CONFIG			+= warn_on
+macx:CONFIG		-= app_bundle	# Let QLC construct the .app bundle
+macx:QTPLUGIN		= qjpeg qgif 	# OSX supported image formats
 
-# OLA directories
-unix:OLA_GIT		= /usr/src/ola
+CONFIG			-= release	# Enable this when making a release
+CONFIG			+= debug	# Disable this when making a release
+
+unix:OLA_GIT		= /usr/src/ola	# OLA directories
+
+#macx:CONFIG		+= x86 ppc	# Build universal binaries (Leopard only)
+#CONFIG			+= coverage	# Unit test coverage measurement
+
+#############################################################################
+# Installation paths
+#############################################################################
 
 # Install root
 win32:INSTALLROOT	= $$(SystemDrive)/QLC

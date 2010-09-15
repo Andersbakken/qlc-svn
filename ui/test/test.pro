@@ -6,7 +6,6 @@ TARGET   = test_ui
 
 QMAKE_CXXFLAGS	-= -Werror
 CONFIG		+= qtestlib
-macx:CONFIG	-= app_bundle
 QT 		+= xml
 QT		+= gui
 QTPLUGIN	 =

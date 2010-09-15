@@ -7,7 +7,6 @@ TARGET   = test_engine
 
 QMAKE_CXXFLAGS -= -Werror
 CONFIG 	+= qtestlib
-CONFIG 	-= app_bundle
 QT 	+= xml
 QTPLUGIN =
 

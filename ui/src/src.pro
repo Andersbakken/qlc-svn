@@ -10,7 +10,6 @@ QT 		+= xml
 # macdeployqt checks dependencies only for the main app so let's put all Qt
 # dependencies here
 macx:QT		+= network xml gui core
-macx:CONFIG	-= app_bundle
 
 # Engine
 INCLUDEPATH	+= ../../engine/src

@@ -19,7 +19,6 @@ macx {
 	# Link these statically to the test binary since LD_INSERT_LIBRARIES
 	# doesn't seem to work with libftdi.
 	QTPLUGIN =
-	CONFIG -= app_bundle
 	HEADERS += ../../src/enttecdmxusbopen.h
 	SOURCES += ../../src/enttecdmxusbopen.cpp
 }

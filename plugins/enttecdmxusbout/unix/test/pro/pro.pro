@@ -17,7 +17,6 @@ SOURCES += ../ftdimock/ftdimock.cpp
 
 macx {
 	QTPLUGIN =
-	CONFIG -= app_bundle
 	HEADERS += ../../src/enttecdmxusbpro.h
 	SOURCES += ../../src/enttecdmxusbpro.cpp
 }

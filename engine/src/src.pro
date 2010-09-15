@@ -6,7 +6,6 @@ TARGET   = qlcengine
 
 CONFIG 		+= staticlib
 CONFIG 		+= qt
-macx:CONFIG     -= app_bundle
 QT              += core xml
 QT		-= gui
 
