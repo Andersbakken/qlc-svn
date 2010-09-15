@@ -50,7 +50,7 @@ QStringList InputPluginStub::inputs()
 {
 	QStringList list;
 
-	for (int i = 0; i < KInputUniverseCount; i++)
+	for (quint32 i = 0; i < KInputUniverseCount; i++)
 		list << QString("%1: Stub %1").arg(i + 1);
 
 	return list;

@@ -1,5 +1,4 @@
 include(../../variables.pri)
-include(../../coverage.pri)
 
 TEMPLATE = app
 LANGUAGE = C++
@@ -15,10 +14,10 @@ DEPENDPATH  += ../src
 
 INCLUDEPATH += ../../plugins/interfaces
 
-unix:LIBS	+= ../src/libqlcengine.a
+unix:LIBS	+= -L../src -lqlcengine
 win32:{
-	CONFIG(release, debug|release) LIBS += ../src/release/libqlcengine.a
-	CONFIG(debug, debug|release) LIBS += ../src/debug/libqlcengine.a
+	CONFIG(release, debug|release) LIBS += -L../src/release -lqlcengine
+	CONFIG(debug, debug|release) LIBS += -L../src/debug -lqlcengine
 }
 
 # Fixture metadata

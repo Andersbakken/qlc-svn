@@ -39,7 +39,7 @@ macx:BINDIR		= MacOS
 
 # Libraries
 win32:LIBSDIR		=
-unix:!macx:LIBSDIR	= lib/qlc
+unix:!macx:LIBSDIR	= lib
 macx:LIBSDIR            = Frameworks
 
 # Data
@@ -66,7 +66,7 @@ macx:FIXTUREDIR		= $$DATADIR/Fixtures
 
 # Plugins
 win32:PLUGINDIR		= Plugins
-unix:!macx:PLUGINDIR	= $$LIBSDIR
+unix:!macx:PLUGINDIR	= $$LIBSDIR/qt4/plugins/qlc
 macx:PLUGINDIR		= PlugIns
 
 # Input Plugins

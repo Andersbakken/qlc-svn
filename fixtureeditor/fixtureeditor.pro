@@ -15,10 +15,10 @@ DEPENDPATH	+= ../engine/src
 INCLUDEPATH	+= ../ui/src
 DEPENDPATH	+= ../ui/src
 
-unix:LIBS	+= ../engine/src/libqlcengine.a
+unix:LIBS	+= -L../engine/src -lqlcengine
 win32:{
-	CONFIG(release, debug|release) LIBS += ../engine/src/release/libqlcengine.a
-	CONFIG(debug, debug|release) LIBS += ../engine/src/debug/libqlcengine.a
+	CONFIG(release, debug|release) LIBS += -L../engine/src/release -lqlcengine
+	CONFIG(debug, debug|release) LIBS += -L../engine/src/debug -lqlcengine
 }
 
 # Sources

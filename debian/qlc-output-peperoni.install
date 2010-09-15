@@ -1,2 +1,2 @@
-usr/lib/qlc/output/libpeperoniout.so
+usr/lib/qt4/plugins/qlc/output/libpeperoniout.so
 etc/udev/rules.d/z65-peperoni.rules

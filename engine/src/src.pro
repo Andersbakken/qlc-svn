@@ -1,15 +1,26 @@
 include(../../variables.pri)
+include(../../coverage.pri)
 
 TEMPLATE = lib
 LANGUAGE = C++
 TARGET   = qlcengine
 
-CONFIG 		+= staticlib
 CONFIG 		+= qt
 QT              += core xml
 QT		-= gui
 
 INCLUDEPATH	+= ../../plugins/interfaces
+
+#############################################################################
+# Installation
+#############################################################################
+
+target.path = $$INSTALLROOT/$$LIBSDIR
+INSTALLS += target
+
+#############################################################################
+# Sources
+#############################################################################
 
 # Fixture metadata
 HEADERS += qlccapability.h \
