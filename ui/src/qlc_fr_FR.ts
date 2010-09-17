@@ -179,7 +179,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addfixture.ui" line="228"/>
         <source>Number of empty channels to leave between added fixtures</source>
-        <translation>Nombre de canaux vides à laisser entre les projecteurs ajoutés</translation>
+        <translation>Nombre de canaux vides à laisser entre les projecteurs</translation>
     </message>
 </context>
 <context>
@@ -255,7 +255,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="app.cpp" line="263"/>
         <source>You must switch back to Design mode to close the application.</source>
-        <translation>Vous devez basculer vers le mode design pour fermer l&apos;application</translation>
+        <translation>Vous devez basculer vers le mode design pour fermer l&apos;application.</translation>
     </message>
     <message>
         <location filename="app.cpp" line="271"/>
@@ -276,8 +276,8 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="435"/>
         <source>(%n fixture(s) have no power consumption defined)</source>
         <translation>
-            <numerusform>(%n pas de consomation de projecteur(s) définie)</numerusform>
-            <numerusform></numerusform>
+            <numerusform>(La consommation n&apos;a pas été définie pour %n projecteur)</numerusform>
+            <numerusform>(La consommation n&apos;a pas été définie pour %n projecteurs)</numerusform>
         </translation>
     </message>
     <message>
@@ -289,7 +289,7 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="443"/>
         <source>Space left for %n fixtures. Currently consuming %1 watts total.</source>
         <translation>
-            <numerusform>Espace laissé pour %n fixtures. Consommation actuelle %1 watts total.</numerusform>
+            <numerusform>Espace laissé pour %n projecteurs. Consommation totale actuelle %1 W.</numerusform>
             <numerusform></numerusform>
         </translation>
     </message>
@@ -365,7 +365,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
     <message>
         <location filename="app.cpp" line="642"/>
         <source>Blackout is active; all outputs are disabled</source>
-        <translation>Blackout est activé; toutes les sorties sont désactivées</translation>
+        <translation>Blackout activé; toutes les sorties sont désactivées</translation>
     </message>
     <message>
         <location filename="app.cpp" line="655"/>
@@ -380,12 +380,12 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
     <message>
         <location filename="app.cpp" line="667"/>
         <source>&amp;Save</source>
-        <translation>&amp;Sauver</translation>
+        <translation>Enregi&amp;strer</translation>
     </message>
     <message>
         <location filename="app.cpp" line="673"/>
         <source>Save &amp;As...</source>
-        <translation>Sauver sous...</translation>
+        <translation>Enregistrer sous</translation>
     </message>
     <message>
         <location filename="app.cpp" line="678"/>
@@ -664,7 +664,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="chasereditor.ui" line="13"/>
         <source>Chaser editor</source>
-        <translation>Éditeur de chaser</translation>
+        <translation>Éditeur de chasers</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="25"/>
@@ -674,7 +674,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="chasereditor.ui" line="38"/>
         <source>Name of the chaser being edited</source>
-        <translation>Nom du chaser qui est en cours d&apos;édition</translation>
+        <translation>Nom du chaser en cours d&apos;édition</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="61"/>
@@ -707,12 +707,12 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="chasereditor.ui" line="114"/>
         <source>Raise the selected step once</source>
-        <translation>Agmenter le pas sélectionné une fois</translation>
+        <translation>Remonter le pas sélectionné</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="134"/>
         <source>Lower the selected step once</source>
-        <translation>Abaisser le pas sélectionné une fois</translation>
+        <translation>Descendre le pas sélectionné</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="167"/>
@@ -723,7 +723,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
         <location filename="chasereditor.ui" line="173"/>
         <source>Run through over and over again</source>
         <translatorcomment>???</translatorcomment>
-        <translation>Répéter encore et encore par-dessus</translation>
+        <translation>Répéter encore et encore</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="176"/>
@@ -733,7 +733,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="chasereditor.ui" line="186"/>
         <source>Run through once and stop</source>
-        <translation>Répéter une fois et arrêter</translation>
+        <translation>Lire une fois et arrêter</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="189"/>
@@ -743,7 +743,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="chasereditor.ui" line="196"/>
         <source>First run forwards, then backwards, again forwards, etc.</source>
-        <translation>D&apos;abord joue le chaser en avant, puis en arrière, encore en avant, etc...</translation>
+        <translation>Joue le chaser en aller-retour.</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="199"/>
@@ -887,7 +887,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="45"/>
         <source>The name of the function being edited</source>
-        <translation>Le nom de la fonction qui est en cours d&apos;édition</translation>
+        <translation>Le nom de la fonction en cours d&apos;édition</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="71"/>
@@ -1169,7 +1169,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="fixturemanager.cpp" line="132"/>
         <source>Fixture Manager</source>
-        <translation>Gestionnaire de projecteur</translation>
+        <translation>Gestionnaire de projecteurs</translation>
     </message>
     <message>
         <location filename="fixturemanager.cpp" line="215"/>
@@ -1234,7 +1234,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="fixturemanager.cpp" line="467"/>
         <source>Fixture manager</source>
-        <translation>Gestionnaire de projecteur</translation>
+        <translation>Gestionnaire de projecteurs</translation>
     </message>
     <message>
         <location filename="fixturemanager.cpp" line="503"/>
@@ -1254,12 +1254,12 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="fixturemanager.cpp" line="600"/>
         <source>Fixture creation failed</source>
-        <translation>La création du projecteur a échoué</translation>
+        <translation>La création du projecteur a échouée</translation>
     </message>
     <message>
         <location filename="fixturemanager.cpp" line="601"/>
         <source>Unable to create new fixture.</source>
-        <translation>Impossible de créer un nouveau projecteur</translation>
+        <translation>Impossible de créer un nouveau projecteur.</translation>
     </message>
     <message>
         <location filename="fixturemanager.cpp" line="608"/>
@@ -1308,12 +1308,12 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="fixtureselection.cpp" line="90"/>
         <source>No fixtures available</source>
-        <translation>Aucun projecteur disponible</translation>
+        <translation>Aucun projecteurs disponibles</translation>
     </message>
     <message>
         <location filename="fixtureselection.cpp" line="94"/>
         <source>Go to Fixture Manager to add some fixtures first.</source>
-        <translation>Allez d&apos;abord au gestionnaire de projecteurs pour en ajouter</translation>
+        <translation>Allez d&apos;abord au gestionnaire de projecteurs pour en ajouter.</translation>
     </message>
 </context>
 <context>
@@ -1321,7 +1321,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="functionmanager.cpp" line="123"/>
         <source>Function Manager</source>
-        <translation>Gestionnaire de fonction</translation>
+        <translation>Gestionnaire de fonctions</translation>
     </message>
     <message>
         <location filename="functionmanager.cpp" line="171"/>
@@ -1346,7 +1346,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="functionmanager.cpp" line="195"/>
         <source>Function Wizard</source>
-        <translation>Fonction magique</translation>
+        <translation>Assistant de fonctions</translation>
     </message>
     <message>
         <location filename="functionmanager.cpp" line="202"/>
@@ -1398,7 +1398,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
         <location filename="functionmanager.cpp" line="430"/>
         <location filename="functionmanager.cpp" line="657"/>
         <source>Function creation failed</source>
-        <translation>La fonction créée a échoué</translation>
+        <translation>Erreur de création de la fonction</translation>
     </message>
     <message>
         <location filename="functionmanager.cpp" line="371"/>
@@ -1407,7 +1407,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
         <location filename="functionmanager.cpp" line="431"/>
         <location filename="functionmanager.cpp" line="658"/>
         <source>Unable to create new function.</source>
-        <translation>Impossible de créer une nouvelle fonction</translation>
+        <translation>Impossible de créer une nouvelle fonction.</translation>
     </message>
 </context>
 <context>
@@ -1494,7 +1494,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="functionselection.cpp" line="229"/>
         <source>Unable to create new function.</source>
-        <translation>Impossible de créer une nouvelle fonction</translation>
+        <translation>Impossible de créer une nouvelle fonction.</translation>
     </message>
 </context>
 <context>
@@ -1502,7 +1502,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="functionwizard.ui" line="14"/>
         <source>Function Wizard</source>
-        <translation>Fonction magique</translation>
+        <translation>Assistant de Fonction</translation>
     </message>
     <message>
         <location filename="functionwizard.ui" line="20"/>
@@ -1680,12 +1680,12 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="inputpatcheditor.ui" line="85"/>
         <source>Send feedback data to the input universe for moving e.g. motorized sliders.</source>
-        <translation>Envoyer les retours de données vers l&apos;univers d&apos;entrées pour par exemple bouger les sliders motorisés</translation>
+        <translation>Envoyer les retours de données vers l&apos;univers d&apos;entrées pour par exemple bouger les sliders motorisés.</translation>
     </message>
     <message>
         <location filename="inputpatcheditor.ui" line="88"/>
         <source>Feedback enabled</source>
-        <translation>Retour enclenché</translation>
+        <translation>Retour de données</translation>
     </message>
     <message>
         <location filename="inputpatcheditor.ui" line="96"/>
@@ -1848,7 +1848,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="inputprofileeditor.cpp" line="81"/>
         <source>You do not have permission to write to the file %1. You might not be able to save your modifications to the profile.</source>
-        <translation>Vous n&apos;avez pas la permission d&apos;écrire vers le fichier %1. Vous ne pouvez pas sauver vos modifications dans le profile</translation>
+        <translation>Vous n&apos;avez pas la permission d&apos;écrire vers le fichier %1. Vous risquez de ne pouvoir sauver vos modifications dans le profile.</translation>
     </message>
     <message>
         <location filename="inputprofileeditor.cpp" line="162"/>
@@ -1858,7 +1858,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="inputprofileeditor.cpp" line="163"/>
         <source>Manufacturer and/or model name is missing.</source>
-        <translation>Le nom du fabricant et/ou du modèle est manquant</translation>
+        <translation>Le nom du fabricant et/ou du modèle est manquant.</translation>
     </message>
     <message>
         <location filename="inputprofileeditor.cpp" line="193"/>
@@ -1892,9 +1892,9 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
         <source>You have enabled the input channel wizard. After clicking OK, wiggle your mapped input profile&apos;s controls. They should appear into the list. Click the wizard button again to stop channel auto-detection.
 
 Note that the wizard cannot tell the difference between a knob and a slider so you will have to do the change manually.</source>
-        <translation>Vous avez enclanché le canal d&apos;entrée magique. Après avoir cliquer OK, manipuler les controles de profile. Ils devraient apparaitre dans la liste. Cliquez de nouveau sur le bouton magique pour arrêter l&apos;autodétection de canal
+        <translation>Vous avez activé l&apos;Assistant de canaux d&apos;entrée. Après avoir cliquer OK, manipulez les controles de profil. Ils devraient apparaitre dans la liste. Cliquez de nouveau sur le bouton de l&apos;assistant pour arrêter l&apos;autodétection de canal
 
-Notez que cette fonction magique ne peut pas faire la différence entre un potentiomètre et un curseur, vous aurez à changer ça manuellement.</translation>
+Notez que cette l&apos;assistant ne peut pas faire la différence entre un potentiomètre et un curseur, vous devrez cette valeur manuellement.</translation>
     </message>
     <message>
         <location filename="inputprofileeditor.cpp" line="390"/>
@@ -1917,7 +1917,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="monitor.cpp" line="210"/>
         <source>Font</source>
-        <translation>Police</translation>
+        <translation>Police de caractère</translation>
     </message>
     <message>
         <location filename="monitor.cpp" line="219"/>
@@ -1971,7 +1971,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="outputmanager.cpp" line="63"/>
         <source>Edit Mapping</source>
-        <translation>Éditer l&apos;organiseur</translation>
+        <translation>Editer la Sortie</translation>
     </message>
     <message>
         <location filename="outputmanager.cpp" line="76"/>
@@ -1999,7 +1999,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="outputpatcheditor.ui" line="25"/>
         <source>Mapping</source>
-        <translation>Organiseur</translation>
+        <translation>Sorties</translation>
     </message>
     <message>
         <location filename="outputpatcheditor.ui" line="41"/>
@@ -2039,7 +2039,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="outputpatcheditor.cpp" line="54"/>
         <source>Mapping properties for output universe %1</source>
-        <translation>Propriétés de l&apos;organisateur pour l&apos;univers sortant %1</translation>
+        <translation>Propriétés des sorties pour l&apos;univers sortant %1</translation>
     </message>
     <message>
         <location filename="outputpatcheditor.cpp" line="200"/>
@@ -2065,7 +2065,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="sceneeditor.ui" line="13"/>
         <source>Scene editor</source>
-        <translation>Éditeur de scène</translation>
+        <translation>Éditeur de scènes</translation>
     </message>
     <message>
         <location filename="sceneeditor.ui" line="23"/>
@@ -2116,12 +2116,12 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="sceneeditor.ui" line="133"/>
         <source>Disable all fixtures&apos; channels</source>
-        <translation>Dès-enclenccher tous les canaux des projecteurs</translation>
+        <translation>Désactiver tous les canaux des projecteurs</translation>
     </message>
     <message>
         <location filename="sceneeditor.ui" line="136"/>
         <source>Disable all</source>
-        <translation>Tout dès-enclencher</translation>
+        <translation>Tout désactiver</translation>
     </message>
     <message>
         <location filename="sceneeditor.ui" line="156"/>
@@ -2131,7 +2131,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="sceneeditor.cpp" line="83"/>
         <source>Enable all channels in current fixture</source>
-        <translation>Enclencher tous les canaux dans le projecteur actuel</translation>
+        <translation>Activerer tous les canaux pour le projecteur sélectionné</translation>
     </message>
     <message>
         <location filename="sceneeditor.cpp" line="85"/>
@@ -2141,12 +2141,12 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="sceneeditor.cpp" line="87"/>
         <source>Copy current values to clipboard</source>
-        <translation>Copier les valeurs actuelles vers le bloc note</translation>
+        <translation>Copier les valeurs actuelles vers le presse papiers</translation>
     </message>
     <message>
         <location filename="sceneeditor.cpp" line="89"/>
         <source>Paste clipboard values to current fixture</source>
-        <translation>Coller les valeurs du bloc note vers le projecteur actuel</translation>
+        <translation>Coller les valeurs du presse papier vers le projecteur actuel</translation>
     </message>
     <message>
         <location filename="sceneeditor.cpp" line="91"/>
@@ -2382,7 +2382,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="vccuelist.cpp" line="230"/>
         <source>Number</source>
-        <translation>Nombre</translation>
+        <translation>Numéro</translation>
     </message>
 </context>
 <context>
@@ -2410,7 +2410,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="vccuelistproperties.ui" line="61"/>
         <source>Number</source>
-        <translation>Nombre</translation>
+        <translation>Numéro</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="66"/>
@@ -2512,12 +2512,12 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="35"/>
         <source>Make virtual console to take exclusive keyboard control during operate mode</source>
-        <translation>Fait que la console virtuelle prenne le controle exclusif du clavier pendant le mode d&apos;exploitation</translation>
+        <translation>La console virtuelle prend le controle exclusif du clavier pendant le mode d&apos;exploitation</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="38"/>
         <source>Grab keyboard in operate mode</source>
-        <translation>Saisir le clavier en mode d&apos;exploitation</translation>
+        <translation>Contrôle au clavier en mode d&apos;exploitation</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="45"/>
@@ -2527,7 +2527,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="48"/>
         <source>Turn off key repeat in operate mode</source>
-        <translation>Éteindre la répétion de combinaison en mode d&apos;exploitation</translation>
+        <translation>Éteindre la répétion de touches en mode d&apos;exploitation</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="58"/>
@@ -3210,7 +3210,7 @@ Notez que cette fonction magique ne peut pas faire la différence entre un poten
     <message>
         <location filename="virtualconsole.cpp" line="518"/>
         <source>Stacking &amp;order</source>
-        <translation>&amp;Ordre de remplissage</translation>
+        <translation>&amp;Ordre d&apos;empilement</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="781"/>
