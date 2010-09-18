@@ -75,6 +75,8 @@ void EnttecDMXUSBOpen_Test::construction()
 
 void EnttecDMXUSBOpen_Test::sendDMX()
 {
+        _ftdi_usb_open_desc_expected_description = TEST_NAME;
+        _ftdi_usb_open_desc_expected_serial = TEST_SRNO;
 	EnttecDMXUSBOpen obj(this, TEST_NAME, TEST_SRNO);
 	QCOMPARE((char)obj.m_universe[0], (char) 0); // Start code always 0
 	QCOMPARE((char)obj.m_universe[1], (char) 0);
@@ -98,6 +100,8 @@ void EnttecDMXUSBOpen_Test::sendDMX()
 
 void EnttecDMXUSBOpen_Test::run()
 {
+        _ftdi_usb_open_desc_expected_description = TEST_NAME;
+        _ftdi_usb_open_desc_expected_serial = TEST_SRNO;
 	EnttecDMXUSBOpen obj(this, TEST_NAME, TEST_SRNO);
 	_ftdi_write_data_expected_size = 513;
 	obj.sendDMX(QByteArray(512, UCHAR_MAX));

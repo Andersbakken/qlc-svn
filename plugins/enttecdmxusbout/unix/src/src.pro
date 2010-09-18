@@ -8,10 +8,14 @@ TARGET		= enttecdmxusbout
 INCLUDEPATH	+= ../../../interfaces
 
 CONFIG		+= plugin
-CONFIG		+= link_pkgconfig
-PKGCONFIG	+= libftdi
-macx:PKGCONFIG  += libusb
-PLUGINS		 =
+CONFIG(coverage) {
+	SOURCES += ../test/ftdimock/ftdimock.cpp
+	QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi)	
+} else {
+	CONFIG		+= link_pkgconfig
+	PKGCONFIG	+= libftdi
+	macx:PKGCONFIG  += libusb
+}
 
 HEADERS += enttecdmxusbwidget.h \
 	   enttecdmxusbout.h \

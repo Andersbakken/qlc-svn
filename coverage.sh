@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Check if lcov is installed
+if [ -z `which lcov` ]; then
+	echo "Unable to produce coverage results because lcov is not installed."
+fi
+
 # Remove previous data
 if [ -d coverage ]; then
 	rm -rf coverage
@@ -11,42 +16,102 @@ mkdir -p coverage/html
 #############################################################################
 # Engine
 #############################################################################
+
+# Prepare for measurement
 lcov -d engine/src -c -i -o coverage/enginebase.info
+if [ $? != 0 ]; then
+	echo
+	echo "Error running lcov. Did you run \"qmake CONFIG+=coverage\" " \
+	     "before compiling the sources? If not, go to the top level " \
+	     "source directory and run \"make distclean\", then " \
+	     "\"qmake CONFIG+=coverage\", and finally \"make\"." \
+	     "After that you can run this script to produce unit test " \
+	     "coverage results."
+	exit
+fi
+
+# Run the unit test
 pushd .
 cd engine/test
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_engine
+if [ `uname -r`=="Darwin" ]; then
+	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src ./test_engine
+else
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_engine
+fi
 popd
-lcov -d engine/src -c -o coverage/enginetest.info
 
+# Measure coverage and combine results from before and after the unit test
+lcov -d engine/src -c -o coverage/enginetest.info
 lcov	-a coverage/enginebase.info -a coverage/enginetest.info \
 	-o coverage/enginemerge.info
 
 #############################################################################
 # Enttec DMXUSB
 #############################################################################
-# DMXUSB Open
-lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbopenbase.info
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:plugins/enttecdmxusbout/unix/src plugins/enttecdmxusbout/unix/test/open/test_dmxusbopen
-lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbopentest.info
 
+###############
+# DMXUSB Open #
+###############
+
+# Prepare for measurement
+lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbopenbase.info
+
+# Run the unit test
+pushd .
+cd plugins/enttecdmxusbout/unix/test/open
+if [ `uname -r`=="Darwin" ]; then
+	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src ./test_dmxusbopen
+else
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbopen
+fi
+popd
+
+# Measure coverage and combine results from before and after the unit test
+lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbopentest.info
 lcov	-a coverage/dmxusbopenbase.info -a coverage/dmxusbopentest.info \
 	-o coverage/dmxusbopenmerge.info
 
-# DMXUSB Pro
-lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbprobase.info
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:plugins/enttecdmxusbout/unix/src plugins/enttecdmxusbout/unix/test/pro/test_dmxusbpro
-lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbprotest.info
+##############
+# DMXUSB Pro #
+##############
 
+# Prepare for measurement
+lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbprobase.info
+
+# Run the unit test
+pushd .
+cd plugins/enttecdmxusbout/unix/test/pro
+if [ `uname -r`=="Darwin" ]; then
+	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src ./test_dmxusbpro
+else
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbpro
+fi
+popd
+
+# Measure coverage and combine results from before and after the unit test
+lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbprotest.info
 lcov	-a coverage/dmxusbprobase.info -a coverage/dmxusbprotest.info \
 	-o coverage/dmxusbpromerge.info
 
 #############################################################################
 # Enttec Wing
 #############################################################################
-lcov -d plugins/ewinginput/src -c -i -o coverage/ewingbase.info
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:plugins/ewinginput/src plugins/ewinginput/test/test_ewing
-lcov -d plugins/ewinginput/src -c -o coverage/ewingtest.info
 
+# Prepare for measurement
+lcov -d plugins/ewinginput/src -c -i -o coverage/ewingbase.info
+
+# Run the unit test
+pushd .
+cd plugins/ewinginput/test
+if [ `uname -r`=="Darwin" ]; then
+	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src ./test_ewing
+else
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_ewing
+fi
+popd
+
+# Measure coverage and combine results from before and after the unit test
+lcov -d plugins/ewinginput/src -c -o coverage/ewingtest.info
 lcov	-a coverage/ewingbase.info -a coverage/ewingtest.info \
 	-o coverage/ewingmerge.info
 
