@@ -9,7 +9,9 @@ include(libqtgui-nametool.pri)
 include(libqtxml-nametool.pri)
 include(libqtcore-nametool.pri)
 include(libqtnetwork-nametool.pri)
+include(libqlcengine-nametool.pri)
 
+INSTALLS += LIBQLCENGINE_ID
 INSTALLS += LIBUSB LIBUSB_ID
 INSTALLS += LIBFTDI LIBFTDI_ID
 INSTALLS += LIBQTGUI QTMENU LIBQTGUI_ID

@@ -5,11 +5,7 @@ LANGUAGE 	= C++
 TARGET 		= qlc
 
 CONFIG          += qt
-QT 		+= xml
-
-# macdeployqt checks dependencies only for the main app so let's put all Qt
-# dependencies here
-macx:QT		+= network xml gui core
+QT 		+= core xml gui
 
 # Engine
 INCLUDEPATH	+= ../../engine/src

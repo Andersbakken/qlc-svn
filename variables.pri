@@ -13,10 +13,9 @@ APPVERSION		= 3.0.7
 QMAKE_CXXFLAGS		+= -Werror
 CONFIG			+= warn_on
 macx:CONFIG		-= app_bundle	# Let QLC construct the .app bundle
-macx:QTPLUGIN		= qjpeg qgif 	# OSX supported image formats
 
-CONFIG			-= release	# Enable this when making a release
-CONFIG			+= debug	# Disable this when making a release
+CONFIG			+= release	# Enable this when making a release
+CONFIG			-= debug	# Disable this when making a release
 
 unix:OLA_GIT		= /usr/src/ola	# OLA directories
 

@@ -2,7 +2,8 @@
 IMAGEFORMATS_DIR = /Developer/Applications/Qt/plugins/imageformats
 imageformats.path = $$INSTALLROOT/PlugIns
 
-for(i, QTPLUGIN):{
+FORMATS = qjpeg qgif
+for(i, FORMATS):{
         FILE = lib$${i}.dylib
 	imageformats.files += $$IMAGEFORMATS_DIR/$$FILE
         qtnametool.commands += && $$LIBQTCORE_INSTALL_NAME_TOOL $$INSTALLROOT/PlugIns/$$FILE

@@ -8,12 +8,19 @@ TARGET   = qlcengine
 CONFIG 		+= qt
 QT              += core xml
 QT		-= gui
+QTPLUGIN	 =
 
 INCLUDEPATH	+= ../../plugins/interfaces
 
 #############################################################################
 # Installation
 #############################################################################
+
+macx {
+	# This must be after "TARGET = " and before target installation so that
+	# install_name_tool can be run before target installation
+	include(../../macx/nametool.pri)
+}
 
 target.path = $$INSTALLROOT/$$LIBSDIR
 INSTALLS += target
