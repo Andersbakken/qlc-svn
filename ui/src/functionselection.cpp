@@ -211,6 +211,7 @@ void FunctionSelection::addFunction(Function* function)
 		updateFunctionItem(item, function);
 		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
 		m_tree->scrollToItem(item);
+		m_tree->setCurrentItem(item);
 	}
 }
 
