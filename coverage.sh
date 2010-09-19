@@ -33,11 +33,8 @@ fi
 # Run the unit test
 pushd .
 cd engine/test
-if [ `uname -r`=="Darwin" ]; then
-	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src ./test_engine
-else
+DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src \
 	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_engine
-fi
 popd
 
 # Measure coverage and combine results from before and after the unit test
@@ -59,11 +56,8 @@ lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbopenbase.info
 # Run the unit test
 pushd .
 cd plugins/enttecdmxusbout/unix/test/open
-if [ `uname -r`=="Darwin" ]; then
-	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src ./test_dmxusbopen
-else
+DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
 	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbopen
-fi
 popd
 
 # Measure coverage and combine results from before and after the unit test
@@ -81,11 +75,8 @@ lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbprobase.info
 # Run the unit test
 pushd .
 cd plugins/enttecdmxusbout/unix/test/pro
-if [ `uname -r`=="Darwin" ]; then
-	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src ./test_dmxusbpro
-else
+DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
 	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbpro
-fi
 popd
 
 # Measure coverage and combine results from before and after the unit test
@@ -103,11 +94,8 @@ lcov -d plugins/ewinginput/src -c -i -o coverage/ewingbase.info
 # Run the unit test
 pushd .
 cd plugins/ewinginput/test
-if [ `uname -r`=="Darwin" ]; then
-	DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src ./test_ewing
-else
+DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src \
 	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_ewing
-fi
 popd
 
 # Measure coverage and combine results from before and after the unit test
