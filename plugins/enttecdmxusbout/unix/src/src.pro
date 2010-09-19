@@ -14,7 +14,6 @@ CONFIG(coverage) {
 } else {
 	CONFIG		+= link_pkgconfig
 	PKGCONFIG	+= libftdi
-	macx:PKGCONFIG  += libusb
 }
 
 HEADERS += enttecdmxusbwidget.h \
