@@ -27,17 +27,33 @@
 
 int _ftdi_init_called = 0;
 int _ftdi_deinit_called = 0;
+struct usb_dev_handle* _ftdi_usb_dev_expected_value = (struct usb_dev_handle*) 0xDEADBEEF;
 
 int _ftdi_usb_open_desc_called = 0;
+int _ftdi_usb_open_desc_expected_return_value = 0;
+
+int _ftdi_usb_reset_called = 0;
+int _ftdi_usb_reset_expected_return_value = 0;
+
+int _ftdi_set_line_property_called = 0;
+int _ftdi_set_line_property_expected_return_value = 0;
+
+int _ftdi_set_baudrate_called = 0;
+int _ftdi_set_baudrate_expected_return_value = 0;
+
+int _ftdi_setrts_called = 0;
+int _ftdi_setrts_expected_return_value = 0;
+
+int _ftdi_set_line_property2_called = 0;
+int _ftdi_set_line_property2_expected_return_value = 0;
+
+int _ftdi_get_error_string_called = 0;
+
+int _ftdi_usb_purge_buffers_called = 0;
+int _ftdi_usb_purge_buffers_expected_return_value = 0;
+
 int _ftdi_usb_close_called = 0;
 int _ftdi_usb_close_expected_return_value = 0;
-int _ftdi_usb_reset_called = 0;
-int _ftdi_usb_purge_buffers_called = 0;
-int _ftdi_set_line_property_called = 0;
-int _ftdi_set_line_property2_called = 0;
-int _ftdi_set_baudrate_called = 0;
-int _ftdi_setrts_called = 0;
-int _ftdi_get_error_string_called = 0;
 
 int _ftdi_write_data_called = 0;
 int _ftdi_write_data_expected_size = 0;
@@ -61,12 +77,16 @@ int ftdi_init(struct ftdi_context* ctx)
 {
         UT_ASSERT(ctx != NULL);
         _ftdi_init_called++;
+	ctx->error_str = (char*) malloc(sizeof(char) * 15);
+	strcpy(ctx->error_str, "Expected error");
         return 0;
 }
 
 void ftdi_deinit(struct ftdi_context* ctx)
 {
         UT_ASSERT(ctx != NULL);
+	free(ctx->error_str);
+	ctx->error_str = NULL;
         _ftdi_deinit_called++;
 }
 
@@ -89,10 +109,11 @@ int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
         UT_ASSERT(QString(description) == _ftdi_usb_open_desc_expected_description);
         UT_ASSERT(QString(serial) == _ftdi_usb_open_desc_expected_serial);
 
-        ctx->usb_dev = reinterpret_cast<usb_dev_handle*> (0xDEADBEEF);
+        ctx->usb_dev = _ftdi_usb_dev_expected_value;
 
         _ftdi_usb_open_desc_called++;
-        return 0;
+
+        return _ftdi_usb_open_desc_expected_return_value;
 }
 
 int ftdi_usb_close(struct ftdi_context* ctx)
@@ -108,23 +129,26 @@ int ftdi_usb_close(struct ftdi_context* ctx)
 int ftdi_usb_reset(struct ftdi_context* ctx)
 {
         UT_ASSERT(ctx != NULL);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
         _ftdi_usb_reset_called++;
-        return 0;
+
+        return _ftdi_usb_reset_expected_return_value;
 }
 
 int ftdi_usb_purge_buffers(struct ftdi_context* ctx)
 {
         UT_ASSERT(ctx != NULL);
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
         _ftdi_usb_purge_buffers_called++;
-        return 0;
+
+        return _ftdi_usb_purge_buffers_expected_return_value;
 }
 
 char* ftdi_get_error_string(struct ftdi_context* ctx)
 {
         UT_ASSERT(ctx != NULL);
         _ftdi_get_error_string_called++;
-        return NULL;
+        return ctx->error_str;
 }
 
 int ftdi_usb_get_strings(struct ftdi_context* ctx, struct usb_device* dev, 
@@ -154,9 +178,10 @@ int ftdi_set_line_property(struct ftdi_context* ctx,
         UT_ASSERT(bits == BITS_8);
         UT_ASSERT(stop == STOP_BIT_2);
         UT_ASSERT(parity == NONE);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
         _ftdi_set_line_property_called++;
-        return 0;
+
+        return _ftdi_set_line_property_expected_return_value;
 }
 
 int ftdi_set_line_property2(struct ftdi_context* ctx, enum ftdi_bits_type bits,
@@ -168,27 +193,39 @@ int ftdi_set_line_property2(struct ftdi_context* ctx, enum ftdi_bits_type bits,
         UT_ASSERT(stop == STOP_BIT_2);
         UT_ASSERT(parity == NONE);
 	UT_ASSERT(break_type == BREAK_ON || break_type == BREAK_OFF);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
         _ftdi_set_line_property2_called++;
-        return 0;
+
+	if ((_ftdi_set_line_property2_expected_return_value == -1 && break_type == BREAK_ON)
+	    ||
+	    (_ftdi_set_line_property2_expected_return_value == -2 && break_type == BREAK_OFF))
+	{
+		return _ftdi_set_line_property2_expected_return_value;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 int ftdi_set_baudrate(struct ftdi_context* ctx, int baudrate)
 {
         UT_ASSERT(ctx != NULL);
         UT_ASSERT(baudrate == 250000);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
         _ftdi_set_baudrate_called++;
-        return 0;
+
+        return _ftdi_set_baudrate_expected_return_value;
 }
 
 int ftdi_setrts(struct ftdi_context* ctx, int rts)
 {
         UT_ASSERT(ctx != NULL);
         UT_ASSERT(rts == 0);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
         _ftdi_setrts_called++;
-        return 0;
+
+        return _ftdi_setrts_expected_return_value;
 }
 
 int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
@@ -196,7 +233,7 @@ int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
         UT_ASSERT(ctx != NULL);
         UT_ASSERT(buf != NULL);
         UT_ASSERT(size == _ftdi_write_data_expected_size);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
 
 	if (size <= 5)
 	{
@@ -234,7 +271,7 @@ int ftdi_read_data(struct ftdi_context* ctx, unsigned char* reply, int size)
         UT_ASSERT(ctx != NULL);
         UT_ASSERT(reply != NULL);
         UT_ASSERT(size == _ftdi_read_data_expected_size);
-        UT_ASSERT(ctx->usb_dev == reinterpret_cast<usb_dev_handle*> (0xDEADBEEF));
+        UT_ASSERT(ctx->usb_dev == _ftdi_usb_dev_expected_value);
 
 	memcpy(reply, _ftdi_read_data_expected_reply, _ftdi_read_data_expected_size);
 

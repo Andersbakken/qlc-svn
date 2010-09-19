@@ -27,11 +27,18 @@
 class EnttecDMXUSBOpen_Test : public QObject
 {
 	Q_OBJECT
+private:
+	void resetCounters();
 
 private slots:
 	void construction();
+	void closeFail();
+	void openFail();
+	void openClose();
 	void sendDMX();
+	void runFail();
 	void run();
+	void deleteWhileRunning();
 };
 
 #endif
