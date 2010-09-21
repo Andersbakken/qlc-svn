@@ -76,7 +76,7 @@
           <string>Add scene(s) to the cue list</string>
          </property>
          <property name="text" >
-          <string>...</string>
+          <string notr="true">...</string>
          </property>
          <property name="icon" >
           <iconset resource="main.qrc" >
@@ -96,7 +96,7 @@
           <string>Remove selected scene(s) from the cue list</string>
          </property>
          <property name="text" >
-          <string>...</string>
+          <string notr="true">...</string>
          </property>
          <property name="icon" >
           <iconset resource="main.qrc" >
@@ -116,7 +116,7 @@
           <string>Raise the selected scene</string>
          </property>
          <property name="text" >
-          <string>...</string>
+          <string notr="true">...</string>
          </property>
          <property name="icon" >
           <iconset resource="main.qrc" >
@@ -136,7 +136,7 @@
           <string>Lower the selected scene</string>
          </property>
          <property name="text" >
-          <string>...</string>
+          <string notr="true">...</string>
          </property>
          <property name="icon" >
           <iconset resource="main.qrc" >
@@ -189,7 +189,7 @@
          <string>Bind a key combination to skip to the next cue</string>
         </property>
         <property name="text" >
-         <string>...</string>
+         <string notr="true">...</string>
         </property>
         <property name="icon" >
          <iconset resource="main.qrc" >
@@ -209,7 +209,7 @@
          <string>Clear the key binding</string>
         </property>
         <property name="text" >
-         <string>...</string>
+         <string notr="true">...</string>
         </property>
         <property name="icon" >
          <iconset resource="main.qrc" >

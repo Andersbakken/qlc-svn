@@ -79,7 +79,7 @@
         <string>Add fixture(s) to the pad</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string notr="true">...</string>
        </property>
        <property name="icon">
         <iconset resource="main.qrc">
@@ -99,7 +99,7 @@
         <string>Remove selected fixture(s) from the pad</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string notr="true">...</string>
        </property>
        <property name="icon">
         <iconset resource="main.qrc">
@@ -119,7 +119,7 @@
         <string>Edit the selected fixture's axis</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string notr="true">...</string>
        </property>
        <property name="icon">
         <iconset resource="main.qrc">

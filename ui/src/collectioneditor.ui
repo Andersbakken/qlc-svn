@@ -60,7 +60,7 @@
       <string>Add function(s) to the collection</string>
      </property>
      <property name="text" >
-      <string>...</string>
+      <string notr="true">...</string>
      </property>
      <property name="icon" >
       <iconset resource="main.qrc" >
@@ -80,7 +80,7 @@
       <string>Remove the selected function</string>
      </property>
      <property name="text" >
-      <string>...</string>
+      <string notr="true">...</string>
      </property>
      <property name="icon" >
       <iconset resource="main.qrc" >

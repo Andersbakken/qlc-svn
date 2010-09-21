@@ -70,7 +70,7 @@
           <string>Add a new fixture to this scene</string>
          </property>
          <property name="text" >
-          <string>...</string>
+          <string notr="true">...</string>
          </property>
          <property name="icon" >
           <iconset resource="main.qrc" >
@@ -90,7 +90,7 @@
           <string>Remove the selected fixture(s) from this scene</string>
          </property>
          <property name="text" >
-          <string>...</string>
+          <string notr="true">...</string>
          </property>
          <property name="icon" >
           <iconset resource="main.qrc" >

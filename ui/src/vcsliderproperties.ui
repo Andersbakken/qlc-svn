@@ -314,7 +314,7 @@
           <item>
            <widget class="QSpinBox" name="m_levelLowLimitSpin">
             <property name="toolTip">
-             <string>Lowest DMX value that can be se with this slider</string>
+             <string>Lowest DMX value that can be set with this slider</string>
             </property>
             <property name="maximum">
              <number>255</number>

@@ -74,7 +74,7 @@
       <string>Add step(s) to the current position</string>
      </property>
      <property name="text" >
-      <string>...</string>
+      <string notr="true">...</string>
      </property>
      <property name="icon" >
       <iconset resource="main.qrc" >
@@ -94,7 +94,7 @@
       <string>Remove the selected step</string>
      </property>
      <property name="text" >
-      <string>...</string>
+      <string notr="true">...</string>
      </property>
      <property name="icon" >
       <iconset resource="main.qrc" >
@@ -114,7 +114,7 @@
       <string>Raise the selected step once</string>
      </property>
      <property name="text" >
-      <string>...</string>
+      <string notr="true">...</string>
      </property>
      <property name="icon" >
       <iconset resource="main.qrc" >
@@ -134,7 +134,7 @@
       <string>Lower the selected step once</string>
      </property>
      <property name="text" >
-      <string>...</string>
+      <string notr="true">...</string>
      </property>
      <property name="icon" >
       <iconset resource="main.qrc" >
