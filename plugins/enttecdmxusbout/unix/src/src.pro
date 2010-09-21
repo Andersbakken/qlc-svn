@@ -37,6 +37,7 @@ unix:!macx {
 
 PRO_FILE = src.pro
 TRANSLATIONS += enttec_fi_FI.ts
+TRANSLATIONS += enttec_de_DE.ts
 include(../../../../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that

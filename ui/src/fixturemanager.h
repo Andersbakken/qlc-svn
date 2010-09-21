@@ -76,7 +76,7 @@ public slots:
 	 /** Callback for Doc::fixtureAdded() signals */
 	void slotFixtureAdded(t_fixture_id id);
 
-	 /** Callback for Doc::fixtureRemoved() signals */
+	/** Callback for Doc::fixtureRemoved() signals */
 	void slotFixtureRemoved(t_fixture_id id);
 
 	/** Callback that listens to mode change signals */
@@ -109,7 +109,7 @@ protected slots:
 	/** Callback for fixture list selection changes */
 	void slotSelectionChanged();
 
-	 /** Callback for mouse double clicks */
+	/** Callback for mouse double clicks */
 	void slotDoubleClicked(QTreeWidgetItem* item);
 
 protected:

@@ -17,6 +17,7 @@ SOURCES += launcher.cpp main.cpp
 # Internationalization
 PRO_FILE      = launcher.pro
 TRANSLATIONS += launcher_fi_FI.ts
+TRANSLATIONS += launcher_de_DE.ts
 include(../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that
