@@ -79,6 +79,8 @@ App::App(QWidget* parent) : QMainWindow(parent)
 	QVariant var = settings.value(KSettingsGeometry);
 	if (var.isValid() == true)
 		restoreGeometry(var.toByteArray());
+
+	this->raise();
 }
 
 App::~App()
