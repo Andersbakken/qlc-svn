@@ -14,10 +14,10 @@ HEADERS += launcher.h
 SOURCES += launcher.cpp main.cpp
 
 # Translations
-# Internationalization
 PRO_FILE      = launcher.pro
 TRANSLATIONS += launcher_fi_FI.ts
 TRANSLATIONS += launcher_de_DE.ts
+TRANSLATIONS += launcher_fr_FR.ts
 include(../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that

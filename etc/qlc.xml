@@ -8,6 +8,7 @@
 		<glob pattern="*.qxw"/>
 		<comment xml:lang="de">QLC Arbeitsbereich</comment>
 		<comment xml:lang="en">QLC workspace</comment>
+		<comment xml:lang="fr">Espace de travail QLC</comment>
 		<comment xml:lang="fi">QLC työtila</comment>
 	</mime-type>
 	<mime-type type="application/x-qlc-fixture">
@@ -18,6 +19,7 @@
 		<glob pattern="*.qxf"/>
 		<comment xml:lang="de">QLC Gerätedefinition</comment>
 		<comment xml:lang="en">QLC fixture definition</comment>
+		<comment xml:lang="fr">QLC définitions des projecteurs</comment>
 		<comment xml:lang="fi">QLC valaisinmääritys</comment>
 	</mime-type>
 	<mime-type type="application/x-qlc-inputprofile">
@@ -28,6 +30,7 @@
 		<glob pattern="*.qxi"/>
 		<comment xml:lang="de">QLC Eingangsprofil</comment>
 		<comment xml:lang="en">QLC input profile</comment>
+		<comment xml:lang="fr">QLC profil d'entrée</comment>
 		<comment xml:lang="fi">QLC syöttölaiteprofiili</comment>
 	</mime-type>
 </mime-info>

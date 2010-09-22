@@ -4,6 +4,7 @@ Name=QLC Fixture Editor
 GenericName=Edit fixtures
 GenericName[de]=Gerätedefinitionen bearbeiten
 GenericName[fi]=Muokkaa valaisimia
+GenericName[fr]=Edition des Projecteurs
 Exec=qlc-fixtureeditor --open %f
 Icon=qlc-fixtureeditor
 MimeType=application/x-qlc-fixture;
