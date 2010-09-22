@@ -19,7 +19,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QDebug>
 #include <QLabel>
+#include <QTimer>
 
 #include "aboutbox.h"
 #include "app.h"
@@ -34,6 +36,8 @@ AboutBox::AboutBox(QWidget* parent) : QDialog (parent)
 				.arg(tr("and contributors:")));
 	m_websiteLabel->setText(tr("Website: %1").arg("<A HREF=\"http://www.sf.net/projects/qlc\">http://www.sf.net/projects/qlc</a>"));
 
+	connect(m_contributors, SIGNAL(itemClicked(QListWidgetItem*)),
+		this, SLOT(slotItemClicked()));
 	m_contributors->clear();
 	m_contributors->addItem("Klaus Weidenbach");
 	m_contributors->addItem("Stefan Krumm");
@@ -41,9 +45,38 @@ AboutBox::AboutBox(QWidget* parent) : QDialog (parent)
 	m_contributors->addItem("Simon Newton");
 	m_contributors->addItem("Christopher Staite");
 	m_contributors->addItem("Lutz Hillebrand");
+	m_contributors->addItem("Matthew Jaggard");
+	m_contributors->addItem("Ptit Vachon");
+	m_contributors->addItem("NiKoyes");
+
+	m_timer = new QTimer(this);
+	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
+	m_row = -1;
+	m_increment = 1;
+	m_timer->start(500);
 }
 
 AboutBox::~AboutBox()
 {
 }
 
+void AboutBox::slotTimeout()
+{
+	if (m_row <= 0)
+		m_increment = 1;
+	else if (m_row >= m_contributors->count())
+		m_increment = -1;
+
+	m_row += m_increment;
+	m_contributors->scrollToItem(m_contributors->item(m_row));
+}
+
+void AboutBox::slotItemClicked()
+{
+	if (m_timer != NULL)
+	{
+		m_timer->stop();
+		delete m_timer;
+		m_timer = NULL;
+	}
+}

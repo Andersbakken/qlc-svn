@@ -52,6 +52,7 @@ Requirements - Linux
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: libusb, libusb-dev, pkg-config
 * Peperoni Output plugin: libusb, libusb-dev, pkg-config
+* Velleman Output: Not available for Linux
 
 Requirements - Windows
 ----------------------
@@ -66,6 +67,7 @@ Requirements - Windows
 * LLA Output plugin: Not available for Windows
 * uDMX Output plugin: No additional requirements
 * Peperoni Output plugin: No additional requirements
+* Velleman Output: K8062 SDK from www.velleman.eu
 
 Requirements - Mac OS X
 -----------------------
@@ -80,6 +82,7 @@ Requirements - Mac OS X
 * OLA Output plugin: libola, ola-dev, pkg-config (see libs/olaout/README)
 * uDMX Output plugin: macports, libusb-compat, pkg-config
 * Peperoni Output plugin: macports, libusb-compat, pkg-config
+* Velleman Output: Not available for OSX
 
 
 Compiling & Installation
@@ -108,10 +111,12 @@ http://sourceforge.net/apps/trac/qlc/ (->View Tickets)
 
 Contributors
 ------------
-Stefan Krumm <stefankrumm@users.sf.net>
-Christian Suehs <dance-or-die@users.sf.net>
-Simon Newton <newtons@iinet.net>
-Christopher Staite <chris_staite@users.sf.net>
-Klaus Weidenbach <dawnbreak@users.sf.net>
-Andrew Shirley <ashirley@users.sf.net>
-Lutz Hillebrand <lutz.h@hagen.de>
+Stefan Krumm <stefankrumm@users.sf.net> (Bugfixes, new features)
+Christian Suehs <dance-or-die@users.sf.net> (Bugfixes, new features)
+Christopher Staite <chris_staite@users.sf.net> (Bugfixes)
+Klaus Weidenbach <dawnbreak@users.sf.net> (Bugfixes, German translation)
+Simon Newton <newtons@iinet.net> (OLA plugin)
+Lutz Hillebrand <lutz.h@hagen.de> (uDMX plugin)
+Matthew Jaggard <matthew@jaggard.org.uk> (Velleman plugin)
+Ptit Vachon <6ril@no-log.org> (French translation)
+NiKoyes <nikoyes@free.fr> (French translation)
