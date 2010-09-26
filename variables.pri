@@ -14,8 +14,8 @@ QMAKE_CXXFLAGS		+= -Werror
 CONFIG			+= warn_on
 macx:CONFIG		-= app_bundle	# Let QLC construct the .app bundle
 
-CONFIG			-= release	# Enable this when making a release
-CONFIG			+= debug	# Disable this when making a release
+#CONFIG			+= release	# Enable this when making a release
+#CONFIG			-= debug	# Disable this when making a release
 
 unix:OLA_GIT		= /usr/src/ola	# OLA directories
 
