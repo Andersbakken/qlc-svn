@@ -55,7 +55,7 @@ SOURCES += ../ui/src/aboutbox.cpp \
 PRO_FILE      = fixtureeditor.pro
 TRANSLATIONS += fixtureeditor_fi_FI.ts
 TRANSLATIONS += fixtureeditor_fr_FR.ts
-#TRANSLATIONS += fixtureeditor_de_DE.ts
+TRANSLATIONS += fixtureeditor_de_DE.ts
 include(../i18n.pri)
 
 macx {
