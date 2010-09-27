@@ -19,6 +19,8 @@ private slots:
 	void firmware();
 	void address();
 	void isOutputData();
+	void name();
+	void infoText();
 
 	void buttons_data();
 	void buttons();

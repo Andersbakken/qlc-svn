@@ -83,6 +83,20 @@ void TestEShortcutWing::isOutputData()
 	QVERIFY(EWing::isOutputData(ba) == false);
 }
 
+void TestEShortcutWing::name()
+{
+	QCOMPARE(m_ewing->name(), QString("Shortcut") + tr(" at ") +
+		 QHostAddress(QHostAddress::LocalHost).toString());
+}
+
+void TestEShortcutWing::infoText()
+{
+	QString str = QString("<B>%1</B><BR>").arg(m_ewing->name());
+	str += tr("Firmware version %1").arg(SHC_FIRMWARE);
+	str += tr("<P>Device is operating correctly</P>");
+	QCOMPARE(m_ewing->infoText(), str);
+}
+
 void TestEShortcutWing::buttons_data()
 {
 	QByteArray ba(data());
