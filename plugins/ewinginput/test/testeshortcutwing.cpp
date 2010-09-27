@@ -85,8 +85,8 @@ void TestEShortcutWing::isOutputData()
 
 void TestEShortcutWing::name()
 {
-	QCOMPARE(m_ewing->name(), QString("Shortcut") + tr(" at ") +
-		 QHostAddress(QHostAddress::LocalHost).toString());
+	QCOMPARE(m_ewing->name(), QString("Shortcut ") + tr("at") + QString(" ")
+		 + QHostAddress(QHostAddress::LocalHost).toString());
 }
 
 void TestEShortcutWing::infoText()

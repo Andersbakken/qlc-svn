@@ -156,7 +156,7 @@ EPlaybackWing::~EPlaybackWing()
 QString EPlaybackWing::name() const
 {
 	QString name("Playback");
-	name += tr(" at ");
+	name += QString(" ") + tr("at") + QString(" ");
 	name += m_address.toString();
 
 	return name;

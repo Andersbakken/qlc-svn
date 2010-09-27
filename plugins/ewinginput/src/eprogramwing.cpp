@@ -152,7 +152,7 @@ EProgramWing::~EProgramWing()
 QString EProgramWing::name() const
 {
 	QString name("Program");
-	name += tr(" at ");
+	name += QString(" ") + tr("at") + QString(" ");
 	name += m_address.toString();
 
 	return name;

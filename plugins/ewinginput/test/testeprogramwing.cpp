@@ -81,6 +81,20 @@ void TestEProgramWing::isOutputData()
 	QVERIFY(EWing::isOutputData(ba) == false);
 }
 
+void TestEProgramWing::name()
+{
+	QCOMPARE(m_ewing->name(), QString("Program ") + tr("at") + QString(" ")
+		 + QHostAddress(QHostAddress::LocalHost).toString());
+}
+
+void TestEProgramWing::infoText()
+{
+	QString str = QString("<B>%1</B><BR>").arg(m_ewing->name());
+	str += tr("Firmware version %1").arg(PRG_FIRMWARE);
+	str += tr("<P>Device is operating correctly</P>");
+	QCOMPARE(m_ewing->infoText(), str);
+}
+
 void TestEProgramWing::buttons_data()
 {
 	QByteArray ba(data());

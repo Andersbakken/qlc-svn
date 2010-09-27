@@ -84,6 +84,20 @@ void TestEPlaybackWing::isOutputData()
 	QVERIFY(EWing::isOutputData(ba) == false);
 }
 
+void TestEPlaybackWing::name()
+{
+	QCOMPARE(m_ewing->name(), QString("Playback ") + tr("at") + QString(" ")
+		 + QHostAddress(QHostAddress::LocalHost).toString());
+}
+
+void TestEPlaybackWing::infoText()
+{
+	QString str = QString("<B>%1</B><BR>").arg(m_ewing->name());
+	str += tr("Firmware version %1").arg(PLB_FIRMWARE);
+	str += tr("<P>Device is operating correctly</P>");
+	QCOMPARE(m_ewing->infoText(), str);
+}
+
 void TestEPlaybackWing::buttons_data()
 {
 	QByteArray ba(data());

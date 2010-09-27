@@ -91,7 +91,7 @@ EShortcutWing::~EShortcutWing()
 QString EShortcutWing::name() const
 {
 	QString name("Shortcut");
-	name += tr(" at ");
+	name += QString(" ") + tr("at") + QString(" ");
 	name += m_address.toString();
 
 	return name;
