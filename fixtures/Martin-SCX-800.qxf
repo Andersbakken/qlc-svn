@@ -136,6 +136,7 @@
    <Dimensions Width="240" Height="203" Weight="15" Depth="550" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="172" Type="Barrel" TiltMax="360" />
+   <Technical PowerConsumption="231" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe</Channel>
   <Channel Number="1" >Gobo</Channel>
@@ -149,6 +150,7 @@
    <Dimensions Width="240" Height="203" Weight="15" Depth="550" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="172" Type="Barrel" TiltMax="360" />
+   <Technical PowerConsumption="231" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe</Channel>
   <Channel Number="1" >Gobo</Channel>

@@ -72,6 +72,7 @@
    <Dimensions Width="0" Height="0" Weight="0" Depth="0" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="270" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Lamp</Channel>
   <Channel Number="1" >Trigger Mode</Channel>
@@ -86,6 +87,7 @@
    <Dimensions Width="265" Height="303" Weight="7" Depth="340" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="270" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Control</Channel>
  </Mode>

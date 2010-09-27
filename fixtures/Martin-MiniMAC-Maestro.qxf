@@ -117,6 +117,7 @@
    <Dimensions Width="316" Height="390" Weight="14" Depth="415" />
    <Lens DegreesMax="18" Name="Other" DegreesMin="18" />
    <Focus TiltMax="270" PanMax="540" Type="Head" />
+   <Technical PowerConsumption="255" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe, reset, lamp</Channel>
   <Channel Number="1" >Image selection</Channel>
@@ -133,6 +134,7 @@
    <Dimensions Width="316" Height="390" Weight="14" Depth="415" />
    <Lens DegreesMax="18" Name="Other" DegreesMin="18" />
    <Focus TiltMax="270" PanMax="540" Type="Head" />
+   <Technical PowerConsumption="255" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe, reset, lamp</Channel>
   <Channel Number="1" >Image selection</Channel>

@@ -167,6 +167,7 @@
    <Dimensions Width="389" Height="559" Weight="21" Depth="320" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="540" Type="Head" TiltMax="270" />
+   <Technical PowerConsumption="480" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Pan fine</Channel>

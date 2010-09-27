@@ -49,6 +49,7 @@
    <Dimensions Width="280" Height="250" Weight="8" Depth="360" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="300" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Gobo</Channel>
   <Channel Number="1" >Rotation</Channel>

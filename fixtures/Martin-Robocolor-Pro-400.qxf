@@ -81,6 +81,7 @@
    <Dimensions Width="337" Height="282" Weight="11" Depth="306" />
    <Lens DegreesMax="33" Name="PC" DegreesMin="15" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="270" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Strobe</Channel>
   <Channel Number="1" >Dimmer</Channel>
@@ -94,6 +95,7 @@
    <Dimensions Width="337" Height="282" Weight="11" Depth="306" />
    <Lens DegreesMax="33" Name="PC" DegreesMin="15" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="270" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Strobe</Channel>
   <Channel Number="1" >Dimmer</Channel>

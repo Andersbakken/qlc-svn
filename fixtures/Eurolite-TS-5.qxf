@@ -74,6 +74,7 @@
    <Dimensions Width="525" Height="260" Weight="11" Depth="300" />
    <Lens DegreesMax="18" Name="Other" DegreesMin="18" />
    <Focus PanMax="180" Type="Mirror" TiltMax="90" />
+   <Technical PowerConsumption="300" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan</Channel>
   <Channel Number="1" >Tilt</Channel>

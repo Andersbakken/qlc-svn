@@ -22,6 +22,7 @@
    <Dimensions Width="460" Height="140" Weight="6" Depth="200" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3600" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Flash rate</Channel>
   <Channel Number="1" >Dimmer</Channel>

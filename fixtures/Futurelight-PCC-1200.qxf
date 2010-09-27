@@ -57,6 +57,7 @@
    <Dimensions Width="0" Height="0" Weight="0" Depth="0" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus TiltMax="0" PanMax="0" Type="Fixed" />
+   <Technical PowerConsumption="1250" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Colour 1</Channel>
   <Channel Number="1" >Colour 2</Channel>

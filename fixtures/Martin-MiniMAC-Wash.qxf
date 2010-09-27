@@ -93,6 +93,7 @@
    <Dimensions Width="316" Height="390" Weight="12" Depth="415" />
    <Lens DegreesMax="40" Name="Fresnel" DegreesMin="23" />
    <Focus TiltMax="270" PanMax="540" Type="Head" />
+   <Technical PowerConsumption="210" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe, reset, lamp</Channel>
   <Channel Number="1" >Color</Channel>
@@ -105,6 +106,7 @@
    <Dimensions Width="316" Height="390" Weight="12" Depth="415" />
    <Lens DegreesMax="40" Name="Fresnel" DegreesMin="23" />
    <Focus TiltMax="270" PanMax="540" Type="Head" />
+   <Technical PowerConsumption="210" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe, reset, lamp</Channel>
   <Channel Number="1" >Color</Channel>
@@ -119,6 +121,7 @@
    <Dimensions Width="316" Height="390" Weight="12" Depth="415" />
    <Lens DegreesMax="40" Name="Fresnel" DegreesMin="23" />
    <Focus TiltMax="270" PanMax="540" Type="Head" />
+   <Technical PowerConsumption="210" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe, reset, lamp</Channel>
   <Channel Number="1" >Color</Channel>
@@ -135,6 +138,7 @@
    <Dimensions Width="316" Height="390" Weight="12" Depth="415" />
    <Lens DegreesMax="40" Name="Fresnel" DegreesMin="23" />
    <Focus TiltMax="270" PanMax="540" Type="Head" />
+   <Technical PowerConsumption="210" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Shutter, strobe, reset, lamp</Channel>
   <Channel Number="1" >Color</Channel>

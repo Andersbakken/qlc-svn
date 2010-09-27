@@ -137,6 +137,7 @@
    <Dimensions Width="340" Height="145" Weight="8" Depth="370" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="10" />
    <Focus PanMax="660" Type="Head" TiltMax="300" />
+   <Technical PowerConsumption="350" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Pan fine</Channel>
@@ -159,6 +160,7 @@
    <Dimensions Width="340" Height="370" Weight="8" Depth="145" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="10" />
    <Focus PanMax="660" Type="Head" TiltMax="300" />
+   <Technical PowerConsumption="350" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Pan fine</Channel>
@@ -177,6 +179,7 @@
    <Dimensions Width="340" Height="370" Weight="8" Depth="145" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="10" />
    <Focus PanMax="660" Type="Fixed" TiltMax="300" />
+   <Technical PowerConsumption="350" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Pan fine</Channel>

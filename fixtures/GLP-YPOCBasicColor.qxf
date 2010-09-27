@@ -104,6 +104,7 @@
    <Dimensions Width="380" Height="510" Weight="18" Depth="390" />
    <Lens DegreesMax="22" Name="Fresnel" DegreesMin="8" />
    <Focus PanMax="540" Type="Head" TiltMax="280" />
+   <Technical PowerConsumption="500" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Pan fine</Channel>

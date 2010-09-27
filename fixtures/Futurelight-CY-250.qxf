@@ -64,6 +64,7 @@
    <Dimensions Width="300" Height="525" Weight="14" Depth="150" />
    <Lens DegreesMax="17" Name="Other" DegreesMin="17" />
    <Focus TiltMax="0" PanMax="0" Type="Barrell" />
+   <Technical PowerConsumption="500" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan</Channel>
   <Channel Number="1" >Tilt</Channel>

@@ -65,6 +65,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Simple</Channel>
  </Mode>
@@ -74,6 +75,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Intensity</Channel>
   <Channel Number="1" >Duration</Channel>
@@ -85,6 +87,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Intensity</Channel>
   <Channel Number="1" >Duration</Channel>
@@ -97,6 +100,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Simple</Channel>
   <Channel Number="1" >Colour</Channel>
@@ -107,6 +111,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Intensity</Channel>
   <Channel Number="1" >Duration</Channel>
@@ -119,6 +124,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Intensity</Channel>
   <Channel Number="1" >Duration</Channel>
@@ -132,6 +138,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Simple</Channel>
   <Channel Number="1" >Colour</Channel>
@@ -143,6 +150,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Intensity</Channel>
   <Channel Number="1" >Duration</Channel>
@@ -156,6 +164,7 @@
    <Dimensions Width="425" Height="245" Weight="8" Depth="240" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="3000" DmxConnector="3-pin and 5-pin"/>
   </Physical>
   <Channel Number="0" >Intensity</Channel>
   <Channel Number="1" >Duration</Channel>

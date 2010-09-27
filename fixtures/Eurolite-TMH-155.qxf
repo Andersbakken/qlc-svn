@@ -68,6 +68,7 @@
    <Dimensions Width="335" Height="360" Weight="12" Depth="330" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="360" Type="Head" TiltMax="250" />
+   <Technical PowerConsumption="265" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Tilt coarse</Channel>
@@ -82,6 +83,7 @@
    <Dimensions Width="335" Height="360" Weight="12" Depth="330" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="360" Type="Head" TiltMax="250" />
+   <Technical PowerConsumption="265" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan coarse</Channel>
   <Channel Number="1" >Tilt coarse</Channel>

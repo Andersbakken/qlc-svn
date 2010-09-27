@@ -107,6 +107,7 @@
    <Dimensions Width="269" Height="537" Weight="9" Depth="263" />
    <Lens DegreesMax="16" Name="Other" DegreesMin="16" />
    <Focus TiltMax="77" PanMax="230" Type="Mirror" />
+   <Technical PowerConsumption="200" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Dimmer, strobe, reset</Channel>
   <Channel Number="1" >Color wheel</Channel>

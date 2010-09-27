@@ -115,6 +115,7 @@
    <Dimensions Width="204" Height="445" Weight="7" Depth="178" />
    <Lens DegreesMax="15" Name="Other" DegreesMin="15" />
    <Focus PanMax="180" Type="Mirror" TiltMax="72" />
+   <Technical PowerConsumption="173" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Strobe, macros</Channel>
   <Channel Number="1" >Dimmer</Channel>
@@ -129,6 +130,7 @@
    <Dimensions Width="204" Height="445" Weight="7" Depth="178" />
    <Lens DegreesMax="15" Name="Other" DegreesMin="15" />
    <Focus PanMax="180" Type="Mirror" TiltMax="72" />
+   <Technical PowerConsumption="173" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Strobe, macros</Channel>
   <Channel Number="1" >Dimmer</Channel>

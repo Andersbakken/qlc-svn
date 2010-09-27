@@ -87,6 +87,7 @@
    <Dimensions Width="0" Height="0" Weight="3" Depth="0" />
    <Lens DegreesMax="0" Name="PC" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Internal programs</Channel>
   <Channel Number="1" >Master Dimmer</Channel>

@@ -99,6 +99,7 @@
    <Dimensions Width="0" Height="0" Weight="0" Depth="0" />
    <Lens DegreesMax="0" Name="" DegreesMin="0" />
    <Focus PanMax="0" Type="Head" TiltMax="0" />
+   <Technical PowerConsumption="420" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan</Channel>
   <Channel Number="1" >Pan fine</Channel>
@@ -117,6 +118,7 @@
    <Dimensions Width="0" Height="0" Weight="0" Depth="0" />
    <Lens DegreesMax="0" Name="" DegreesMin="0" />
    <Focus PanMax="0" Type="Head" TiltMax="0" />
+   <Technical PowerConsumption="420" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Pan</Channel>
   <Channel Number="1" >Tilt</Channel>

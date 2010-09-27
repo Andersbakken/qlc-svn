@@ -57,6 +57,7 @@
    <Dimensions Width="270" Height="285" Weight="7" Depth="315" />
    <Lens DegreesMax="18" Name="Other" DegreesMin="18" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="320" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Colour</Channel>
   <Channel Number="1" >Gobo</Channel>
