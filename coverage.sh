@@ -112,7 +112,9 @@ lcov	-a coverage/enginemerge.info \
 	-a coverage/dmxusbopenmerge.info \
 	-a coverage/dmxusbpromerge.info \
 	-o coverage/coverage.info
+lcov	-r coverage/coverage.info moc_* -o coverage/coveragenomoc.info
+lcov	-r coverage/coveragenomoc.info usr* -o coverage/coveragenomocusr.info
 
 # Generate HTML report
-genhtml -o coverage/html coverage/coverage.info
+genhtml -o coverage/html coverage/coveragenomocusr.info
 
