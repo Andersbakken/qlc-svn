@@ -183,7 +183,7 @@ void EProgramWing::parseData(const QByteArray& data)
 	size = EWING_PROGRAM_BYTE_BUTTON + EWING_PROGRAM_BUTTON_SIZE;
 	if (data.size() < size)
 	{
-		qWarning() << "Expected at least" << size
+		qWarning() << Q_FUNC_INFO << "Expected at least" << size
 			   << "bytes for buttons but got only" << data.size();
 		return;
 	}

@@ -119,7 +119,12 @@ void EShortcutWing::parseData(const QByteArray& data)
 
 	/* Check that we can get all channels from the packet */
 	size = EWING_SHORTCUT_BYTE_BUTTON + EWING_SHORTCUT_BUTTON_SIZE;
-	Q_ASSERT(data.size() >= size);
+	if (data.size() < size)
+	{
+		qWarning() << Q_FUNC_INFO << "Expected at least" << size
+			   << "bytes for buttons but got only" << data.size();
+		return;
+	}
 
 	/* Read the state of each button */
 	for (int byte = size - 1; byte >= EWING_SHORTCUT_BYTE_BUTTON; byte--)
