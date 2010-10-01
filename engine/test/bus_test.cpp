@@ -93,6 +93,22 @@ void Bus_Test::name()
 	QVERIFY(spy.count() == 1);
 }
 
+void Bus_Test::idName()
+{
+	Bus::instance()->setName(0, "Fade");
+
+	QCOMPARE(Bus::instance()->idName(0), QString("Fade"));
+	QCOMPARE(Bus::instance()->idName(1), QString("Hold"));
+	QCOMPARE(Bus::instance()->idName(5), QString("Bus 6"));
+	QCOMPARE(Bus::instance()->idName(Bus::count()), QString());
+
+	QStringList idNames(Bus::instance()->idNames());
+	QCOMPARE(idNames.size(), int(Bus::count()));
+	QCOMPARE(idNames[0], QString("Fade"));
+	QCOMPARE(idNames[1], QString("Hold"));
+	QCOMPARE(idNames[5], QString("Bus 6"));
+}
+
 void Bus_Test::tap()
 {
 	QSignalSpy spy(Bus::instance(), SIGNAL(tapped(quint32)));
@@ -134,6 +150,11 @@ void Bus_Test::load()
 	QDomText valueText = doc.createTextNode("142");
 	value.appendChild(valueText);
 	root.appendChild(value);
+
+	QDomElement foo = doc.createElement("Foobar");
+	QDomText fooText = doc.createTextNode("Xyzzy");
+	foo.appendChild(fooText);
+	root.appendChild(foo);
 
 	QVERIFY(Bus::instance()->loadXML(&root) == true);
 	QVERIFY(Bus::instance()->value(0) == 142);

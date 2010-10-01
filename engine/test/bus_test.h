@@ -34,6 +34,7 @@ private slots:
 	void defaults();
 	void value();
 	void name();
+	void idName();
 	void tap();
 	void loadWrongRoot();
 	void load();
