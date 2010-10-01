@@ -27,9 +27,11 @@
 
 #include "function.h"
 #include "fixture.h"
+#define protected public
 #include "chaser.h"
 #include "scene.h"
 #include "doc.h"
+#undef protected
 
 void Chaser_Test::initTestCase()
 {
@@ -497,7 +499,12 @@ void Chaser_Test::createCopy()
 	doc.addFunction(c1);
 	QVERIFY(c1->id() != Function::invalidId());
 
+	// Verify that the function is not created when Doc is full
+	doc.m_functionAllocation = KFunctionArraySize;
 	Function* f = c1->createCopy(&doc);
+	QVERIFY(f == NULL);
+
+	doc.m_functionAllocation = 1;
 	QVERIFY(f != NULL);
 	QVERIFY(f != c1);
 	QVERIFY(f->id() != c1->id());
@@ -1235,5 +1242,36 @@ void Chaser_Test::writeBusZeroPingPongBackward()
 	s3->disarm();
 
 	delete mts;
+	delete doc;
+}
+
+void Chaser_Test::tap()
+{
+	Doc* doc = new Doc(this, m_cache);
+
+	Fixture* fxi = new Fixture(doc);
+	fxi->setAddress(0);
+	fxi->setUniverse(0);
+	fxi->setChannels(2);
+	doc->addFixture(fxi);
+
+	Scene* s1 = new Scene(doc);
+	s1->setName("Scene1");
+	s1->setValue(fxi->id(), 0, UCHAR_MAX);
+	s1->setValue(fxi->id(), 1, UCHAR_MAX);
+	doc->addFunction(s1);
+
+	Chaser* c = new Chaser(doc);
+	c->setName("Chaser");
+	c->setRunOrder(Chaser::PingPong);
+	c->setDirection(Chaser::Backward);
+	c->addStep(s1->id());
+
+	QVERIFY(c->m_tapped == false);
+	c->slotBusTapped(Bus::defaultFade());
+	QVERIFY(c->m_tapped == false);
+	c->slotBusTapped(Bus::defaultHold());
+	QVERIFY(c->m_tapped == true);
+
 	delete doc;
 }

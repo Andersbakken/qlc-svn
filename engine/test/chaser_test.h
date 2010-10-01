@@ -58,6 +58,7 @@ private slots:
 	void writeBusZeroPingPongForward();
 	void writeBusZeroPingPongBackward();
 
+	void tap();
 private:
 	Doc* m_doc;
 	QLCFixtureDefCache m_cache;
