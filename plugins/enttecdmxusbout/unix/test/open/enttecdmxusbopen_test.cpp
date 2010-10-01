@@ -101,7 +101,7 @@ void EnttecDMXUSBOpen_Test::resetCounters()
 	_ftdi_setrts_expected_return_value = 0;
 
 	_ftdi_write_data_called = 0;
-	_ftdi_write_data_expected_size = 5;
+	_ftdi_write_data_expected_size = 513;
 	_ftdi_write_data_expected_return_value = 0;
 
 	_ftdi_usb_purge_buffers_called = 0;
@@ -142,7 +142,8 @@ void EnttecDMXUSBOpen_Test::closeFail()
 	resetCounters();
 
 	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
-        
+	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
+
 	QVERIFY(obj->open() == true);
 	QCOMPARE(_ftdi_usb_open_desc_called, 1);
 	QCOMPARE(_ftdi_usb_reset_called, 1);
@@ -165,6 +166,7 @@ void EnttecDMXUSBOpen_Test::openFail()
 	resetCounters();
 
 	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
 	_ftdi_usb_open_desc_expected_return_value = -1;
 	QVERIFY(obj->open() == false);
@@ -219,6 +221,7 @@ void EnttecDMXUSBOpen_Test::openClose()
 	resetCounters();
 
 	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
 	QCOMPARE(_ftdi_usb_open_desc_called, 0);
 	QCOMPARE(_ftdi_usb_reset_called, 0);
@@ -283,6 +286,7 @@ void EnttecDMXUSBOpen_Test::runFail()
 	resetCounters();
 
 	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
 	// Simulate sudden closing of the device
 	QVERIFY(obj->open() == true);

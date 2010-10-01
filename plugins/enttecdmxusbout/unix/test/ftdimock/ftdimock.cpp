@@ -237,6 +237,7 @@ int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
 
 	if (size <= 5)
 	{
+		// Enttec pro serial query packet
 		UT_ASSERT(buf[0] == 0x7e);
 		UT_ASSERT(buf[1] == 0x0a);
 		UT_ASSERT(buf[2] == 0x00);
@@ -245,6 +246,7 @@ int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
 	}
 	else if (size > 513)
 	{
+		// Enttec pro write DMX packet
 		UT_ASSERT(size == 518);
 		UT_ASSERT(buf[0] == 0x7e);
 		UT_ASSERT(buf[1] == 0x06);
@@ -255,6 +257,7 @@ int ftdi_write_data(struct ftdi_context* ctx, unsigned char* buf, int size)
 	}
 	else
 	{
+		// Enttec open DMX writer thread packet
 		UT_ASSERT(size == 513);
 		UT_ASSERT(buf[0] == 0);
 		UT_ASSERT(buf[1] == UCHAR_MAX);
