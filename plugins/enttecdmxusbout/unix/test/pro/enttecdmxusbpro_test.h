@@ -38,6 +38,7 @@ private slots:
 	void extractSerialWrongReply();
 	void closeAlreadyClosed();
 	void closeFail();
+	void openFail();
 	void open();
 	void sendDMX();
 };

@@ -66,15 +66,8 @@ bool EnttecDMXUSBPro::open()
 		{
 			qWarning() << "Unable to reset" << uniqueName()
 				   << ":" << ftdi_get_error_string(&m_context);
-			return close();
-		}
-
-		if (ftdi_set_baudrate(&m_context, 250000) < 0)
-		{
-			qWarning() << "Unable to set 250kbps baudrate for"
-				   << uniqueName() << ":"
-				   << ":" << ftdi_get_error_string(&m_context);
-			return close();
+			close();
+			return false;
 		}
 
 		if (ftdi_set_line_property(&m_context, BITS_8, STOP_BIT_2, NONE) < 0)
@@ -82,7 +75,17 @@ bool EnttecDMXUSBPro::open()
 			qWarning() << "Unable to set 8N2 serial properties to"
 				   << uniqueName()
 				   << ":" << ftdi_get_error_string(&m_context);
-			return close();
+			close();
+			return false;
+		}
+
+		if (ftdi_set_baudrate(&m_context, 250000) < 0)
+		{
+			qWarning() << "Unable to set 250kbps baudrate for"
+				   << uniqueName() << ":"
+				   << ":" << ftdi_get_error_string(&m_context);
+			close();
+			return false;
 		}
 
 		if (ftdi_setrts(&m_context, 0) < 0)
@@ -90,7 +93,8 @@ bool EnttecDMXUSBPro::open()
 			qWarning() << "Unable to set RTS line to 0 for"
 				   << uniqueName()
 				   << ":" << ftdi_get_error_string(&m_context);
-			return close();
+			close();
+			return false;
 		}
 
 		return true;
