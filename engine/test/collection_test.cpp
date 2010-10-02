@@ -219,6 +219,33 @@ void Collection_Test::loadWrongRoot()
 	QVERIFY(c.loadXML(&root) == false);
 }
 
+void Collection_Test::loadWrongMemberTag()
+{
+	QDomDocument doc;
+
+	QDomElement root = doc.createElement("Function");
+	root.setAttribute("Type", "Collection");
+
+	QDomElement s1 = doc.createElement("Foo");
+	QDomText s1Text = doc.createTextNode("50");
+	s1.appendChild(s1Text);
+	root.appendChild(s1);
+
+	QDomElement s2 = doc.createElement("Step");
+	QDomText s2Text = doc.createTextNode("12");
+	s2.appendChild(s2Text);
+	root.appendChild(s2);
+
+	QDomElement s3 = doc.createElement("Bar");
+	QDomText s3Text = doc.createTextNode("87");
+	s3.appendChild(s3Text);
+	root.appendChild(s3);
+
+	Collection c(m_doc);
+	QVERIFY(c.loadXML(&root) == true);
+	QCOMPARE(c.functions().size(), 1);
+}
+
 void Collection_Test::save()
 {
 	Collection c(m_doc);

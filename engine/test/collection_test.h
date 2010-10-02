@@ -43,6 +43,7 @@ private slots:
 	void loadSuccess();
 	void loadWrongType();
 	void loadWrongRoot();
+	void loadWrongMemberTag();
 	void save();
 	void copyFrom();
 	void createCopy();
