@@ -364,6 +364,7 @@ void Doc_Test::addFunction()
 	QVERIFY(s->id() == 0);
 	QVERIFY(doc.m_functionAllocation == 1);
 	QVERIFY(doc.isModified() == true);
+	QCOMPARE(int(doc.functionsFree()), KFunctionArraySize - 1);
 
 	doc.resetModified();
 
@@ -373,6 +374,7 @@ void Doc_Test::addFunction()
 	QVERIFY(c->id() == 1);
 	QVERIFY(doc.m_functionAllocation == 2);
 	QVERIFY(doc.isModified() == true);
+	QCOMPARE(int(doc.functionsFree()), KFunctionArraySize - 2);
 
 	doc.resetModified();
 
@@ -386,6 +388,7 @@ void Doc_Test::addFunction()
 	QVERIFY(o->id() == 2);
 	QVERIFY(doc.m_functionAllocation == 3);
 	QVERIFY(doc.isModified() == true);
+	QCOMPARE(int(doc.functionsFree()), KFunctionArraySize - 3);
 
 	doc.resetModified();
 
@@ -397,8 +400,7 @@ void Doc_Test::addFunction()
 	QVERIFY(e->id() == 3);
 	QVERIFY(doc.m_functionAllocation == 4);
 	QVERIFY(doc.isModified() == true);
-
-	QVERIFY(doc.functionsFree() == KFunctionArraySize - 4);
+	QCOMPARE(int(doc.functionsFree()), KFunctionArraySize - 4);
 }
 
 void Doc_Test::deleteFunction()
