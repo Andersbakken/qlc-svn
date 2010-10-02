@@ -505,6 +505,7 @@ void Chaser_Test::createCopy()
 	QVERIFY(f == NULL);
 
 	doc.m_functionAllocation = 1;
+	f = c1->createCopy(&doc);
 	QVERIFY(f != NULL);
 	QVERIFY(f != c1);
 	QVERIFY(f->id() != c1->id());
