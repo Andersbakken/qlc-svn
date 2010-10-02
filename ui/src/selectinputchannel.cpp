@@ -21,6 +21,7 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
+#include <QDebug>
 
 #include "qlcinputchannel.h"
 #include "qlcinputprofile.h"
@@ -218,3 +219,10 @@ void SelectInputChannel::slotItemChanged(QTreeWidgetItem* item, int column)
 	item->setText(KColumnChannel, QString("%1").arg(channel - 1));
 }
 
+void SelectInputChannel::slotItemDoubleClicked(QTreeWidgetItem* item, int column)
+{
+	Q_UNUSED(column);
+
+	if (!(item->flags() & Qt::ItemIsEditable))
+		accept();
+}

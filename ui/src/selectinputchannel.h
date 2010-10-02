@@ -35,6 +35,7 @@ class InputPatch;
 class SelectInputChannel : public QDialog, public Ui_SelectInputChannel
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(SelectInputChannel)
 
 	/********************************************************************
 	 * Initialization
@@ -42,9 +43,6 @@ class SelectInputChannel : public QDialog, public Ui_SelectInputChannel
 public:
 	SelectInputChannel(QWidget* parent);
 	~SelectInputChannel();
-
-private:
-	Q_DISABLE_COPY(SelectInputChannel)
 
 protected slots:
 	void accept();
@@ -84,6 +82,9 @@ protected:
 protected slots:
 	/** Receives changed information for items with manual input enabled */
 	void slotItemChanged(QTreeWidgetItem* item, int column);
+
+	/** Receives item double clicks */
+	void slotItemDoubleClicked(QTreeWidgetItem* item, int column);
 };
 
 #endif
