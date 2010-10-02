@@ -47,7 +47,9 @@ HEADERS += bus_test.h \
 	  outputmap_test.h \
 	  inputmap_test.h \
 	  mastertimer_test.h \
-	  doc_test.h
+	  doc_test.h \
+	  dummyoutplugin_test.h \
+	  ../../plugins/interfaces/qlcoutplugin.h
 
 # Stubs
 HEADERS += mastertimer_stub.h \
@@ -69,6 +71,7 @@ SOURCES += qlcphysical_test.cpp \
 	   qlcinputprofile_test.cpp \
 	   qlcmacros_test.cpp
 
+# Engine
 SOURCES += bus_test.cpp \
 	  fixture_test.cpp \
 	  function_test.cpp \
@@ -85,6 +88,7 @@ SOURCES += bus_test.cpp \
 	  inputmap_test.cpp \
 	  mastertimer_test.cpp \
 	  doc_test.cpp \
+	  dummyoutplugin_test.cpp \
 	  test_engine.cpp
 
 # Stubs

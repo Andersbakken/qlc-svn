@@ -34,6 +34,7 @@
 #include "qlcmacros_test.h"
 
 // Engine
+#include "dummyoutplugin_test.h"
 #include "scenechannel_test.h"
 #include "mastertimer_test.h"
 #include "outputpatch_test.h"
@@ -92,10 +93,6 @@ int main(int argc, char** argv)
 	if (r != 0)
 		return r;
 
-	/********************************************************************
-	 * Engine
-	 ********************************************************************/
-
 	QLCFixtureDefCache_Test fixtureDefCache;
 	r = QTest::qExec(&fixtureDefCache, argc, argv);
 	if (r != 0)
@@ -110,6 +107,10 @@ int main(int argc, char** argv)
 	r = QTest::qExec(&inputProfile, argc, argv);
 	if (r != 0)
 		return r;
+
+	/********************************************************************
+	 * Engine
+	 ********************************************************************/
 
 	OutputPatch_Test outputpatch;
 	r = QTest::qExec(&outputpatch, argc, argv);
@@ -187,6 +188,11 @@ int main(int argc, char** argv)
 
 	Doc_Test doc;
 	r = QTest::qExec(&doc, argc, argv);
+	if (r != 0)
+		return r;
+
+	DummyOutPlugin_Test dummy;
+	r = QTest::qExec(&dummy, argc, argv);
 	if (r != 0)
 		return r;
 
