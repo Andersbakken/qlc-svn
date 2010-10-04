@@ -146,6 +146,23 @@ void Fixture_Test::lessThan()
 	QVERIFY(!(fxi1 < fxi2));
 }
 
+void Fixture_Test::type()
+{
+	Fixture fxi(this);
+	QCOMPARE(fxi.type(), QString(KXMLFixtureDimmer));
+
+	const QLCFixtureDef* fixtureDef;
+	fixtureDef = m_fixtureDefCache.fixtureDef("Martin", "MAC250+");
+	QVERIFY(fixtureDef != NULL);
+
+	const QLCFixtureMode* fixtureMode;
+	fixtureMode = fixtureDef->modes().at(0);
+	QVERIFY(fixtureMode != NULL);
+
+	fxi.setFixtureDefinition(fixtureDef, fixtureMode);
+	QCOMPARE(fxi.type(), fixtureDef->type());
+}
+
 void Fixture_Test::dimmer()
 {
 	Fixture fxi(this);
