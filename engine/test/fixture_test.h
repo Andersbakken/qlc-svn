@@ -34,6 +34,7 @@ private slots:
 	void id();
 	void name();
 	void address();
+	void lessThan();
 	void dimmer();
 	void fixtureDef();
 	void loadWrongRoot();

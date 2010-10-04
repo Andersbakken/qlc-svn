@@ -127,6 +127,25 @@ void Fixture_Test::address()
 	QVERIFY(fxi.channelAddress(20) == Fixture::invalidChannel());
 }
 
+void Fixture_Test::lessThan()
+{
+	Fixture fxi1(this);
+	Fixture fxi2(this);
+
+	QVERIFY(!(fxi1 < fxi2));
+	QVERIFY(!(fxi2 < fxi1));
+
+	fxi1.setAddress(0);
+	fxi2.setAddress(1);
+	QVERIFY(fxi1 < fxi2);
+	QVERIFY(!(fxi2 < fxi1));
+
+	fxi1.setAddress(511);
+	fxi2.setAddress(42);
+	QVERIFY(fxi2 < fxi1);
+	QVERIFY(!(fxi1 < fxi2));
+}
+
 void Fixture_Test::dimmer()
 {
 	Fixture fxi(this);
