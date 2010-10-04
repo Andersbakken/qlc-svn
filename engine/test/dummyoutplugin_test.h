@@ -26,12 +26,12 @@
 
 class DummyOutPlugin_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void dummyMethods();
-	void outputs();
-	void infoText();
+    void dummyMethods();
+    void outputs();
+    void infoText();
 };
 
 #endif

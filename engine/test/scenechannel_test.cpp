@@ -27,30 +27,30 @@
 
 void SceneChannel_Test::initial()
 {
-	SceneChannel sch;
-	QVERIFY(sch.address == 0);
-	QVERIFY(sch.start == 0);
-	QVERIFY(sch.current == 0);
-	QVERIFY(sch.target == 0);
+    SceneChannel sch;
+    QVERIFY(sch.address == 0);
+    QVERIFY(sch.start == 0);
+    QVERIFY(sch.current == 0);
+    QVERIFY(sch.target == 0);
 }
 
 void SceneChannel_Test::copy()
 {
-	SceneChannel sch;
-	sch.address = 123;
-	sch.start = 15;
-	sch.current = 48;
-	sch.target = 90;
+    SceneChannel sch;
+    sch.address = 123;
+    sch.start = 15;
+    sch.current = 48;
+    sch.target = 90;
 
-	SceneChannel sch2 = sch;
-	QVERIFY(sch2.address == 123);
-	QVERIFY(sch2.start == 15);
-	QVERIFY(sch2.current == 48);
-	QVERIFY(sch2.target == 90);
+    SceneChannel sch2 = sch;
+    QVERIFY(sch2.address == 123);
+    QVERIFY(sch2.start == 15);
+    QVERIFY(sch2.current == 48);
+    QVERIFY(sch2.target == 90);
 
-	SceneChannel sch3(sch);
-	QVERIFY(sch3.address == 123);
-	QVERIFY(sch3.start == 15);
-	QVERIFY(sch3.current == 48);
-	QVERIFY(sch3.target == 90);
+    SceneChannel sch3(sch);
+    QVERIFY(sch3.address == 123);
+    QVERIFY(sch3.start == 15);
+    QVERIFY(sch3.current == 48);
+    QVERIFY(sch3.target == 90);
 }

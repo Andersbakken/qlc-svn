@@ -29,34 +29,36 @@
 
 class VCXYPadFixtureEditor : public QDialog, public Ui_VCXYPadFixtureEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	VCXYPadFixtureEditor(QWidget* parent, QList <VCXYPadFixture> fixtures);
-	~VCXYPadFixtureEditor();
+    VCXYPadFixtureEditor(QWidget* parent, QList <VCXYPadFixture> fixtures);
+    ~VCXYPadFixtureEditor();
 
 private:
-	Q_DISABLE_COPY(VCXYPadFixtureEditor)
+    Q_DISABLE_COPY(VCXYPadFixtureEditor)
 
 protected slots:
-	void accept();
+    void accept();
 
-	void slotXMinChanged(int value);
-	void slotXMaxChanged(int value);
-	void slotYMinChanged(int value);
-	void slotYMaxChanged(int value);
+    void slotXMinChanged(int value);
+    void slotXMaxChanged(int value);
+    void slotYMinChanged(int value);
+    void slotYMaxChanged(int value);
 
-	/********************************************************************
-	 * Fixtures
-	 ********************************************************************/
+    /********************************************************************
+     * Fixtures
+     ********************************************************************/
 public:
-	QList <VCXYPadFixture> fixtures() const { return m_fixtures; }
+    QList <VCXYPadFixture> fixtures() const {
+        return m_fixtures;
+    }
 
 protected:
-	QList <VCXYPadFixture> m_fixtures;
+    QList <VCXYPadFixture> m_fixtures;
 };
 
 #endif

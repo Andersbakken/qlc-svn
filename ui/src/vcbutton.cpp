@@ -63,39 +63,39 @@ const QSize VCButton::defaultSize(QSize(50, 50));
 
 VCButton::VCButton(QWidget* parent) : VCWidget(parent)
 {
-	/* Set the class name "VCButton" as the object name as well */
-	setObjectName(VCButton::staticMetaObject.className());
+    /* Set the class name "VCButton" as the object name as well */
+    setObjectName(VCButton::staticMetaObject.className());
 
-	/* No function is initially attached to the button */
-	m_function = Function::invalidId();
+    /* No function is initially attached to the button */
+    m_function = Function::invalidId();
 
-	setCaption(QString::null);
-	setOn(false);
-	setAction(Toggle);
-	setFrameStyle(KVCFrameStyleNone);
+    setCaption(QString::null);
+    setOn(false);
+    setAction(Toggle);
+    setFrameStyle(KVCFrameStyleNone);
 
-	/* Menu actions */
-	m_chooseIconAction = new QAction(QIcon(":/image.png"), tr("Choose..."),
-					 this);
-	m_chooseIconAction->setShortcut(QKeySequence("SHIFT+C"));
+    /* Menu actions */
+    m_chooseIconAction = new QAction(QIcon(":/image.png"), tr("Choose..."),
+                                     this);
+    m_chooseIconAction->setShortcut(QKeySequence("SHIFT+C"));
 
-	m_resetIconAction = new QAction(QIcon(":/undo.png"), tr("None"), this);	
-	m_resetIconAction->setShortcut(QKeySequence("SHIFT+ALT+C"));
+    m_resetIconAction = new QAction(QIcon(":/undo.png"), tr("None"), this);
+    m_resetIconAction->setShortcut(QKeySequence("SHIFT+ALT+C"));
 
-	connect(m_chooseIconAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotChooseIcon()));
-	connect(m_resetIconAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotResetIcon()));
+    connect(m_chooseIconAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotChooseIcon()));
+    connect(m_resetIconAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotResetIcon()));
 
-	/* Initial size */
-	setMinimumSize(VCButton::defaultSize);
-	resize(VCButton::defaultSize);
+    /* Initial size */
+    setMinimumSize(VCButton::defaultSize);
+    resize(VCButton::defaultSize);
 
-	setStyle(App::saneStyle());
+    setStyle(App::saneStyle());
 
-	/* Listen to function removals */
-	connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
-		this, SLOT(slotFunctionRemoved(t_function_id)));
+    /* Listen to function removals */
+    connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
+            this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 VCButton::~VCButton()
@@ -108,31 +108,31 @@ VCButton::~VCButton()
 
 VCWidget* VCButton::createCopy(VCWidget* parent)
 {
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(parent != NULL);
 
-	VCButton* button = new VCButton(parent);
-	if (button->copyFrom(this) == false)
-	{
-		delete button;
-		button = NULL;
-	}
+    VCButton* button = new VCButton(parent);
+    if (button->copyFrom(this) == false)
+    {
+        delete button;
+        button = NULL;
+    }
 
-	return button;
+    return button;
 }
 
 bool VCButton::copyFrom(VCWidget* widget)
 {
-	VCButton* button = qobject_cast <VCButton*> (widget);
-	if (button == NULL)
-		return false;
+    VCButton* button = qobject_cast <VCButton*> (widget);
+    if (button == NULL)
+        return false;
 
-	/* Copy button-specific stuff */
-	setIcon(button->icon());
-	setKeySequence(button->keySequence());
-	setFunction(button->function());
-	
-	/* Copy common stuff */
-	return VCWidget::copyFrom(widget);
+    /* Copy button-specific stuff */
+    setIcon(button->icon());
+    setKeySequence(button->keySequence());
+    setFunction(button->function());
+
+    /* Copy common stuff */
+    return VCWidget::copyFrom(widget);
 }
 
 /*****************************************************************************
@@ -141,9 +141,9 @@ bool VCButton::copyFrom(VCWidget* widget)
 
 void VCButton::editProperties()
 {
-	VCButtonProperties prop(this, _app);
-	if (prop.exec() == QDialog::Accepted)
-		_app->doc()->setModified();
+    VCButtonProperties prop(this, _app);
+    if (prop.exec() == QDialog::Accepted)
+        _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -152,39 +152,39 @@ void VCButton::editProperties()
 
 void VCButton::setBackgroundColor(const QColor& color)
 {
-	QPalette pal = palette();
+    QPalette pal = palette();
 
-	m_hasCustomBackgroundColor = true;
-	m_backgroundImage = QString::null;
-	pal.setColor(QPalette::Button, color);
-	setPalette(pal);
+    m_hasCustomBackgroundColor = true;
+    m_backgroundImage = QString::null;
+    pal.setColor(QPalette::Button, color);
+    setPalette(pal);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 void VCButton::resetBackgroundColor()
 {
-	QColor fg;
+    QColor fg;
 
-	m_hasCustomBackgroundColor = false;
-	m_backgroundImage = QString::null;
+    m_hasCustomBackgroundColor = false;
+    m_backgroundImage = QString::null;
 
-	/* Store foreground color */
-	if (m_hasCustomForegroundColor == true)
-		fg = palette().color(QPalette::ButtonText);
+    /* Store foreground color */
+    if (m_hasCustomForegroundColor == true)
+        fg = palette().color(QPalette::ButtonText);
 
-	/* Reset the whole palette to application palette */
-	setPalette(QApplication::palette());
+    /* Reset the whole palette to application palette */
+    setPalette(QApplication::palette());
 
-	/* Restore foreground color */
-	if (fg.isValid() == true)
-	{
-		QPalette pal = palette();
-		pal.setColor(QPalette::ButtonText, fg);
-		setPalette(pal);
-	}
+    /* Restore foreground color */
+    if (fg.isValid() == true)
+    {
+        QPalette pal = palette();
+        pal.setColor(QPalette::ButtonText, fg);
+        setPalette(pal);
+    }
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -193,36 +193,36 @@ void VCButton::resetBackgroundColor()
 
 void VCButton::setForegroundColor(const QColor& color)
 {
-	QPalette pal = palette();
+    QPalette pal = palette();
 
-	m_hasCustomForegroundColor = true;
+    m_hasCustomForegroundColor = true;
 
-	pal.setColor(QPalette::ButtonText, color);
-	setPalette(pal);
+    pal.setColor(QPalette::ButtonText, color);
+    setPalette(pal);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 void VCButton::resetForegroundColor()
 {
-	QColor bg;
+    QColor bg;
 
-	m_hasCustomForegroundColor = false;
+    m_hasCustomForegroundColor = false;
 
-	/* Store background color */
-	if (m_hasCustomBackgroundColor == true)
-		bg = palette().color(QPalette::Button);
+    /* Store background color */
+    if (m_hasCustomBackgroundColor == true)
+        bg = palette().color(QPalette::Button);
 
-	/* Reset the whole palette to application palette */
-	setPalette(QApplication::palette());
+    /* Reset the whole palette to application palette */
+    setPalette(QApplication::palette());
 
-	/* Restore foreground color */
-	if (bg.isValid() == true)
-		setBackgroundColor(bg);
-	else if (m_backgroundImage.isEmpty() == false)
-		setBackgroundImage(m_backgroundImage);
+    /* Restore foreground color */
+    if (bg.isValid() == true)
+        setBackgroundColor(bg);
+    else if (m_backgroundImage.isEmpty() == false)
+        setBackgroundImage(m_backgroundImage);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -231,41 +231,41 @@ void VCButton::resetForegroundColor()
 
 void VCButton::setIcon(const QString& icon)
 {
-	m_icon = icon;
-	update();
+    m_icon = icon;
+    update();
 }
 
 void VCButton::slotChooseIcon()
 {
-	/* No point coming here if there is no VC */
-	VirtualConsole* vc = VirtualConsole::instance();
-	if (vc == NULL)
-		return;
+    /* No point coming here if there is no VC */
+    VirtualConsole* vc = VirtualConsole::instance();
+    if (vc == NULL)
+        return;
 
-        QString formats;
-        QListIterator <QByteArray> it(QImageReader::supportedImageFormats());
-        while (it.hasNext() == true)
-                formats += QString("*.%1 ").arg(QString(it.next()).toLower());
+    QString formats;
+    QListIterator <QByteArray> it(QImageReader::supportedImageFormats());
+    while (it.hasNext() == true)
+        formats += QString("*.%1 ").arg(QString(it.next()).toLower());
 
-	QString path;
-	path = QFileDialog::getOpenFileName(this, tr("Select button icon"),
-		icon(), tr("Images (%1)").arg(formats));
-        if (path.isEmpty() == false)
-	{
-		VCWidget* widget;
-		foreach(widget, vc->selectedWidgets())
-		{
-			VCButton* button = qobject_cast<VCButton*> (widget);
-			if (button != NULL)
-				button->setIcon(path);
-		}
-	}
+    QString path;
+    path = QFileDialog::getOpenFileName(this, tr("Select button icon"),
+                                        icon(), tr("Images (%1)").arg(formats));
+    if (path.isEmpty() == false)
+    {
+        VCWidget* widget;
+        foreach(widget, vc->selectedWidgets())
+        {
+            VCButton* button = qobject_cast<VCButton*> (widget);
+            if (button != NULL)
+                button->setIcon(path);
+        }
+    }
 }
 
 void VCButton::slotResetIcon()
 {
-	m_icon = QString::null;
-	update();
+    m_icon = QString::null;
+    update();
 }
 
 /*****************************************************************************
@@ -274,190 +274,190 @@ void VCButton::slotResetIcon()
 
 bool VCButton::loader(const QDomElement* root, QWidget* parent)
 {
-	VCButton* button = NULL;
+    VCButton* button = NULL;
 
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(root != NULL);
+    Q_ASSERT(parent != NULL);
 
-	if (root->tagName() != KXMLQLCVCButton)
-	{
-		qDebug() << "Button node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCButton)
+    {
+        qDebug() << "Button node not found!";
+        return false;
+    }
 
-	/* Create a new button into its parent */
-	button = new VCButton(parent);
-	button->show();
+    /* Create a new button into its parent */
+    button = new VCButton(parent);
+    button->show();
 
-	/* Continue loading */
-	return button->loadXML(root);
+    /* Continue loading */
+    return button->loadXML(root);
 }
 
 bool VCButton::loadXML(const QDomElement* root)
 {
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
+    bool visible = false;
+    int x = 0;
+    int y = 0;
+    int w = 0;
+    int h = 0;
 
-	QDomNode node;
-	QDomElement tag;
-	QString str;
+    QDomNode node;
+    QDomElement tag;
+    QString str;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCVCButton)
-	{
-		qDebug() << "Button node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCButton)
+    {
+        qDebug() << "Button node not found!";
+        return false;
+    }
 
-	/* Caption */
-	setCaption(root->attribute(KXMLQLCVCCaption));
+    /* Caption */
+    setCaption(root->attribute(KXMLQLCVCCaption));
 
-	/* Icon */
-	setIcon(root->attribute(KXMLQLCVCButtonIcon));
+    /* Icon */
+    setIcon(root->attribute(KXMLQLCVCButtonIcon));
 
-	/* Children */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
-			setGeometry(x, y, w, h);
-		}
-		else if (tag.tagName() == KXMLQLCVCAppearance)
-		{
-			loadXMLAppearance(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCVCButtonFunction)
-		{
-			str = tag.attribute(KXMLQLCVCButtonFunctionID);
-			setFunction(str.toInt());
-		}
-		else if (tag.tagName() == KXMLQLCVCWidgetInput)
-		{
-			loadXMLInput(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCVCButtonAction)
-		{
-			setAction(stringToAction(tag.text()));
-		}
-		else if (tag.tagName() == KXMLQLCVCButtonKey)
-		{
-			setKeySequence(QKeySequence(tag.text()));
-		}
-		else if (tag.tagName() == "KeyBind") /* Legacy */
-		{
-			loadKeyBind(&tag);
-		}
-		else
-		{
-			qDebug() << "Unknown button tag:" << tag.tagName();
-		}
+    /* Children */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == KXMLQLCWindowState)
+        {
+            loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
+            setGeometry(x, y, w, h);
+        }
+        else if (tag.tagName() == KXMLQLCVCAppearance)
+        {
+            loadXMLAppearance(&tag);
+        }
+        else if (tag.tagName() == KXMLQLCVCButtonFunction)
+        {
+            str = tag.attribute(KXMLQLCVCButtonFunctionID);
+            setFunction(str.toInt());
+        }
+        else if (tag.tagName() == KXMLQLCVCWidgetInput)
+        {
+            loadXMLInput(&tag);
+        }
+        else if (tag.tagName() == KXMLQLCVCButtonAction)
+        {
+            setAction(stringToAction(tag.text()));
+        }
+        else if (tag.tagName() == KXMLQLCVCButtonKey)
+        {
+            setKeySequence(QKeySequence(tag.text()));
+        }
+        else if (tag.tagName() == "KeyBind") /* Legacy */
+        {
+            loadKeyBind(&tag);
+        }
+        else
+        {
+            qDebug() << "Unknown button tag:" << tag.tagName();
+        }
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	/* All buttons start raised... */
-	setOn(false);
+    /* All buttons start raised... */
+    setOn(false);
 
-	return true;
+    return true;
 }
 
 bool VCButton::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement root;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(vc_root != NULL);
 
-	/* VC button entry */
-	root = doc->createElement(KXMLQLCVCButton);
-	vc_root->appendChild(root);
+    /* VC button entry */
+    root = doc->createElement(KXMLQLCVCButton);
+    vc_root->appendChild(root);
 
-	/* Caption */
-	root.setAttribute(KXMLQLCVCCaption, caption());
+    /* Caption */
+    root.setAttribute(KXMLQLCVCCaption, caption());
 
-	/* Icon */
-	root.setAttribute(KXMLQLCVCButtonIcon, icon());
+    /* Icon */
+    root.setAttribute(KXMLQLCVCButtonIcon, icon());
 
-	/* Function */
-	tag = doc->createElement(KXMLQLCVCButtonFunction);
-	root.appendChild(tag);
-	str.setNum(function());
-	tag.setAttribute(KXMLQLCVCButtonFunctionID, str);
+    /* Function */
+    tag = doc->createElement(KXMLQLCVCButtonFunction);
+    root.appendChild(tag);
+    str.setNum(function());
+    tag.setAttribute(KXMLQLCVCButtonFunctionID, str);
 
-	/* Action */
-	tag = doc->createElement(KXMLQLCVCButtonAction);
-	root.appendChild(tag);
-	text = doc->createTextNode(actionToString(action()));
-	tag.appendChild(text);
+    /* Action */
+    tag = doc->createElement(KXMLQLCVCButtonAction);
+    root.appendChild(tag);
+    text = doc->createTextNode(actionToString(action()));
+    tag.appendChild(text);
 
-	/* Key sequence */
-	if (m_keySequence.isEmpty() == false)
-	{
-		tag = doc->createElement(KXMLQLCVCButtonKey);
-		root.appendChild(tag);
-		text = doc->createTextNode(m_keySequence.toString());
-		tag.appendChild(text);
-	}
+    /* Key sequence */
+    if (m_keySequence.isEmpty() == false)
+    {
+        tag = doc->createElement(KXMLQLCVCButtonKey);
+        root.appendChild(tag);
+        text = doc->createTextNode(m_keySequence.toString());
+        tag.appendChild(text);
+    }
 
-	/* External input */
-	saveXMLInput(doc, &root);
+    /* External input */
+    saveXMLInput(doc, &root);
 
-	/* Window state */
-	saveXMLWindowState(doc, &root);
+    /* Window state */
+    saveXMLWindowState(doc, &root);
 
-	/* Appearance */
-	saveXMLAppearance(doc, &root);
+    /* Appearance */
+    saveXMLAppearance(doc, &root);
 
-	return true;
+    return true;
 }
 
 bool VCButton::loadKeyBind(const QDomElement* key_root)
 {
-	QDomElement tag;
-	QDomNode node;
+    QDomElement tag;
+    QDomNode node;
 
-	if (key_root->tagName() != "KeyBind")
-	{
-		qWarning() << "Not a key bind node!";
-		return false;
-	}
+    if (key_root->tagName() != "KeyBind")
+    {
+        qWarning() << "Not a key bind node!";
+        return false;
+    }
 
-	node = key_root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == "Key")
-		{
-			int mod = tag.attribute("Modifier").toInt();
-			int key = tag.text().toInt();
+    node = key_root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == "Key")
+        {
+            int mod = tag.attribute("Modifier").toInt();
+            int key = tag.text().toInt();
 
-			if (key < Qt::Key_unknown)
-				setKeySequence(QKeySequence(key | mod));
-		}
-		else if (tag.tagName() == "Action")
-		{
-			setAction(stringToAction(tag.text()));
-		}
-		else
-		{
-			qWarning() << "Unknown key binding tag:"
-				   << tag.tagName();
-		}
+            if (key < Qt::Key_unknown)
+                setKeySequence(QKeySequence(key | mod));
+        }
+        else if (tag.tagName() == "Action")
+        {
+            setAction(stringToAction(tag.text()));
+        }
+        else
+        {
+            qWarning() << "Unknown key binding tag:"
+            << tag.tagName();
+        }
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }
 
 /*****************************************************************************
@@ -466,27 +466,27 @@ bool VCButton::loadKeyBind(const QDomElement* key_root)
 
 void VCButton::setOn(bool on)
 {
-	m_on = on;
+    m_on = on;
 
-	/* Send input feedback */
-	if (m_inputUniverse != KInputUniverseInvalid &&
-	    m_inputChannel != KInputChannelInvalid)
-	{
-		if (on == true)
-		{
-			_app->inputMap()->feedBack(m_inputUniverse,
-						   m_inputChannel,
-						   UCHAR_MAX);
-		}
-		else
-		{
-			_app->inputMap()->feedBack(m_inputUniverse,
-						   m_inputChannel,
-						   0);
-		}
-	}
+    /* Send input feedback */
+    if (m_inputUniverse != KInputUniverseInvalid &&
+            m_inputChannel != KInputChannelInvalid)
+    {
+        if (on == true)
+        {
+            _app->inputMap()->feedBack(m_inputUniverse,
+                                       m_inputChannel,
+                                       UCHAR_MAX);
+        }
+        else
+        {
+            _app->inputMap()->feedBack(m_inputUniverse,
+                                       m_inputChannel,
+                                       0);
+        }
+    }
 
-	update();
+    update();
 }
 
 /*****************************************************************************
@@ -495,19 +495,19 @@ void VCButton::setOn(bool on)
 
 void VCButton::setKeySequence(const QKeySequence& keySequence)
 {
-	m_keySequence = QKeySequence(keySequence);
+    m_keySequence = QKeySequence(keySequence);
 }
 
 void VCButton::slotKeyPressed(const QKeySequence& keySequence)
 {
-	if (m_keySequence == keySequence)
-		pressFunction();
+    if (m_keySequence == keySequence)
+        pressFunction();
 }
 
 void VCButton::slotKeyReleased(const QKeySequence& keySequence)
 {
-	if (m_keySequence == keySequence)
-		releaseFunction();
+    if (m_keySequence == keySequence)
+        releaseFunction();
 }
 
 /*****************************************************************************
@@ -515,29 +515,29 @@ void VCButton::slotKeyReleased(const QKeySequence& keySequence)
  *****************************************************************************/
 
 void VCButton::slotInputValueChanged(quint32 universe,
-				     quint32 channel,
-				     uchar value)
+                                     quint32 channel,
+                                     uchar value)
 {
-	Q_UNUSED(value);
+    Q_UNUSED(value);
 
-	/* Don't allow operation during design mode */
-	if (mode() == Doc::Design)
-		return;
+    /* Don't allow operation during design mode */
+    if (mode() == Doc::Design)
+        return;
 
-	if (universe == m_inputUniverse && channel == m_inputChannel)
-	{
-		if (isOn() == true && value == 0)
-		{
-			if (m_action == Flash)
-				releaseFunction();
-			else
-				pressFunction();
-		}
-		else if (isOn() == false && value > 0)
-		{
-			pressFunction();
-		}
-	}
+    if (universe == m_inputUniverse && channel == m_inputChannel)
+    {
+        if (isOn() == true && value == 0)
+        {
+            if (m_action == Flash)
+                releaseFunction();
+            else
+                pressFunction();
+        }
+        else if (isOn() == false && value > 0)
+        {
+            pressFunction();
+        }
+    }
 }
 
 /*****************************************************************************
@@ -546,46 +546,46 @@ void VCButton::slotInputValueChanged(quint32 universe,
 
 void VCButton::setFunction(t_function_id fid)
 {
-	Function* old = _app->doc()->function(m_function);
-	if (old != NULL)
-	{
-		/* Get rid of old function connections */
-		disconnect(old, SIGNAL(running(t_function_id)),
-			   this, SLOT(slotFunctionRunning(t_function_id)));
-		disconnect(old, SIGNAL(stopped(t_function_id)),
-			   this, SLOT(slotFunctionStopped(t_function_id)));
-		disconnect(old, SIGNAL(flashing(t_function_id,bool)),
-			   this, SLOT(slotFunctionFlashing(t_function_id,bool)));
-	}
+    Function* old = _app->doc()->function(m_function);
+    if (old != NULL)
+    {
+        /* Get rid of old function connections */
+        disconnect(old, SIGNAL(running(t_function_id)),
+                   this, SLOT(slotFunctionRunning(t_function_id)));
+        disconnect(old, SIGNAL(stopped(t_function_id)),
+                   this, SLOT(slotFunctionStopped(t_function_id)));
+        disconnect(old, SIGNAL(flashing(t_function_id,bool)),
+                   this, SLOT(slotFunctionFlashing(t_function_id,bool)));
+    }
 
-	Function* function = _app->doc()->function(fid);
-	if (function != NULL)
-	{
-		/* Connect to the new function */
-		connect(function, SIGNAL(running(t_function_id)),
-			this, SLOT(slotFunctionRunning(t_function_id)));
-		connect(function, SIGNAL(stopped(t_function_id)),
-			this, SLOT(slotFunctionStopped(t_function_id)));
-		connect(function, SIGNAL(flashing(t_function_id,bool)),
-			this, SLOT(slotFunctionFlashing(t_function_id,bool)));
+    Function* function = _app->doc()->function(fid);
+    if (function != NULL)
+    {
+        /* Connect to the new function */
+        connect(function, SIGNAL(running(t_function_id)),
+                this, SLOT(slotFunctionRunning(t_function_id)));
+        connect(function, SIGNAL(stopped(t_function_id)),
+                this, SLOT(slotFunctionStopped(t_function_id)));
+        connect(function, SIGNAL(flashing(t_function_id,bool)),
+                this, SLOT(slotFunctionFlashing(t_function_id,bool)));
 
-		m_function = fid;
+        m_function = fid;
 
-		setToolTip(function->name());
-	}
-	else
-	{
-		/* No function attachment */
-		m_function = Function::invalidId();
-		setToolTip(QString::null);
-	}
+        setToolTip(function->name());
+    }
+    else
+    {
+        /* No function attachment */
+        m_function = Function::invalidId();
+        setToolTip(QString::null);
+    }
 }
 
 void VCButton::slotFunctionRemoved(t_function_id fid)
 {
-	/* Invalidate the button's function if it's the one that was removed */
-	if (fid == m_function)
-		setFunction(Function::invalidId());
+    /* Invalidate the button's function if it's the one that was removed */
+    if (fid == m_function)
+        setFunction(Function::invalidId());
 }
 
 /*****************************************************************************
@@ -594,23 +594,23 @@ void VCButton::slotFunctionRemoved(t_function_id fid)
 
 void VCButton::setAction(Action action)
 {
-	m_action = action;
+    m_action = action;
 }
 
 QString VCButton::actionToString(VCButton::Action action)
 {
-	if (action == Flash)
-		return QString(KXMLQLCVCButtonActionFlash);
-	else
-		return QString(KXMLQLCVCButtonActionToggle);
+    if (action == Flash)
+        return QString(KXMLQLCVCButtonActionFlash);
+    else
+        return QString(KXMLQLCVCButtonActionToggle);
 }
 
 VCButton::Action VCButton::stringToAction(const QString& str)
 {
-	if (str == KXMLQLCVCButtonActionFlash)
-		return Flash;
-	else
-		return Toggle;
+    if (str == KXMLQLCVCButtonActionFlash)
+        return Flash;
+    else
+        return Toggle;
 }
 
 /*****************************************************************************
@@ -619,69 +619,69 @@ VCButton::Action VCButton::stringToAction(const QString& str)
 
 void VCButton::pressFunction()
 {
-	Function* f = NULL;
-	if (m_action == Toggle)
-	{
-		f = _app->doc()->function(m_function);
-		if (f != NULL)
-		{
-			if (isOn() == true)
-				f->stop();
-			else
-				_app->masterTimer()->startFunction(f);
-		}
-	}
-	else if (m_action == Flash && isOn() == false)
-	{
-		f = _app->doc()->function(m_function);
-		if (f != NULL)
-			f->flash(_app->masterTimer());
-	}
+    Function* f = NULL;
+    if (m_action == Toggle)
+    {
+        f = _app->doc()->function(m_function);
+        if (f != NULL)
+        {
+            if (isOn() == true)
+                f->stop();
+            else
+                _app->masterTimer()->startFunction(f);
+        }
+    }
+    else if (m_action == Flash && isOn() == false)
+    {
+        f = _app->doc()->function(m_function);
+        if (f != NULL)
+            f->flash(_app->masterTimer());
+    }
 }
 
 void VCButton::releaseFunction()
 {
-	Function* f = NULL;
+    Function* f = NULL;
 
-	if (m_action == Flash && isOn() == true)
-	{
-		f = _app->doc()->function(m_function);
-		if (f != NULL)
-			f->unFlash(_app->masterTimer());
-	}
+    if (m_action == Flash && isOn() == true)
+    {
+        f = _app->doc()->function(m_function);
+        if (f != NULL)
+            f->unFlash(_app->masterTimer());
+    }
 }
 
 void VCButton::slotFunctionRunning(t_function_id fid)
 {
-	if (fid == m_function && m_action != Flash)
-		setOn(true);
+    if (fid == m_function && m_action != Flash)
+        setOn(true);
 }
 
 void VCButton::slotFunctionStopped(t_function_id fid)
 {
-	if (fid == m_function && m_action != Flash)
-	{
-		setOn(false);
-		slotBlinkReady();
-		QTimer::singleShot(200, this, SLOT(slotBlinkReady()));
-	}
+    if (fid == m_function && m_action != Flash)
+    {
+        setOn(false);
+        slotBlinkReady();
+        QTimer::singleShot(200, this, SLOT(slotBlinkReady()));
+    }
 }
 
 void VCButton::slotFunctionFlashing(t_function_id fid, bool state)
 {
-	if (fid == m_function)
-		setOn(state);
+    if (fid == m_function)
+        setOn(state);
 }
 
 void VCButton::slotBlinkReady()
 {
-	// This function is called twice with same XOR mask,
-	// thus creating a brief opposite-color -- normal-color blink
-	QPalette pal = palette();
-	QColor color(pal.color(QPalette::Button));
-	color.setRgb(color.red()^0xff, color.green()^0xff, color.blue()^0xff);
-	pal.setColor(QPalette::Button, color);
-	setPalette(pal);
+    // This function is called twice with same XOR mask,
+    // thus creating a brief opposite-color -- normal-color blink
+    QPalette pal = palette();
+    QColor color(pal.color(QPalette::Button));
+    color.setRgb(color.red()^0xff, color.green()^0xff, color.blue()^0xff);
+    pal.setColor(QPalette::Button, color);
+    setPalette(pal);
 }
 
 /*****************************************************************************
@@ -690,12 +690,12 @@ void VCButton::slotBlinkReady()
 
 QMenu* VCButton::customMenu(QMenu* parentMenu)
 {
-	QMenu* menu = new QMenu(parentMenu);
-	menu->setTitle(tr("Icon"));
-	menu->addAction(m_chooseIconAction);
-	menu->addAction(m_resetIconAction);
+    QMenu* menu = new QMenu(parentMenu);
+    menu->setTitle(tr("Icon"));
+    menu->addAction(m_chooseIconAction);
+    menu->addAction(m_resetIconAction);
 
-	return menu;
+    return menu;
 }
 
 /*****************************************************************************
@@ -704,76 +704,76 @@ QMenu* VCButton::customMenu(QMenu* parentMenu)
 
 void VCButton::paintEvent(QPaintEvent* e)
 {
-	QStyleOptionButton option;
-	option.initFrom(this);
+    QStyleOptionButton option;
+    option.initFrom(this);
 
-	/* This should look like a normal button */
-	option.features = QStyleOptionButton::None;
+    /* This should look like a normal button */
+    option.features = QStyleOptionButton::None;
 
-	/* Sunken or raised based on isOn() status */
-	if (isOn() == true)
-		option.state = QStyle::State_Sunken;
-	else
-		option.state= QStyle::State_Raised;
+    /* Sunken or raised based on isOn() status */
+    if (isOn() == true)
+        option.state = QStyle::State_Sunken;
+    else
+        option.state= QStyle::State_Raised;
 
-	/* Enabled or disabled looks based on application mode */
-	if (mode() == Doc::Operate)
-		option.state |= QStyle::State_Enabled;
+    /* Enabled or disabled looks based on application mode */
+    if (mode() == Doc::Operate)
+        option.state |= QStyle::State_Enabled;
 
-	/* Icon */
-	if (icon() != QString::null)
-	{
-		option.icon = QIcon(icon());
-		option.iconSize = QSize(26, 26);
-	}
-	else
-	{
-		option.icon = QIcon();
-		option.iconSize = QSize(-1, -1);
-	}
+    /* Icon */
+    if (icon() != QString::null)
+    {
+        option.icon = QIcon(icon());
+        option.iconSize = QSize(26, 26);
+    }
+    else
+    {
+        option.icon = QIcon();
+        option.iconSize = QSize(-1, -1);
+    }
 
-	/* Paint the button */
-	QPainter painter(this);
-	style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
+    /* Paint the button */
+    QPainter painter(this);
+    style()->drawControl(QStyle::CE_PushButton, &option, &painter, this);
 
-	/* Paint caption with text wrapping */
-	if (caption().isEmpty() == false)
-	{
-		style()->drawItemText(&painter,
-				      rect(),
-				      Qt::AlignCenter | Qt::TextWordWrap,
-				      palette(),
-				      (mode() == Doc::Operate),
-				      caption());
-	}
+    /* Paint caption with text wrapping */
+    if (caption().isEmpty() == false)
+    {
+        style()->drawItemText(&painter,
+                              rect(),
+                              Qt::AlignCenter | Qt::TextWordWrap,
+                              palette(),
+                              (mode() == Doc::Operate),
+                              caption());
+    }
 
-	/* Flash emblem */
-	if (m_action == Flash)
-	{
-		QIcon icon(":/flash.png");
-		painter.drawPixmap(rect().width() - 16, 0,
-			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
-	}
+    /* Flash emblem */
+    if (m_action == Flash)
+    {
+        QIcon icon(":/flash.png");
+        painter.drawPixmap(rect().width() - 16, 0,
+                           icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
+    }
 
-	/* Stop painting here */
-	painter.end();
+    /* Stop painting here */
+    painter.end();
 
-	/* Draw a selection frame if appropriate */
-	VCWidget::paintEvent(e);
+    /* Draw a selection frame if appropriate */
+    VCWidget::paintEvent(e);
 }
 
 void VCButton::mousePressEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Design)
-		VCWidget::mousePressEvent(e);
-	else
-		pressFunction();
+    if (mode() == Doc::Design)
+        VCWidget::mousePressEvent(e);
+    else
+        pressFunction();
 }
 
 void VCButton::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Design)
-		VCWidget::mouseReleaseEvent(e);
-	else
-		releaseFunction();
+    if (mode() == Doc::Design)
+        VCWidget::mouseReleaseEvent(e);
+    else
+        releaseFunction();
 }

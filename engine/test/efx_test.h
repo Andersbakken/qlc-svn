@@ -29,60 +29,60 @@ class Doc;
 
 class EFX_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void init();
-	void cleanup();
+    void initTestCase();
+    void init();
+    void cleanup();
 
-	void initial();
-	void algorithmNames();
-	void width();
-	void height();
-	void rotation();
-	void xOffset();
-	void yOffset();
-	void xFrequency();
-	void yFrequency();
-	void xPhase();
-	void yPhase();
-	void fixtures();
-	void propagationMode();
-	void startStopScenes();
+    void initial();
+    void algorithmNames();
+    void width();
+    void height();
+    void rotation();
+    void xOffset();
+    void yOffset();
+    void xFrequency();
+    void yFrequency();
+    void xPhase();
+    void yPhase();
+    void fixtures();
+    void propagationMode();
+    void startStopScenes();
 
-	void previewCircle();
-	void previewEight();
-	void previewLine();
-	//void previewTriangle();
-	void previewDiamond();
-	void previewLissajous();
+    void previewCircle();
+    void previewEight();
+    void previewLine();
+    //void previewTriangle();
+    void previewDiamond();
+    void previewLissajous();
 
-	void rotateAndScale();
-	void widthHeightOffset();
+    void rotateAndScale();
+    void widthHeightOffset();
 
-	void copyFrom();
-	void createCopy();
+    void copyFrom();
+    void createCopy();
 
-	void loadXAxis();
-	void loadYAxis();
-	void loadYAxisWrongRoot();
-	void loadAxisNoXY();
-	void loadSuccess();
-	void loadWrongType();
-	void loadWrongRoot();
-	void loadDuplicateFixture();
-	void save();
+    void loadXAxis();
+    void loadYAxis();
+    void loadYAxisWrongRoot();
+    void loadAxisNoXY();
+    void loadSuccess();
+    void loadWrongType();
+    void loadWrongRoot();
+    void loadDuplicateFixture();
+    void save();
 
-	void armSuccess();
-	void armMissingStartScene();
-	void armMissingStopScene();
-	void armMissingFixture();
-	void writeStartStopScenes();
+    void armSuccess();
+    void armMissingStartScene();
+    void armMissingStopScene();
+    void armMissingFixture();
+    void writeStartStopScenes();
 
 private:
-	Doc* m_doc;
-	QLCFixtureDefCache m_cache;
+    Doc* m_doc;
+    QLCFixtureDefCache m_cache;
 };
 
 #endif

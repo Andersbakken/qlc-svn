@@ -46,7 +46,7 @@ extern App* _app;
 
 FunctionWizard::FunctionWizard(QWidget* parent) : QDialog(parent)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 FunctionWizard::~FunctionWizard()
@@ -55,43 +55,43 @@ FunctionWizard::~FunctionWizard()
 
 void FunctionWizard::slotAddClicked()
 {
-	FixtureSelection fs(this, _app->doc(), true, fixtureIds());
-	if (fs.exec() == QDialog::Accepted)
-	{
-		QListIterator <t_fixture_id> it(fs.selection);
-		while (it.hasNext() == true)
-			addFixture(it.next());
-	}
+    FixtureSelection fs(this, _app->doc(), true, fixtureIds());
+    if (fs.exec() == QDialog::Accepted)
+    {
+        QListIterator <t_fixture_id> it(fs.selection);
+        while (it.hasNext() == true)
+            addFixture(it.next());
+    }
 }
 
 void FunctionWizard::slotRemoveClicked()
 {
-	QListIterator <QTreeWidgetItem*> it(m_fixtureTree->selectedItems());
-	while (it.hasNext() == true)
-		delete it.next();
+    QListIterator <QTreeWidgetItem*> it(m_fixtureTree->selectedItems());
+    while (it.hasNext() == true)
+        delete it.next();
 }
 
 void FunctionWizard::accept()
 {
-	PaletteGenerator pal(_app->doc(), fixtures());
+    PaletteGenerator pal(_app->doc(), fixtures());
 
-	if (m_coloursCheck->isChecked() == true)
-		pal.createColours();
-	if (m_goboCheck->isChecked() == true)
-		pal.createGobos();
-	if (m_shutterCheck->isChecked() == true)
-		pal.createShutters();
+    if (m_coloursCheck->isChecked() == true)
+        pal.createColours();
+    if (m_goboCheck->isChecked() == true)
+        pal.createGobos();
+    if (m_shutterCheck->isChecked() == true)
+        pal.createShutters();
 
-	if (m_intensityCheck->isChecked() == true)
-	{
-		IntensityGenerator gen(_app->doc(), fixtures());
-		gen.createOddEvenChaser();
-		gen.createFullZeroChaser();
-		gen.createSequenceChasers();
-		gen.createRandomChaser();
-	}
+    if (m_intensityCheck->isChecked() == true)
+    {
+        IntensityGenerator gen(_app->doc(), fixtures());
+        gen.createOddEvenChaser();
+        gen.createFullZeroChaser();
+        gen.createSequenceChasers();
+        gen.createRandomChaser();
+    }
 
-	QDialog::accept();
+    QDialog::accept();
 }
 
 /****************************************************************************
@@ -100,69 +100,69 @@ void FunctionWizard::accept()
 
 void FunctionWizard::addFixture(t_fixture_id fxi_id)
 {
-	Fixture* fxi = _app->doc()->fixture(fxi_id);
-	Q_ASSERT(fxi != NULL);
+    Fixture* fxi = _app->doc()->fixture(fxi_id);
+    Q_ASSERT(fxi != NULL);
 
-	QTreeWidgetItem* item = new QTreeWidgetItem(m_fixtureTree);
-	item->setText(KColumnName, fxi->name());
-	item->setData(KColumnID, Qt::UserRole, fxi_id);
+    QTreeWidgetItem* item = new QTreeWidgetItem(m_fixtureTree);
+    item->setText(KColumnName, fxi->name());
+    item->setData(KColumnID, Qt::UserRole, fxi_id);
 
-	QStringList caps;
-	if (IntensityGenerator::findChannels(fxi,
-				KQLCChannelGroupColour).isEmpty() == false)
-	{
-		caps << KQLCChannelGroupColour;
-	}
+    QStringList caps;
+    if (IntensityGenerator::findChannels(fxi,
+                                         KQLCChannelGroupColour).isEmpty() == false)
+    {
+        caps << KQLCChannelGroupColour;
+    }
 
-	if (IntensityGenerator::findChannels(fxi,
-				KQLCChannelGroupGobo).isEmpty() == false)
-	{
-		caps << KQLCChannelGroupGobo;
-	}
+    if (IntensityGenerator::findChannels(fxi,
+                                         KQLCChannelGroupGobo).isEmpty() == false)
+    {
+        caps << KQLCChannelGroupGobo;
+    }
 
-	if (IntensityGenerator::findChannels(fxi,
-				KQLCChannelGroupShutter).isEmpty() == false)
-	{
-		caps << KQLCChannelGroupShutter;
-	}
+    if (IntensityGenerator::findChannels(fxi,
+                                         KQLCChannelGroupShutter).isEmpty() == false)
+    {
+        caps << KQLCChannelGroupShutter;
+    }
 
-	if (IntensityGenerator::findChannels(fxi,
-				KQLCChannelGroupIntensity).isEmpty() == false)
-	{
-		caps << KQLCChannelGroupIntensity;
-	}
+    if (IntensityGenerator::findChannels(fxi,
+                                         KQLCChannelGroupIntensity).isEmpty() == false)
+    {
+        caps << KQLCChannelGroupIntensity;
+    }
 
-	item->setText(KColumnCaps, caps.join(", "));
+    item->setText(KColumnCaps, caps.join(", "));
 }
 
 QList <Fixture*> FunctionWizard::fixtures() const
 {
-	QList <Fixture*> list;
-	for (int i = 0; i < m_fixtureTree->topLevelItemCount(); i++)
-	{
-		QTreeWidgetItem* item(m_fixtureTree->topLevelItem(i));
-		Q_ASSERT(item != NULL);
+    QList <Fixture*> list;
+    for (int i = 0; i < m_fixtureTree->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item(m_fixtureTree->topLevelItem(i));
+        Q_ASSERT(item != NULL);
 
-		t_fixture_id id = item->data(KColumnID, Qt::UserRole).toInt();
-		Fixture* fxi = _app->doc()->fixture(id);
-		Q_ASSERT(fxi != NULL);
+        t_fixture_id id = item->data(KColumnID, Qt::UserRole).toInt();
+        Fixture* fxi = _app->doc()->fixture(id);
+        Q_ASSERT(fxi != NULL);
 
-		list << fxi;
-	}
+        list << fxi;
+    }
 
-	return list;
+    return list;
 }
 
 QList <t_fixture_id> FunctionWizard::fixtureIds() const
 {
-	QList <t_fixture_id> list;
-	for (int i = 0; i < m_fixtureTree->topLevelItemCount(); i++)
-	{
-		QTreeWidgetItem* item(m_fixtureTree->topLevelItem(i));
-		Q_ASSERT(item != NULL);
+    QList <t_fixture_id> list;
+    for (int i = 0; i < m_fixtureTree->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item(m_fixtureTree->topLevelItem(i));
+        Q_ASSERT(item != NULL);
 
-		list << item->data(KColumnID, Qt::UserRole).toInt();
-	}
+        list << item->data(KColumnID, Qt::UserRole).toInt();
+    }
 
-	return list;
+    return list;
 }

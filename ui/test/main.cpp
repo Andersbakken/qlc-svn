@@ -26,14 +26,14 @@
 
 int main(int argc, char** argv)
 {
-	QApplication qapp(argc, argv);
-	int r;
-	
-	VCWidgetProperties_Test props;
-	r = QTest::qExec(&props, argc, argv);
-	if (r != 0)
-		return r;
+    QApplication qapp(argc, argv);
+    int r;
 
-	return 0;
+    VCWidgetProperties_Test props;
+    r = QTest::qExec(&props, argc, argv);
+    if (r != 0)
+        return r;
+
+    return 0;
 }
 

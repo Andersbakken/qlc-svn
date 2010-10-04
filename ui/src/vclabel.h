@@ -32,40 +32,40 @@ class QPaintEvent;
 
 class VCLabel : public VCWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Normal constructor */
-	VCLabel(QWidget* parent);
+    /** Normal constructor */
+    VCLabel(QWidget* parent);
 
-	/** Destructor */
-	~VCLabel();
+    /** Destructor */
+    ~VCLabel();
 
 private:
-	Q_DISABLE_COPY(VCLabel)
+    Q_DISABLE_COPY(VCLabel)
 
-	/*********************************************************************
-	* Clipboard
-	*********************************************************************/
+    /*********************************************************************
+    * Clipboard
+    *********************************************************************/
 public:
-	VCWidget* createCopy(VCWidget* parent);
+    VCWidget* createCopy(VCWidget* parent);
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
 public:
-	static bool loader(const QDomElement* root, QWidget* parent);
-	bool loadXML(const QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+    static bool loader(const QDomElement* root, QWidget* parent);
+    bool loadXML(const QDomElement* root);
+    bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
-	/*********************************************************************
-	 * Painting
-	 *********************************************************************/
+    /*********************************************************************
+     * Painting
+     *********************************************************************/
 protected:
-	void paintEvent(QPaintEvent* e);
+    void paintEvent(QPaintEvent* e);
 };
 
 #endif

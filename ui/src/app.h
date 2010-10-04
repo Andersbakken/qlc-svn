@@ -60,282 +60,294 @@ class App;
 
 class App : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	App();
-	~App();
+    App();
+    ~App();
 
-	static QString longName();
-	static QString version();
+    static QString longName();
+    static QString version();
 
 private:
-	Q_DISABLE_COPY(App)
+    Q_DISABLE_COPY(App)
 
 protected:
-	void init();
-	void closeEvent(QCloseEvent*);
+    void init();
+    void closeEvent(QCloseEvent*);
 
-	/*********************************************************************
-	 * Output mapping
-	 *********************************************************************/
+    /*********************************************************************
+     * Output mapping
+     *********************************************************************/
 public:
-	OutputMap* outputMap() const { return m_outputMap; }
+    OutputMap* outputMap() const {
+        return m_outputMap;
+    }
 
 protected:
-	void initOutputMap();
+    void initOutputMap();
 
 protected slots:
-	void slotOutputMapBlackoutChanged(bool state);
-	void slotFlashBlackoutIndicator();
+    void slotOutputMapBlackoutChanged(bool state);
+    void slotFlashBlackoutIndicator();
 
 protected:
-	OutputMap* m_outputMap;
+    OutputMap* m_outputMap;
 
-	/*********************************************************************
-	 * Input mapping
-	 *********************************************************************/
+    /*********************************************************************
+     * Input mapping
+     *********************************************************************/
 public:
-	InputMap* inputMap() { return m_inputMap; }
+    InputMap* inputMap() {
+        return m_inputMap;
+    }
 
 protected:
-	void initInputMap();
+    void initInputMap();
 
 protected:
-	InputMap* m_inputMap;
+    InputMap* m_inputMap;
 
-	/*********************************************************************
-	 * Master timer
-	 *********************************************************************/
+    /*********************************************************************
+     * Master timer
+     *********************************************************************/
 public:
-	/** Get a pointer to the master timer */
-	MasterTimer* masterTimer() { return m_masterTimer; }
+    /** Get a pointer to the master timer */
+    MasterTimer* masterTimer() {
+        return m_masterTimer;
+    }
 
 protected:
-	/** The function runner object */
-	MasterTimer* m_masterTimer;
+    /** The function runner object */
+    MasterTimer* m_masterTimer;
 
-	/*********************************************************************
-	 * Doc
-	 *********************************************************************/
+    /*********************************************************************
+     * Doc
+     *********************************************************************/
 public:
-	Doc* doc() { return m_doc; }
-	void newDocument();
+    Doc* doc() {
+        return m_doc;
+    }
+    void newDocument();
 
 signals:
-	void documentChanged(Doc* doc);
+    void documentChanged(Doc* doc);
 
 protected slots:
-	void slotDocModified(bool state);
+    void slotDocModified(bool state);
 
 protected:
-	void initDoc();
+    void initDoc();
 
 protected:
-	Doc* m_doc;
+    Doc* m_doc;
 
-	/*********************************************************************
-	 * Fixture definitions
-	 *********************************************************************/
+    /*********************************************************************
+     * Fixture definitions
+     *********************************************************************/
 public:
-	const QLCFixtureDefCache& fixtureDefCache() const
-		{ return m_fixtureDefCache; }
+    const QLCFixtureDefCache& fixtureDefCache() const
+    {
+        return m_fixtureDefCache;
+    }
 
 protected:
-	/** Load all fixture definitions */
-	void loadFixtureDefinitions();
+    /** Load all fixture definitions */
+    void loadFixtureDefinitions();
 
 protected:
-	/** Available fixture definitions */
-	QLCFixtureDefCache m_fixtureDefCache;
+    /** Available fixture definitions */
+    QLCFixtureDefCache m_fixtureDefCache;
 
-	/*********************************************************************
-	 * Main operating mode
-	 *********************************************************************/
+    /*********************************************************************
+     * Main operating mode
+     *********************************************************************/
 public slots:
-	void slotModeOperate();
-	void slotModeDesign();
-	void slotModeToggle();
+    void slotModeOperate();
+    void slotModeDesign();
+    void slotModeToggle();
 
-	void slotModeChanged(Doc::Mode mode);
+    void slotModeChanged(Doc::Mode mode);
 
-	/*********************************************************************
-	 * Sane style
-	 *********************************************************************/
+    /*********************************************************************
+     * Sane style
+     *********************************************************************/
 public:
-	/** Attempt to get a sane style that replaces windows' crappy sliders
-	 *  and buttons that don't obey background color setting. */
-	static QStyle* saneStyle();
+    /** Attempt to get a sane style that replaces windows' crappy sliders
+     *  and buttons that don't obey background color setting. */
+    static QStyle* saneStyle();
 
 protected:
-	static QStyle* s_saneStyle;
+    static QStyle* s_saneStyle;
 
-	/*********************************************************************
-	 * Status bar
-	 *********************************************************************/
+    /*********************************************************************
+     * Status bar
+     *********************************************************************/
 protected:
-	void initStatusBar();
-
-protected:
-	/** Flashing blackout indicator on the status bar */
-	QLabel* m_blackoutIndicator;
-
-	/** Periodic timer object for the flashing indicator */
-	QTimer* m_blackoutIndicatorTimer;
-
-	/** Mode indicator on the status bar */
-	QLabel* m_modeIndicator;
-
-	/** Indicator showing available fixture space */
-	QLabel* m_fixtureAllocationIndicator;
-
-	/** Indicator showing available function space */
-	QLabel* m_functionAllocationIndicator;
-
-	/*********************************************************************
-	 * Menus & toolbars
-	 *********************************************************************/	
-protected:
-	void initActions();
-	void initMenuBar();
-	void initToolBar();
-	QMenuBar *menuBar();
-
-	/** Displays an error message if a file error has occurred */
-	bool handleFileError(QFile::FileError error);
-
-public slots:
-	bool slotFileNew();
-	QFile::FileError slotFileOpen();
-	QFile::FileError slotFileSave();
-	QFile::FileError slotFileSaveAs();
-	void slotFileQuit();
-
-	void slotFixtureManager();
-	void slotFunctionManager();
-	void slotBusManager();
-	void slotOutputManager();
-	void slotInputManager();
-
-	void slotControlVC();
-	void slotControlMonitor();
-	void slotControlBlackout();
-
-#ifdef __APPLE__
-	void slotWindowMenuAboutToShow();
-	void slotWindowMenuItemSelected();
-	void slotWindowMinimize();
-	void slotWindowAllToFront();
-#endif
-
-	void slotHelpIndex();
-	void slotHelpAbout();
-	void slotHelpAboutQt();
-
-	void slotCustomContextMenuRequested(const QPoint&);
+    void initStatusBar();
 
 protected:
-	QAction* m_fileNewAction;
-	QAction* m_fileOpenAction;
-	QAction* m_fileSaveAction;
-	QAction* m_fileSaveAsAction;
-	QAction* m_fileQuitAction;
+    /** Flashing blackout indicator on the status bar */
+    QLabel* m_blackoutIndicator;
 
-	QAction* m_fixtureManagerAction;
-	QAction* m_functionManagerAction;
-	QAction* m_busManagerAction;
-	QAction* m_inputManagerAction;
-	QAction* m_outputManagerAction;
+    /** Periodic timer object for the flashing indicator */
+    QTimer* m_blackoutIndicatorTimer;
 
-	QAction* m_modeToggleAction;
-	QAction* m_controlVCAction;
-	QAction* m_controlMonitorAction;
-	QAction* m_controlBlackoutAction;
+    /** Mode indicator on the status bar */
+    QLabel* m_modeIndicator;
 
-#ifdef __APPLE__
-	QAction* m_windowMinimizeAction;
-	QAction* m_windowAllToFrontAction;
-#endif
+    /** Indicator showing available fixture space */
+    QLabel* m_fixtureAllocationIndicator;
 
-	QAction* m_helpIndexAction;
-	QAction* m_helpAboutAction;
-	QAction* m_helpAboutQtAction;
+    /** Indicator showing available function space */
+    QLabel* m_functionAllocationIndicator;
 
+    /*********************************************************************
+     * Menus & toolbars
+     *********************************************************************/
 protected:
-	QMenu* m_fileMenu;
-	QMenu* m_managerMenu;
-	QMenu* m_controlMenu;
-	QMenu* m_helpMenu;
+    void initActions();
+    void initMenuBar();
+    void initToolBar();
+    QMenuBar *menuBar();
 
-#ifdef __APPLE__
-	QMenu* m_windowMenu;
-#endif
-
-	QToolBar* m_toolbar;
-
-	/*********************************************************************
-	 * Workspace background
-	 *********************************************************************/	
-public:
-	/** Set workspace background image from the given path */
-	void setBackgroundImage(QString path);
-
-	/** Get the current workspace background image path */
-	QString backgroundImage() const { return m_backgroundImage; }
+    /** Displays an error message if a file error has occurred */
+    bool handleFileError(QFile::FileError error);
 
 public slots:
-	/** Open a file dialog to browse an image for workspace background */
-	void slotSetBackgroundImage();
+    bool slotFileNew();
+    QFile::FileError slotFileOpen();
+    QFile::FileError slotFileSave();
+    QFile::FileError slotFileSaveAs();
+    void slotFileQuit();
 
-	/** Clear the current workspace background */
-	void slotClearBackgroundImage();
+    void slotFixtureManager();
+    void slotFunctionManager();
+    void slotBusManager();
+    void slotOutputManager();
+    void slotInputManager();
+
+    void slotControlVC();
+    void slotControlMonitor();
+    void slotControlBlackout();
+
+#ifdef __APPLE__
+    void slotWindowMenuAboutToShow();
+    void slotWindowMenuItemSelected();
+    void slotWindowMinimize();
+    void slotWindowAllToFront();
+#endif
+
+    void slotHelpIndex();
+    void slotHelpAbout();
+    void slotHelpAboutQt();
+
+    void slotCustomContextMenuRequested(const QPoint&);
 
 protected:
-	QString m_backgroundImage;
+    QAction* m_fileNewAction;
+    QAction* m_fileOpenAction;
+    QAction* m_fileSaveAction;
+    QAction* m_fileSaveAsAction;
+    QAction* m_fileQuitAction;
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    QAction* m_fixtureManagerAction;
+    QAction* m_functionManagerAction;
+    QAction* m_busManagerAction;
+    QAction* m_inputManagerAction;
+    QAction* m_outputManagerAction;
+
+    QAction* m_modeToggleAction;
+    QAction* m_controlVCAction;
+    QAction* m_controlMonitorAction;
+    QAction* m_controlBlackoutAction;
+
+#ifdef __APPLE__
+    QAction* m_windowMinimizeAction;
+    QAction* m_windowAllToFrontAction;
+#endif
+
+    QAction* m_helpIndexAction;
+    QAction* m_helpAboutAction;
+    QAction* m_helpAboutQtAction;
+
+protected:
+    QMenu* m_fileMenu;
+    QMenu* m_managerMenu;
+    QMenu* m_controlMenu;
+    QMenu* m_helpMenu;
+
+#ifdef __APPLE__
+    QMenu* m_windowMenu;
+#endif
+
+    QToolBar* m_toolbar;
+
+    /*********************************************************************
+     * Workspace background
+     *********************************************************************/
 public:
-	/**
-	 * Set the name of the current workspace file
-	 */
-	void setFileName(const QString& fileName);
+    /** Set workspace background image from the given path */
+    void setBackgroundImage(QString path);
 
-	/**
-	 * Get the name of the current workspace file
-	 */
-	QString fileName() const;
+    /** Get the current workspace background image path */
+    QString backgroundImage() const {
+        return m_backgroundImage;
+    }
 
-	/**
-	 * Load workspace contents from a file with the given name.
-	 *
-	 * @param fileName The name of the file to load from.
-	 * @return QFile::NoError if successful.
-	 */
-	QFile::FileError loadXML(const QString& fileName);
+public slots:
+    /** Open a file dialog to browse an image for workspace background */
+    void slotSetBackgroundImage();
 
-	/**
-	 * Load workspace contents from the given XML document.
-	 *
-	 * @param doc The XML document to load from.
-	 */
-	bool loadXML(const QDomDocument* doc);
-
-	/**
-	 * Save workspace contents to a file with the given name. Changes the
-	 * current workspace file name to the given fileName.
-	 *
-	 * @param fileName The name of the file to save to.
-	 * @return QFile::NoError if successful.
-	 */
-	QFile::FileError saveXML(const QString& fileName);
+    /** Clear the current workspace background */
+    void slotClearBackgroundImage();
 
 protected:
-	QString m_fileName;
+    QString m_backgroundImage;
+
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
+public:
+    /**
+     * Set the name of the current workspace file
+     */
+    void setFileName(const QString& fileName);
+
+    /**
+     * Get the name of the current workspace file
+     */
+    QString fileName() const;
+
+    /**
+     * Load workspace contents from a file with the given name.
+     *
+     * @param fileName The name of the file to load from.
+     * @return QFile::NoError if successful.
+     */
+    QFile::FileError loadXML(const QString& fileName);
+
+    /**
+     * Load workspace contents from the given XML document.
+     *
+     * @param doc The XML document to load from.
+     */
+    bool loadXML(const QDomDocument* doc);
+
+    /**
+     * Save workspace contents to a file with the given name. Changes the
+     * current workspace file name to the given fileName.
+     *
+     * @param fileName The name of the file to save to.
+     * @return QFile::NoError if successful.
+     */
+    QFile::FileError saveXML(const QString& fileName);
+
+protected:
+    QString m_fileName;
 };
 
 #endif

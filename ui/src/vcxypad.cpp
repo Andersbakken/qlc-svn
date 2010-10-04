@@ -51,21 +51,21 @@ extern App* _app;
 
 VCXYPad::VCXYPad(QWidget* parent) : VCWidget(parent)
 {
-	/* Set the class name "VCXYPad" as the object name as well */
-	setObjectName(VCXYPad::staticMetaObject.className());
+    /* Set the class name "VCXYPad" as the object name as well */
+    setObjectName(VCXYPad::staticMetaObject.className());
 
-	setFrameStyle(KVCFrameStyleSunken);
-	setCaption("XY Pad");
-	setMinimumSize(20, 20);
+    setFrameStyle(KVCFrameStyleSunken);
+    setCaption("XY Pad");
+    setMinimumSize(20, 20);
 
-	resize(QSize(120, 120));
+    resize(QSize(120, 120));
 
-	m_xyPosPixmap = QPixmap(":/xypad-point.png");
+    m_xyPosPixmap = QPixmap(":/xypad-point.png");
 
-	/* Set initial position to center */
-	m_currentXYPosition.setX(width() / 2);
-	m_currentXYPosition.setY(height() / 2);
-	m_currentXYPositionChanged = false;
+    /* Set initial position to center */
+    m_currentXYPosition.setX(width() / 2);
+    m_currentXYPosition.setY(height() / 2);
+    m_currentXYPositionChanged = false;
 }
 
 VCXYPad::~VCXYPad()
@@ -78,35 +78,35 @@ VCXYPad::~VCXYPad()
 
 VCWidget* VCXYPad::createCopy(VCWidget* parent)
 {
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(parent != NULL);
 
-	VCXYPad* xypad = new VCXYPad(parent);
-	if (xypad->copyFrom(this) == false)
-	{
-		delete xypad;
-		xypad = NULL;
-	}
+    VCXYPad* xypad = new VCXYPad(parent);
+    if (xypad->copyFrom(this) == false)
+    {
+        delete xypad;
+        xypad = NULL;
+    }
 
-	return xypad;
+    return xypad;
 }
 
 bool VCXYPad::copyFrom(VCWidget* widget)
 {
-	VCXYPad* xypad = qobject_cast <VCXYPad*> (widget);
-	if (xypad == NULL)
-		return false;
+    VCXYPad* xypad = qobject_cast <VCXYPad*> (widget);
+    if (xypad == NULL)
+        return false;
 
-	/* Get rid of existing channels */
-	m_fixtures.clear();
+    /* Get rid of existing channels */
+    m_fixtures.clear();
 
-	/* Copy the other widget's fixtures */
-	m_fixtures = xypad->fixtures();
+    /* Copy the other widget's fixtures */
+    m_fixtures = xypad->fixtures();
 
-	/* Copy the current position */
-	setCurrentXYPosition(xypad->currentXYPosition());
+    /* Copy the current position */
+    setCurrentXYPosition(xypad->currentXYPosition());
 
-	/* Copy common stuff */
-	return VCWidget::copyFrom(widget);
+    /* Copy common stuff */
+    return VCWidget::copyFrom(widget);
 }
 
 /*****************************************************************************
@@ -115,9 +115,9 @@ bool VCXYPad::copyFrom(VCWidget* widget)
 
 void VCXYPad::editProperties()
 {
-	VCXYPadProperties prop(_app, this);
-	if (prop.exec() == QDialog::Accepted)
-		_app->doc()->setModified();
+    VCXYPadProperties prop(_app, this);
+    if (prop.exec() == QDialog::Accepted)
+        _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -126,21 +126,21 @@ void VCXYPad::editProperties()
 
 void VCXYPad::appendFixture(const VCXYPadFixture& fxi)
 {
-	if (m_fixtures.indexOf(fxi) == -1)
-		m_fixtures.append(fxi);
+    if (m_fixtures.indexOf(fxi) == -1)
+        m_fixtures.append(fxi);
 }
 
 void VCXYPad::removeFixture(t_fixture_id fxi_id)
 {
-	VCXYPadFixture fixture;
-	fixture.setFixture(fxi_id);
+    VCXYPadFixture fixture;
+    fixture.setFixture(fxi_id);
 
-	m_fixtures.removeAll(fixture);
+    m_fixtures.removeAll(fixture);
 }
 
 void VCXYPad::clearFixtures()
 {
-	m_fixtures.clear();
+    m_fixtures.clear();
 }
 
 /*****************************************************************************
@@ -149,39 +149,39 @@ void VCXYPad::clearFixtures()
 
 void VCXYPad::setCurrentXYPosition(const QPoint& point)
 {
-	m_currentXYPositionMutex.lock();
-	m_currentXYPosition = point;
-	m_currentXYPositionChanged = true;
-	m_currentXYPositionMutex.unlock();
+    m_currentXYPositionMutex.lock();
+    m_currentXYPosition = point;
+    m_currentXYPositionChanged = true;
+    m_currentXYPositionMutex.unlock();
 
-	update();
+    update();
 }
 
 void VCXYPad::writeDMX(MasterTimer* timer, QByteArray* universes)
 {
-	Q_UNUSED(timer);
+    Q_UNUSED(timer);
 
-	m_currentXYPositionMutex.lock();
-	if (m_currentXYPositionChanged == true)
-	{
-		m_currentXYPositionChanged = false;
+    m_currentXYPositionMutex.lock();
+    if (m_currentXYPositionChanged == true)
+    {
+        m_currentXYPositionChanged = false;
 
-		/* Scale XY coordinate values to 0.0 - 1.0 */
-		float x = SCALE(float(m_currentXYPosition.x()),
-				float(0), float(width()), float(0), float(1));
-		float y = SCALE(float(m_currentXYPosition.y()),
-				float(0), float(height()), float(0), float(1));
+        /* Scale XY coordinate values to 0.0 - 1.0 */
+        float x = SCALE(float(m_currentXYPosition.x()),
+                        float(0), float(width()), float(0), float(1));
+        float y = SCALE(float(m_currentXYPosition.y()),
+                        float(0), float(height()), float(0), float(1));
 
-		/* Write values outside mutex lock to keep UI snappy */
-		m_currentXYPositionMutex.unlock();
-		foreach (VCXYPadFixture fixture, m_fixtures)
-			fixture.writeDMX(x, y, universes);
-	}
-	else
-	{
-		/* No changes in values, unlock and get out */
-		m_currentXYPositionMutex.unlock();
-	}
+        /* Write values outside mutex lock to keep UI snappy */
+        m_currentXYPositionMutex.unlock();
+        foreach (VCXYPadFixture fixture, m_fixtures)
+        fixture.writeDMX(x, y, universes);
+    }
+    else
+    {
+        /* No changes in values, unlock and get out */
+        m_currentXYPositionMutex.unlock();
+    }
 }
 
 /*****************************************************************************
@@ -190,27 +190,27 @@ void VCXYPad::writeDMX(MasterTimer* timer, QByteArray* universes)
 
 void VCXYPad::slotModeChanged(Doc::Mode mode)
 {
-	QMutableListIterator <VCXYPadFixture> it(m_fixtures);
-	while (it.hasNext() == true)
-	{
-		VCXYPadFixture fxi(it.next());
-		if (mode == Doc::Operate)
-			fxi.arm();
-		else
-			fxi.disarm();
-		it.setValue(fxi);
-	}
+    QMutableListIterator <VCXYPadFixture> it(m_fixtures);
+    while (it.hasNext() == true)
+    {
+        VCXYPadFixture fxi(it.next());
+        if (mode == Doc::Operate)
+            fxi.arm();
+        else
+            fxi.disarm();
+        it.setValue(fxi);
+    }
 
-	if (mode == Doc::Operate)
-		_app->masterTimer()->registerDMXSource(this);
-	else
-		_app->masterTimer()->unregisterDMXSource(this);
+    if (mode == Doc::Operate)
+        _app->masterTimer()->registerDMXSource(this);
+    else
+        _app->masterTimer()->unregisterDMXSource(this);
 
-	/* Reset this flag so that the pad won't immediately set a value
-	   when mode is changed */
-	m_currentXYPositionChanged = false;
+    /* Reset this flag so that the pad won't immediately set a value
+       when mode is changed */
+    m_currentXYPositionChanged = false;
 
-	VCWidget::slotModeChanged(mode);
+    VCWidget::slotModeChanged(mode);
 }
 
 /*****************************************************************************
@@ -219,131 +219,131 @@ void VCXYPad::slotModeChanged(Doc::Mode mode)
 
 bool VCXYPad::loader(const QDomElement* root, QWidget* parent)
 {
-	VCXYPad* xypad = NULL;
+    VCXYPad* xypad = NULL;
 
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(root != NULL);
+    Q_ASSERT(parent != NULL);
 
-	if (root->tagName() != KXMLQLCVCXYPad)
-	{
-		qDebug() << "XY Pad node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCXYPad)
+    {
+        qDebug() << "XY Pad node not found!";
+        return false;
+    }
 
-	/* Create a new xy pad into its parent */
-	xypad = new VCXYPad(parent);
-	xypad->show();
+    /* Create a new xy pad into its parent */
+    xypad = new VCXYPad(parent);
+    xypad->show();
 
-	/* Continue loading */
-	return xypad->loadXML(root);
+    /* Continue loading */
+    return xypad->loadXML(root);
 }
 
 bool VCXYPad::loadXML(const QDomElement* root)
 {
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
+    bool visible = false;
+    int x = 0;
+    int y = 0;
+    int w = 0;
+    int h = 0;
 
-	int xpos = 0;
-	int ypos = 0;
+    int xpos = 0;
+    int ypos = 0;
 
-	QDomNode node;
-	QDomElement tag;
-	QString str;
+    QDomNode node;
+    QDomElement tag;
+    QString str;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCVCXYPad)
-	{
-		qDebug() << "XY Pad node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCXYPad)
+    {
+        qDebug() << "XY Pad node not found!";
+        return false;
+    }
 
-	/* Caption */
-	setCaption(root->attribute(KXMLQLCVCCaption));
+    /* Caption */
+    setCaption(root->attribute(KXMLQLCVCCaption));
 
-	/* Children */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
-		}
-		else if (tag.tagName() == KXMLQLCVCAppearance)
-		{
-			loadXMLAppearance(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCVCXYPadPosition)
-		{
-			str = tag.attribute(KXMLQLCVCXYPadPositionX);
-			xpos = str.toInt();
+    /* Children */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == KXMLQLCWindowState)
+        {
+            loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
+        }
+        else if (tag.tagName() == KXMLQLCVCAppearance)
+        {
+            loadXMLAppearance(&tag);
+        }
+        else if (tag.tagName() == KXMLQLCVCXYPadPosition)
+        {
+            str = tag.attribute(KXMLQLCVCXYPadPositionX);
+            xpos = str.toInt();
 
-			str = tag.attribute(KXMLQLCVCXYPadPositionY);
-			ypos = str.toInt();
-		}
-		else if (tag.tagName() == KXMLQLCVCXYPadFixture)
-		{
-			VCXYPadFixture fxi;
-			if (fxi.loadXML(&tag) == true)
-				appendFixture(fxi);
-		}
-		else
-		{
-			qDebug() << "Unknown XY Pad tag:" << tag.tagName();
-		}
+            str = tag.attribute(KXMLQLCVCXYPadPositionY);
+            ypos = str.toInt();
+        }
+        else if (tag.tagName() == KXMLQLCVCXYPadFixture)
+        {
+            VCXYPadFixture fxi;
+            if (fxi.loadXML(&tag) == true)
+                appendFixture(fxi);
+        }
+        else
+        {
+            qDebug() << "Unknown XY Pad tag:" << tag.tagName();
+        }
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	/* First set window dimensions and AFTER that set the
-	   pointer's XY position */
-	setGeometry(x, y, w, h);
-	setCurrentXYPosition(QPoint(xpos, ypos));
+    /* First set window dimensions and AFTER that set the
+       pointer's XY position */
+    setGeometry(x, y, w, h);
+    setCurrentXYPosition(QPoint(xpos, ypos));
 
-	return true;
+    return true;
 }
 
 bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement root;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(vc_root != NULL);
 
-	/* VC XY Pad entry */
-	root = doc->createElement(KXMLQLCVCXYPad);
-	vc_root->appendChild(root);
+    /* VC XY Pad entry */
+    root = doc->createElement(KXMLQLCVCXYPad);
+    vc_root->appendChild(root);
 
-	/* Caption */
-	root.setAttribute(KXMLQLCVCCaption, caption());
+    /* Caption */
+    root.setAttribute(KXMLQLCVCCaption, caption());
 
-	/* Fixtures */
-	VCXYPadFixture fixture;
-	foreach (fixture, m_fixtures)
-		fixture.saveXML(doc, &root);
+    /* Fixtures */
+    VCXYPadFixture fixture;
+    foreach (fixture, m_fixtures)
+    fixture.saveXML(doc, &root);
 
-	/* Current XY Position */
-	tag = doc->createElement(KXMLQLCVCXYPadPosition);
-	tag.setAttribute(KXMLQLCVCXYPadPositionX,
-			 QString("%1").arg(currentXYPosition().x()));
-	tag.setAttribute(KXMLQLCVCXYPadPositionY,
-			 QString("%1").arg(currentXYPosition().y()));
-	root.appendChild(tag);
+    /* Current XY Position */
+    tag = doc->createElement(KXMLQLCVCXYPadPosition);
+    tag.setAttribute(KXMLQLCVCXYPadPositionX,
+                     QString("%1").arg(currentXYPosition().x()));
+    tag.setAttribute(KXMLQLCVCXYPadPositionY,
+                     QString("%1").arg(currentXYPosition().y()));
+    root.appendChild(tag);
 
-	/* Window state */
-	saveXMLWindowState(doc, &root);
+    /* Window state */
+    saveXMLWindowState(doc, &root);
 
-	/* Appearance */
-	saveXMLAppearance(doc, &root);
+    /* Appearance */
+    saveXMLAppearance(doc, &root);
 
-	return true;
+    return true;
 }
 
 /*****************************************************************************
@@ -352,73 +352,73 @@ bool VCXYPad::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 void VCXYPad::paintEvent(QPaintEvent* e)
 {
-	/* Let the parent class draw its stuff first */
-	VCWidget::paintEvent(e);
+    /* Let the parent class draw its stuff first */
+    VCWidget::paintEvent(e);
 
-	QPainter p(this);
-	QPen pen;
+    QPainter p(this);
+    QPen pen;
 
-	/* Draw name (offset just a bit to avoid frame) */
-	p.drawText(1, 1, width() - 2, height() - 2,
-		   Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, caption());
+    /* Draw name (offset just a bit to avoid frame) */
+    p.drawText(1, 1, width() - 2, height() - 2,
+               Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, caption());
 
-	/* Draw crosshairs to indicate the center position */
-	pen.setStyle(Qt::DotLine);
-	pen.setColor(palette().color(QPalette::WindowText));
-	pen.setWidth(0);
-	p.setPen(pen);
-	p.drawLine(width() / 2, 0, width() / 2, height());
-	p.drawLine(0, height() / 2, width(), height() / 2);
+    /* Draw crosshairs to indicate the center position */
+    pen.setStyle(Qt::DotLine);
+    pen.setColor(palette().color(QPalette::WindowText));
+    pen.setWidth(0);
+    p.setPen(pen);
+    p.drawLine(width() / 2, 0, width() / 2, height());
+    p.drawLine(0, height() / 2, width(), height() / 2);
 
-	/* Draw the current point pixmap */
-	p.drawPixmap(m_currentXYPosition.x() - (m_xyPosPixmap.width() / 2),
-		     m_currentXYPosition.y() - (m_xyPosPixmap.height() / 2),
-		     m_xyPosPixmap);
+    /* Draw the current point pixmap */
+    p.drawPixmap(m_currentXYPosition.x() - (m_xyPosPixmap.width() / 2),
+                 m_currentXYPosition.y() - (m_xyPosPixmap.height() / 2),
+                 m_xyPosPixmap);
 }
 
 void VCXYPad::mousePressEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Operate)
-	{
-		/* Mouse moves the XY point in operate mode */
-		int x = CLAMP(e->x(), 0, width());
-		int y = CLAMP(e->y(), 0, height());
-		QPoint point(x, y);
+    if (mode() == Doc::Operate)
+    {
+        /* Mouse moves the XY point in operate mode */
+        int x = CLAMP(e->x(), 0, width());
+        int y = CLAMP(e->y(), 0, height());
+        QPoint point(x, y);
 
-		setCurrentXYPosition(point);
-		setMouseTracking(true);
-		setCursor(Qt::CrossCursor);
-	}
+        setCurrentXYPosition(point);
+        setMouseTracking(true);
+        setCursor(Qt::CrossCursor);
+    }
 
-	VCWidget::mousePressEvent(e);
+    VCWidget::mousePressEvent(e);
 }
 
 void VCXYPad::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Operate)
-	{
-		/* Mouse moves the XY point in operate mode */
-		setMouseTracking(false);
-		unsetCursor();
+    if (mode() == Doc::Operate)
+    {
+        /* Mouse moves the XY point in operate mode */
+        setMouseTracking(false);
+        unsetCursor();
 
-		VCWidget::mouseReleaseEvent(e);
-	}
+        VCWidget::mouseReleaseEvent(e);
+    }
 
-	VCWidget::mouseReleaseEvent(e);
+    VCWidget::mouseReleaseEvent(e);
 }
 
 void VCXYPad::mouseMoveEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Operate)
-	{
-		/* Mouse moves the XY point in operate mode */
-		int x = CLAMP(e->x(), 0, width());
-		int y = CLAMP(e->y(), 0, height());
-		QPoint point(x, y);
+    if (mode() == Doc::Operate)
+    {
+        /* Mouse moves the XY point in operate mode */
+        int x = CLAMP(e->x(), 0, width());
+        int y = CLAMP(e->y(), 0, height());
+        QPoint point(x, y);
 
-		setCurrentXYPosition(point);
-		update();
-	}
+        setCurrentXYPosition(point);
+        update();
+    }
 
-	VCWidget::mouseMoveEvent(e);
+    VCWidget::mouseMoveEvent(e);
 }

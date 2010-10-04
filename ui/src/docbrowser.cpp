@@ -36,72 +36,72 @@
 
 DocBrowser::DocBrowser(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
-	new QVBoxLayout(this);
+    new QVBoxLayout(this);
 
-	setWindowTitle(tr("%1 - Document Browser").arg(APPNAME));
-	setWindowIcon(QIcon(":/help.png"));
+    setWindowTitle(tr("%1 - Document Browser").arg(APPNAME));
+    setWindowIcon(QIcon(":/help.png"));
 
-	/* Recall window size */
-	QSettings settings;
-	QVariant var = settings.value(SETTINGS_GEOMETRY);
-	if (var.isValid() == true)
-		restoreGeometry(var.toByteArray());
+    /* Recall window size */
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
 
-	/* Actions */
-	m_backwardAction = new QAction(QIcon(":/back.png"), tr("Backward"), this);
-	m_forwardAction = new QAction(QIcon(":/forward.png"), tr("Forward"), this);
-	m_homeAction = new QAction(QIcon(":/qlc.png"), tr("Index"), this);
+    /* Actions */
+    m_backwardAction = new QAction(QIcon(":/back.png"), tr("Backward"), this);
+    m_forwardAction = new QAction(QIcon(":/forward.png"), tr("Forward"), this);
+    m_homeAction = new QAction(QIcon(":/qlc.png"), tr("Index"), this);
 
-	m_backwardAction->setEnabled(false);
-	m_forwardAction->setEnabled(false);
+    m_backwardAction->setEnabled(false);
+    m_forwardAction->setEnabled(false);
 
-	/* Toolbar */
-	m_toolbar = new QToolBar("Document Browser", this);
-	layout()->addWidget(m_toolbar);
-	m_toolbar->addAction(m_backwardAction);
-	m_toolbar->addAction(m_forwardAction);
-	m_toolbar->addAction(m_homeAction);
+    /* Toolbar */
+    m_toolbar = new QToolBar("Document Browser", this);
+    layout()->addWidget(m_toolbar);
+    m_toolbar->addAction(m_backwardAction);
+    m_toolbar->addAction(m_forwardAction);
+    m_toolbar->addAction(m_homeAction);
 
-	/* Browser */
-	m_browser = new QTextBrowser(this);
-	layout()->addWidget(m_browser);
-	connect(m_browser, SIGNAL(backwardAvailable(bool)),
-		this, SLOT(slotBackwardAvailable(bool)));
-	connect(m_browser, SIGNAL(forwardAvailable(bool)),
-		this, SLOT(slotForwardAvailable(bool)));
-	connect(m_backwardAction, SIGNAL(triggered(bool)),
-		m_browser, SLOT(backward()));
-	connect(m_forwardAction, SIGNAL(triggered(bool)),
-		m_browser, SLOT(forward()));
-	connect(m_homeAction, SIGNAL(triggered(bool)),
-		m_browser, SLOT(home()));
+    /* Browser */
+    m_browser = new QTextBrowser(this);
+    layout()->addWidget(m_browser);
+    connect(m_browser, SIGNAL(backwardAvailable(bool)),
+            this, SLOT(slotBackwardAvailable(bool)));
+    connect(m_browser, SIGNAL(forwardAvailable(bool)),
+            this, SLOT(slotForwardAvailable(bool)));
+    connect(m_backwardAction, SIGNAL(triggered(bool)),
+            m_browser, SLOT(backward()));
+    connect(m_forwardAction, SIGNAL(triggered(bool)),
+            m_browser, SLOT(forward()));
+    connect(m_homeAction, SIGNAL(triggered(bool)),
+            m_browser, SLOT(home()));
 
-	/* Set document search paths */
-	QStringList searchPaths;
+    /* Set document search paths */
+    QStringList searchPaths;
 #ifdef __APPLE__
-        searchPaths << QString("%1/../%2/html/")
-                       .arg(QApplication::applicationDirPath())
-                       .arg(DOCSDIR);
+    searchPaths << QString("%1/../%2/html/")
+    .arg(QApplication::applicationDirPath())
+    .arg(DOCSDIR);
 #else
-	searchPaths << QString("%1/html/").arg(DOCSDIR);
+    searchPaths << QString("%1/html/").arg(DOCSDIR);
 #endif
 
-	m_browser->setSearchPaths(searchPaths);
-	m_browser->setSource(QUrl(QString("index.html")));
+    m_browser->setSearchPaths(searchPaths);
+    m_browser->setSource(QUrl(QString("index.html")));
 }
 
 DocBrowser::~DocBrowser()
 {
-	QSettings settings;
-	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 void DocBrowser::slotBackwardAvailable(bool available)
 {
-	m_backwardAction->setEnabled(available);
+    m_backwardAction->setEnabled(available);
 }
 
 void DocBrowser::slotForwardAvailable(bool available)
 {
-	m_forwardAction->setEnabled(available);
+    m_forwardAction->setEnabled(available);
 }

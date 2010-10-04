@@ -48,92 +48,96 @@ class QByteArray;
 
 class VCXYPad : public VCWidget, public DMXSource
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	VCXYPad(QWidget* parent);
-	virtual ~VCXYPad();
+    VCXYPad(QWidget* parent);
+    virtual ~VCXYPad();
 
 private:
-	Q_DISABLE_COPY(VCXYPad)
+    Q_DISABLE_COPY(VCXYPad)
 
-	/*********************************************************************
-	 * Clipboard
-	 *********************************************************************/
+    /*********************************************************************
+     * Clipboard
+     *********************************************************************/
 public:
-	/** Create a copy of this widget into the given parent */
-	VCWidget* createCopy(VCWidget* parent);
+    /** Create a copy of this widget into the given parent */
+    VCWidget* createCopy(VCWidget* parent);
 
-	/** Copy the contents for this widget from another widget */
-	bool copyFrom(VCWidget* widget);
+    /** Copy the contents for this widget from another widget */
+    bool copyFrom(VCWidget* widget);
 
-	/*********************************************************************
-	 * Properties
-	 *********************************************************************/
+    /*********************************************************************
+     * Properties
+     *********************************************************************/
 public:
-	/** Display a properties dialog */
-	void editProperties();
+    /** Display a properties dialog */
+    void editProperties();
 
-	/*********************************************************************
-	 * Fixtures
-	 *********************************************************************/
+    /*********************************************************************
+     * Fixtures
+     *********************************************************************/
 public:
-	void appendFixture(const VCXYPadFixture& fxi);
-	void removeFixture(t_fixture_id fxi);
-	void clearFixtures();
+    void appendFixture(const VCXYPadFixture& fxi);
+    void removeFixture(t_fixture_id fxi);
+    void clearFixtures();
 
-	QList <VCXYPadFixture> fixtures() const { return m_fixtures; }
+    QList <VCXYPadFixture> fixtures() const {
+        return m_fixtures;
+    }
 
 protected:
-	QList <VCXYPadFixture> m_fixtures;
+    QList <VCXYPadFixture> m_fixtures;
 
-	/*********************************************************************
-	 * Current position
-	 *********************************************************************/
+    /*********************************************************************
+     * Current position
+     *********************************************************************/
 public:
-	/** Get the pad's current position (i.e. where the point is) */
-	QPoint currentXYPosition() const { return m_currentXYPosition; }
+    /** Get the pad's current position (i.e. where the point is) */
+    QPoint currentXYPosition() const {
+        return m_currentXYPosition;
+    }
 
-	/** Set the pad's current position (i.e. move the point) */
-	void setCurrentXYPosition(const QPoint& point);
+    /** Set the pad's current position (i.e. move the point) */
+    void setCurrentXYPosition(const QPoint& point);
 
-	/** @reimp from DMXSource */
-	void writeDMX(MasterTimer* timer, QByteArray* universes);
+    /** @reimp from DMXSource */
+    void writeDMX(MasterTimer* timer, QByteArray* universes);
 
 protected:
-	QPixmap m_xyPosPixmap;
+    QPixmap m_xyPosPixmap;
 
-	QPoint m_currentXYPosition;
-	bool m_currentXYPositionChanged;
-        QMutex m_currentXYPositionMutex;
+    QPoint m_currentXYPosition;
+    bool m_currentXYPositionChanged;
+    QMutex m_currentXYPositionMutex;
 
-	/*********************************************************************
-	 * QLC mode
-	 *********************************************************************/
+    /*********************************************************************
+     * QLC mode
+     *********************************************************************/
 protected slots:
-	void slotModeChanged(Doc::Mode mode);
+    void slotModeChanged(Doc::Mode mode);
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
 public:
-	static bool loader(const QDomElement* root, QWidget* parent);
-	bool loadXML(const QDomElement* root);
+    static bool loader(const QDomElement* root, QWidget* parent);
+    bool loadXML(const QDomElement* root);
 
-	bool saveXML(QDomDocument* doc, QDomElement* root);
+    bool saveXML(QDomDocument* doc, QDomElement* root);
 
-	/*********************************************************************
-	 * Event handlers
-	 *********************************************************************/
+    /*********************************************************************
+     * Event handlers
+     *********************************************************************/
 protected:
-	void paintEvent(QPaintEvent* e);
+    void paintEvent(QPaintEvent* e);
 
-	void mousePressEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
 };
 
 #endif

@@ -33,46 +33,48 @@ class QLCCapability;
 
 class EditChannel : public QDialog, public Ui_EditChannel
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	EditChannel(QWidget* parent, QLCChannel* channel = NULL);
-	~EditChannel();
+    EditChannel(QWidget* parent, QLCChannel* channel = NULL);
+    ~EditChannel();
 
 protected:
-	void init();
+    void init();
 
-	/*********************************************************************
-	 * Channel
-	 *********************************************************************/
+    /*********************************************************************
+     * Channel
+     *********************************************************************/
 public:
-	/** Get the channel that was edited. */
-	QLCChannel* channel() { return m_channel; }
+    /** Get the channel that was edited. */
+    QLCChannel* channel() {
+        return m_channel;
+    }
 
 protected:
-	QLCChannel* m_channel;
+    QLCChannel* m_channel;
 
-	/*********************************************************************
-	 * Basic channel info
-	 *********************************************************************/
+    /*********************************************************************
+     * Basic channel info
+     *********************************************************************/
 protected slots:
-	void slotNameChanged(const QString& name);
-	void slotGroupActivated(const QString& group);
-	void slotMsbRadioToggled(bool toggled);
-	void slotLsbRadioToggled(bool toggled);
+    void slotNameChanged(const QString& name);
+    void slotGroupActivated(const QString& group);
+    void slotMsbRadioToggled(bool toggled);
+    void slotLsbRadioToggled(bool toggled);
 
-	/*********************************************************************
-	 * Capabilities
-	 *********************************************************************/
+    /*********************************************************************
+     * Capabilities
+     *********************************************************************/
 protected slots:
-	void slotCapabilityListSelectionChanged(QTreeWidgetItem* item);
-	void slotAddCapabilityClicked();
-	void slotRemoveCapabilityClicked();
-	void slotEditCapabilityClicked();
-	void slotWizardClicked();
+    void slotCapabilityListSelectionChanged(QTreeWidgetItem* item);
+    void slotAddCapabilityClicked();
+    void slotRemoveCapabilityClicked();
+    void slotEditCapabilityClicked();
+    void slotWizardClicked();
 
 protected:
-	void refreshCapabilities();
-	QLCCapability* currentCapability();
+    void refreshCapabilities();
+    QLCCapability* currentCapability();
 };
 
 #endif

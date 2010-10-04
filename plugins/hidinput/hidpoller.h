@@ -31,40 +31,42 @@ class HIDInput;
 
 class HIDPoller : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	HIDPoller(HIDInput* parent);
-	~HIDPoller();
+    HIDPoller(HIDInput* parent);
+    ~HIDPoller();
 
-	/*********************************************************************
-	 * Polled devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Polled devices
+     *********************************************************************/
 public:
-	bool addDevice(HIDDevice* device);
-	bool removeDevice(HIDDevice* device);
-	int deviceCount() const { return m_devices.count(); }
+    bool addDevice(HIDDevice* device);
+    bool removeDevice(HIDDevice* device);
+    int deviceCount() const {
+        return m_devices.count();
+    }
 
 protected:
-	QMap <int, HIDDevice*> m_devices;
-	bool m_changed;
-	QMutex m_mutex;
-	
-	/*********************************************************************
-	 * Poller thread
-	 *********************************************************************/
+    QMap <int, HIDDevice*> m_devices;
+    bool m_changed;
+    QMutex m_mutex;
+
+    /*********************************************************************
+     * Poller thread
+     *********************************************************************/
 public:
-	virtual void stop();
+    virtual void stop();
 
 protected:
-	virtual void run();
-	void readEvent(struct pollfd pfd);
+    virtual void run();
+    void readEvent(struct pollfd pfd);
 
 protected:
-	bool m_running;
+    bool m_running;
 };
 
 #endif

@@ -30,37 +30,37 @@ class MIDIOut;
 
 class ConfigureMIDIOut : public QDialog, public Ui_ConfigureMIDIOut
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	ConfigureMIDIOut(QWidget* parent, MIDIOut* plugin);
-	virtual ~ConfigureMIDIOut();
+    ConfigureMIDIOut(QWidget* parent, MIDIOut* plugin);
+    virtual ~ConfigureMIDIOut();
 
 protected:
-	MIDIOut* m_plugin;
+    MIDIOut* m_plugin;
 
-	/*********************************************************************
-	 * List of devices
-	 *********************************************************************/
+    /*********************************************************************
+     * List of devices
+     *********************************************************************/
 protected slots:
-	/** Invoke refresh for the interface list */
-	void slotRefreshClicked();
+    /** Invoke refresh for the interface list */
+    void slotRefreshClicked();
 
-	/** Open an editor dialog for the selected MIDI device */
-	void slotEditClicked();
+    /** Open an editor dialog for the selected MIDI device */
+    void slotEditClicked();
 
-	/** Callback for MIDIOut::deviceAdded() signals */
-	void slotDeviceAdded(MIDIDevice* device);
+    /** Callback for MIDIOut::deviceAdded() signals */
+    void slotDeviceAdded(MIDIDevice* device);
 
-	/** Callback for MIDIOut::deviceRemoved() signals */
-	void slotDeviceRemoved(MIDIDevice* device);
+    /** Callback for MIDIOut::deviceRemoved() signals */
+    void slotDeviceRemoved(MIDIDevice* device);
 
 protected:
-	/** Refresh the interface list */
-	void refreshList();
+    /** Refresh the interface list */
+    void refreshList();
 };
 
 #endif

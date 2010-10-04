@@ -64,80 +64,138 @@ class QDomDocument;
 class QLCPhysical
 {
 public:
-	QLCPhysical();
-	~QLCPhysical();
+    QLCPhysical();
+    ~QLCPhysical();
 
-	QLCPhysical& operator=(const QLCPhysical& physical);
+    QLCPhysical& operator=(const QLCPhysical& physical);
 
 public:
-	void setBulbType(const QString& type) { m_bulbType = type; }
-	QString bulbType() const { return m_bulbType; }
+    void setBulbType(const QString& type) {
+        m_bulbType = type;
+    }
+    QString bulbType() const {
+        return m_bulbType;
+    }
 
-	void setBulbLumens(const int lumens) { m_bulbLumens = lumens; }
-	int bulbLumens() const { return m_bulbLumens; }
+    void setBulbLumens(const int lumens) {
+        m_bulbLumens = lumens;
+    }
+    int bulbLumens() const {
+        return m_bulbLumens;
+    }
 
-	void setBulbColourTemperature(const int temp) { m_bulbColourTemperature = temp; }
-	int bulbColourTemperature() const { return m_bulbColourTemperature; }
+    void setBulbColourTemperature(const int temp) {
+        m_bulbColourTemperature = temp;
+    }
+    int bulbColourTemperature() const {
+        return m_bulbColourTemperature;
+    }
 
-	void setWeight(const int weight) { m_weight = weight; }
-	int weight() const { return m_weight; }
+    void setWeight(const int weight) {
+        m_weight = weight;
+    }
+    int weight() const {
+        return m_weight;
+    }
 
-	void setWidth(const int width) { m_width = width; }
-	int width() const { return m_width; }
+    void setWidth(const int width) {
+        m_width = width;
+    }
+    int width() const {
+        return m_width;
+    }
 
-	void setHeight(const int height) { m_height = height; }
-	int height() const { return m_height; }
+    void setHeight(const int height) {
+        m_height = height;
+    }
+    int height() const {
+        return m_height;
+    }
 
-	void setDepth(const int depth) { m_depth = depth; }
-	int depth() const { return m_depth; }
+    void setDepth(const int depth) {
+        m_depth = depth;
+    }
+    int depth() const {
+        return m_depth;
+    }
 
-	void setLensName(const QString& name) { m_lensName = name; }
-	QString lensName() const { return m_lensName; }
+    void setLensName(const QString& name) {
+        m_lensName = name;
+    }
+    QString lensName() const {
+        return m_lensName;
+    }
 
-	void setLensDegreesMin(const int degrees) { m_lensDegreesMin = degrees; }
-	int lensDegreesMin() const { return m_lensDegreesMin; }
+    void setLensDegreesMin(const int degrees) {
+        m_lensDegreesMin = degrees;
+    }
+    int lensDegreesMin() const {
+        return m_lensDegreesMin;
+    }
 
-	void setLensDegreesMax(const int degrees) { m_lensDegreesMax = degrees; }
-	int lensDegreesMax() const { return m_lensDegreesMax; }
+    void setLensDegreesMax(const int degrees) {
+        m_lensDegreesMax = degrees;
+    }
+    int lensDegreesMax() const {
+        return m_lensDegreesMax;
+    }
 
-	void setFocusType(const QString& type) { m_focusType = type; }
-	QString focusType() const { return m_focusType; }
+    void setFocusType(const QString& type) {
+        m_focusType = type;
+    }
+    QString focusType() const {
+        return m_focusType;
+    }
 
-	void setFocusPanMax(const int pan) { m_focusPanMax = pan; }
-	int focusPanMax() const { return m_focusPanMax; }
+    void setFocusPanMax(const int pan) {
+        m_focusPanMax = pan;
+    }
+    int focusPanMax() const {
+        return m_focusPanMax;
+    }
 
-	void setFocusTiltMax(const int tilt) { m_focusTiltMax = tilt; }
-	int focusTiltMax() const { return m_focusTiltMax; }
+    void setFocusTiltMax(const int tilt) {
+        m_focusTiltMax = tilt;
+    }
+    int focusTiltMax() const {
+        return m_focusTiltMax;
+    }
 
-	void setPowerConsumption(const int watt) { m_powerConsumption = watt; }
-	int powerConsumption() const;
+    void setPowerConsumption(const int watt) {
+        m_powerConsumption = watt;
+    }
+    int powerConsumption() const;
 
-	void setDmxConnector(const QString& type) { m_dmxConnector = type; }
-	QString dmxConnector() const { return m_dmxConnector; }
+    void setDmxConnector(const QString& type) {
+        m_dmxConnector = type;
+    }
+    QString dmxConnector() const {
+        return m_dmxConnector;
+    }
 
-	bool loadXML(const QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* root);
+    bool loadXML(const QDomElement* root);
+    bool saveXML(QDomDocument* doc, QDomElement* root);
 
 protected:
-	QString m_bulbType;
-	int m_bulbLumens;
-	int m_bulbColourTemperature;
+    QString m_bulbType;
+    int m_bulbLumens;
+    int m_bulbColourTemperature;
 
-	int m_weight;
-	int m_width;
-	int m_height;
-	int m_depth;
+    int m_weight;
+    int m_width;
+    int m_height;
+    int m_depth;
 
-	QString m_lensName;
-	int m_lensDegreesMin;
-	int m_lensDegreesMax;
+    QString m_lensName;
+    int m_lensDegreesMin;
+    int m_lensDegreesMax;
 
-	QString m_focusType;
-	int m_focusPanMax;
-	int m_focusTiltMax;
+    QString m_focusType;
+    int m_focusPanMax;
+    int m_focusTiltMax;
 
-	int m_powerConsumption;
-	QString m_dmxConnector;
+    int m_powerConsumption;
+    QString m_dmxConnector;
 };
 
 #endif

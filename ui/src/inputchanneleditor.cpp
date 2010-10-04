@@ -29,63 +29,63 @@
 #include "inputchanneleditor.h"
 
 InputChannelEditor::InputChannelEditor(QWidget* parent,
-				       const QLCInputProfile* profile,
-				       const QLCInputChannel* channel)
-	: QDialog(parent)
+                                       const QLCInputProfile* profile,
+                                       const QLCInputChannel* channel)
+        : QDialog(parent)
 {
-	m_channel = 0;
-	m_type = QLCInputChannel::NoType;
-	m_name = QString::null;
+    m_channel = 0;
+    m_type = QLCInputChannel::NoType;
+    m_name = QString::null;
 
-	setupUi(this);
+    setupUi(this);
 
-	/* Connect to these already now so that the handlers get called
-	   during initialization. */
-	connect(m_numberSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotNumberChanged(int)));
-	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
-		this, SLOT(slotNameEdited(const QString&)));
-	connect(m_typeCombo, SIGNAL(activated(const QString&)),
-		this, SLOT(slotTypeActivated(const QString &)));
+    /* Connect to these already now so that the handlers get called
+       during initialization. */
+    connect(m_numberSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotNumberChanged(int)));
+    connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
+            this, SLOT(slotNameEdited(const QString&)));
+    connect(m_typeCombo, SIGNAL(activated(const QString&)),
+            this, SLOT(slotTypeActivated(const QString &)));
 
-	/* Fill type combo with type icons and names */
-	QStringListIterator it(QLCInputChannel::types());
-	while (it.hasNext() == true)
-	{
-		QString str(it.next());
-		if (str == KXMLQLCInputChannelButton)
-			m_typeCombo->addItem(QIcon(":/button.png"), str);
-		else if (str == KXMLQLCInputChannelKnob)
-			m_typeCombo->addItem(QIcon(":/knob.png"), str);
-		else if (str == KXMLQLCInputChannelSlider)
-			m_typeCombo->addItem(QIcon(":/slider.png"), str);
-	}
+    /* Fill type combo with type icons and names */
+    QStringListIterator it(QLCInputChannel::types());
+    while (it.hasNext() == true)
+    {
+        QString str(it.next());
+        if (str == KXMLQLCInputChannelButton)
+            m_typeCombo->addItem(QIcon(":/button.png"), str);
+        else if (str == KXMLQLCInputChannelKnob)
+            m_typeCombo->addItem(QIcon(":/knob.png"), str);
+        else if (str == KXMLQLCInputChannelSlider)
+            m_typeCombo->addItem(QIcon(":/slider.png"), str);
+    }
 
-	if (channel != NULL && profile != NULL)
-	{
-		QString type;
-		quint32 num;
-		
-		/* Channel number */
-		num = profile->channelNumber(channel);
-		if (num != KInputChannelInvalid)
-			m_numberSpin->setValue(num + 1);
-		else
-			m_numberSpin->setValue(1);
+    if (channel != NULL && profile != NULL)
+    {
+        QString type;
+        quint32 num;
 
-		/* Channel name */
-		m_nameEdit->setText(channel->name());
+        /* Channel number */
+        num = profile->channelNumber(channel);
+        if (num != KInputChannelInvalid)
+            m_numberSpin->setValue(num + 1);
+        else
+            m_numberSpin->setValue(1);
 
-		/* Channel type */
-		type = QLCInputChannel::typeToString(channel->type());
-		m_typeCombo->setCurrentIndex(m_typeCombo->findText(type));
-	}
-	else
-	{
-		/* Multiple channels are being edited. Disable the channel
-		   number spin. */
-		m_numberSpin->setEnabled(false);
-	}
+        /* Channel name */
+        m_nameEdit->setText(channel->name());
+
+        /* Channel type */
+        type = QLCInputChannel::typeToString(channel->type());
+        m_typeCombo->setCurrentIndex(m_typeCombo->findText(type));
+    }
+    else
+    {
+        /* Multiple channels are being edited. Disable the channel
+           number spin. */
+        m_numberSpin->setEnabled(false);
+    }
 }
 
 InputChannelEditor::~InputChannelEditor()
@@ -94,15 +94,15 @@ InputChannelEditor::~InputChannelEditor()
 
 void InputChannelEditor::slotNumberChanged(int number)
 {
-	m_channel = number - 1;
+    m_channel = number - 1;
 }
 
 void InputChannelEditor::slotNameEdited(const QString& text)
 {
-	m_name = text;
+    m_name = text;
 }
 
 void InputChannelEditor::slotTypeActivated(const QString& text)
 {
-	m_type = QLCInputChannel::stringToType(text);
+    m_type = QLCInputChannel::stringToType(text);
 }

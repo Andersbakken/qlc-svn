@@ -43,125 +43,129 @@ class Fixture;
 
 class ConsoleChannel : public QGroupBox, public DMXSource
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	ConsoleChannel(QWidget *parent, t_fixture_id fixtureID,
-		       t_channel channel);
-	~ConsoleChannel();
+    ConsoleChannel(QWidget *parent, t_fixture_id fixtureID,
+                   t_channel channel);
+    ~ConsoleChannel();
 
 private:
-	Q_DISABLE_COPY(ConsoleChannel)
+    Q_DISABLE_COPY(ConsoleChannel)
 
 protected:
-	/** Initialize the UI */
-	void init();
+    /** Initialize the UI */
+    void init();
 
-	/*********************************************************************
-	 * Menu
-	 *********************************************************************/
+    /*********************************************************************
+     * Menu
+     *********************************************************************/
 protected slots:
-	void slotContextMenuTriggered(QAction* action);
+    void slotContextMenuTriggered(QAction* action);
 
 protected:
-	/** Open a context menu */
-	void contextMenuEvent(QContextMenuEvent*);
+    /** Open a context menu */
+    void contextMenuEvent(QContextMenuEvent*);
 
-	/** Initialize the context menu */
-	void initMenu();
+    /** Initialize the context menu */
+    void initMenu();
 
-	/** Initialize the context menu for fixtures with capabilities */
-	void initCapabilityMenu(const QLCChannel* ch);
-
-protected:
-	const QIcon colorIcon(const QString& name);
+    /** Initialize the context menu for fixtures with capabilities */
+    void initCapabilityMenu(const QLCChannel* ch);
 
 protected:
-	QMenu* m_menu;
+    const QIcon colorIcon(const QString& name);
 
-	/*********************************************************************
-	 * Value
-	 *********************************************************************/
+protected:
+    QMenu* m_menu;
+
+    /*********************************************************************
+     * Value
+     *********************************************************************/
 public:
-	/** Get the channel's value */
-	int sliderValue() const;
+    /** Get the channel's value */
+    int sliderValue() const;
 
-	/** Update the UI to match the channel's real status & value */
-	void updateValue();
+    /** Update the UI to match the channel's real status & value */
+    void updateValue();
 
-	/** Enable/disable DMX value output */
-	void setOutputDMX(bool state);
+    /** Enable/disable DMX value output */
+    void setOutputDMX(bool state);
 
-	/** Emulate the user dragging the value slider */
-	void setValue(uchar value);
+    /** Emulate the user dragging the value slider */
+    void setValue(uchar value);
 
 public slots:
-	/** Value edit box was edited */
-	void slotValueEdited(const QString& text);
+    /** Value edit box was edited */
+    void slotValueEdited(const QString& text);
 
-	/** Slider value was changed */
-	void slotValueChange(int value);
+    /** Slider value was changed */
+    void slotValueChange(int value);
 
 signals:
-	/** Slider value has changed */
-	void valueChanged(t_channel channel, uchar value, bool enabled);
+    /** Slider value has changed */
+    void valueChanged(t_channel channel, uchar value, bool enabled);
 
 protected:
-	uchar m_value;
-	bool m_valueChanged;
-	QMutex m_valueChangedMutex;
-	bool m_outputDMX;
+    uchar m_value;
+    bool m_valueChanged;
+    QMutex m_valueChangedMutex;
+    bool m_outputDMX;
 
-	/*********************************************************************
-	 * DMXSource
-	 *********************************************************************/
+    /*********************************************************************
+     * DMXSource
+     *********************************************************************/
 public:
-	/** @reimp */
-	void writeDMX(MasterTimer* timer, QByteArray* universes);
+    /** @reimp */
+    void writeDMX(MasterTimer* timer, QByteArray* universes);
 
-	/*********************************************************************
-	 * Enable/disable
-	 *********************************************************************/
+    /*********************************************************************
+     * Enable/disable
+     *********************************************************************/
 public:
-	/** Enable/disable the channel */
-	void enable(bool state);
+    /** Enable/disable the channel */
+    void enable(bool state);
 
-	/** Check, whether this channel has been enabled */
-	bool isEnabled() const { return isChecked(); }
+    /** Check, whether this channel has been enabled */
+    bool isEnabled() const {
+        return isChecked();
+    }
 
 protected slots:
-	/** This channel was checked/unchecked */
-	void slotToggled(bool state);
+    /** This channel was checked/unchecked */
+    void slotToggled(bool state);
 
-	/*********************************************************************
-	 * Checkable
-	 *********************************************************************/
+    /*********************************************************************
+     * Checkable
+     *********************************************************************/
 public:
-	void setCheckable(bool checkable);
+    void setCheckable(bool checkable);
 
-	 /*********************************************************************
-	 * Fixture channel
-	 *********************************************************************/
+    /*********************************************************************
+    * Fixture channel
+    *********************************************************************/
 public:
-	t_channel channel() const { return m_channel; }
+    t_channel channel() const {
+        return m_channel;
+    }
 
 protected:
-	t_channel m_channel;
-	t_fixture_id m_fixtureID;
-	Fixture* m_fixture;
+    t_channel m_channel;
+    t_fixture_id m_fixtureID;
+    Fixture* m_fixture;
 
-	/*********************************************************************
-	 * Widgets
-	 *********************************************************************/
+    /*********************************************************************
+     * Widgets
+     *********************************************************************/
 protected:
-	QToolButton* m_presetButton;
-	QIntValidator* m_validator;
-	QLineEdit* m_valueEdit;
-	QSlider* m_valueSlider;
-	QLabel* m_numberLabel;
+    QToolButton* m_presetButton;
+    QIntValidator* m_validator;
+    QLineEdit* m_valueEdit;
+    QSlider* m_valueSlider;
+    QLabel* m_numberLabel;
 };
 
 #endif

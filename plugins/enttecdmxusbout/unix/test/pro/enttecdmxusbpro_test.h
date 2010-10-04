@@ -26,21 +26,21 @@
 
 class EnttecDMXUSBPro_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private:
-	void resetCounters();
+    void resetCounters();
 
 private slots:
-	void construction();
-	void extractSerialFailedWrite();
-	void extractSerialFailedRead();
-	void extractSerialWrongReply();
-	void closeAlreadyClosed();
-	void closeFail();
-	void openFail();
-	void open();
-	void sendDMX();
+    void construction();
+    void extractSerialFailedWrite();
+    void extractSerialFailedRead();
+    void extractSerialWrongReply();
+    void closeAlreadyClosed();
+    void closeFail();
+    void openFail();
+    void open();
+    void sendDMX();
 };
 
 #endif

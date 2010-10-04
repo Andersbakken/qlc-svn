@@ -56,146 +56,146 @@
    separately. */
 int main(int argc, char** argv)
 {
-	QCoreApplication qapp(argc, argv);
-	int r;
+    QCoreApplication qapp(argc, argv);
+    int r;
 
-	/********************************************************************
-	 * Fixture metadata
-	 ********************************************************************/
+    /********************************************************************
+     * Fixture metadata
+     ********************************************************************/
 
-	QLCMacros_Test macros;
-	r = QTest::qExec(&macros, argc, argv);
-	if (r != 0)
-		return r;
+    QLCMacros_Test macros;
+    r = QTest::qExec(&macros, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCPhysical_Test physical;
-	r = QTest::qExec(&physical, argc, argv);
-	if (r != 0)
-		return r;
+    QLCPhysical_Test physical;
+    r = QTest::qExec(&physical, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCCapability_Test capability;
-	r = QTest::qExec(&capability, argc, argv);
-	if (r != 0)
-		return r;
+    QLCCapability_Test capability;
+    r = QTest::qExec(&capability, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCChannel_Test channel;
-	r = QTest::qExec(&channel, argc, argv);
-	if (r != 0)
-		return r;
+    QLCChannel_Test channel;
+    r = QTest::qExec(&channel, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCFixtureMode_Test mode;
-	r = QTest::qExec(&mode, argc, argv);
-	if (r != 0)
-		return r;
+    QLCFixtureMode_Test mode;
+    r = QTest::qExec(&mode, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCFixtureDef_Test fixtureDef;
-	r = QTest::qExec(&fixtureDef, argc, argv);
-	if (r != 0)
-		return r;
+    QLCFixtureDef_Test fixtureDef;
+    r = QTest::qExec(&fixtureDef, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCFixtureDefCache_Test fixtureDefCache;
-	r = QTest::qExec(&fixtureDefCache, argc, argv);
-	if (r != 0)
-		return r;
+    QLCFixtureDefCache_Test fixtureDefCache;
+    r = QTest::qExec(&fixtureDefCache, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCInputChannel_Test inputChannel;
-	r = QTest::qExec(&inputChannel, argc, argv);
-	if (r != 0)
-		return r;
+    QLCInputChannel_Test inputChannel;
+    r = QTest::qExec(&inputChannel, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCInputProfile_Test inputProfile;
-	r = QTest::qExec(&inputProfile, argc, argv);
-	if (r != 0)
-		return r;
+    QLCInputProfile_Test inputProfile;
+    r = QTest::qExec(&inputProfile, argc, argv);
+    if (r != 0)
+        return r;
 
-	/********************************************************************
-	 * Engine
-	 ********************************************************************/
+    /********************************************************************
+     * Engine
+     ********************************************************************/
 
-	OutputPatch_Test outputpatch;
-	r = QTest::qExec(&outputpatch, argc, argv);
-	if (r != 0)
-		return r;
+    OutputPatch_Test outputpatch;
+    r = QTest::qExec(&outputpatch, argc, argv);
+    if (r != 0)
+        return r;
 
-	OutputMap_Test outputmap;
-	r = QTest::qExec(&outputmap, argc, argv);
-	if (r != 0)
-		return r;
+    OutputMap_Test outputmap;
+    r = QTest::qExec(&outputmap, argc, argv);
+    if (r != 0)
+        return r;
 
-	InputPatch_Test inputpatch;
-	r = QTest::qExec(&inputpatch, argc, argv);
-	if (r != 0)
-		return r;
+    InputPatch_Test inputpatch;
+    r = QTest::qExec(&inputpatch, argc, argv);
+    if (r != 0)
+        return r;
 
-	InputMap_Test inputmap;
-	r = QTest::qExec(&inputmap, argc, argv);
-	if (r != 0)
-		return r;
+    InputMap_Test inputmap;
+    r = QTest::qExec(&inputmap, argc, argv);
+    if (r != 0)
+        return r;
 
-	Bus_Test bus;
-	r = QTest::qExec(&bus, argc, argv);
-	if (r != 0)
-		return r;
+    Bus_Test bus;
+    r = QTest::qExec(&bus, argc, argv);
+    if (r != 0)
+        return r;
 
-	Fixture_Test fixture;
-	r = QTest::qExec(&fixture, argc, argv);
-	if (r != 0)
-		return r;
+    Fixture_Test fixture;
+    r = QTest::qExec(&fixture, argc, argv);
+    if (r != 0)
+        return r;
 
-	Function_Test function;
-	r = QTest::qExec(&function, argc, argv);
-	if (r != 0)
-		return r;
+    Function_Test function;
+    r = QTest::qExec(&function, argc, argv);
+    if (r != 0)
+        return r;
 
-	SceneValue_Test scenevalue;
-	r = QTest::qExec(&scenevalue, argc, argv);
-	if (r != 0)
-		return r;
+    SceneValue_Test scenevalue;
+    r = QTest::qExec(&scenevalue, argc, argv);
+    if (r != 0)
+        return r;
 
-	SceneChannel_Test scenechannel;
-	r = QTest::qExec(&scenechannel, argc, argv);
-	if (r != 0)
-		return r;
+    SceneChannel_Test scenechannel;
+    r = QTest::qExec(&scenechannel, argc, argv);
+    if (r != 0)
+        return r;
 
-	Scene_Test scene;
-	r = QTest::qExec(&scene, argc, argv);
-	if (r != 0)
-		return r;
-	Chaser_Test chaser;
-	r = QTest::qExec(&chaser, argc, argv);
-	if (r != 0)
-		return r;
+    Scene_Test scene;
+    r = QTest::qExec(&scene, argc, argv);
+    if (r != 0)
+        return r;
+    Chaser_Test chaser;
+    r = QTest::qExec(&chaser, argc, argv);
+    if (r != 0)
+        return r;
 
-	Collection_Test collection;
-	r = QTest::qExec(&collection, argc, argv);
-	if (r != 0)
-		return r;
+    Collection_Test collection;
+    r = QTest::qExec(&collection, argc, argv);
+    if (r != 0)
+        return r;
 
-	EFXFixture_Test efxfixture;
-	r = QTest::qExec(&efxfixture, argc, argv);
-	if (r != 0)
-		return r;
+    EFXFixture_Test efxfixture;
+    r = QTest::qExec(&efxfixture, argc, argv);
+    if (r != 0)
+        return r;
 
-	EFX_Test efx;
-	r = QTest::qExec(&efx, argc, argv);
-	if (r != 0)
-		return r;
+    EFX_Test efx;
+    r = QTest::qExec(&efx, argc, argv);
+    if (r != 0)
+        return r;
 
-	MasterTimer_Test mt;
-	r = QTest::qExec(&mt, argc, argv);
-	if (r != 0)
-		return r;
+    MasterTimer_Test mt;
+    r = QTest::qExec(&mt, argc, argv);
+    if (r != 0)
+        return r;
 
-	Doc_Test doc;
-	r = QTest::qExec(&doc, argc, argv);
-	if (r != 0)
-		return r;
+    Doc_Test doc;
+    r = QTest::qExec(&doc, argc, argv);
+    if (r != 0)
+        return r;
 
-	DummyOutPlugin_Test dummy;
-	r = QTest::qExec(&dummy, argc, argv);
-	if (r != 0)
-		return r;
+    DummyOutPlugin_Test dummy;
+    r = QTest::qExec(&dummy, argc, argv);
+    if (r != 0)
+        return r;
 
-	return 0;
+    return 0;
 }
 

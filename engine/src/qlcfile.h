@@ -55,34 +55,34 @@ class QString;
 class QLCFile
 {
 public:
-	/**
-	 * Read an XML file to a QDomDocument structure
-	 *
-	 * @param path Path to the file to read
-	 * @param document QDomDocument* or NULL if an error has occurred
-	 *
-	 * @return An error code (QFile::NoError if successful)
-	 */
-	static QFile::FileError readXML(QString path, QDomDocument** document);
+    /**
+     * Read an XML file to a QDomDocument structure
+     *
+     * @param path Path to the file to read
+     * @param document QDomDocument* or NULL if an error has occurred
+     *
+     * @return An error code (QFile::NoError if successful)
+     */
+    static QFile::FileError readXML(QString path, QDomDocument** document);
 
-	/**
-	 * Get a common XML file header as a QDomDocument
-	 *
-	 * @param content The content type (Settings, Workspace)
-	 * @param doc A newly-created QDomDocument containing the header
-	 *
-	 * @return true if succesful, otherwise false
-	 */
-	static bool getXMLHeader(QString content, QDomDocument** doc);
+    /**
+     * Get a common XML file header as a QDomDocument
+     *
+     * @param content The content type (Settings, Workspace)
+     * @param doc A newly-created QDomDocument containing the header
+     *
+     * @return true if succesful, otherwise false
+     */
+    static bool getXMLHeader(QString content, QDomDocument** doc);
 
-	/**
-	 * Get a string that gives a textual description for the given file
-	 * error code.
-	 *
-	 * @param error The error code to get description for
-	 * @return Short description of the given file error
-	 */
-	static QString errorString(QFile::FileError error);
+    /**
+     * Get a string that gives a textual description for the given file
+     * error code.
+     *
+     * @param error The error code to get description for
+     * @return Short description of the given file error
+     */
+    static QString errorString(QFile::FileError error);
 };
 
 #endif

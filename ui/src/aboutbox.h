@@ -29,21 +29,21 @@ class QTimer;
 
 class AboutBox : public QDialog, public Ui_AboutBox
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(AboutBox)
+    Q_OBJECT
+    Q_DISABLE_COPY(AboutBox)
 
 public:
-	AboutBox(QWidget* parent);
-	~AboutBox();
+    AboutBox(QWidget* parent);
+    ~AboutBox();
 
 private slots:
-	void slotTimeout();
-	void slotItemClicked();
+    void slotTimeout();
+    void slotItemClicked();
 
 private:
-	QTimer* m_timer;
-	int m_row;
-	int m_increment;
+    QTimer* m_timer;
+    int m_row;
+    int m_increment;
 };
 
 #endif

@@ -26,20 +26,20 @@
 
 class InputMap_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initial();
-	void editorUniverse();
-	void appendPlugin();
-	void pluginNames();
-	void pluginInputs();
-	void configurePlugin();
-	void pluginStatus();
-	void profiles();
-	void setPatch();
-	void feedBack();
-	void slotValueChanged();
+    void initial();
+    void editorUniverse();
+    void appendPlugin();
+    void pluginNames();
+    void pluginInputs();
+    void configurePlugin();
+    void pluginStatus();
+    void profiles();
+    void setPatch();
+    void feedBack();
+    void slotValueChanged();
 };
 
 #endif

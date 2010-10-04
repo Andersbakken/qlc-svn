@@ -62,151 +62,151 @@ class BusEntry;
  */
 class Bus : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(Bus)
+    Q_OBJECT
+    Q_DISABLE_COPY(Bus)
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/**
-	 * Initialize the Bus singleton object, setting the given object as
-	 * the bus' parent.
-	 *
-	 * @param parent A parent object who owns the Bus singleton
-	 */
-	static void init(QObject* parent);
+    /**
+     * Initialize the Bus singleton object, setting the given object as
+     * the bus' parent.
+     *
+     * @param parent A parent object who owns the Bus singleton
+     */
+    static void init(QObject* parent);
 
-	/**
-	 * Get the bus singleton object. If Bus::init() has not been called,
-	 * the debug version asserts.
-	 *
-	 * @return The bus singleton or NULL
-	 */
-	static Bus* instance();
+    /**
+     * Get the bus singleton object. If Bus::init() has not been called,
+     * the debug version asserts.
+     *
+     * @return The bus singleton or NULL
+     */
+    static Bus* instance();
 
-	/**
-	 * Get the maximum number of buses
-	 */
-	static quint32 count();
+    /**
+     * Get the maximum number of buses
+     */
+    static quint32 count();
 
-	/**
-	 * Get the bus ID of the default fade bus
-	 */
-	static quint32 defaultFade();
+    /**
+     * Get the bus ID of the default fade bus
+     */
+    static quint32 defaultFade();
 
-	/**
-	 * Get the bus ID of the default hold bus
-	 */
-	static quint32 defaultHold();
+    /**
+     * Get the bus ID of the default hold bus
+     */
+    static quint32 defaultHold();
 
-	/**
-	 * Destructor
-	 */
-	~Bus();
+    /**
+     * Destructor
+     */
+    ~Bus();
 
 protected:
-	/**
-	 * Create a new Bus instance with the given parent object.
-	 *
-	 * @param parent A parent object who owns the Bus
-	 */
-	Bus(QObject* parent);
+    /**
+     * Create a new Bus instance with the given parent object.
+     *
+     * @param parent A parent object who owns the Bus
+     */
+    Bus(QObject* parent);
 
 protected:
-	QList <BusEntry*> m_buses;
-	static Bus* s_instance;
+    QList <BusEntry*> m_buses;
+    static Bus* s_instance;
 
-	/********************************************************************
-	 * Value
-	 ********************************************************************/
+    /********************************************************************
+     * Value
+     ********************************************************************/
 public:
-	/**
-	 * Get the value of a bus.
-	 *
-	 * @param bus The index of the bus, whose value to get.
-	 * @return Bus value or 0 if the bus does not exist.
-	 */
-	quint32 value(quint32 bus) const;
+    /**
+     * Get the value of a bus.
+     *
+     * @param bus The index of the bus, whose value to get.
+     * @return Bus value or 0 if the bus does not exist.
+     */
+    quint32 value(quint32 bus) const;
 
-	/**
-	 * Set the value of a bus and emit valueChanged(), if the bus is valid.
-	 *
-	 * @param bus The index of the bus, whose value to set.
-	 * @param value The value to set to the bus.
-	 */
-	void setValue(quint32 bus, quint32 value);
+    /**
+     * Set the value of a bus and emit valueChanged(), if the bus is valid.
+     *
+     * @param bus The index of the bus, whose value to set.
+     * @param value The value to set to the bus.
+     */
+    void setValue(quint32 bus, quint32 value);
 
 signals:
-	void valueChanged(quint32 bus, quint32 value);
+    void valueChanged(quint32 bus, quint32 value);
 
-	/********************************************************************
-	 * Name
-	 ********************************************************************/
+    /********************************************************************
+     * Name
+     ********************************************************************/
 public:
-	/**
-	 * Get the name of a bus.
-	 *
-	 * @param bus The index of the bus, whose name to get.
-	 * @return Bus name or QString::null if the bus does not exist.
-	 */
-	QString name(quint32 bus) const;
+    /**
+     * Get the name of a bus.
+     *
+     * @param bus The index of the bus, whose name to get.
+     * @return Bus name or QString::null if the bus does not exist.
+     */
+    QString name(quint32 bus) const;
 
-	/**
-	 * Get the name and index of a bus in one string, to be used in
-	 * UI elements.
-	 *
-	 * @param The index of the bus, whose name to get.
-	 * @return Bus ID and name (e.g. "1: Fade") or QString::null if the
-	 *         given bus does not exist.
-	 */
-	QString idName(quint32 bus) const;
+    /**
+     * Get the name and index of a bus in one string, to be used in
+     * UI elements.
+     *
+     * @param The index of the bus, whose name to get.
+     * @return Bus ID and name (e.g. "1: Fade") or QString::null if the
+     *         given bus does not exist.
+     */
+    QString idName(quint32 bus) const;
 
-	/**
-	 * Get a list of all buses. Each entry in the list takes the same form
-	 * as idName() does for a single bus.
-	 *
-	 * @return A list of idNames for all available buses.
-	 */
-	QStringList idNames() const;
+    /**
+     * Get a list of all buses. Each entry in the list takes the same form
+     * as idName() does for a single bus.
+     *
+     * @return A list of idNames for all available buses.
+     */
+    QStringList idNames() const;
 
-	/**
-	 * Set the name of a bus and emit nameChanged() if bus is valid.
-	 *
-	 * @param bus The index of the bus, whose name to set.
-	 * @param name The new name of the bus.
-	 */
-	void setName(quint32 bus, const QString& name);
+    /**
+     * Set the name of a bus and emit nameChanged() if bus is valid.
+     *
+     * @param bus The index of the bus, whose name to set.
+     * @param name The new name of the bus.
+     */
+    void setName(quint32 bus, const QString& name);
 
 signals:
-	void nameChanged(quint32 bus, const QString& name);
+    void nameChanged(quint32 bus, const QString& name);
 
-	/********************************************************************
-	 * Tap
-	 ********************************************************************/
+    /********************************************************************
+     * Tap
+     ********************************************************************/
 public:
-	/**
-	 * Emit a tapped signal thru the given bus. If bus does not exist,
-	 * no signal is emitted. Tap signals are used, for example, in chasers
-	 * to immediately skip to the next step instead of waiting for the set
-	 * time to pass.
-	 *
-	 * @param bus The index of the bus to tap.
-	 */
-	void tap(quint32 bus);
+    /**
+     * Emit a tapped signal thru the given bus. If bus does not exist,
+     * no signal is emitted. Tap signals are used, for example, in chasers
+     * to immediately skip to the next step instead of waiting for the set
+     * time to pass.
+     *
+     * @param bus The index of the bus to tap.
+     */
+    void tap(quint32 bus);
 
 signals:
-	void tapped(quint32 id);
+    void tapped(quint32 id);
 
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
+    /********************************************************************
+     * Load & Save
+     ********************************************************************/
 public:
-	/** Load all buses from an XML document */
-	bool loadXML(const QDomElement* root);
+    /** Load all buses from an XML document */
+    bool loadXML(const QDomElement* root);
 
-	/** Save all buses to an XML document */
-	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+    /** Save all buses to an XML document */
+    bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 };
 
 #endif

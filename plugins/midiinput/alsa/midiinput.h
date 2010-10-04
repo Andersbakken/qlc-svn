@@ -44,118 +44,124 @@ class MIDIInput;
 
 class MIDIInput : public QObject, public QLCInPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCInPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCInPlugin)
 
-	friend class ConfigureMIDIInput;
-	friend class MIDIPoller;
+    friend class ConfigureMIDIInput;
+    friend class MIDIPoller;
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	~MIDIInput();
+    ~MIDIInput();
 
-	void init();
+    void init();
 
-	/** Open the given input for input data */
-	void open(quint32 input = 0);
+    /** Open the given input for input data */
+    void open(quint32 input = 0);
 
-	/** Close the given input */
-	void close(quint32 input = 0);
+    /** Close the given input */
+    void close(quint32 input = 0);
 
-	/*********************************************************************
-	 * ALSA
-	 *********************************************************************/
+    /*********************************************************************
+     * ALSA
+     *********************************************************************/
 protected:
-	/** Initialize ALSA for proper operation */
-	void initALSA();
+    /** Initialize ALSA for proper operation */
+    void initALSA();
 
 public:
-	/** Get the ALSA sequencer handle */
-	snd_seq_t* alsa() { return m_alsa; }
+    /** Get the ALSA sequencer handle */
+    snd_seq_t* alsa() {
+        return m_alsa;
+    }
 
-	/** Get the plugin's own ALSA port that collates all events */
-	const snd_seq_addr_t* address() { return m_address; }
+    /** Get the plugin's own ALSA port that collates all events */
+    const snd_seq_addr_t* address() {
+        return m_address;
+    }
 
 protected:
-	/** The plugin's ALSA sequencer interface handle */
-	snd_seq_t* m_alsa;
+    /** The plugin's ALSA sequencer interface handle */
+    snd_seq_t* m_alsa;
 
-	/** This sequencer client's port address */
-	snd_seq_addr_t* m_address;
+    /** This sequencer client's port address */
+    snd_seq_addr_t* m_address;
 
-	/*********************************************************************
-	 * Devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Devices
+     *********************************************************************/
 public:
-	void rescanDevices();
+    void rescanDevices();
 
-	MIDIDevice* device(const snd_seq_addr_t* address);
-	MIDIDevice* device(quint32 index);
+    MIDIDevice* device(const snd_seq_addr_t* address);
+    MIDIDevice* device(quint32 index);
 
-	void addDevice(MIDIDevice* device);
-	void removeDevice(MIDIDevice* device);
+    void addDevice(MIDIDevice* device);
+    void removeDevice(MIDIDevice* device);
 
-	const QList <MIDIDevice*>& devices() { return m_devices; }
+    const QList <MIDIDevice*>& devices() {
+        return m_devices;
+    }
 
 signals:
-	void deviceAdded(MIDIDevice* device);
-	void deviceRemoved(MIDIDevice* device);
-	void configurationChanged();
+    void deviceAdded(MIDIDevice* device);
+    void deviceRemoved(MIDIDevice* device);
+    void configurationChanged();
 
 protected:
-	/** The list of available MIDI devices */
-	QList <MIDIDevice*> m_devices;
+    /** The list of available MIDI devices */
+    QList <MIDIDevice*> m_devices;
 
-	/*********************************************************************
-	 * Name
-	 *********************************************************************/
+    /*********************************************************************
+     * Name
+     *********************************************************************/
 public:
-	QString name();
+    QString name();
 
-	/*********************************************************************
-	 * Inputs
-	 *********************************************************************/
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
 public:
-	QStringList inputs();
+    QStringList inputs();
 
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
 public:
-	void configure();
+    void configure();
 
-	/*********************************************************************
-	 * Status
-	 *********************************************************************/
+    /*********************************************************************
+     * Status
+     *********************************************************************/
 public:
-	QString infoText(quint32 input = KInputInvalid);
+    QString infoText(quint32 input = KInputInvalid);
 
-	/*********************************************************************
-	 * Device poller
-	 *********************************************************************/
+    /*********************************************************************
+     * Device poller
+     *********************************************************************/
 public:
-	void addPollDevice(MIDIDevice* device);
-	void removePollDevice(MIDIDevice* device);
+    void addPollDevice(MIDIDevice* device);
+    void removePollDevice(MIDIDevice* device);
 
 protected:
-	MIDIPoller* m_poller;
+    MIDIPoller* m_poller;
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 protected:
-	void customEvent(QEvent* event);
+    void customEvent(QEvent* event);
 
 signals:
-	void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
-			  uchar value);
+    void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
+                      uchar value);
 
 public:
-	void connectInputData(QObject* listener);
+    void connectInputData(QObject* listener);
 
-	void feedBack(quint32 input, quint32 channel, uchar value);
+    void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

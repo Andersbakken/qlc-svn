@@ -28,18 +28,18 @@
  *****************************************************************************/
 
 const QEvent::Type MIDIInputEvent::eventType =
-	static_cast<QEvent::Type> (QEvent::registerEventType());
+    static_cast<QEvent::Type> (QEvent::registerEventType());
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
 MIDIInputEvent::MIDIInputEvent(MIDIDevice* device, quint32 channel,
-		uchar value) : QEvent(MIDIInputEvent::eventType)
+                               uchar value) : QEvent(MIDIInputEvent::eventType)
 {
-	m_device = device;
-	m_channel = channel;
-	m_value = value;
+    m_device = device;
+    m_channel = channel;
+    m_value = value;
 }
 
 MIDIInputEvent::~MIDIInputEvent()

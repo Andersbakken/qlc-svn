@@ -26,16 +26,16 @@
 
 class OutputMap_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initial();
-	void appendPlugin();
-	void setPatch();
-	void claimReleaseDump();
-	void blackout();
-	void pluginNames();
-	void pluginOutputs();
+    void initial();
+    void appendPlugin();
+    void setPatch();
+    void claimReleaseDump();
+    void blackout();
+    void pluginNames();
+    void pluginOutputs();
 };
 
 #endif

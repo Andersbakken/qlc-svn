@@ -32,27 +32,29 @@ class QLCChannel;
 
 class CapabilityWizard : public QDialog, public Ui_CapabilityWizard
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	CapabilityWizard(QWidget* parent, const QLCChannel* channel);
-	~CapabilityWizard();
+    CapabilityWizard(QWidget* parent, const QLCChannel* channel);
+    ~CapabilityWizard();
 
-	/********************************************************************
-	 * Capabilities
-	 ********************************************************************/
+    /********************************************************************
+     * Capabilities
+     ********************************************************************/
 public:
-	const QList <QLCCapability*> capabilities() const { return m_caps; }
+    const QList <QLCCapability*> capabilities() const {
+        return m_caps;
+    }
 
 protected slots:
-	void slotCreateCapabilities();
+    void slotCreateCapabilities();
 
 protected:
-	QList <QLCCapability*> m_caps;
-	const QLCChannel* m_channel;
+    QList <QLCCapability*> m_caps;
+    const QLCChannel* m_channel;
 
 };
 

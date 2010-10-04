@@ -41,34 +41,34 @@ typedef QList<unsigned int> OutputList;
 // The OLA Output plugin
 class OLAOut : public QObject, public QLCOutPlugin
 {
-  Q_OBJECT
-  Q_INTERFACES(QLCOutPlugin)
-  friend class ConfigureOlaOut;
+    Q_OBJECT
+    Q_INTERFACES(QLCOutPlugin)
+    friend class ConfigureOlaOut;
 
 public:
-  OLAOut();
-  ~OLAOut();
-  void init();
-  void open(quint32 output=0);
-  void close(quint32 output=0);
-  QStringList outputs();
-  QString name();
-  void configure();
-  QString infoText(quint32 output = KOutputInvalid);
+    OLAOut();
+    ~OLAOut();
+    void init();
+    void open(quint32 output=0);
+    void close(quint32 output=0);
+    QStringList outputs();
+    QString name();
+    void configure();
+    QString infoText(quint32 output = KOutputInvalid);
 
-  void outputDMX(quint32 output, const QByteArray& universe);
+    void outputDMX(quint32 output, const QByteArray& universe);
 
-  const OutputList outputMapping() const;
-  void setOutputUniverse(quint32 output, unsigned int universe);
-  bool isServerEmbedded();
-  void setServerEmbedded(bool embedServer);
+    const OutputList outputMapping() const;
+    void setOutputUniverse(quint32 output, unsigned int universe);
+    bool isServerEmbedded();
+    void setServerEmbedded(bool embedServer);
 
 protected:
-  QString m_configDir;
-  OlaOutThread *m_thread;
-  OutputList m_output_list;
-  ola::LogDestination *m_log_destination;
-  bool m_embedServer;
+    QString m_configDir;
+    OlaOutThread *m_thread;
+    OutputList m_output_list;
+    ola::LogDestination *m_log_destination;
+    bool m_embedServer;
 };
 
 #endif

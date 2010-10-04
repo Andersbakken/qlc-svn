@@ -33,41 +33,41 @@ class OutputMap;
 
 class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	OutputPatchEditor(QWidget* parent, int universe,
-			  const OutputPatch* patch);
-	~OutputPatchEditor();
+    OutputPatchEditor(QWidget* parent, int universe,
+                      const OutputPatch* patch);
+    ~OutputPatchEditor();
 
 public slots:
-	void reject();
+    void reject();
 
 private:
-	Q_DISABLE_COPY(OutputPatchEditor)
+    Q_DISABLE_COPY(OutputPatchEditor)
 
 protected:
-	void fillTree();
-	void updateOutputInfo();
-	void storeDMXZeroBasedSetting(bool set);
+    void fillTree();
+    void updateOutputInfo();
+    void storeDMXZeroBasedSetting(bool set);
 
 protected slots:
-	void slotCurrentItemChanged(QTreeWidgetItem* item);
-	void slotItemChanged(QTreeWidgetItem* item);
-	void slotConfigureClicked();
-	void slotZeroBasedDMXClicked();
+    void slotCurrentItemChanged(QTreeWidgetItem* item);
+    void slotItemChanged(QTreeWidgetItem* item);
+    void slotConfigureClicked();
+    void slotZeroBasedDMXClicked();
 
 protected:
-	int m_universe;
+    int m_universe;
 
-	QString m_originalPluginName;
-	QString m_currentPluginName;
-	quint32 m_originalOutput;
-	quint32 m_currentOutput;
-	bool m_originalDMXZeroBasedSetting;
+    QString m_originalPluginName;
+    QString m_currentPluginName;
+    quint32 m_originalOutput;
+    quint32 m_currentOutput;
+    bool m_originalDMXZeroBasedSetting;
 };
 
 #endif /* OUTPUTPATCHEDITOR_H */

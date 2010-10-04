@@ -40,119 +40,129 @@ class QString;
 
 class MIDIDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	MIDIDevice(MIDIOut* parent, UINT id);
-	virtual ~MIDIDevice();
+    MIDIDevice(MIDIOut* parent, UINT id);
+    virtual ~MIDIDevice();
 
-	/** Load global settings */
-	void loadSettings();
+    /** Load global settings */
+    void loadSettings();
 
-	/** Save global settings */
-	void saveSettings();
+    /** Save global settings */
+    void saveSettings();
 
-	/*********************************************************************
-	 * File operations
-	 *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-	/** Attempt to open the device in write-only mode */
-	bool open();
+    /** Attempt to open the device in write-only mode */
+    bool open();
 
-	/** Close the device */
-	void close();
+    /** Close the device */
+    void close();
 
 protected:
-	HMIDIOUT m_handle;
+    HMIDIOUT m_handle;
 
-	/*********************************************************************
-	 * Output
-	 *********************************************************************/
+    /*********************************************************************
+     * Output
+     *********************************************************************/
 public:
-	quint32 output() const { return static_cast<quint32> (m_id); }
+    quint32 output() const {
+        return static_cast<quint32> (m_id);
+    }
 
 protected:
-	UINT m_id;
+    UINT m_id;
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	/** Get device information string to be used in plugin manager */
-	QString infoText();
+    /** Get device information string to be used in plugin manager */
+    QString infoText();
 
-	/** Get the device's name */
-	QString name() const;
-
-protected:
-	/** Extract the name of this device */
-	void extractName();
+    /** Get the device's name */
+    QString name() const;
 
 protected:
-	/** The name of this MIDI device */
-	QString m_name;
-	bool m_isOK;
+    /** Extract the name of this device */
+    void extractName();
 
-	/*********************************************************************
-	 * Operational mode
-	 *********************************************************************/
+protected:
+    /** The name of this MIDI device */
+    QString m_name;
+    bool m_isOK;
+
+    /*********************************************************************
+     * Operational mode
+     *********************************************************************/
 public:
-	/**
-	 * This device's operational mode.
-	 *
-	 * @ControlChange: Use MIDI ControlChange ID's as DMX channels
-	 * @Note: Use MIDI Note ON/OFF commands as DMX channels
-	 */
-	enum Mode
-	{
-		ControlChange,
-		Note
-	};
+    /**
+     * This device's operational mode.
+     *
+     * @ControlChange: Use MIDI ControlChange ID's as DMX channels
+     * @Note: Use MIDI Note ON/OFF commands as DMX channels
+     */
+    enum Mode
+    {
+        ControlChange,
+        Note
+    };
 
-	/** Get this device's operational mode */
-	Mode mode() const { return m_mode; }
+    /** Get this device's operational mode */
+    Mode mode() const {
+        return m_mode;
+    }
 
-	/** Set this device's operational mode */
-	void setMode(Mode m) { m_mode = m; }
+    /** Set this device's operational mode */
+    void setMode(Mode m) {
+        m_mode = m;
+    }
 
-	static QString modeToString(Mode mode);
-	static Mode stringToMode(const QString& mode);
+    static QString modeToString(Mode mode);
+    static Mode stringToMode(const QString& mode);
 
 protected:
-	Mode m_mode;
+    Mode m_mode;
 
-	/*********************************************************************
-	 * MIDI channel
-	 *********************************************************************/
+    /*********************************************************************
+     * MIDI channel
+     *********************************************************************/
 public:
-	/** Get this device's MIDI channel */
-	t_channel midiChannel() const { return m_midiChannel; }
+    /** Get this device's MIDI channel */
+    t_channel midiChannel() const {
+        return m_midiChannel;
+    }
 
-	/** Set this device's MIDI channel */
-	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
+    /** Set this device's MIDI channel */
+    void setMidiChannel(t_channel channel) {
+        m_midiChannel = channel;
+    }
 
 protected:
-	t_channel m_midiChannel;
+    t_channel m_midiChannel;
 
-	/********************************************************************
-	 * Write
-	 ********************************************************************/
+    /********************************************************************
+     * Write
+     ********************************************************************/
 public:
-	void outputDMX(const QByteArray& universe);
+    void outputDMX(const QByteArray& universe);
 
 protected:
-	/** Send one channel */
-	void sendData(BYTE command, BYTE channel, BYTE value);
+    /** Send one channel */
+    void sendData(BYTE command, BYTE channel, BYTE value);
 
 protected:
-	/**
-	 * Cache values here because MIDI is so slow that we need to send only
-	 * those values that have actually changed.
-	 */
-	BYTE m_values[MAX_MIDI_DMX_CHANNELS];
+    /**
+     * Cache values here because MIDI is so slow that we need to send only
+     * those values that have actually changed.
+     */
+    BYTE m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

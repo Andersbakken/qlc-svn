@@ -33,52 +33,52 @@
 #include "hidinput.h"
 
 HIDJsDevice::HIDJsDevice(HIDInput* parent, quint32 line, const QString& path)
-	: HIDDevice(parent, line, path)
+        : HIDDevice(parent, line, path)
 {
-	init();
+    init();
 }
 
 HIDJsDevice::~HIDJsDevice()
 {
-	qobject_cast<HIDInput*> (parent())->removePollDevice(this);
+    qobject_cast<HIDInput*> (parent())->removePollDevice(this);
 }
 
 void HIDJsDevice::init()
 {
-	if (open() == false)
-		return;
+    if (open() == false)
+        return;
 
-	/* Device name */
-	char name[128] = "Unknown";
-	if (ioctl(m_file.handle(), JSIOCGNAME(sizeof(name)), name) < 0)
-	{
-		m_name = QString("HID Input %1: %2").arg(m_line + 1)
-						    .arg(strerror(errno));
-		qWarning() << "Unable to get joystick name:"
-			   << strerror(errno);
-	}
-	else
-	{
-		m_name = QString("HID Input %1: %2").arg(m_line + 1).arg(name);
-	}
+    /* Device name */
+    char name[128] = "Unknown";
+    if (ioctl(m_file.handle(), JSIOCGNAME(sizeof(name)), name) < 0)
+    {
+        m_name = QString("HID Input %1: %2").arg(m_line + 1)
+                 .arg(strerror(errno));
+        qWarning() << "Unable to get joystick name:"
+        << strerror(errno);
+    }
+    else
+    {
+        m_name = QString("HID Input %1: %2").arg(m_line + 1).arg(name);
+    }
 
-	/* Number of axes */
-	if (ioctl(m_file.handle(), JSIOCGAXES, &m_axes) < 0)
-	{
-		m_axes = 0;
-		qWarning() << "Unable to get number of axes:"
-			   << strerror(errno);
-	}
+    /* Number of axes */
+    if (ioctl(m_file.handle(), JSIOCGAXES, &m_axes) < 0)
+    {
+        m_axes = 0;
+        qWarning() << "Unable to get number of axes:"
+        << strerror(errno);
+    }
 
-	/* Number of buttons */
-	if (ioctl(m_file.handle(), JSIOCGBUTTONS, &m_buttons) < 0)
-	{
-		m_buttons = 0;
-		qWarning() << "Unable to get number of buttons:"
-			   << strerror(errno);
-	}
+    /* Number of buttons */
+    if (ioctl(m_file.handle(), JSIOCGBUTTONS, &m_buttons) < 0)
+    {
+        m_buttons = 0;
+        qWarning() << "Unable to get number of buttons:"
+        << strerror(errno);
+    }
 
-	close();
+    close();
 }
 
 /*****************************************************************************
@@ -87,91 +87,91 @@ void HIDJsDevice::init()
 
 bool HIDJsDevice::open()
 {
-	bool result = false;
+    bool result = false;
 
-	result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadWrite);
-	if (result == false)
-	{
-		result = m_file.open(QIODevice::Unbuffered |
-				     QIODevice::ReadOnly);
-		if (result == false)
-		{
-			qWarning() << "Unable to open" << m_file.fileName()
-				   << ":" << m_file.errorString();
-		}
-		else
-		{
-			qDebug() << "Opened" << m_file.fileName()
-				 << "in read only mode";
-		}
-	}
+    result = m_file.open(QIODevice::Unbuffered | QIODevice::ReadWrite);
+    if (result == false)
+    {
+        result = m_file.open(QIODevice::Unbuffered |
+                             QIODevice::ReadOnly);
+        if (result == false)
+        {
+            qWarning() << "Unable to open" << m_file.fileName()
+            << ":" << m_file.errorString();
+        }
+        else
+        {
+            qDebug() << "Opened" << m_file.fileName()
+            << "in read only mode";
+        }
+    }
 
-	return result;
+    return result;
 }
 
 void HIDJsDevice::close()
 {
-	m_file.close();
+    m_file.close();
 }
 
 QString HIDJsDevice::path() const
 {
-	return m_file.fileName();
+    return m_file.fileName();
 }
 
 bool HIDJsDevice::readEvent()
 {
-	struct js_event ev;
-	HIDInputEvent* e;
-	int r;
+    struct js_event ev;
+    HIDInputEvent* e;
+    int r;
 
-	r = read(m_file.handle(), &ev, sizeof(struct js_event));
-	if (r > 0)
-	{
-		quint32 ch;
-		uchar val;
+    r = read(m_file.handle(), &ev, sizeof(struct js_event));
+    if (r > 0)
+    {
+        quint32 ch;
+        uchar val;
 
-		/* Get the event type */
-		if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_BUTTON)
-		{
-			if (ev.value != 0)
-				val = UCHAR_MAX;
-			else
-				val = 0;
+        /* Get the event type */
+        if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_BUTTON)
+        {
+            if (ev.value != 0)
+                val = UCHAR_MAX;
+            else
+                val = 0;
 
-			/* Map button channels to start after axes */
-			ch = quint32(m_axes + ev.number);
+            /* Map button channels to start after axes */
+            ch = quint32(m_axes + ev.number);
 
-			/* Generate and post an event */
-			e = new HIDInputEvent(this, m_line, ch, val, true);
-	                QApplication::postEvent(parent(), e);
-		}
-		else if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_AXIS)
-		{
-			/** @todo Use SHRT_MAX & SHRT_MIN */
-			val = SCALE(double(ev.value),
-				    double(-32767), double(32768),
-				    double(0), double(UCHAR_MAX));
-			ch = quint32(ev.number);
+            /* Generate and post an event */
+            e = new HIDInputEvent(this, m_line, ch, val, true);
+            QApplication::postEvent(parent(), e);
+        }
+        else if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_AXIS)
+        {
+            /** @todo Use SHRT_MAX & SHRT_MIN */
+            val = SCALE(double(ev.value),
+                        double(-32767), double(32768),
+                        double(0), double(UCHAR_MAX));
+            ch = quint32(ev.number);
 
-			e = new HIDInputEvent(this, m_line, ch, val, true);
-	                QApplication::postEvent(parent(), e);
-		}
-		else
-		{
-			/* Unknown event type */
-		}
+            e = new HIDInputEvent(this, m_line, ch, val, true);
+            QApplication::postEvent(parent(), e);
+        }
+        else
+        {
+            /* Unknown event type */
+        }
 
-		return true;
-	}
-	else
-	{
-		/* This device seems to be dead */
-		e = new HIDInputEvent(this, 0, 0, 0, false);
-		QApplication::postEvent(parent(), e);
+        return true;
+    }
+    else
+    {
+        /* This device seems to be dead */
+        e = new HIDInputEvent(this, 0, 0, 0, false);
+        QApplication::postEvent(parent(), e);
 
-		return false;
-	}
+        return false;
+    }
 }
 
 /*****************************************************************************
@@ -180,13 +180,13 @@ bool HIDJsDevice::readEvent()
 
 QString HIDJsDevice::infoText()
 {
-	QString info;
+    QString info;
 
-	info += tr("<P><B>%1</B><BR>").arg(m_name);
-	info += tr("Axes: %1<BR>").arg(m_axes);
-	info += tr("Buttons: %1</P>").arg(m_buttons);
+    info += tr("<P><B>%1</B><BR>").arg(m_name);
+    info += tr("Axes: %1<BR>").arg(m_axes);
+    info += tr("Buttons: %1</P>").arg(m_buttons);
 
-	return info;
+    return info;
 }
 
 /*****************************************************************************
@@ -195,8 +195,8 @@ QString HIDJsDevice::infoText()
 
 void HIDJsDevice::feedBack(quint32 channel, uchar value)
 {
-	/* HID devices don't (yet) support feedback */
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
+    /* HID devices don't (yet) support feedback */
+    Q_UNUSED(channel);
+    Q_UNUSED(value);
 }
 

@@ -37,68 +37,70 @@ class InputMap;
 
 class InputManager : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Get the InputManager singleton instance. Can be NULL. */
-	static InputManager* instance() { return s_instance; }
+    /** Get the InputManager singleton instance. Can be NULL. */
+    static InputManager* instance() {
+        return s_instance;
+    }
 
-	/** Create an instance with parent. Fails if s_instance is not NULL. */
-	static void create(QWidget* parent);
+    /** Create an instance with parent. Fails if s_instance is not NULL. */
+    static void create(QWidget* parent);
 
-	/** Normal public destructor */
-	virtual ~InputManager();
+    /** Normal public destructor */
+    virtual ~InputManager();
 
 private:
-	Q_DISABLE_COPY(InputManager)
+    Q_DISABLE_COPY(InputManager)
 
 protected:
-	/** Protected constructor to prevent multiple instances. */
-	InputManager(QWidget* parent, Qt::WindowFlags flags = 0);
+    /** Protected constructor to prevent multiple instances. */
+    InputManager(QWidget* parent, Qt::WindowFlags flags = 0);
 
 protected slots:
-	void slotModeChanged(Doc::Mode mode);
-	void slotDocumentChanged(Doc* doc);
+    void slotModeChanged(Doc::Mode mode);
+    void slotDocumentChanged(Doc* doc);
 
 protected:
-	static InputManager* s_instance;
+    static InputManager* s_instance;
 
-	/*********************************************************************
-	 * Tree widget
-	 *********************************************************************/
+    /*********************************************************************
+     * Tree widget
+     *********************************************************************/
 public:
-	/** Update the input mapping tree */
-	void updateTree();
+    /** Update the input mapping tree */
+    void updateTree();
 
 protected:
-	/** Update the contents of an input patch to an item */
-	void updateItem(QTreeWidgetItem* item, InputPatch* patch,
-			quint32 universe);
+    /** Update the contents of an input patch to an item */
+    void updateItem(QTreeWidgetItem* item, InputPatch* patch,
+                    quint32 universe);
 
 protected slots:
-	/** Listens to input data and displays a small icon to indicate a
-	    working connection between a plugin and an input device. */
-	void slotInputValueChanged(quint32 universe,
-				   quint32 channel,
-				   uchar value);
-	/** Hides the small icon after a while ^^ */
-	void slotTimerTimeout();
+    /** Listens to input data and displays a small icon to indicate a
+        working connection between a plugin and an input device. */
+    void slotInputValueChanged(quint32 universe,
+                               quint32 channel,
+                               uchar value);
+    /** Hides the small icon after a while ^^ */
+    void slotTimerTimeout();
 
 protected:
-	QTreeWidget* m_tree;
-	QTimer* m_timer;
+    QTreeWidget* m_tree;
+    QTimer* m_timer;
 
-	/*********************************************************************
-	 * Toolbar
-	 *********************************************************************/
+    /*********************************************************************
+     * Toolbar
+     *********************************************************************/
 protected slots:
-	void slotEditClicked();
+    void slotEditClicked();
 
 protected:
-	QToolBar* m_toolbar;
+    QToolBar* m_toolbar;
 };
 
 #endif

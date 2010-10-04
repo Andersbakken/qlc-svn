@@ -33,15 +33,15 @@ class QByteArray;
 class DMXSource
 {
 public:
-	virtual ~DMXSource() {}
+    virtual ~DMXSource() {}
 
-	/**
-	 * Write the source's current values to the given universe buffer.
-	 *
-	 * @param timer The calling MasterTimer instance
-	 * @param universes Universe buffer to write to
-	 */
-	virtual void writeDMX(MasterTimer* timer, QByteArray* universes) = 0;
+    /**
+     * Write the source's current values to the given universe buffer.
+     *
+     * @param timer The calling MasterTimer instance
+     * @param universes Universe buffer to write to
+     */
+    virtual void writeDMX(MasterTimer* timer, QByteArray* universes) = 0;
 };
 
 #endif

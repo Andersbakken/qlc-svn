@@ -34,90 +34,96 @@ class QLCChannel;
 
 class QLCFixtureEditor : public QWidget, public Ui_FixtureEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef,
-			 const QString& fileName = QString::null);
-	virtual ~QLCFixtureEditor();
+    QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef,
+                     const QString& fileName = QString::null);
+    virtual ~QLCFixtureEditor();
 
 protected:
-	void init();
-	void closeEvent(QCloseEvent* e);
+    void init();
+    void closeEvent(QCloseEvent* e);
 
-	/*********************************************************************
-	 * Saving
-	 *********************************************************************/
+    /*********************************************************************
+     * Saving
+     *********************************************************************/
 public:
-	bool save();
-	bool saveAs();
+    bool save();
+    bool saveAs();
 
-	void setFileName(QString path) { m_fileName = path; }
-	QString fileName() const { return m_fileName; }
+    void setFileName(QString path) {
+        m_fileName = path;
+    }
+    QString fileName() const {
+        return m_fileName;
+    }
 
-	bool modified() const { return m_modified; }
-	void setModified(bool modified = true);
+    bool modified() const {
+        return m_modified;
+    }
+    void setModified(bool modified = true);
 
 protected:
-	QLCFixtureDef* m_fixtureDef;
-	QString m_fileName;
-	bool m_modified;
+    QLCFixtureDef* m_fixtureDef;
+    QString m_fileName;
+    bool m_modified;
 
-	/*********************************************************************
-	 * General
-	 *********************************************************************/
+    /*********************************************************************
+     * General
+     *********************************************************************/
 protected slots:
-	void slotManufacturerTextEdited(const QString &text);
-	void slotModelTextEdited(const QString &text);
-	void slotTypeActivated(const QString &text);
+    void slotManufacturerTextEdited(const QString &text);
+    void slotModelTextEdited(const QString &text);
+    void slotTypeActivated(const QString &text);
 
 protected:
-	bool checkManufacturerModel();
-	void setCaption();
-	void ensureNewExtension();
-	bool newExtensionReminder();
+    bool checkManufacturerModel();
+    void setCaption();
+    void ensureNewExtension();
+    bool newExtensionReminder();
 
-	/*********************************************************************
-	 * Channels
-	 *********************************************************************/
+    /*********************************************************************
+     * Channels
+     *********************************************************************/
 protected slots:
-	void slotChannelListSelectionChanged(QTreeWidgetItem* item);
-	void slotAddChannel();
-	void slotRemoveChannel();
-	void slotEditChannel();
-	void slotCopyChannel();
-	void slotPasteChannel();
-	void slotExpandChannels();
-	void slotChannelListContextMenuRequested();
+    void slotChannelListSelectionChanged(QTreeWidgetItem* item);
+    void slotAddChannel();
+    void slotRemoveChannel();
+    void slotEditChannel();
+    void slotCopyChannel();
+    void slotPasteChannel();
+    void slotExpandChannels();
+    void slotChannelListContextMenuRequested();
 
 protected:
-	QLCChannel* currentChannel();
-	void refreshChannelList();
-	void updateChannelItem(const QLCChannel* channel,
-			       QTreeWidgetItem* item);
+    QLCChannel* currentChannel();
+    void refreshChannelList();
+    void updateChannelItem(const QLCChannel* channel,
+                           QTreeWidgetItem* item);
 
-	/*********************************************************************
-	 * Modes
-	 *********************************************************************/
+    /*********************************************************************
+     * Modes
+     *********************************************************************/
 protected slots:
-	void slotModeListSelectionChanged(QTreeWidgetItem* item);
-	void slotAddMode();
-	void slotRemoveMode();
-	void slotEditMode();
-	void slotCloneMode();
-	void slotExpandModes();
-	void slotModeListContextMenuRequested();
+    void slotModeListSelectionChanged(QTreeWidgetItem* item);
+    void slotAddMode();
+    void slotRemoveMode();
+    void slotEditMode();
+    void slotCloneMode();
+    void slotExpandModes();
+    void slotModeListContextMenuRequested();
 
 protected:
-	QLCFixtureMode* currentMode();
-	void refreshModeList();
-	void updateModeItem(const QLCFixtureMode* mode, QTreeWidgetItem* item);
+    QLCFixtureMode* currentMode();
+    void refreshModeList();
+    void updateModeItem(const QLCFixtureMode* mode, QTreeWidgetItem* item);
 
-	/*********************************************************************
-	 * Clipboard
-	 *********************************************************************/
+    /*********************************************************************
+     * Clipboard
+     *********************************************************************/
 public slots:
-	void slotClipboardChanged();
+    void slotClipboardChanged();
 };
 
 #endif

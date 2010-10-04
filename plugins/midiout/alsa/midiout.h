@@ -41,117 +41,121 @@ class QString;
 
 class MIDIOut : public QObject, public QLCOutPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCOutPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCOutPlugin)
 
-	friend class ConfigureMIDIOut;
+    friend class ConfigureMIDIOut;
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Destructor */
-	~MIDIOut();
+    /** Destructor */
+    ~MIDIOut();
 
-	/** Second-stage constructor */
-	void init();
-	
-	/** Open the given output */
-	void open(quint32 output = 0);
+    /** Second-stage constructor */
+    void init();
 
-	/** Close the given output */
-	void close(quint32 output = 0);
+    /** Open the given output */
+    void open(quint32 output = 0);
+
+    /** Close the given output */
+    void close(quint32 output = 0);
 
 protected:
-	void subscribeDevice(MIDIDevice* device);
-	void unsubscribeDevice(MIDIDevice* device);
+    void subscribeDevice(MIDIDevice* device);
+    void unsubscribeDevice(MIDIDevice* device);
 
-	/*********************************************************************
-	 * ALSA
-	 *********************************************************************/
+    /*********************************************************************
+     * ALSA
+     *********************************************************************/
 protected:
-	/** Initialize ALSA for proper operation */
-	void initALSA();
+    /** Initialize ALSA for proper operation */
+    void initALSA();
 
 public:
-	/** Get the ALSA sequencer handle */
-	snd_seq_t* alsa() { return m_alsa; }
+    /** Get the ALSA sequencer handle */
+    snd_seq_t* alsa() {
+        return m_alsa;
+    }
 
-	/** Get the plugin's own ALSA port that collates all events */
-	const snd_seq_addr_t* address() { return m_address; }
+    /** Get the plugin's own ALSA port that collates all events */
+    const snd_seq_addr_t* address() {
+        return m_address;
+    }
 
 protected:
-	/** The plugin's ALSA sequencer interface handle */
-	snd_seq_t* m_alsa;
+    /** The plugin's ALSA sequencer interface handle */
+    snd_seq_t* m_alsa;
 
-	/** This sequencer client's port address */
-	snd_seq_addr_t* m_address;
+    /** This sequencer client's port address */
+    snd_seq_addr_t* m_address;
 
-	/*********************************************************************
-	 * Devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Devices
+     *********************************************************************/
 public:
-	/** Find out what kinds of MIDI devices there are available */
-	void rescanDevices();
+    /** Find out what kinds of MIDI devices there are available */
+    void rescanDevices();
 
 protected:
-	/** Get a MIDIDevice by its ALSA address */
-	MIDIDevice* device(const snd_seq_addr_t* address);
+    /** Get a MIDIDevice by its ALSA address */
+    MIDIDevice* device(const snd_seq_addr_t* address);
 
-	/** Get a MIDIDevice by its index in the QList */
-	MIDIDevice* device(unsigned int index);
+    /** Get a MIDIDevice by its index in the QList */
+    MIDIDevice* device(unsigned int index);
 
-	/** Add a new MIDIDevice and associate it with the given output */
-	void addDevice(MIDIDevice* device);
+    /** Add a new MIDIDevice and associate it with the given output */
+    void addDevice(MIDIDevice* device);
 
-	/** Remove the MIDIDevice associated with the output from the QMap */
-	void removeDevice(MIDIDevice* device);
+    /** Remove the MIDIDevice associated with the output from the QMap */
+    void removeDevice(MIDIDevice* device);
 
 signals:
-	/** Configuration dialog listens to this signal to refill its list */
-	void deviceAdded(MIDIDevice* device);
+    /** Configuration dialog listens to this signal to refill its list */
+    void deviceAdded(MIDIDevice* device);
 
-	/** Configuration dialog listens to this signal to refill its list */
-	void deviceRemoved(MIDIDevice* device);
+    /** Configuration dialog listens to this signal to refill its list */
+    void deviceRemoved(MIDIDevice* device);
 
 protected:
-	/** A map of available MIDI devices */
-	QList <MIDIDevice*> m_devices;
+    /** A map of available MIDI devices */
+    QList <MIDIDevice*> m_devices;
 
-	/*********************************************************************
-	 * Name
-	 *********************************************************************/
+    /*********************************************************************
+     * Name
+     *********************************************************************/
 public:
-	/** Get the name of this plugin */
-	QString name();
+    /** Get the name of this plugin */
+    QString name();
 
-	/*********************************************************************
-	 * Oututs
-	 *********************************************************************/
+    /*********************************************************************
+     * Oututs
+     *********************************************************************/
 public:
-	/** Get the number of outputs provided by this plugin */
-	QStringList outputs();
+    /** Get the number of outputs provided by this plugin */
+    QStringList outputs();
 
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
 public:
-	/** Configure this plugin */
-	void configure();
+    /** Configure this plugin */
+    void configure();
 
-	/*********************************************************************
-	 * Status
-	 *********************************************************************/
+    /*********************************************************************
+     * Status
+     *********************************************************************/
 public:
-	/** Get a short information snippet on the given output's state */
-	QString infoText(quint32 output = KOutputInvalid);
+    /** Get a short information snippet on the given output's state */
+    QString infoText(quint32 output = KOutputInvalid);
 
-	/*********************************************************************
-	 * Write
-	 *********************************************************************/
+    /*********************************************************************
+     * Write
+     *********************************************************************/
 public:
-	/** \reimp */
-	void outputDMX(quint32 output, const QByteArray& universe);
+    /** \reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

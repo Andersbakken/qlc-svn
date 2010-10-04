@@ -38,64 +38,64 @@ class QString;
 
 class PeperoniOut : public QObject, public QLCOutPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCOutPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCOutPlugin)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	virtual ~PeperoniOut();
+    virtual ~PeperoniOut();
 
-	void init();
-	void open(quint32 output);
-	void close(quint32 output);
+    void init();
+    void open(quint32 output);
+    void close(quint32 output);
 
-	/*********************************************************************
-	 * Devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Devices
+     *********************************************************************/
 public:
-	void rescanDevices();
+    void rescanDevices();
 
 protected:
-	/** Get a PeperoniDevice entry by its usbdev struct */
-	PeperoniDevice* device(struct usb_device* usbdev);
+    /** Get a PeperoniDevice entry by its usbdev struct */
+    PeperoniDevice* device(struct usb_device* usbdev);
 
 protected:
-	/** List of available devices */
-	QList <PeperoniDevice*> m_devices;
+    /** List of available devices */
+    QList <PeperoniDevice*> m_devices;
 
-	/*********************************************************************
-	 * Outputs
-	 *********************************************************************/
+    /*********************************************************************
+     * Outputs
+     *********************************************************************/
 public:
-	/** Get the names of outputs provided by this plugin */
-	QStringList outputs();
+    /** Get the names of outputs provided by this plugin */
+    QStringList outputs();
 
-	/*********************************************************************
-	 * Name
-	 *********************************************************************/
+    /*********************************************************************
+     * Name
+     *********************************************************************/
 public:
-	QString name();
+    QString name();
 
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
 public:
-	void configure();
+    void configure();
 
-	/*********************************************************************
-	 * Plugin status
-	 *********************************************************************/
+    /*********************************************************************
+     * Plugin status
+     *********************************************************************/
 public:
-	QString infoText(quint32 output = KOutputInvalid);
+    QString infoText(quint32 output = KOutputInvalid);
 
-	/*********************************************************************
-	 * Value read/write methods
-	 *********************************************************************/
+    /*********************************************************************
+     * Value read/write methods
+     *********************************************************************/
 public:
-	/** \reimp */
-	void outputDMX(quint32 output, const QByteArray& universe);
+    /** \reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

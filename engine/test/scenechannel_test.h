@@ -26,11 +26,11 @@
 
 class SceneChannel_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initial();
-	void copy();
+    void initial();
+    void copy();
 };
 
 #endif

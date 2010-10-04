@@ -26,11 +26,11 @@
 
 class InputPatch_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void defaults();
-	void patch();
+    void defaults();
+    void patch();
 };
 
 #endif

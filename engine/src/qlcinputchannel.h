@@ -40,101 +40,105 @@ class QString;
 
 class QLCInputChannel
 {
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/** Standard constructor */
-	QLCInputChannel();
+    /** Standard constructor */
+    QLCInputChannel();
 
-	/** Copy constructor */
-	QLCInputChannel(const QLCInputChannel& channel);
+    /** Copy constructor */
+    QLCInputChannel(const QLCInputChannel& channel);
 
-	/** Destructor */
-	virtual ~QLCInputChannel();
+    /** Destructor */
+    virtual ~QLCInputChannel();
 
-	/** Assignment operator */
-	QLCInputChannel& operator=(const QLCInputChannel& channel);
+    /** Assignment operator */
+    QLCInputChannel& operator=(const QLCInputChannel& channel);
 
-	/********************************************************************
-	 * Channel number
-	 ********************************************************************/
+    /********************************************************************
+     * Channel number
+     ********************************************************************/
 public:
-	/** Set the channel number that this object represents */
-	// void setChannel(quint32 channel);
+    /** Set the channel number that this object represents */
+    // void setChannel(quint32 channel);
 
-	/** Get the channel number that this object represents */
-	// quint32 channel() const { return m_channel; }
+    /** Get the channel number that this object represents */
+    // quint32 channel() const { return m_channel; }
 
 protected:
-	// quint32 m_channel;
+    // quint32 m_channel;
 
-	/********************************************************************
-	 * Type
-	 ********************************************************************/
+    /********************************************************************
+     * Type
+     ********************************************************************/
 public:
-	enum Type
-	{
-		Slider,
-		Knob,
-		Button,
-		NoType
-	};
+    enum Type
+    {
+        Slider,
+        Knob,
+        Button,
+        NoType
+    };
 
-	/** Set the type of this channel (see enum Type) */
-	void setType(Type type);
+    /** Set the type of this channel (see enum Type) */
+    void setType(Type type);
 
-	/** Get the type of this channel */
-	Type type() const { return m_type; }
+    /** Get the type of this channel */
+    Type type() const {
+        return m_type;
+    }
 
-	/** Convert the given QLCInputChannel::Type to a QString */
-	static QString typeToString(Type type);
+    /** Convert the given QLCInputChannel::Type to a QString */
+    static QString typeToString(Type type);
 
-	/** Convert the given QString to a QLCInputChannel::Type */
-	static Type stringToType(const QString& type);
+    /** Convert the given QString to a QLCInputChannel::Type */
+    static Type stringToType(const QString& type);
 
-	/** Get a list of available channel types */
-	static QStringList types();
+    /** Get a list of available channel types */
+    static QStringList types();
 
 protected:
-	Type m_type;
+    Type m_type;
 
-	/********************************************************************
-	 * Name
-	 ********************************************************************/
+    /********************************************************************
+     * Name
+     ********************************************************************/
 public:
-	/** Set the name of this this channel */
-	void setName(const QString& name);
+    /** Set the name of this this channel */
+    void setName(const QString& name);
 
-	/** Get the name of this channel */
-	QString name() const { return m_name; }
+    /** Get the name of this channel */
+    QString name() const {
+        return m_name;
+    }
 
 protected:
-	QString m_name;
+    QString m_name;
 
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
+    /********************************************************************
+     * Load & Save
+     ********************************************************************/
 public:
-	/**
-	 * Load this channel's contents from the given XML document
-	 *
-	 * @param root An input channel tag
-	 * @return true if successful, otherwise false
-	 */
-	bool loadXML(const QDomElement* root);
+    /**
+     * Load this channel's contents from the given XML document
+     *
+     * @param root An input channel tag
+     * @return true if successful, otherwise false
+     */
+    bool loadXML(const QDomElement* root);
 
-	/**
-	 * Save this channel's contents to the given XML document, setting the
-	 * given channel number as the channel's number.
-	 *
-	 * @param doc The master XML document to save to
-	 * @param root The input profile root to save under
-	 * @param channelNumber The channel's number in the channel map
-	 * @return true if successful, otherwise false
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* root,
-		     quint32 channelNumber) const;
+    /**
+     * Save this channel's contents to the given XML document, setting the
+     * given channel number as the channel's number.
+     *
+     * @param doc The master XML document to save to
+     * @param root The input profile root to save under
+     * @param channelNumber The channel's number in the channel map
+     * @return true if successful, otherwise false
+     */
+    bool saveXML(QDomDocument* doc, QDomElement* root,
+                 quint32 channelNumber) const;
 };
 
 #endif

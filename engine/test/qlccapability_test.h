@@ -13,7 +13,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-        
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
@@ -27,27 +27,27 @@
 
 class QLCCapability_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initial();
+    void initial();
 
-	void min_data();
-	void min();
+    void min_data();
+    void min();
 
-	void max_data();
-	void max();
+    void max_data();
+    void max();
 
-	void name();
-	void overlaps();
-	void copy();
+    void name();
+    void overlaps();
+    void copy();
 
-	void load();
-	void loadWrongRoot();
-	void loadNoMin();
-	void loadNoMax();
-	void loadMinGreaterThanMax();
-	void save();
+    void load();
+    void loadWrongRoot();
+    void loadNoMin();
+    void loadNoMax();
+    void loadMinGreaterThanMax();
+    void save();
 };
 
 #endif

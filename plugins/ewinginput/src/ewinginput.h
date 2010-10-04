@@ -38,91 +38,91 @@ class QUdpSocket;
 
 class QLC_DECLSPEC EWingInput : public QObject, public QLCInPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCInPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCInPlugin)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	void init();
-	~EWingInput();
+    void init();
+    ~EWingInput();
 
-	void open(quint32 input = 0);
-	void close(quint32 input = 0);
+    void open(quint32 input = 0);
+    void close(quint32 input = 0);
 
 protected slots:
-	void slotReadSocket();
+    void slotReadSocket();
 
 protected:
-	/**
-	 * Create a new wing object from the given datagram packet. Looks up
-	 * the exact wing type from data and creates an EPlaybackWing,
-	 * EShortcutWing or an EProgramWing.
-	 *
-	 * @param parent The parent object that owns the new wing object
-	 * @param address The address of the physical wing board
-	 * @param data A UDP datagram packet originating from a wing
-	 *
-	 * @return A new EWing object or NULL if an error occurred
-	 */
-	static EWing* createWing(QObject* parent, const QHostAddress& address,
-				const QByteArray& data);
+    /**
+     * Create a new wing object from the given datagram packet. Looks up
+     * the exact wing type from data and creates an EPlaybackWing,
+     * EShortcutWing or an EProgramWing.
+     *
+     * @param parent The parent object that owns the new wing object
+     * @param address The address of the physical wing board
+     * @param data A UDP datagram packet originating from a wing
+     *
+     * @return A new EWing object or NULL if an error occurred
+     */
+    static EWing* createWing(QObject* parent, const QHostAddress& address,
+                             const QByteArray& data);
 
-	/*********************************************************************
-	 * Devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Devices
+     *********************************************************************/
 protected:
-	EWing* device(const QHostAddress& address, EWing::Type type);
-	EWing* device(quint32 index);
+    EWing* device(const QHostAddress& address, EWing::Type type);
+    EWing* device(quint32 index);
 
-	void addDevice(EWing* device);
-	void removeDevice(EWing* device);
+    void addDevice(EWing* device);
+    void removeDevice(EWing* device);
 
 protected:
-	QList <EWing*> m_devices;
-	QUdpSocket* m_socket;
+    QList <EWing*> m_devices;
+    QUdpSocket* m_socket;
 
-	/*********************************************************************
-	 * Name
-	 *********************************************************************/
+    /*********************************************************************
+     * Name
+     *********************************************************************/
 public:
-	QString name();
+    QString name();
 
-	/*********************************************************************
-	 * Inputs
-	 *********************************************************************/
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
 public:
-	QStringList inputs();
+    QStringList inputs();
 
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
 public:
-	void configure();
+    void configure();
 
-	/*********************************************************************
-	 * Status
-	 *********************************************************************/
+    /*********************************************************************
+     * Status
+     *********************************************************************/
 public:
-	QString infoText(quint32 input = KInputInvalid);
+    QString infoText(quint32 input = KInputInvalid);
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 protected slots:
-	void slotValueChanged(quint32 channel, uchar value);
+    void slotValueChanged(quint32 channel, uchar value);
 
 signals:
-	void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
-			  uchar value);
+    void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
+                      uchar value);
 
-	void configurationChanged();
+    void configurationChanged();
 
 public:
-	void connectInputData(QObject* listener);
+    void connectInputData(QObject* listener);
 
-	void feedBack(quint32 input, quint32 channel, uchar value);
+    void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

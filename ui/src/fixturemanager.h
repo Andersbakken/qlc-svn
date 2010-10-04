@@ -41,112 +41,114 @@ class QAction;
 
 class FixtureManager : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/** Get the monitor singleton instance. Can be NULL. */
-	static FixtureManager* instance() { return s_instance; }
+    /** Get the monitor singleton instance. Can be NULL. */
+    static FixtureManager* instance() {
+        return s_instance;
+    }
 
-	/** Create an instance  with parent. Fails if s_instance != NULL. */
-	static void create(QWidget* parent);
+    /** Create an instance  with parent. Fails if s_instance != NULL. */
+    static void create(QWidget* parent);
 
-	~FixtureManager();
+    ~FixtureManager();
 
 protected:
-	/** Protected constructor to prevent multiple instances. */
-	FixtureManager(QWidget* parent, Qt::WindowFlags f = 0);
+    /** Protected constructor to prevent multiple instances. */
+    FixtureManager(QWidget* parent, Qt::WindowFlags f = 0);
 
 private:
-	Q_DISABLE_COPY(FixtureManager)
+    Q_DISABLE_COPY(FixtureManager)
 
 protected:
-	/** The singleton FixtureManager instance */
-	static FixtureManager* s_instance;
+    /** The singleton FixtureManager instance */
+    static FixtureManager* s_instance;
 
-	/********************************************************************
-	 * Doc signal handlers
-	 ********************************************************************/
+    /********************************************************************
+     * Doc signal handlers
+     ********************************************************************/
 public slots:
-	/** Listen to document changes (after App::newDocument())*/
-	void slotDocumentChanged(Doc* doc);
+    /** Listen to document changes (after App::newDocument())*/
+    void slotDocumentChanged(Doc* doc);
 
-	 /** Callback for Doc::fixtureAdded() signals */
-	void slotFixtureAdded(t_fixture_id id);
+    /** Callback for Doc::fixtureAdded() signals */
+    void slotFixtureAdded(t_fixture_id id);
 
-	/** Callback for Doc::fixtureRemoved() signals */
-	void slotFixtureRemoved(t_fixture_id id);
+    /** Callback for Doc::fixtureRemoved() signals */
+    void slotFixtureRemoved(t_fixture_id id);
 
-	/** Callback that listens to mode change signals */
-	void slotModeChanged(Doc::Mode mode);
+    /** Callback that listens to mode change signals */
+    void slotModeChanged(Doc::Mode mode);
 
-	/********************************************************************
-	 * Data view
-	 ********************************************************************/
+    /********************************************************************
+     * Data view
+     ********************************************************************/
 public:
-	/** Update the list of fixtures */
-	void updateView();
+    /** Update the list of fixtures */
+    void updateView();
 
 protected:
-	/** Get a QTreeWidgetItem whose fixture ID is $id */
-	QTreeWidgetItem* fixtureItem(t_fixture_id id) const;
+    /** Get a QTreeWidgetItem whose fixture ID is $id */
+    QTreeWidgetItem* fixtureItem(t_fixture_id id) const;
 
-	/** Construct the list view and data view */
-	void initDataView();
+    /** Construct the list view and data view */
+    void initDataView();
 
-	/** Update a single fixture's data into a QTreeWidgetItem */
-	void updateItem(QTreeWidgetItem* item, Fixture* fxt);
+    /** Update a single fixture's data into a QTreeWidgetItem */
+    void updateItem(QTreeWidgetItem* item, Fixture* fxt);
 
-	/** Copy the given function into the given fixture */
-	void copyFunction(Function* function, Fixture* fxt);
+    /** Copy the given function into the given fixture */
+    void copyFunction(Function* function, Fixture* fxt);
 
-	/** Display an error message if fixture add fails */
-	void addFixtureErrorMessage();
+    /** Display an error message if fixture add fails */
+    void addFixtureErrorMessage();
 
 protected slots:
-	/** Callback for fixture list selection changes */
-	void slotSelectionChanged();
+    /** Callback for fixture list selection changes */
+    void slotSelectionChanged();
 
-	/** Callback for mouse double clicks */
-	void slotDoubleClicked(QTreeWidgetItem* item);
-
-protected:
-	/** Get a CSS style sheet & HTML header for fixture info */
-	QString fixtureInfoStyleSheetHeader();
+    /** Callback for mouse double clicks */
+    void slotDoubleClicked(QTreeWidgetItem* item);
 
 protected:
-	QSplitter* m_splitter;
-	QTreeWidget* m_tree;
+    /** Get a CSS style sheet & HTML header for fixture info */
+    QString fixtureInfoStyleSheetHeader();
 
-	QTabWidget* m_tab;
-	QTextBrowser* m_info;
-	FixtureConsole* m_console;
-
-	/********************************************************************
-	 * Menu & Toolbar & Actions
-	 ********************************************************************/
 protected:
-	/** Construct actions for toolbar & context menu */
-	void initActions();
+    QSplitter* m_splitter;
+    QTreeWidget* m_tree;
 
-	/** Construct the toolbar */
-	void initToolBar();
+    QTabWidget* m_tab;
+    QTextBrowser* m_info;
+    FixtureConsole* m_console;
+
+    /********************************************************************
+     * Menu & Toolbar & Actions
+     ********************************************************************/
+protected:
+    /** Construct actions for toolbar & context menu */
+    void initActions();
+
+    /** Construct the toolbar */
+    void initToolBar();
 
 protected slots:
-	void slotAdd();
-	void slotRemove();
-	void slotProperties();
+    void slotAdd();
+    void slotRemove();
+    void slotProperties();
 
-	/** Callback for right mouse button clicks over a fixture item */
-	void slotContextMenuRequested(const QPoint& pos);
+    /** Callback for right mouse button clicks over a fixture item */
+    void slotContextMenuRequested(const QPoint& pos);
 
 protected:
-	QAction* m_addAction;
-	QAction* m_removeAction;
-	QAction* m_propertiesAction;
-	QAction* m_consoleAction;
+    QAction* m_addAction;
+    QAction* m_removeAction;
+    QAction* m_propertiesAction;
+    QAction* m_consoleAction;
 };
 
 #endif

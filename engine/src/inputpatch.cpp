@@ -35,18 +35,18 @@
 
 InputPatch::InputPatch(QObject* parent) : QObject(parent)
 {
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(parent != NULL);
 
-	m_plugin = NULL;
-	m_input = KInputInvalid;
-	m_profile = NULL;
-	m_feedbackEnabled = true;
+    m_plugin = NULL;
+    m_input = KInputInvalid;
+    m_profile = NULL;
+    m_feedbackEnabled = true;
 }
 
 InputPatch::~InputPatch()
 {
-	if (m_plugin != NULL)
-		m_plugin->close(m_input);
+    if (m_plugin != NULL)
+        m_plugin->close(m_input);
 }
 
 /*****************************************************************************
@@ -54,52 +54,52 @@ InputPatch::~InputPatch()
  *****************************************************************************/
 
 void InputPatch::set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
-		     QLCInputProfile* profile)
+                     QLCInputProfile* profile)
 {
-	/* TODO: This closes the plugin line always, regardless of whether
-	   the line has been assigned to more than one input universe */
-	if (m_plugin != NULL && m_input != KInputInvalid)
-		m_plugin->close(m_input);
+    /* TODO: This closes the plugin line always, regardless of whether
+       the line has been assigned to more than one input universe */
+    if (m_plugin != NULL && m_input != KInputInvalid)
+        m_plugin->close(m_input);
 
-	m_plugin = plugin;
-	m_input = input;
-	m_profile = profile;
-	m_feedbackEnabled = enableFeedback;
+    m_plugin = plugin;
+    m_input = input;
+    m_profile = profile;
+    m_feedbackEnabled = enableFeedback;
 
-	/* Open the assigned plugin input */
-	if (m_plugin != NULL && input != KInputInvalid)
-		m_plugin->open(m_input);
+    /* Open the assigned plugin input */
+    if (m_plugin != NULL && input != KInputInvalid)
+        m_plugin->open(m_input);
 }
 
 QString InputPatch::pluginName() const
 {
-	if (m_plugin != NULL)
-		return m_plugin->name();
-	else
-		return KInputNone;
+    if (m_plugin != NULL)
+        return m_plugin->name();
+    else
+        return KInputNone;
 }
 
 quint32 InputPatch::input() const
 {
-	if (m_plugin != NULL && m_input < quint32(m_plugin->inputs().count()))
-		return m_input;
-	else
-		return KInputInvalid;
+    if (m_plugin != NULL && m_input < quint32(m_plugin->inputs().count()))
+        return m_input;
+    else
+        return KInputInvalid;
 }
 
 QString InputPatch::inputName() const
 {
-	if (m_plugin != NULL && m_input != KInputInvalid &&
-	    m_input < quint32(m_plugin->inputs().count()))
-		return m_plugin->inputs()[m_input];
-	else
-		return KInputNone;
+    if (m_plugin != NULL && m_input != KInputInvalid &&
+            m_input < quint32(m_plugin->inputs().count()))
+        return m_plugin->inputs()[m_input];
+    else
+        return KInputNone;
 }
 
 QString InputPatch::profileName() const
 {
-	if (m_profile != NULL)
-		return m_profile->name();
-	else
-		return KInputNone;
+    if (m_profile != NULL)
+        return m_profile->name();
+    else
+        return KInputNone;
 }

@@ -37,69 +37,69 @@
 #define KColumnID           3
 
 FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
-				   QList <t_fixture_id> disabled)
-	: QDialog(parent)
+                                   QList <t_fixture_id> disabled)
+        : QDialog(parent)
 {
-	Q_ASSERT(doc != NULL);
+    Q_ASSERT(doc != NULL);
 
-	setupUi(this);
+    setupUi(this);
 
-	/* Multiple/single selection */
-	if (multiple == true)
-		m_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	else
-		m_tree->setSelectionMode(QAbstractItemView::SingleSelection);
+    /* Multiple/single selection */
+    if (multiple == true)
+        m_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    else
+        m_tree->setSelectionMode(QAbstractItemView::SingleSelection);
 
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotItemDoubleClicked(QTreeWidgetItem*)));
+    connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, SLOT(slotItemDoubleClicked(QTreeWidgetItem*)));
 
-	/* Fill the tree */
-	for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
-	{
-		QTreeWidgetItem* item;
-		Fixture* fixture;
-		QString str;
-		
-		fixture = doc->fixture(fxi_id);
-		if (fixture == NULL)
-			continue;
+    /* Fill the tree */
+    for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+    {
+        QTreeWidgetItem* item;
+        Fixture* fixture;
+        QString str;
 
-		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnName, fixture->name());
-		item->setText(KColumnID, str.setNum(fxi_id));
-		
-		if (fixture->fixtureDef() == NULL)
-		{
-			item->setText(KColumnManufacturer, tr("Generic"));
-			item->setText(KColumnModel, tr("Generic"));
-		}
-		else
-		{
-			item->setText(KColumnManufacturer,
-				      fixture->fixtureDef()->manufacturer());
-			item->setText(KColumnModel,
-				      fixture->fixtureDef()->model());
-		}
+        fixture = doc->fixture(fxi_id);
+        if (fixture == NULL)
+            continue;
 
-		if (disabled.contains(fxi_id) == true)
-			item->setFlags(0); // Disables the item
-	}
+        item = new QTreeWidgetItem(m_tree);
+        item->setText(KColumnName, fixture->name());
+        item->setText(KColumnID, str.setNum(fxi_id));
 
-	if (m_tree->topLevelItemCount() == 0)
-	{
-		m_tree->setHeaderLabel(tr("No fixtures available"));
-		m_tree->header()->hideSection(KColumnManufacturer);
-		m_tree->header()->hideSection(KColumnModel);
-		QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
-		item->setText(0, tr("Go to Fixture Manager to add some fixtures first."));
-		m_tree->setEnabled(false);
-		m_buttonBox->setStandardButtons(QDialogButtonBox::Close);
-	}
-	else
-	{
-		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-		m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
-	}
+        if (fixture->fixtureDef() == NULL)
+        {
+            item->setText(KColumnManufacturer, tr("Generic"));
+            item->setText(KColumnModel, tr("Generic"));
+        }
+        else
+        {
+            item->setText(KColumnManufacturer,
+                          fixture->fixtureDef()->manufacturer());
+            item->setText(KColumnModel,
+                          fixture->fixtureDef()->model());
+        }
+
+        if (disabled.contains(fxi_id) == true)
+            item->setFlags(0); // Disables the item
+    }
+
+    if (m_tree->topLevelItemCount() == 0)
+    {
+        m_tree->setHeaderLabel(tr("No fixtures available"));
+        m_tree->header()->hideSection(KColumnManufacturer);
+        m_tree->header()->hideSection(KColumnModel);
+        QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
+        item->setText(0, tr("Go to Fixture Manager to add some fixtures first."));
+        m_tree->setEnabled(false);
+        m_buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    }
+    else
+    {
+        m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+        m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+    }
 }
 
 FixtureSelection::~FixtureSelection()
@@ -108,21 +108,21 @@ FixtureSelection::~FixtureSelection()
 
 void FixtureSelection::slotItemDoubleClicked(QTreeWidgetItem* item)
 {
-	if (item == NULL)
-		return;
+    if (item == NULL)
+        return;
 
-	accept();
+    accept();
 }
 
 void FixtureSelection::accept()
 {
-	selection.clear();
+    selection.clear();
 
-	/* TODO: Check, whether some items are fixture items. If they are,
-	   don't put them into selection list. See above Qt::ItemIsEnabled. */
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	while (it.hasNext() == true)
-		selection.append(it.next()->text(KColumnID).toInt());
+    /* TODO: Check, whether some items are fixture items. If they are,
+       don't put them into selection list. See above Qt::ItemIsEnabled. */
+    QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+    while (it.hasNext() == true)
+        selection.append(it.next()->text(KColumnID).toInt());
 
-	QDialog::accept();
+    QDialog::accept();
 }

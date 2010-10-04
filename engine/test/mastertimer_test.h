@@ -30,30 +30,30 @@ class Doc;
 
 class MasterTimer_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void init();
-	void cleanup();
+    void initTestCase();
+    void init();
+    void cleanup();
 
-	void initial();
-	void startStop();
-	void startStopFunction();
-	void registerUnregisterDMXSource();
-	void interval();
-	void functionInitiatedStop();
-	void runMultipleFunctions();
-	void stopAllFunctions();
-	void stop();
-	void restart();
+    void initial();
+    void startStop();
+    void startStopFunction();
+    void registerUnregisterDMXSource();
+    void interval();
+    void functionInitiatedStop();
+    void runMultipleFunctions();
+    void stopAllFunctions();
+    void stop();
+    void restart();
 
-	void cleanupTestCase();
+    void cleanupTestCase();
 
 protected:
-	OutputMapStub* m_oms;
-	Doc* m_doc;
-	QLCFixtureDefCache m_cache;
+    OutputMapStub* m_oms;
+    Doc* m_doc;
+    QLCFixtureDefCache m_cache;
 };
 
 #endif

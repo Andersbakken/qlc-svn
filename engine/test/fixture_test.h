@@ -27,29 +27,29 @@
 
 class Fixture_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void id();
-	void name();
-	void address();
-	void lessThan();
-	void type();
-	void dimmer();
-	void fixtureDef();
-	void loadWrongRoot();
-	void loadFixtureDef();
-	void loadFixtureDefWrongChannels();
-	void loadDimmer();
-	void loadWrongAddress();
-	void loadWrongUniverse();
-	void loadWrongID();
-	void loader();
-	void save();
+    void initTestCase();
+    void id();
+    void name();
+    void address();
+    void lessThan();
+    void type();
+    void dimmer();
+    void fixtureDef();
+    void loadWrongRoot();
+    void loadFixtureDef();
+    void loadFixtureDefWrongChannels();
+    void loadDimmer();
+    void loadWrongAddress();
+    void loadWrongUniverse();
+    void loadWrongID();
+    void loader();
+    void save();
 
 private:
-	QLCFixtureDefCache m_fixtureDefCache;
+    QLCFixtureDefCache m_fixtureDefCache;
 };
 
 #endif

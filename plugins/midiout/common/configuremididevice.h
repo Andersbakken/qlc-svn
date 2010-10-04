@@ -29,17 +29,17 @@ class MIDIDevice;
 
 class ConfigureMIDIDevice : public QDialog, public Ui_ConfigureMIDIDevice
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	ConfigureMIDIDevice(QWidget* parent, MIDIDevice* device);
-	~ConfigureMIDIDevice();
+    ConfigureMIDIDevice(QWidget* parent, MIDIDevice* device);
+    ~ConfigureMIDIDevice();
 
 public slots:
-	void accept();
+    void accept();
 
 protected:
-	MIDIDevice* m_device;
+    MIDIDevice* m_device;
 };
 
 #endif

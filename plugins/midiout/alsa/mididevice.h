@@ -41,106 +41,114 @@ class QString;
 
 class MIDIDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address);
-	virtual ~MIDIDevice();
+    MIDIDevice(MIDIOut* parent, const snd_seq_addr_t* address);
+    virtual ~MIDIDevice();
 
-	/** Load global settings */
-	void loadSettings();
+    /** Load global settings */
+    void loadSettings();
 
-	/** Save global settings */
-	void saveSettings();
+    /** Save global settings */
+    void saveSettings();
 
-	/*********************************************************************
- 	 * ALSA address
-	 *********************************************************************/
+    /*********************************************************************
+      * ALSA address
+     *********************************************************************/
 public:
-	/** Get the device's ALSA client:port address */
-	const snd_seq_addr_t* address() const;
+    /** Get the device's ALSA client:port address */
+    const snd_seq_addr_t* address() const;
 
-	/** Set the device's ALSA client:port address */
-	void setAddress(const snd_seq_addr_t* address);
+    /** Set the device's ALSA client:port address */
+    void setAddress(const snd_seq_addr_t* address);
 
 protected:
-	snd_seq_addr_t* m_address;
+    snd_seq_addr_t* m_address;
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	/** Get device information string to be used in plugin manager */
-	QString infoText();
+    /** Get device information string to be used in plugin manager */
+    QString infoText();
 
-	/** Get the device's name */
-	QString name() const;
-
-protected:
-	/** Extract the name of this device from ALSA */
-	void extractName();
+    /** Get the device's name */
+    QString name() const;
 
 protected:
-	/** The name of this ALSA MIDI device */
-	QString m_name;
+    /** Extract the name of this device from ALSA */
+    void extractName();
 
-	/*********************************************************************
-	 * Operational mode
-	 *********************************************************************/
+protected:
+    /** The name of this ALSA MIDI device */
+    QString m_name;
+
+    /*********************************************************************
+     * Operational mode
+     *********************************************************************/
 public:
-	/**
-	 * This device's operational mode.
-	 *
-	 * @ControlChange: Use MIDI ControlChange ID's as DMX channels
-	 * @Note: Use MIDI Note ON/OFF commands as DMX channels
-	 */
-	enum Mode
-	{
-		ControlChange,
-		Note
-	};
+    /**
+     * This device's operational mode.
+     *
+     * @ControlChange: Use MIDI ControlChange ID's as DMX channels
+     * @Note: Use MIDI Note ON/OFF commands as DMX channels
+     */
+    enum Mode
+    {
+        ControlChange,
+        Note
+    };
 
-	/** Get this device's operational mode */
-	Mode mode() const { return m_mode; }
+    /** Get this device's operational mode */
+    Mode mode() const {
+        return m_mode;
+    }
 
-	/** Set this device's operational mode */
-	void setMode(Mode m) { m_mode = m; }
+    /** Set this device's operational mode */
+    void setMode(Mode m) {
+        m_mode = m;
+    }
 
-	static QString modeToString(Mode mode);
-	static Mode stringToMode(const QString& mode);
+    static QString modeToString(Mode mode);
+    static Mode stringToMode(const QString& mode);
 
 protected:
-	Mode m_mode;
+    Mode m_mode;
 
-	/*********************************************************************
-	 * MIDI channel
-	 *********************************************************************/
+    /*********************************************************************
+     * MIDI channel
+     *********************************************************************/
 public:
-	/** Get this device's MIDI channel */
-	t_channel midiChannel() const { return m_midiChannel; }
+    /** Get this device's MIDI channel */
+    t_channel midiChannel() const {
+        return m_midiChannel;
+    }
 
-	/** Set this device's MIDI channel */
-	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
+    /** Set this device's MIDI channel */
+    void setMidiChannel(t_channel channel) {
+        m_midiChannel = channel;
+    }
 
 protected:
-	t_channel m_midiChannel;
+    t_channel m_midiChannel;
 
-	/********************************************************************
-	 * Write
-	 ********************************************************************/
+    /********************************************************************
+     * Write
+     ********************************************************************/
 public:
-	/** Write the given values to MIDI output */
-	void outputDMX(const QByteArray& universe);
+    /** Write the given values to MIDI output */
+    void outputDMX(const QByteArray& universe);
 
 protected:
-	/**
-	 * Cache values since MIDI is so slow that we need to send only those
-	 * channels that have actually changed.
-	 */
-	uchar m_values[MAX_MIDI_DMX_CHANNELS];
+    /**
+     * Cache values since MIDI is so slow that we need to send only those
+     * channels that have actually changed.
+     */
+    uchar m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

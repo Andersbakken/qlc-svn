@@ -38,16 +38,16 @@
 
 Collection::Collection(Doc* doc) : Function(doc)
 {
-	setName(tr("New Collection"));
+    setName(tr("New Collection"));
 
-	// Listen to member Function removals
-	connect(doc, SIGNAL(functionRemoved(t_function_id)),
-		this, SLOT(slotFunctionRemoved(t_function_id)));
+    // Listen to member Function removals
+    connect(doc, SIGNAL(functionRemoved(t_function_id)),
+            this, SLOT(slotFunctionRemoved(t_function_id)));
 }
 
 Collection::~Collection()
 {
-	m_functions.clear();
+    m_functions.clear();
 }
 
 /*****************************************************************************
@@ -56,7 +56,7 @@ Collection::~Collection()
 
 Function::Type Collection::type() const
 {
-	return Function::Collection;
+    return Function::Collection;
 }
 
 /*****************************************************************************
@@ -67,40 +67,40 @@ Function* Collection::createCopy(Doc* doc)
 {
     Q_ASSERT(doc != NULL);
 
-	Function* copy = new Collection(doc);
-	Q_ASSERT(copy != NULL);
-	if (copy->copyFrom(this) == false)
-	{
-		delete copy;
-		copy = NULL;
-	}
-	else if (doc->addFunction(copy) == false)
-	{
-		delete copy;
-		copy = NULL;
-	}
-	else
-	{
-		copy->setName(tr("Copy of %1").arg(name()));
-	}
+    Function* copy = new Collection(doc);
+    Q_ASSERT(copy != NULL);
+    if (copy->copyFrom(this) == false)
+    {
+        delete copy;
+        copy = NULL;
+    }
+    else if (doc->addFunction(copy) == false)
+    {
+        delete copy;
+        copy = NULL;
+    }
+    else
+    {
+        copy->setName(tr("Copy of %1").arg(name()));
+    }
 
-	return copy;
+    return copy;
 }
 
 bool Collection::copyFrom(const Function* function)
 {
-	const Collection* coll = qobject_cast<const Collection*> (function);
-	if (coll == NULL)
-		return false;
+    const Collection* coll = qobject_cast<const Collection*> (function);
+    if (coll == NULL)
+        return false;
 
-	m_functions.clear();
-	m_functions = coll->m_functions;
+    m_functions.clear();
+    m_functions = coll->m_functions;
 
-	bool result = Function::copyFrom(function);
+    bool result = Function::copyFrom(function);
 
-	emit changed(m_id);
+    emit changed(m_id);
 
-	return result;
+    return result;
 }
 
 /*****************************************************************************
@@ -109,34 +109,34 @@ bool Collection::copyFrom(const Function* function)
 
 bool Collection::addFunction(t_function_id fid)
 {
-	if (fid != m_id && m_functions.contains(fid) == false)
-	{
-		m_functions.append(fid);
-		emit changed(m_id);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    if (fid != m_id && m_functions.contains(fid) == false)
+    {
+        m_functions.append(fid);
+        emit changed(m_id);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool Collection::removeFunction(t_function_id fid)
 {
-	if (m_functions.removeAll(fid) > 0)
-	{
-		emit changed(m_id);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    if (m_functions.removeAll(fid) > 0)
+    {
+        emit changed(m_id);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void Collection::slotFunctionRemoved(t_function_id fid)
 {
-	removeFunction(fid);
+    removeFunction(fid);
 }
 
 /*****************************************************************************
@@ -145,78 +145,78 @@ void Collection::slotFunctionRemoved(t_function_id fid)
 
 bool Collection::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
-	int i = 0;
+    QDomElement root;
+    QDomElement tag;
+    QDomText text;
+    QString str;
+    int i = 0;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(wksp_root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(wksp_root != NULL);
 
-        /* Function tag */
-        root = doc->createElement(KXMLQLCFunction);
-        wksp_root->appendChild(root);
+    /* Function tag */
+    root = doc->createElement(KXMLQLCFunction);
+    wksp_root->appendChild(root);
 
-	root.setAttribute(KXMLQLCFunctionID, id());
-	root.setAttribute(KXMLQLCFunctionType, Function::typeToString(type()));
-	root.setAttribute(KXMLQLCFunctionName, name());
+    root.setAttribute(KXMLQLCFunctionID, id());
+    root.setAttribute(KXMLQLCFunctionType, Function::typeToString(type()));
+    root.setAttribute(KXMLQLCFunctionName, name());
 
-	/* Steps */
-	QListIterator <t_function_id> it(m_functions);
-	while (it.hasNext() == true)
-	{
-		/* Step tag */
-		tag = doc->createElement(KXMLQLCFunctionStep);
-		root.appendChild(tag);
+    /* Steps */
+    QListIterator <t_function_id> it(m_functions);
+    while (it.hasNext() == true)
+    {
+        /* Step tag */
+        tag = doc->createElement(KXMLQLCFunctionStep);
+        root.appendChild(tag);
 
-		/* Step number */
-		tag.setAttribute(KXMLQLCFunctionNumber, i++);
+        /* Step number */
+        tag.setAttribute(KXMLQLCFunctionNumber, i++);
 
-		/* Step Function ID */
-		str.setNum(it.next());
-		text = doc->createTextNode(str);
-		tag.appendChild(text);
-	}
+        /* Step Function ID */
+        str.setNum(it.next());
+        text = doc->createTextNode(str);
+        tag.appendChild(text);
+    }
 
-	return true;
+    return true;
 }
 
 bool Collection::loadXML(const QDomElement* root)
 {
-	QDomNode node;
-	QDomElement tag;
+    QDomNode node;
+    QDomElement tag;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCFunction)
-	{
-		qDebug() << "Function node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCFunction)
+    {
+        qDebug() << "Function node not found!";
+        return false;
+    }
 
-        if (root->attribute(KXMLQLCFunctionType) !=
+    if (root->attribute(KXMLQLCFunctionType) !=
             typeToString(Function::Collection))
-        {
-                qWarning("Function is not a collection!");
-                return false;
-        }
+    {
+        qWarning("Function is not a collection!");
+        return false;
+    }
 
-	/* Load collection contents */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
+    /* Load collection contents */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
 
-		if (tag.tagName() == KXMLQLCFunctionStep)
-			addFunction(tag.text().toInt());
-		else
-			qDebug() << "Unknown collection tag:" << tag.tagName();
+        if (tag.tagName() == KXMLQLCFunctionStep)
+            addFunction(tag.text().toInt());
+        else
+            qDebug() << "Unknown collection tag:" << tag.tagName();
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }
 
 /*****************************************************************************
@@ -225,20 +225,20 @@ bool Collection::loadXML(const QDomElement* root)
 
 void Collection::arm()
 {
-	Doc* doc = qobject_cast <Doc*> (parent());
-	Q_ASSERT(doc != NULL);
+    Doc* doc = qobject_cast <Doc*> (parent());
+    Q_ASSERT(doc != NULL);
 
-	/* Check that all member functions exist (nonexistent functions can
-	   be present only when a corrupted file has been loaded) */
-	QMutableListIterator<t_function_id> it(m_functions);
-	while (it.hasNext() == true)
-	{
-		/* Remove any nonexistent member functions */
-		if (doc->function(it.next()) == NULL)
-			it.remove();
-	}
+    /* Check that all member functions exist (nonexistent functions can
+       be present only when a corrupted file has been loaded) */
+    QMutableListIterator<t_function_id> it(m_functions);
+    while (it.hasNext() == true)
+    {
+        /* Remove any nonexistent member functions */
+        if (doc->function(it.next()) == NULL)
+            it.remove();
+    }
 
-	resetElapsed();
+    resetElapsed();
 }
 
 void Collection::disarm()
@@ -247,76 +247,76 @@ void Collection::disarm()
 
 void Collection::preRun(MasterTimer* timer)
 {
-	m_childCountMutex.lock();
-	m_childCount = 0;
-	m_childCountMutex.unlock();
+    m_childCountMutex.lock();
+    m_childCount = 0;
+    m_childCountMutex.unlock();
 
-	Function::preRun(timer);
+    Function::preRun(timer);
 }
 
 void Collection::postRun(MasterTimer* timer, QByteArray* universes)
 {
-	Doc* doc = qobject_cast <Doc*> (parent());
-	Q_ASSERT(doc != NULL);
+    Doc* doc = qobject_cast <Doc*> (parent());
+    Q_ASSERT(doc != NULL);
 
-	/* TODO: this stops these functions, regardless of whether they
-	   were started by this collection or not. Oh well... */
-	QListIterator <t_function_id> it(m_functions);
-	while (it.hasNext() == true)
-	{
-		Function* function = doc->function(it.next());
-		if (function != NULL)
-			function->stop();
-	}
+    /* TODO: this stops these functions, regardless of whether they
+       were started by this collection or not. Oh well... */
+    QListIterator <t_function_id> it(m_functions);
+    while (it.hasNext() == true)
+    {
+        Function* function = doc->function(it.next());
+        if (function != NULL)
+            function->stop();
+    }
 
-	Function::postRun(timer, universes);
+    Function::postRun(timer, universes);
 }
 
 void Collection::write(MasterTimer* timer, QByteArray* universes)
 {
-	Q_UNUSED(universes);
+    Q_UNUSED(universes);
 
-	if (elapsed() == 0)
-	{
-		Doc* doc = qobject_cast <Doc*> (parent());
-		Q_ASSERT(doc != NULL);
+    if (elapsed() == 0)
+    {
+        Doc* doc = qobject_cast <Doc*> (parent());
+        Q_ASSERT(doc != NULL);
 
-		QListIterator <t_function_id> it(m_functions);
-		while (it.hasNext() == true)
-		{
-			Function* function = doc->function(it.next());
-			if (function == NULL)
-				continue;
+        QListIterator <t_function_id> it(m_functions);
+        while (it.hasNext() == true)
+        {
+            Function* function = doc->function(it.next());
+            if (function == NULL)
+                continue;
 
-			m_childCountMutex.lock();
-			m_childCount++;
-			m_childCountMutex.unlock();
+            m_childCountMutex.lock();
+            m_childCount++;
+            m_childCountMutex.unlock();
 
-			connect(function, SIGNAL(stopped(t_function_id)),
-				this, SLOT(slotChildStopped(t_function_id)));
+            connect(function, SIGNAL(stopped(t_function_id)),
+                    this, SLOT(slotChildStopped(t_function_id)));
 
-			timer->startFunction(function);
-		}
-	}
+            timer->startFunction(function);
+        }
+    }
 
-	incrementElapsed();
+    incrementElapsed();
 
-	if (m_childCount == 0)
-		stop();
+    if (m_childCount == 0)
+        stop();
 }
 
 void Collection::slotChildStopped(t_function_id fid)
 {
-	Doc* doc = qobject_cast <Doc*> (parent());
-	Q_ASSERT(doc != NULL);
+    Doc* doc = qobject_cast <Doc*> (parent());
+    Q_ASSERT(doc != NULL);
 
-	Function* function = doc->function(fid);
-	disconnect(function, SIGNAL(stopped(t_function_id)),
-		   this, SLOT(slotChildStopped(t_function_id)));
+    Function* function = doc->function(fid);
+    disconnect(function, SIGNAL(stopped(t_function_id)),
+               this, SLOT(slotChildStopped(t_function_id)));
 
-	m_childCountMutex.lock();
-	m_childCount--;
-	if (m_childCount == 0)
-		stop();
-	m_childCountMutex.unlock();
+    m_childCountMutex.lock();
+    m_childCount--;
+    if (m_childCount == 0)
+        stop();
+    m_childCountMutex.unlock();
 }

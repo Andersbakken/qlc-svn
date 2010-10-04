@@ -30,16 +30,16 @@ class MIDIDevice;
 class MIDIInputEvent : public QEvent
 {
 public:
-	static const QEvent::Type eventType;
+    static const QEvent::Type eventType;
 
 public:
-	MIDIInputEvent(MIDIDevice* device, quint32 channel,
-			uchar value);
-	~MIDIInputEvent();
+    MIDIInputEvent(MIDIDevice* device, quint32 channel,
+                   uchar value);
+    ~MIDIInputEvent();
 
-	MIDIDevice* m_device;
-	quint32 m_channel;
-	uchar m_value;
+    MIDIDevice* m_device;
+    quint32 m_channel;
+    uchar m_value;
 };
 
 #endif

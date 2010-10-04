@@ -31,28 +31,28 @@
  * Initialization
  *****************************************************************************/
 AssignHotKey::AssignHotKey(QWidget* parent, const QKeySequence& keySequence)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	setupUi(this);
+    setupUi(this);
 
-	QString str("<HTML><HEAD><TITLE></TITLE></HEAD><BODY><CENTER>");
-	str += QString("<H1>") + tr("Assign Key") + QString("</H1>");
-	str += tr("Hit the key combination that you wish to assign. "
-		  "You may hit either a single key or a combination "
-		  "using CTRL, ALT, and SHIFT.");
-	str += QString("</CENTER></BODY></HTML>");
+    QString str("<HTML><HEAD><TITLE></TITLE></HEAD><BODY><CENTER>");
+    str += QString("<H1>") + tr("Assign Key") + QString("</H1>");
+    str += tr("Hit the key combination that you wish to assign. "
+              "You may hit either a single key or a combination "
+              "using CTRL, ALT, and SHIFT.");
+    str += QString("</CENTER></BODY></HTML>");
 
-	/* TODO: For OSX, put the apple key to the above text */
+    /* TODO: For OSX, put the apple key to the above text */
 
-	m_infoText->setText(str);
-	m_infoText->setFocusPolicy(Qt::NoFocus);
-	m_buttonBox->setFocusPolicy(Qt::NoFocus);
+    m_infoText->setText(str);
+    m_infoText->setFocusPolicy(Qt::NoFocus);
+    m_buttonBox->setFocusPolicy(Qt::NoFocus);
 
-	m_previewEdit->setReadOnly(true);
-	m_previewEdit->setAlignment(Qt::AlignCenter);
+    m_previewEdit->setReadOnly(true);
+    m_previewEdit->setAlignment(Qt::AlignCenter);
 
-	m_keySequence = QKeySequence(keySequence);
-	m_previewEdit->setText(m_keySequence.toString());
+    m_keySequence = QKeySequence(keySequence);
+    m_previewEdit->setText(m_keySequence.toString());
 }
 
 AssignHotKey::~AssignHotKey()
@@ -61,6 +61,6 @@ AssignHotKey::~AssignHotKey()
 
 void AssignHotKey::keyPressEvent(QKeyEvent* event)
 {
-	m_keySequence = QKeySequence(event->key() | event->modifiers());
-	m_previewEdit->setText(m_keySequence.toString());
+    m_keySequence = QKeySequence(event->key() | event->modifiers());
+    m_previewEdit->setText(m_keySequence.toString());
 }

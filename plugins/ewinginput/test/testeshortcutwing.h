@@ -8,27 +8,27 @@ class EShortcutWing;
 
 class TestEShortcutWing : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 protected:
-	QByteArray data();
+    QByteArray data();
 
 private slots:
-	void initTestCase();
+    void initTestCase();
 
-	void firmware();
-	void address();
-	void isOutputData();
-	void name();
-	void infoText();
+    void firmware();
+    void address();
+    void isOutputData();
+    void name();
+    void infoText();
 
-	void buttons_data();
-	void buttons();
+    void buttons_data();
+    void buttons();
 
-	void cleanupTestCase();
+    void cleanupTestCase();
 
 private:
-	EShortcutWing* m_ewing;
+    EShortcutWing* m_ewing;
 };
 
 #endif

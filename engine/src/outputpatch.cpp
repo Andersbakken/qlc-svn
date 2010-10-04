@@ -34,14 +34,14 @@
 
 OutputPatch::OutputPatch(QObject* parent) : QObject(parent)
 {
-	m_plugin = NULL;
-	m_output = KOutputInvalid;
+    m_plugin = NULL;
+    m_output = KOutputInvalid;
 }
 
 OutputPatch::~OutputPatch()
 {
-	if (m_plugin != NULL)
-		m_plugin->close(m_output);
+    if (m_plugin != NULL)
+        m_plugin->close(m_output);
 }
 
 /****************************************************************************
@@ -50,33 +50,33 @@ OutputPatch::~OutputPatch()
 
 void OutputPatch::set(QLCOutPlugin* plugin, quint32 output)
 {
-	/* TODO: This closes the plugin line always, regardless of whether
-	   the line has been assigned to more than one output universe */
-	if (m_plugin != NULL)
-		m_plugin->close(m_output);
+    /* TODO: This closes the plugin line always, regardless of whether
+       the line has been assigned to more than one output universe */
+    if (m_plugin != NULL)
+        m_plugin->close(m_output);
 
-	m_plugin = plugin;
-	m_output = output;
+    m_plugin = plugin;
+    m_output = output;
 
-	if (m_plugin != NULL)
-		m_plugin->open(m_output);
+    if (m_plugin != NULL)
+        m_plugin->open(m_output);
 }
 
 QString OutputPatch::pluginName() const
 {
-	if (m_plugin != NULL)
-		return m_plugin->name();
-	else
-		return KOutputNone;
+    if (m_plugin != NULL)
+        return m_plugin->name();
+    else
+        return KOutputNone;
 }
 
 QString OutputPatch::outputName() const
 {
-	if (m_plugin != NULL && m_output != KOutputInvalid &&
-	    m_output < quint32(m_plugin->outputs().size()))
-		return m_plugin->outputs()[m_output];
-	else
-		return KOutputNone;
+    if (m_plugin != NULL && m_output != KOutputInvalid &&
+            m_output < quint32(m_plugin->outputs().size()))
+        return m_plugin->outputs()[m_output];
+    else
+        return KOutputNone;
 }
 
 /*****************************************************************************
@@ -85,7 +85,7 @@ QString OutputPatch::outputName() const
 
 void OutputPatch::dump(const QByteArray& universe)
 {
-	/* Don't do anything if there is no plugin and/or output line. */
-	if (m_plugin != NULL && m_output != KOutputInvalid)
-		m_plugin->outputDMX(m_output, universe);
+    /* Don't do anything if there is no plugin and/or output line. */
+    if (m_plugin != NULL && m_output != KOutputInvalid)
+        m_plugin->outputDMX(m_output, universe);
 }

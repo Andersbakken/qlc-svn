@@ -36,7 +36,7 @@
 
 void VellemanOut::init()
 {
-	m_currentlyOpen = false;
+    m_currentlyOpen = false;
 }
 
 /*****************************************************************************
@@ -45,26 +45,26 @@ void VellemanOut::init()
 
 void VellemanOut::open(quint32 output)
 {
-	if (output != 0)
-		return;
+    if (output != 0)
+        return;
 }
 
 void VellemanOut::close(quint32 output)
 {
-	if (output != 0)
-		return;
+    if (output != 0)
+        return;
 
-	m_currentlyOpen = false;
-	qDebug("About to StopDevice");
-	StopDevice();
-	qDebug("Finished StopDevice");
+    m_currentlyOpen = false;
+    qDebug("About to StopDevice");
+    StopDevice();
+    qDebug("Finished StopDevice");
 }
 
 QStringList VellemanOut::outputs()
 {
-	QStringList list;
-	list << QString("1: Velleman Device");
-	return list;
+    QStringList list;
+    list << QString("1: Velleman Device");
+    return list;
 }
 
 /*****************************************************************************
@@ -73,7 +73,7 @@ QStringList VellemanOut::outputs()
 
 QString VellemanOut::name()
 {
-	return QString("Velleman Output");
+    return QString("Velleman Output");
 }
 
 /*****************************************************************************
@@ -82,7 +82,7 @@ QString VellemanOut::name()
 
 void VellemanOut::configure()
 {
-	//Do Nothing.
+    //Do Nothing.
 }
 
 /*****************************************************************************
@@ -91,33 +91,33 @@ void VellemanOut::configure()
 
 QString VellemanOut::infoText(quint32 output)
 {
-	QString str;
+    QString str;
 
-	str += QString("<HTML>");
-	str += QString("<HEAD>");
-	str += QString("<TITLE>%1</TITLE>").arg(name());
-	str += QString("</HEAD>");
-	str += QString("<BODY>");
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
 
-	if (output == KOutputInvalid)
-	{
-		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("This plugin provides DMX output support for ");
-		str += QString("the Velleman k8062 using the DLL supplied ");
-		str += QString("with the product. Please note, use of this ");
-		str += QString("interface is not necessarily recommended.");
-		str += QString("</P>");
-	}
-	else if (output == 0)
-	{
-		str += QString("<H3>%1</H3>").arg(outputs()[output]);
-	}
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support for ");
+        str += QString("the Velleman k8062 using the DLL supplied ");
+        str += QString("with the product. Please note, use of this ");
+        str += QString("interface is not necessarily recommended.");
+        str += QString("</P>");
+    }
+    else if (output == 0)
+    {
+        str += QString("<H3>%1</H3>").arg(outputs()[output]);
+    }
 
-	str += QString("</BODY>");
-	str += QString("</HTML>");
+    str += QString("</BODY>");
+    str += QString("</HTML>");
 
-	return str;
+    return str;
 }
 
 /*****************************************************************************
@@ -126,25 +126,25 @@ QString VellemanOut::infoText(quint32 output)
 
 void VellemanOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output != 0)
-		return;
+    if (output != 0)
+        return;
 
-	if (!m_currentlyOpen)
-	{
-		StartDevice();
-		m_currentlyOpen = true;
-	}
+    if (!m_currentlyOpen)
+    {
+        StartDevice();
+        m_currentlyOpen = true;
+    }
 
-	int32_t channelCount = (int32_t) universe.size();
-	SetChannelCount(channelCount);
+    int32_t channelCount = (int32_t) universe.size();
+    SetChannelCount(channelCount);
 
-	int32_t values [512]; //Set up array to pass to SetAllData.
-	for (int32_t channelLoop = 0; channelLoop < channelCount; channelLoop++)
-	{
-		//Write the value to our temporary array.
-		values[channelLoop] = (quint32) universe[channelLoop];
-	}
-	SetAllData(values);
+    int32_t values [512]; //Set up array to pass to SetAllData.
+    for (int32_t channelLoop = 0; channelLoop < channelCount; channelLoop++)
+    {
+        //Write the value to our temporary array.
+        values[channelLoop] = (quint32) universe[channelLoop];
+    }
+    SetAllData(values);
 }
 
 /*****************************************************************************

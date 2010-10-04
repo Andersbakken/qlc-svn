@@ -77,319 +77,319 @@ extern QString _ftdi_usb_open_desc_expected_serial;
 
 void EnttecDMXUSBOpen_Test::resetCounters()
 {
-	_ftdi_usb_dev_expected_value = (struct usb_dev_handle*) 0xDEADBEEF;
+    _ftdi_usb_dev_expected_value = (struct usb_dev_handle*) 0xDEADBEEF;
 
-	_ftdi_init_called = 0;
-	_ftdi_deinit_called = 0;
+    _ftdi_init_called = 0;
+    _ftdi_deinit_called = 0;
 
-	_ftdi_usb_open_desc_called = 0;
-	_ftdi_usb_open_desc_expected_return_value = 0;
+    _ftdi_usb_open_desc_called = 0;
+    _ftdi_usb_open_desc_expected_return_value = 0;
 
-	_ftdi_usb_close_called = 0;
-	_ftdi_usb_close_expected_return_value = 0;
+    _ftdi_usb_close_called = 0;
+    _ftdi_usb_close_expected_return_value = 0;
 
-	_ftdi_usb_reset_called = 0;
-	_ftdi_usb_reset_expected_return_value = 0;
+    _ftdi_usb_reset_called = 0;
+    _ftdi_usb_reset_expected_return_value = 0;
 
-	_ftdi_set_line_property_called = 0;
-	_ftdi_set_line_property_expected_return_value = 0;
+    _ftdi_set_line_property_called = 0;
+    _ftdi_set_line_property_expected_return_value = 0;
 
-	_ftdi_set_baudrate_called = 0;
-	_ftdi_set_baudrate_expected_return_value = 0;
+    _ftdi_set_baudrate_called = 0;
+    _ftdi_set_baudrate_expected_return_value = 0;
 
-	_ftdi_setrts_called = 0;
-	_ftdi_setrts_expected_return_value = 0;
+    _ftdi_setrts_called = 0;
+    _ftdi_setrts_expected_return_value = 0;
 
-	_ftdi_write_data_called = 0;
-	_ftdi_write_data_expected_size = 513;
-	_ftdi_write_data_expected_return_value = 0;
+    _ftdi_write_data_called = 0;
+    _ftdi_write_data_expected_size = 513;
+    _ftdi_write_data_expected_return_value = 0;
 
-	_ftdi_usb_purge_buffers_called = 0;
-	_ftdi_usb_purge_buffers_expected_return_value = 0;
+    _ftdi_usb_purge_buffers_called = 0;
+    _ftdi_usb_purge_buffers_expected_return_value = 0;
 
-	_ftdi_set_line_property2_called = 0;
-	_ftdi_set_line_property2_expected_return_value = 0;
+    _ftdi_set_line_property2_called = 0;
+    _ftdi_set_line_property2_expected_return_value = 0;
 
-	_ftdi_usb_open_desc_expected_description = TEST_NAME;
-	_ftdi_usb_open_desc_expected_serial = TEST_SRNO;
+    _ftdi_usb_open_desc_expected_description = TEST_NAME;
+    _ftdi_usb_open_desc_expected_serial = TEST_SRNO;
 }
 
 void EnttecDMXUSBOpen_Test::construction()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
 
-	QCOMPARE(obj->m_name, QString(TEST_NAME));
-	QCOMPARE(obj->m_serial, QString(TEST_SRNO));
-	QCOMPARE(obj->m_running, false);
-	QCOMPARE(obj->m_universe, QByteArray(513, 0));
+    QCOMPARE(obj->m_name, QString(TEST_NAME));
+    QCOMPARE(obj->m_serial, QString(TEST_SRNO));
+    QCOMPARE(obj->m_running, false);
+    QCOMPARE(obj->m_universe, QByteArray(513, 0));
 
-	QCOMPARE(obj->name(), QString(TEST_NAME));
-	QCOMPARE(obj->serial(), QString(TEST_SRNO));
-	QCOMPARE(obj->uniqueName(), QString("%1 (S/N: %2)").arg(TEST_NAME)
-							  .arg(TEST_SRNO));
+    QCOMPARE(obj->name(), QString(TEST_NAME));
+    QCOMPARE(obj->serial(), QString(TEST_SRNO));
+    QCOMPARE(obj->uniqueName(), QString("%1 (S/N: %2)").arg(TEST_NAME)
+             .arg(TEST_SRNO));
 
-	QVERIFY(obj->isOpen() == false);
+    QVERIFY(obj->isOpen() == false);
 
-	delete obj;
-	QCOMPARE(_ftdi_init_called, 1);
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_init_called, 1);
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 void EnttecDMXUSBOpen_Test::closeFail()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
-	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
-	QVERIFY(obj->open() == true);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_baudrate_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 1);
-	QCOMPARE(_ftdi_setrts_called, 1);
-        QCOMPARE(_ftdi_usb_close_called, 0);
+    QVERIFY(obj->open() == true);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_baudrate_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 1);
+    QCOMPARE(_ftdi_setrts_called, 1);
+    QCOMPARE(_ftdi_usb_close_called, 0);
 
-	_ftdi_usb_close_expected_return_value = -1;
-	QVERIFY(obj->close() == false);
-	QCOMPARE(_ftdi_usb_close_called, 1);
+    _ftdi_usb_close_expected_return_value = -1;
+    QVERIFY(obj->close() == false);
+    QCOMPARE(_ftdi_usb_close_called, 1);
 
-	delete obj;
-	QCOMPARE(_ftdi_init_called, 1);
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_init_called, 1);
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 void EnttecDMXUSBOpen_Test::openFail()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
-	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
-	_ftdi_usb_open_desc_expected_return_value = -1;
-	QVERIFY(obj->open() == false);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 0);
-	QCOMPARE(_ftdi_set_line_property_called, 0);
-	QCOMPARE(_ftdi_set_baudrate_called, 0);
-	QCOMPARE(_ftdi_setrts_called, 0);
-	QVERIFY(obj->close() == true);
-	resetCounters();
+    _ftdi_usb_open_desc_expected_return_value = -1;
+    QVERIFY(obj->open() == false);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 0);
+    QCOMPARE(_ftdi_set_line_property_called, 0);
+    QCOMPARE(_ftdi_set_baudrate_called, 0);
+    QCOMPARE(_ftdi_setrts_called, 0);
+    QVERIFY(obj->close() == true);
+    resetCounters();
 
-	_ftdi_usb_reset_expected_return_value = -1;
-	QVERIFY(obj->open() == false);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 0);
-	QCOMPARE(_ftdi_set_baudrate_called, 0);
-	QCOMPARE(_ftdi_setrts_called, 0);
-	resetCounters();
+    _ftdi_usb_reset_expected_return_value = -1;
+    QVERIFY(obj->open() == false);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 0);
+    QCOMPARE(_ftdi_set_baudrate_called, 0);
+    QCOMPARE(_ftdi_setrts_called, 0);
+    resetCounters();
 
-	_ftdi_set_line_property_expected_return_value = -1;
-	QVERIFY(obj->open() == false);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 1);
-	QCOMPARE(_ftdi_set_baudrate_called, 0);
-	QCOMPARE(_ftdi_setrts_called, 0);
-	resetCounters();
+    _ftdi_set_line_property_expected_return_value = -1;
+    QVERIFY(obj->open() == false);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 1);
+    QCOMPARE(_ftdi_set_baudrate_called, 0);
+    QCOMPARE(_ftdi_setrts_called, 0);
+    resetCounters();
 
-	_ftdi_set_baudrate_expected_return_value = -1;
-	QVERIFY(obj->open() == false);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 1);
-	QCOMPARE(_ftdi_set_baudrate_called, 1);
-	QCOMPARE(_ftdi_setrts_called, 0);
-	resetCounters();
+    _ftdi_set_baudrate_expected_return_value = -1;
+    QVERIFY(obj->open() == false);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 1);
+    QCOMPARE(_ftdi_set_baudrate_called, 1);
+    QCOMPARE(_ftdi_setrts_called, 0);
+    resetCounters();
 
-	_ftdi_setrts_expected_return_value = -1;
-	QVERIFY(obj->open() == false);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 1);
-	QCOMPARE(_ftdi_set_baudrate_called, 1);
-	QCOMPARE(_ftdi_setrts_called, 1);
-	resetCounters();
+    _ftdi_setrts_expected_return_value = -1;
+    QVERIFY(obj->open() == false);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 1);
+    QCOMPARE(_ftdi_set_baudrate_called, 1);
+    QCOMPARE(_ftdi_setrts_called, 1);
+    resetCounters();
 
 }
 
 void EnttecDMXUSBOpen_Test::openClose()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
-	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
-	QCOMPARE(_ftdi_usb_open_desc_called, 0);
-	QCOMPARE(_ftdi_usb_reset_called, 0);
-	QCOMPARE(_ftdi_set_line_property_called, 0);
-	QCOMPARE(_ftdi_set_baudrate_called, 0);
-	QCOMPARE(_ftdi_setrts_called, 0);
-	QCOMPARE(_ftdi_usb_close_called, 0);
+    QCOMPARE(_ftdi_usb_open_desc_called, 0);
+    QCOMPARE(_ftdi_usb_reset_called, 0);
+    QCOMPARE(_ftdi_set_line_property_called, 0);
+    QCOMPARE(_ftdi_set_baudrate_called, 0);
+    QCOMPARE(_ftdi_setrts_called, 0);
+    QCOMPARE(_ftdi_usb_close_called, 0);
 
-	QVERIFY(obj->isOpen() == false);
-	QVERIFY(obj->open() == true);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 1);
-	QCOMPARE(_ftdi_set_baudrate_called, 1);
-	QCOMPARE(_ftdi_setrts_called, 1);
-	QCOMPARE(_ftdi_usb_close_called, 0);
+    QVERIFY(obj->isOpen() == false);
+    QVERIFY(obj->open() == true);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 1);
+    QCOMPARE(_ftdi_set_baudrate_called, 1);
+    QCOMPARE(_ftdi_setrts_called, 1);
+    QCOMPARE(_ftdi_usb_close_called, 0);
 
-	obj->close();
-	QCOMPARE(_ftdi_usb_close_called, 1);
-	obj->close();
-	QCOMPARE(_ftdi_usb_close_called, 1); // Counter value doesn't grow
-	obj->close();
-	QCOMPARE(_ftdi_usb_close_called, 1); // Counter value doesn't grow
+    obj->close();
+    QCOMPARE(_ftdi_usb_close_called, 1);
+    obj->close();
+    QCOMPARE(_ftdi_usb_close_called, 1); // Counter value doesn't grow
+    obj->close();
+    QCOMPARE(_ftdi_usb_close_called, 1); // Counter value doesn't grow
 
-	delete obj;
-	QCOMPARE(_ftdi_init_called, 1);
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_init_called, 1);
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 void EnttecDMXUSBOpen_Test::sendDMX()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
 
-	QCOMPARE((char)obj->m_universe[0], (char) 0); // Start code always 0
-	QCOMPARE((char)obj->m_universe[1], (char) 0);
-	QCOMPARE(obj->m_universe.size(), 513); // 512 + start code
+    QCOMPARE((char)obj->m_universe[0], (char) 0); // Start code always 0
+    QCOMPARE((char)obj->m_universe[1], (char) 0);
+    QCOMPARE(obj->m_universe.size(), 513); // 512 + start code
 
-	obj->sendDMX(QByteArray(15, 147));
-	QCOMPARE((char)obj->m_universe[0], (char) 0); // Start code always 0
-	QCOMPARE((char)obj->m_universe[1], (char) 147);
-	QCOMPARE((char)obj->m_universe[15], (char) 147);
-	QCOMPARE((char)obj->m_universe[16], (char) 0);
-	QCOMPARE(obj->m_universe.size(), 513); // 512 + start code
+    obj->sendDMX(QByteArray(15, 147));
+    QCOMPARE((char)obj->m_universe[0], (char) 0); // Start code always 0
+    QCOMPARE((char)obj->m_universe[1], (char) 147);
+    QCOMPARE((char)obj->m_universe[15], (char) 147);
+    QCOMPARE((char)obj->m_universe[16], (char) 0);
+    QCOMPARE(obj->m_universe.size(), 513); // 512 + start code
 
-	obj->sendDMX(QByteArray(512, UCHAR_MAX));
-	QCOMPARE((char)obj->m_universe[0], (char) 0); // Start code always 0
-	QCOMPARE((char)obj->m_universe[1], (char) UCHAR_MAX);
-	QCOMPARE((char)obj->m_universe[15], (char) UCHAR_MAX);
-	QCOMPARE((char)obj->m_universe[16], (char) UCHAR_MAX);
-	QCOMPARE((char)obj->m_universe[511], (char) UCHAR_MAX);
-	QCOMPARE(obj->m_universe.size(), 513); // 512 + start code
+    obj->sendDMX(QByteArray(512, UCHAR_MAX));
+    QCOMPARE((char)obj->m_universe[0], (char) 0); // Start code always 0
+    QCOMPARE((char)obj->m_universe[1], (char) UCHAR_MAX);
+    QCOMPARE((char)obj->m_universe[15], (char) UCHAR_MAX);
+    QCOMPARE((char)obj->m_universe[16], (char) UCHAR_MAX);
+    QCOMPARE((char)obj->m_universe[511], (char) UCHAR_MAX);
+    QCOMPARE(obj->m_universe.size(), 513); // 512 + start code
 
-	delete obj;
-	QCOMPARE(_ftdi_init_called, 1);
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_init_called, 1);
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 void EnttecDMXUSBOpen_Test::runFail()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
-	QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    QVERIFY(obj->sendDMX(QByteArray(512, UCHAR_MAX)) == true);
 
-	// Simulate sudden closing of the device
-	QVERIFY(obj->open() == true);
-	_ftdi_usb_dev_expected_value = NULL;
-	obj->m_context.usb_dev = NULL;
-	QVERIFY(obj->isOpen() == false);
-	QTest::qWait(100);
-	obj->close();
-	QVERIFY(_ftdi_write_data_called < 2);
+    // Simulate sudden closing of the device
+    QVERIFY(obj->open() == true);
+    _ftdi_usb_dev_expected_value = NULL;
+    obj->m_context.usb_dev = NULL;
+    QVERIFY(obj->isOpen() == false);
+    QTest::qWait(100);
+    obj->close();
+    QVERIFY(_ftdi_write_data_called < 2);
 
-	resetCounters();
+    resetCounters();
 
-	// Ftdimock knows to return false on BREAK_ON with -2
-	_ftdi_set_line_property2_expected_return_value = -1;
-	obj->sendDMX(QByteArray(512, UCHAR_MAX));
-	QVERIFY(obj->open() == true);
-	QVERIFY(obj->isOpen() == true);
-	QTest::qWait(100);
-	obj->close();
-	QVERIFY(obj->isOpen() == false);
-	QCOMPARE(_ftdi_write_data_called, 0); // Write is never reached
-	QVERIFY(_ftdi_set_line_property2_called >= 4);
+    // Ftdimock knows to return false on BREAK_ON with -2
+    _ftdi_set_line_property2_expected_return_value = -1;
+    obj->sendDMX(QByteArray(512, UCHAR_MAX));
+    QVERIFY(obj->open() == true);
+    QVERIFY(obj->isOpen() == true);
+    QTest::qWait(100);
+    obj->close();
+    QVERIFY(obj->isOpen() == false);
+    QCOMPARE(_ftdi_write_data_called, 0); // Write is never reached
+    QVERIFY(_ftdi_set_line_property2_called >= 4);
 
-	resetCounters();
+    resetCounters();
 
-	// Ftdimock knows to return false on BREAK_OFF with -2
-	_ftdi_set_line_property2_expected_return_value = -2;
-	QVERIFY(obj->open() == true);
-	QVERIFY(obj->isOpen() == true);
-	QTest::qWait(100);
-	obj->close();
-	QVERIFY(obj->isOpen() == false);
-	QCOMPARE(_ftdi_write_data_called, 0); // Write is never reached
-	QVERIFY(_ftdi_set_line_property2_called >= 4);
+    // Ftdimock knows to return false on BREAK_OFF with -2
+    _ftdi_set_line_property2_expected_return_value = -2;
+    QVERIFY(obj->open() == true);
+    QVERIFY(obj->isOpen() == true);
+    QTest::qWait(100);
+    obj->close();
+    QVERIFY(obj->isOpen() == false);
+    QCOMPARE(_ftdi_write_data_called, 0); // Write is never reached
+    QVERIFY(_ftdi_set_line_property2_called >= 4);
 
-	resetCounters();
+    resetCounters();
 
-	// Simulate failing write
-	_ftdi_write_data_expected_return_value = -1;
-	_ftdi_write_data_expected_size = 513;
-	obj->sendDMX(QByteArray(512, UCHAR_MAX));
-	QVERIFY(obj->open() == true);
-	QVERIFY(obj->isOpen() == true);
-	QTest::qWait(100);
-	obj->close();
-	QVERIFY(obj->isOpen() == false);
-	QVERIFY(_ftdi_write_data_called >= 4);
-	QVERIFY(_ftdi_set_line_property2_called >= 4);
+    // Simulate failing write
+    _ftdi_write_data_expected_return_value = -1;
+    _ftdi_write_data_expected_size = 513;
+    obj->sendDMX(QByteArray(512, UCHAR_MAX));
+    QVERIFY(obj->open() == true);
+    QVERIFY(obj->isOpen() == true);
+    QTest::qWait(100);
+    obj->close();
+    QVERIFY(obj->isOpen() == false);
+    QVERIFY(_ftdi_write_data_called >= 4);
+    QVERIFY(_ftdi_set_line_property2_called >= 4);
 
-	resetCounters();
+    resetCounters();
 
-	delete obj;
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 void EnttecDMXUSBOpen_Test::run()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
 
-	_ftdi_write_data_expected_size = 513;
-	obj->sendDMX(QByteArray(512, UCHAR_MAX));
-	QVERIFY(obj->open() == true);
-	QVERIFY(obj->isOpen() == true);
-	QCOMPARE(_ftdi_usb_open_desc_called, 1);
-	QCOMPARE(_ftdi_usb_reset_called, 1);
-	QCOMPARE(_ftdi_set_line_property_called, 1);
-	QCOMPARE(_ftdi_set_baudrate_called, 1);
-	QCOMPARE(_ftdi_setrts_called, 1);
-	QTest::qWait(200);
-	obj->close();
-	QVERIFY(obj->isOpen() == false);
+    _ftdi_write_data_expected_size = 513;
+    obj->sendDMX(QByteArray(512, UCHAR_MAX));
+    QVERIFY(obj->open() == true);
+    QVERIFY(obj->isOpen() == true);
+    QCOMPARE(_ftdi_usb_open_desc_called, 1);
+    QCOMPARE(_ftdi_usb_reset_called, 1);
+    QCOMPARE(_ftdi_set_line_property_called, 1);
+    QCOMPARE(_ftdi_set_baudrate_called, 1);
+    QCOMPARE(_ftdi_setrts_called, 1);
+    QTest::qWait(200);
+    obj->close();
+    QVERIFY(obj->isOpen() == false);
 
-	QCOMPARE(_ftdi_usb_purge_buffers_called, 1);
+    QCOMPARE(_ftdi_usb_purge_buffers_called, 1);
 
-	QVERIFY(_ftdi_set_line_property2_called >= 15);
-	QVERIFY(_ftdi_write_data_called >= 7);
+    QVERIFY(_ftdi_set_line_property2_called >= 15);
+    QVERIFY(_ftdi_write_data_called >= 7);
 
-	QVERIFY(obj->isRunning() == false);
-	QVERIFY(obj->m_running == false);
+    QVERIFY(obj->isRunning() == false);
+    QVERIFY(obj->m_running == false);
 
-	delete obj;
-	QCOMPARE(_ftdi_init_called, 1);
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_init_called, 1);
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 void EnttecDMXUSBOpen_Test::deleteWhileRunning()
 {
-	resetCounters();
+    resetCounters();
 
-	EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
+    EnttecDMXUSBOpen* obj = new EnttecDMXUSBOpen(this, TEST_NAME, TEST_SRNO);
 
-	_ftdi_write_data_expected_size = 513;
-	obj->sendDMX(QByteArray(512, UCHAR_MAX));
-	QVERIFY(obj->open() == true);
-	QVERIFY(obj->isOpen() == true);
-	QTest::qWait(100);
+    _ftdi_write_data_expected_size = 513;
+    obj->sendDMX(QByteArray(512, UCHAR_MAX));
+    QVERIFY(obj->open() == true);
+    QVERIFY(obj->isOpen() == true);
+    QTest::qWait(100);
 
-	delete obj;
-	QCOMPARE(_ftdi_usb_close_called, 1);
-	QCOMPARE(_ftdi_init_called, 1);
-	QCOMPARE(_ftdi_deinit_called, 1);
+    delete obj;
+    QCOMPARE(_ftdi_usb_close_called, 1);
+    QCOMPARE(_ftdi_init_called, 1);
+    QCOMPARE(_ftdi_deinit_called, 1);
 }
 
 QTEST_MAIN(EnttecDMXUSBOpen_Test)

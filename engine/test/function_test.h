@@ -26,23 +26,23 @@
 
 class Function_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void invalidId();
-	void typeToString();
-	void stringToType();
-	void runOrderToString();
-	void stringToRunOrder();
-	void directionToString();
-	void stringToDirection();
-	void loaderWrongRoot();
-	void loaderWrongID();
-	void loaderScene();
-	void loaderChaser();
-	void loaderCollection();
-	void loaderEFX();
+    void initTestCase();
+    void invalidId();
+    void typeToString();
+    void stringToType();
+    void runOrderToString();
+    void stringToRunOrder();
+    void directionToString();
+    void stringToDirection();
+    void loaderWrongRoot();
+    void loaderWrongID();
+    void loaderScene();
+    void loaderChaser();
+    void loaderCollection();
+    void loaderEFX();
 };
 
 #endif

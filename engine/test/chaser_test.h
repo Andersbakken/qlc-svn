@@ -29,39 +29,39 @@ class Doc;
 
 class Chaser_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void init();
-	void cleanup();
+    void initTestCase();
+    void init();
+    void cleanup();
 
-	void initial();
-	void directionRunOrder();
-	void steps();
-	void functionRemoval();
+    void initial();
+    void directionRunOrder();
+    void steps();
+    void functionRemoval();
 
-	void loadSuccess();
-	void loadWrongType();
-	void loadWrongRoot();
-	void save();
-	void copyFrom();
-	void createCopy();
+    void loadSuccess();
+    void loadWrongType();
+    void loadWrongRoot();
+    void save();
+    void copyFrom();
+    void createCopy();
 
-	void armSuccess();
-	void armMissingFunction();
+    void armSuccess();
+    void armMissingFunction();
 
-	void writeBusZeroLoopForward();
-	void writeBusZeroLoopBackward();
-	void writeBusZeroSingleShotForward();
-	void writeBusZeroSingleShotBackward();
-	void writeBusZeroPingPongForward();
-	void writeBusZeroPingPongBackward();
+    void writeBusZeroLoopForward();
+    void writeBusZeroLoopBackward();
+    void writeBusZeroSingleShotForward();
+    void writeBusZeroSingleShotBackward();
+    void writeBusZeroPingPongForward();
+    void writeBusZeroPingPongBackward();
 
-	void tap();
+    void tap();
 private:
-	Doc* m_doc;
-	QLCFixtureDefCache m_cache;
+    Doc* m_doc;
+    QLCFixtureDefCache m_cache;
 };
 
 #endif

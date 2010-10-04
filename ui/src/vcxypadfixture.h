@@ -45,90 +45,104 @@ class QDomElement;
 
 class VCXYPadFixture
 {
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	VCXYPadFixture();
-	VCXYPadFixture(const QVariant& variant);
-	VCXYPadFixture(const VCXYPadFixture& vc_fxi);
-	~VCXYPadFixture();
+    VCXYPadFixture();
+    VCXYPadFixture(const QVariant& variant);
+    VCXYPadFixture(const VCXYPadFixture& vc_fxi);
+    ~VCXYPadFixture();
 
-	/** Assignment operator */
-	VCXYPadFixture& operator=(const VCXYPadFixture& fxi);
+    /** Assignment operator */
+    VCXYPadFixture& operator=(const VCXYPadFixture& fxi);
 
-	/** Comparing operator */
-	bool operator==(const VCXYPadFixture& fxi);
+    /** Comparing operator */
+    bool operator==(const VCXYPadFixture& fxi);
 
-	/* Serialization operator for VCXYPadFixtureEditor */
-	operator QVariant() const;
+    /* Serialization operator for VCXYPadFixtureEditor */
+    operator QVariant() const;
 
-	/********************************************************************
-	 * Fixture
-	 ********************************************************************/
+    /********************************************************************
+     * Fixture
+     ********************************************************************/
 public:
-	void setFixture(t_fixture_id fxi_id);
-	t_fixture_id fixture() const { return m_fixture; }
+    void setFixture(t_fixture_id fxi_id);
+    t_fixture_id fixture() const {
+        return m_fixture;
+    }
 
-	QString name() const;
+    QString name() const;
 
-	void arm();
-	void disarm();
+    void arm();
+    void disarm();
 
-	/** Write the value using x & y multipliers for the actual range */
-	void writeDMX(double xmul, double ymul, QByteArray* universes);
+    /** Write the value using x & y multipliers for the actual range */
+    void writeDMX(double xmul, double ymul, QByteArray* universes);
 
 protected:
-	t_fixture_id m_fixture;
+    t_fixture_id m_fixture;
 
-	/********************************************************************
-	 * X-Axis
-	 ********************************************************************/
+    /********************************************************************
+     * X-Axis
+     ********************************************************************/
 public:
-	void setX(double min, double max, bool reverse);
+    void setX(double min, double max, bool reverse);
 
-	double xMin() const { return m_xMin; }
-	double xMax() const { return m_xMax; }
-	bool xReverse() const { return m_xReverse; }
+    double xMin() const {
+        return m_xMin;
+    }
+    double xMax() const {
+        return m_xMax;
+    }
+    bool xReverse() const {
+        return m_xReverse;
+    }
 
-	/** min% - max% for displaying X limits in tree widget */
-	QString xBrief() const;
+    /** min% - max% for displaying X limits in tree widget */
+    QString xBrief() const;
 
 protected:
-	double m_xMin;
-	double m_xMax;
-	bool m_xReverse;
+    double m_xMin;
+    double m_xMax;
+    bool m_xReverse;
 
-	t_channel m_xLSB;
-	t_channel m_xMSB;
+    t_channel m_xLSB;
+    t_channel m_xMSB;
 
-	/********************************************************************
-	 * Y-Axis
-	 ********************************************************************/
+    /********************************************************************
+     * Y-Axis
+     ********************************************************************/
 public:
-	void setY(double min, double max, bool reverse);
+    void setY(double min, double max, bool reverse);
 
-	double yMin() const { return m_yMin; }
-	double yMax() const { return m_yMax; }
-	bool yReverse() const { return m_yReverse; }
+    double yMin() const {
+        return m_yMin;
+    }
+    double yMax() const {
+        return m_yMax;
+    }
+    bool yReverse() const {
+        return m_yReverse;
+    }
 
-	/** min% - max% for displaying Y limits in tree widget */
-	QString yBrief() const;
+    /** min% - max% for displaying Y limits in tree widget */
+    QString yBrief() const;
 
 protected:
-	double m_yMin;
-	double m_yMax;
-	bool m_yReverse;
+    double m_yMin;
+    double m_yMax;
+    bool m_yReverse;
 
-	t_channel m_yLSB;
-	t_channel m_yMSB;
+    t_channel m_yLSB;
+    t_channel m_yMSB;
 
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
+    /********************************************************************
+     * Load & Save
+     ********************************************************************/
 public:
-	bool loadXML(const QDomElement* root);
-	bool saveXML(QDomDocument* doc, QDomElement* root);
+    bool loadXML(const QDomElement* root);
+    bool saveXML(QDomDocument* doc, QDomElement* root);
 };
 
 #endif

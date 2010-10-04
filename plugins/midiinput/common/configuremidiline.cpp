@@ -26,25 +26,25 @@
 #include "mididevice.h"
 
 ConfigureMIDILine::ConfigureMIDILine(QWidget* parent, MIDIDevice* device)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	Q_ASSERT(device != NULL);
-	m_device = device;
+    Q_ASSERT(device != NULL);
+    m_device = device;
 
-	setupUi(this);
+    setupUi(this);
 
 #ifdef WIN32
-	m_feedBackCombo->addItems(MIDIDevice::feedBackNames());
-	m_feedBackCombo->setCurrentIndex(m_device->feedBackId());
+    m_feedBackCombo->addItems(MIDIDevice::feedBackNames());
+    m_feedBackCombo->setCurrentIndex(m_device->feedBackId());
 #else
-	m_feedBackLabel->hide();
-	m_feedBackCombo->hide();
+    m_feedBackLabel->hide();
+    m_feedBackCombo->hide();
 #endif
-	m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::ControlChange));
-	m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::Note));
+    m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::ControlChange));
+    m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::Note));
 
-	m_midiChannelSpin->setValue(device->midiChannel() + 1);
-	m_modeCombo->setCurrentIndex(device->mode());
+    m_midiChannelSpin->setValue(device->midiChannel() + 1);
+    m_modeCombo->setCurrentIndex(device->mode());
 }
 
 ConfigureMIDILine::~ConfigureMIDILine()
@@ -54,10 +54,10 @@ ConfigureMIDILine::~ConfigureMIDILine()
 void ConfigureMIDILine::accept()
 {
 #ifdef WIN32
-	m_device->setFeedBackId(m_feedBackCombo->currentIndex());
+    m_device->setFeedBackId(m_feedBackCombo->currentIndex());
 #endif
-        m_device->setMidiChannel(m_midiChannelSpin->value() - 1);
-        m_device->setMode(MIDIDevice::stringToMode(m_modeCombo->currentText()));
+    m_device->setMidiChannel(m_midiChannelSpin->value() - 1);
+    m_device->setMode(MIDIDevice::stringToMode(m_modeCombo->currentText()));
 
-	QDialog::accept();
+    QDialog::accept();
 }

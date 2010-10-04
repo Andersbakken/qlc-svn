@@ -31,25 +31,25 @@ const string QLCLogDestination::PREFIX = "OLA: ";
 
 void QLCLogDestination::Write(log_level level, const string &log_line) {
 
-  string output = PREFIX;
-  output.append(log_line);
-  ola::StringTrim(&output);
+    string output = PREFIX;
+    output.append(log_line);
+    ola::StringTrim(&output);
 
-  switch (level)
-  {
+    switch (level)
+    {
     case ola::OLA_LOG_FATAL:
-      qCritical() << output.data();
-      break;
+        qCritical() << output.data();
+        break;
     case ola::OLA_LOG_WARN:
-      qWarning() << output.data();
-      break;
+        qWarning() << output.data();
+        break;
     case ola::OLA_LOG_INFO:
     case ola::OLA_LOG_DEBUG:
-      qDebug() << output.data();
-      break;
+        qDebug() << output.data();
+        break;
     default:
-      break;
-  }
+        break;
+    }
 }
 
 } // ola

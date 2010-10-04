@@ -45,23 +45,23 @@
 class BusEntry
 {
 public:
-	BusEntry()
-	{
-		value = 0;
-	}
+    BusEntry()
+    {
+        value = 0;
+    }
 
-	~BusEntry()
-	{
-	}
+    ~BusEntry()
+    {
+    }
 
-	BusEntry(const BusEntry& entry)
-	{
-		name = entry.name;
-		value = entry.value;
-	}
+    BusEntry(const BusEntry& entry)
+    {
+        name = entry.name;
+        value = entry.value;
+    }
 
-	QString name;
-	quint32 value;
+    QString name;
+    quint32 value;
 };
 
 /****************************************************************************
@@ -72,48 +72,48 @@ Bus* Bus::s_instance = NULL;
 
 void Bus::init(QObject* parent)
 {
-	if (s_instance == NULL)
-	{
-		Q_ASSERT(parent != NULL);
-		s_instance = new Bus(parent);
-	}
+    if (s_instance == NULL)
+    {
+        Q_ASSERT(parent != NULL);
+        s_instance = new Bus(parent);
+    }
 }
 
 Bus* Bus::instance()
 {
-	return s_instance;
+    return s_instance;
 }
 
 Bus::Bus(QObject* parent) : QObject(parent)
 {
-	for (quint32 i = 0; i < Bus::count(); i++)
-		m_buses.append(new BusEntry);
+    for (quint32 i = 0; i < Bus::count(); i++)
+        m_buses.append(new BusEntry);
 
-	m_buses[defaultFade()]->name = QString("Fade");
-	m_buses[defaultHold()]->name = QString("Hold");
+    m_buses[defaultFade()]->name = QString("Fade");
+    m_buses[defaultHold()]->name = QString("Hold");
 }
 
 quint32 Bus::count()
 {
-	return KBusCount;
+    return KBusCount;
 }
 
 quint32 Bus::defaultFade()
 {
-	return KBusIDDefaultFade;
+    return KBusIDDefaultFade;
 }
 
 quint32 Bus::defaultHold()
 {
-	return KBusIDDefaultHold;
+    return KBusIDDefaultHold;
 }
 
 Bus::~Bus()
 {
-	while (m_buses.isEmpty() == false)
-		delete m_buses.takeFirst();
+    while (m_buses.isEmpty() == false)
+        delete m_buses.takeFirst();
 
-	s_instance = NULL;
+    s_instance = NULL;
 }
 
 /****************************************************************************
@@ -122,43 +122,43 @@ Bus::~Bus()
 
 QString Bus::name(quint32 bus) const
 {
-	if (bus < KBusCount)
-		return m_buses[bus]->name;
-	else
-		return QString::null;
+    if (bus < KBusCount)
+        return m_buses[bus]->name;
+    else
+        return QString::null;
 }
 
 QString Bus::idName(quint32 bus) const
 {
-	if (bus < KBusCount)
-	{
-		QString nomen(name(bus));
-		if (nomen.simplified().isEmpty() == true)
-			return QString("Bus %1").arg(bus + 1);
-		else
-			return nomen;
-	}
-	else
-	{
-		return QString::null;
-	}
+    if (bus < KBusCount)
+    {
+        QString nomen(name(bus));
+        if (nomen.simplified().isEmpty() == true)
+            return QString("Bus %1").arg(bus + 1);
+        else
+            return nomen;
+    }
+    else
+    {
+        return QString::null;
+    }
 }
 
 QStringList Bus::idNames() const
 {
-	QStringList list;
-	for (quint32 bus = 0; bus < KBusCount; bus++)
-		list << idName(bus);
-	return list;
+    QStringList list;
+    for (quint32 bus = 0; bus < KBusCount; bus++)
+        list << idName(bus);
+    return list;
 }
 
 void Bus::setName(quint32 bus, const QString& name)
 {
-	if (bus < KBusCount)
-	{
-		m_buses[bus]->name = name;
-		emit nameChanged(bus, name);
-	}
+    if (bus < KBusCount)
+    {
+        m_buses[bus]->name = name;
+        emit nameChanged(bus, name);
+    }
 }
 
 /****************************************************************************
@@ -167,19 +167,19 @@ void Bus::setName(quint32 bus, const QString& name)
 
 quint32 Bus::value(quint32 bus) const
 {
-	if (bus < KBusCount)
-		return m_buses[bus]->value;
-	else
-		return 0;
+    if (bus < KBusCount)
+        return m_buses[bus]->value;
+    else
+        return 0;
 }
 
 void Bus::setValue(quint32 bus, quint32 value)
 {
-	if (bus < KBusCount)
-	{
-		m_buses[bus]->value = value;
-		emit valueChanged(bus, value);
-	}
+    if (bus < KBusCount)
+    {
+        m_buses[bus]->value = value;
+        emit valueChanged(bus, value);
+    }
 }
 
 /****************************************************************************
@@ -188,8 +188,8 @@ void Bus::setValue(quint32 bus, quint32 value)
 
 void Bus::tap(quint32 bus)
 {
-	if (bus < KBusCount)
-		emit tapped(bus);
+    if (bus < KBusCount)
+        emit tapped(bus);
 }
 
 /****************************************************************************
@@ -198,75 +198,75 @@ void Bus::tap(quint32 bus)
 
 bool Bus::loadXML(const QDomElement* root)
 {
-	QDomElement tag;
-	QDomNode node;
+    QDomElement tag;
+    QDomNode node;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCBus)
-	{
-		qWarning() << "Bus node not found in file!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCBus)
+    {
+        qWarning() << "Bus node not found in file!";
+        return false;
+    }
 
-	quint32 id = root->attribute(KXMLQLCBusID).toUInt();
-	if (id >= KBusCount)
-	{
-		qWarning() << "Bus ID" << id << "out of bounds.";
-		return false;
-	}
+    quint32 id = root->attribute(KXMLQLCBusID).toUInt();
+    if (id >= KBusCount)
+    {
+        qWarning() << "Bus ID" << id << "out of bounds.";
+        return false;
+    }
 
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCBusName)
-		{
-			setName(id, tag.text());
-			//m_buses[id]->name = tag.text();
-		}
-		else if (tag.tagName() == KXMLQLCBusValue)
-		{
-			setValue(id, tag.text().toULong());
-			//m_buses[id]->value = tag.text().toULong();
-		}
-		else
-			qDebug() << "Unknown Bus tag:" << tag.tagName();
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == KXMLQLCBusName)
+        {
+            setName(id, tag.text());
+            //m_buses[id]->name = tag.text();
+        }
+        else if (tag.tagName() == KXMLQLCBusValue)
+        {
+            setValue(id, tag.text().toULong());
+            //m_buses[id]->value = tag.text().toULong();
+        }
+        else
+            qDebug() << "Unknown Bus tag:" << tag.tagName();
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }
 
 bool Bus::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
+    QDomElement root;
+    QDomElement tag;
+    QDomText text;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(wksp_root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(wksp_root != NULL);
 
-	for (quint32 i = 0; i < KBusCount; i++)
-	{
-		/* Bus entry */
-		root = doc->createElement(KXMLQLCBus);
-		root.setAttribute(KXMLQLCBusID, QString("%1").arg(i));
-		wksp_root->appendChild(root);
+    for (quint32 i = 0; i < KBusCount; i++)
+    {
+        /* Bus entry */
+        root = doc->createElement(KXMLQLCBus);
+        root.setAttribute(KXMLQLCBusID, QString("%1").arg(i));
+        wksp_root->appendChild(root);
 
-		/* Name */
-		tag = doc->createElement(KXMLQLCBusName);
-		root.appendChild(tag);
-		text = doc->createTextNode(m_buses[i]->name);
-		tag.appendChild(text);
+        /* Name */
+        tag = doc->createElement(KXMLQLCBusName);
+        root.appendChild(tag);
+        text = doc->createTextNode(m_buses[i]->name);
+        tag.appendChild(text);
 
-		/* Value */
-		tag = doc->createElement(KXMLQLCBusValue);
-		root.appendChild(tag);
-		text = doc->createTextNode(QString("%1").arg(m_buses[i]->value));
-		tag.appendChild(text);
-	}
+        /* Value */
+        tag = doc->createElement(KXMLQLCBusValue);
+        root.appendChild(tag);
+        text = doc->createTextNode(QString("%1").arg(m_buses[i]->value));
+        tag.appendChild(text);
+    }
 
-	return true;
+    return true;
 }

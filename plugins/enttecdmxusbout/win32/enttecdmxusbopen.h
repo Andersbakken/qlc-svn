@@ -33,139 +33,141 @@
 
 class EnttecDMXUSBOpen : public QThread, public EnttecDMXUSBWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/**
-	 * Construct a new DMXUSBOpen object with the given parent and
-	 * FTDI device information. Neither can be null.
-	 *
-	 * @param parent The owner of this object
-	 * @param info FTDI device information
-	 * @param id The device's unique ID
-	 */
-	EnttecDMXUSBOpen(QObject* parent,
-			 const FT_DEVICE_LIST_INFO_NODE& info,
-			 DWORD id);
+    /**
+     * Construct a new DMXUSBOpen object with the given parent and
+     * FTDI device information. Neither can be null.
+     *
+     * @param parent The owner of this object
+     * @param info FTDI device information
+     * @param id The device's unique ID
+     */
+    EnttecDMXUSBOpen(QObject* parent,
+                     const FT_DEVICE_LIST_INFO_NODE& info,
+                     DWORD id);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~EnttecDMXUSBOpen();
+    /**
+     * Destructor
+     */
+    virtual ~EnttecDMXUSBOpen();
 
 protected:
-	/** FTDI device information */
-	FT_HANDLE m_handle;
-	DWORD m_id;
+    /** FTDI device information */
+    FT_HANDLE m_handle;
+    DWORD m_id;
 
-	/********************************************************************
-	 * Open & close
-	 ********************************************************************/
+    /********************************************************************
+     * Open & close
+     ********************************************************************/
 public:
-	/**
-	 * Open widget for further operations, such as serial() and sendDMX()
-	 *
-	 * @return true if widget was opened successfully (or was already open)
-	 */
-        bool open();
+    /**
+     * Open widget for further operations, such as serial() and sendDMX()
+     *
+     * @return true if widget was opened successfully (or was already open)
+     */
+    bool open();
 
-	/**
-	 * Close widget, preventing any further operations
-	 *
-	 * @param true if widget was closed successfully (or was already closed)
-	 */
-        bool close();
+    /**
+     * Close widget, preventing any further operations
+     *
+     * @param true if widget was closed successfully (or was already closed)
+     */
+    bool close();
 
-	/**
-	 * Check, whether widget has been opened
-	 *
-	 * @return true if widget is open, otherwise false
-	 */
-        bool isOpen();
+    /**
+     * Check, whether widget has been opened
+     *
+     * @return true if widget is open, otherwise false
+     */
+    bool isOpen();
 
-	/**
-	 * Initialize the widget port for DMX output
-	 *
-	 * @return true if successful, otherwise false
-	 */
-	bool initializePort();
+    /**
+     * Initialize the widget port for DMX output
+     *
+     * @return true if successful, otherwise false
+     */
+    bool initializePort();
 
-	/********************************************************************
-	 * Serial & name
-	 ********************************************************************/
+    /********************************************************************
+     * Serial & name
+     ********************************************************************/
 public:
-	/**
-	 * Get the widget serial number as a string. The same serial should be
-	 * printed on the actual physical device. Can be used to uniquely
-	 * identify widgets.
-	 *
-	 * @return widget's serial number in string form
-	 */
-        QString serial() const;
+    /**
+     * Get the widget serial number as a string. The same serial should be
+     * printed on the actual physical device. Can be used to uniquely
+     * identify widgets.
+     *
+     * @return widget's serial number in string form
+     */
+    QString serial() const;
 
-	/**
-	 * Get the device's friendly name, which is not unique, but only
-	 * tells the product name (e.g. "Open DMX USB")
-	 *
-	 * @return widget's name
-	 */
-	QString name() const;
+    /**
+     * Get the device's friendly name, which is not unique, but only
+     * tells the product name (e.g. "Open DMX USB")
+     *
+     * @return widget's name
+     */
+    QString name() const;
 
-	/**
-	 * Get the widget's unique name
-	 *
-	 * @return widget's unique name as: "<name> (S/N: <serial>)"
-	 */
-	QString uniqueName() const;
+    /**
+     * Get the widget's unique name
+     *
+     * @return widget's unique name as: "<name> (S/N: <serial>)"
+     */
+    QString uniqueName() const;
 
-	/**
-	 * Set the serial number for the widget. Open DMX USB doesn't have
-	 * API for getting the serial, so it has to be given to the device.
-	 *
-	 * Serial is used only by users to discern which widget is which.
-	 *
-	 * @param serial The serial to set
-	 */
-	void setSerial(const QString& serial) { m_serial = serial; }
+    /**
+     * Set the serial number for the widget. Open DMX USB doesn't have
+     * API for getting the serial, so it has to be given to the device.
+     *
+     * Serial is used only by users to discern which widget is which.
+     *
+     * @param serial The serial to set
+     */
+    void setSerial(const QString& serial) {
+        m_serial = serial;
+    }
 
 protected:
-	QString m_serial;
-	QString m_name;
+    QString m_serial;
+    QString m_name;
 
-	/********************************************************************
-	 * DMX operations
-	 ********************************************************************/
+    /********************************************************************
+     * DMX operations
+     ********************************************************************/
 public:
-	/**
-	 * Send the given universe-ful of DMX data to widget. The universe must
-	 * be at least 25 bytes but no more than 513 bytes long.
-	 *
-	 * @param universe The DMX universe to send
-	 * @return true if the values were sent successfully, otherwise false
-	 */
-	bool sendDMX(const QByteArray& universe);
+    /**
+     * Send the given universe-ful of DMX data to widget. The universe must
+     * be at least 25 bytes but no more than 513 bytes long.
+     *
+     * @param universe The DMX universe to send
+     * @return true if the values were sent successfully, otherwise false
+     */
+    bool sendDMX(const QByteArray& universe);
 
-	/********************************************************************
-	 * Thread
-	 ********************************************************************/
+    /********************************************************************
+     * Thread
+     ********************************************************************/
 protected:
-	/**
-	 * Stop the writer thread
-	 */
-	void stop();
+    /**
+     * Stop the writer thread
+     */
+    void stop();
 
-	/**
-	 * DMX writer thread
-	 */
-	void run();
+    /**
+     * DMX writer thread
+     */
+    void run();
 
 protected:
-	bool m_running;
-	QByteArray m_universe;
-	QMutex m_mutex;
+    bool m_running;
+    QByteArray m_universe;
+    QMutex m_mutex;
 };
 
 #endif

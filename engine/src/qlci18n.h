@@ -28,13 +28,13 @@ class QString;
 class QLCi18n
 {
 public:
-	static void setDefaultLocale(const QString& locale);
-	static QString defaultLocale();
+    static void setDefaultLocale(const QString& locale);
+    static QString defaultLocale();
 
-	static void loadTranslation(const QString& component);
+    static void loadTranslation(const QString& component);
 
 private:
-	static QString s_defaultLocale;
+    static QString s_defaultLocale;
 };
 
 #endif

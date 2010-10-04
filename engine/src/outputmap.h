@@ -46,265 +46,269 @@ class OutputPatchEditor;
 
 class OutputMap : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(OutputMap)
+    Q_OBJECT
+    Q_DISABLE_COPY(OutputMap)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/**
-	 * Create a new OutputMap object
-	 *
-	 * @param universes Number of universes
-	 */
-	OutputMap(QObject* parent, int universes = KUniverseCount);
+    /**
+     * Create a new OutputMap object
+     *
+     * @param universes Number of universes
+     */
+    OutputMap(QObject* parent, int universes = KUniverseCount);
 
-	/**
-	 * Destroy a OutputMap object
-	 */
-	~OutputMap();
+    /**
+     * Destroy a OutputMap object
+     */
+    ~OutputMap();
 
-	/**
-	 * Load all output plugins from the plugin directory (varies between
-	 * platforms).
-	 */
-	void loadPlugins();
+    /**
+     * Load all output plugins from the plugin directory (varies between
+     * platforms).
+     */
+    void loadPlugins();
 
 protected:
-	/** Total number of supported universes */
-	int m_universes;
+    /** Total number of supported universes */
+    int m_universes;
 
-	/*********************************************************************
-	 * Blackout
-	 *********************************************************************/
+    /*********************************************************************
+     * Blackout
+     *********************************************************************/
 public:
-	/**
-	 * Toggle blackout between on and off.
-	 *
-	 * @return New blackout state (i.e. after toggling)
-	 */
-	bool toggleBlackout();
+    /**
+     * Toggle blackout between on and off.
+     *
+     * @return New blackout state (i.e. after toggling)
+     */
+    bool toggleBlackout();
 
-	/**
-	 * Set blackout on or off
-	 *
-	 * @param blackout If true, set blackout ON, otherwise OFF
-	 */
-	void setBlackout(bool blackout);
+    /**
+     * Set blackout on or off
+     *
+     * @param blackout If true, set blackout ON, otherwise OFF
+     */
+    void setBlackout(bool blackout);
 
-	/**
-	 * Get blackout state
-	 *
-	 * @return true if blackout is ON, otherwise false
-	 */
-	bool blackout() const;
+    /**
+     * Get blackout state
+     *
+     * @return true if blackout is ON, otherwise false
+     */
+    bool blackout() const;
 
 signals:
-	/**
-	 * Signal that is sent when blackout state is changed.
-	 *
-	 * @param state true if blackout has been turned on, otherwise false
-	 */
-	void blackoutChanged(bool state);
+    /**
+     * Signal that is sent when blackout state is changed.
+     *
+     * @param state true if blackout has been turned on, otherwise false
+     */
+    void blackoutChanged(bool state);
 
 protected:
-	/** Current blackout state */
-	bool m_blackout;
+    /** Current blackout state */
+    bool m_blackout;
 
-	/*********************************************************************
-	 * Values
-	 *********************************************************************/
+    /*********************************************************************
+     * Values
+     *********************************************************************/
 public:
-	/**
-	 * Claim access to all universes. This is declared virtual to make
-	 * unit testing a bit easier.
-	 */
-	virtual QByteArray* claimUniverses();
+    /**
+     * Claim access to all universes. This is declared virtual to make
+     * unit testing a bit easier.
+     */
+    virtual QByteArray* claimUniverses();
 
-	/**
-	 * Release access to all universes. This is declared virtual to make
-	 * unit testing a bit easier.
-	 */
-	virtual void releaseUniverses();
+    /**
+     * Release access to all universes. This is declared virtual to make
+     * unit testing a bit easier.
+     */
+    virtual void releaseUniverses();
 
-	/**
-	 * Write current universe array data to plugins, each universe within
-	 * the array to its assigned plugin.
-	 */
-	void dumpUniverses();
+    /**
+     * Write current universe array data to plugins, each universe within
+     * the array to its assigned plugin.
+     */
+    void dumpUniverses();
 
-	/**
-	 * Grab a read-only copy of the current universe array for
-	 * monitoring purposes.
-	 */
-	QByteArray peekUniverses() const { return *m_universeArray; }
+    /**
+     * Grab a read-only copy of the current universe array for
+     * monitoring purposes.
+     */
+    QByteArray peekUniverses() const {
+        return *m_universeArray;
+    }
 
-	/**
-	 * Read the value of a single channel
-	 *
-	 * @param channel The channel to read the value from
-	 * @return The value of the channel (0 if channel is out of bounds)
-	 */
-	uchar value(t_channel channel) const;
+    /**
+     * Read the value of a single channel
+     *
+     * @param channel The channel to read the value from
+     * @return The value of the channel (0 if channel is out of bounds)
+     */
+    uchar value(t_channel channel) const;
 
 protected:
-	/** The values of all universes */
-	QByteArray* m_universeArray;
+    /** The values of all universes */
+    QByteArray* m_universeArray;
 
-	/** When true, universes are dumped. Otherwise not. */
-	bool m_universeChanged;
+    /** When true, universes are dumped. Otherwise not. */
+    bool m_universeChanged;
 
-	/** Mutex guarding m_universeArray */
-	QMutex m_universeMutex;
+    /** Mutex guarding m_universeArray */
+    QMutex m_universeMutex;
 
-	/*********************************************************************
-	 * Patch
-	 *********************************************************************/
+    /*********************************************************************
+     * Patch
+     *********************************************************************/
 protected:
-	/**
-	 * Initialize the patching table
-	 */
-	void initPatch();
+    /**
+     * Initialize the patching table
+     */
+    void initPatch();
 
 public:
-	/**
-	 * Get the total number of supported universes
-	 *
-	 * @return Universe count supported by QLC
-	 */
-	int universes() const { return m_universes; }
+    /**
+     * Get the total number of supported universes
+     *
+     * @return Universe count supported by QLC
+     */
+    int universes() const {
+        return m_universes;
+    }
 
-	/**
-	 * Patch the given universe to go thru the given plugin
-	 *
-	 * @param universe The universe to patch
-	 * @param pluginName The name of the plugin to patch to the universe
-	 * @param output A universe provided by the plugin to patch to
-	 * @return true if successful, otherwise false
-	 */
-	bool setPatch(unsigned int universe, const QString& pluginName,
-		      unsigned int output = 0);
+    /**
+     * Patch the given universe to go thru the given plugin
+     *
+     * @param universe The universe to patch
+     * @param pluginName The name of the plugin to patch to the universe
+     * @param output A universe provided by the plugin to patch to
+     * @return true if successful, otherwise false
+     */
+    bool setPatch(unsigned int universe, const QString& pluginName,
+                  unsigned int output = 0);
 
-	/**
-	 * Get the output mapping for a QLC universe.
-	 *
-	 * @param universe The internal universe to get mapping for
-	 */
-	OutputPatch* patch(int universe) const;
+    /**
+     * Get the output mapping for a QLC universe.
+     *
+     * @param universe The internal universe to get mapping for
+     */
+    OutputPatch* patch(int universe) const;
 
-	/**
-	 * Get a list of available universes.
-	 */
-	QStringList universeNames() const;
-	
-	/**
-	 * Check, whether the given universe should be displayed as 0-511
-	 * or 1-512.
-	 *
-	 * @param universe The universe to check the setting for
-	 * @return true for 0-511, false for 1-512
-	 */
-	bool isDMXZeroBased(int universe) const;
+    /**
+     * Get a list of available universes.
+     */
+    QStringList universeNames() const;
 
-	/**
-	 * Change, whether the given universe should be displayed as 0-511
-	 * or 1-512.
-	 *
-	 * @param universe The universe to change the setting for
-	 * @param set true for 0-511, false for 1-512
-	 */
-	void setDMXZeroBased(int universe, bool set);
+    /**
+     * Check, whether the given universe should be displayed as 0-511
+     * or 1-512.
+     *
+     * @param universe The universe to check the setting for
+     * @return true for 0-511, false for 1-512
+     */
+    bool isDMXZeroBased(int universe) const;
 
-	/**
-	 * Check, whether a certain output in a certain plugin has been mapped
-	 * to a universe. Returns the mapped universe number or -1 if not
-	 * mapped.
-	 *
-	 * @param pluginName The name of the plugin to check for
-	 * @param output The particular output to check for
-	 * @return Mapped universe number or -1 if not mapped
-	 */
-	int mapping(const QString& pluginName, quint32 output) const;
+    /**
+     * Change, whether the given universe should be displayed as 0-511
+     * or 1-512.
+     *
+     * @param universe The universe to change the setting for
+     * @param set true for 0-511, false for 1-512
+     */
+    void setDMXZeroBased(int universe, bool set);
 
-protected:
-	/** Vector containing all active plugins */
-	QVector <OutputPatch*> m_patch;
-
-	/*********************************************************************
-	 * Plugins
-	 *********************************************************************/
-public:
-	/**
-	 * Get a list of available Output output plugins as a string list
-	 * containing the plugins' names
-	 *
-	 * @return QStringList containing plugins' names
-	 */
-	QStringList pluginNames();
-
-	/**
-	 * Get the number of universes provided by the given plugin.
-	 *
-	 * @param pluginName Name of the plugin, whose output count to get
-	 * @return A list of output names provided by the plugin.
-	 */
-	QStringList pluginOutputs(const QString& pluginName);
-
-	/**
-	 * Open a configuration dialog for the given plugin
-	 *
-	 * @param pluginName Name of the plugin to configure
-	 */
-	void configurePlugin(const QString& pluginName);
-
-	/**
-	 * Get a status text for the given plugin. If no plugin name is
-	 * given, an overall mapping status of all universes is returned.
-	 *
-	 * @param pluginName Name of the plugin, whose status to get
-	 * @param output Plugin's output line for getting more specific info
-	 */
-	QString pluginStatus(const QString& pluginName = QString::null,
-			     quint32 output = KOutputInvalid);
-
-	/**
-	 * Append the given plugin to our list of plugins. Will fail if
-	 * a plugin with the same name already exists.
-	 *
-	 * @param outputPlugin The output plugin to append
-	 * @return true if successful, otherwise false
-	 */
-	bool appendPlugin(QLCOutPlugin* outputPlugin);
-
-	/**
-	 * Get a plugin instance by the plugin's name
-	 *
-	 * @param name The name of the plugin to search for
-	 * @return QLCOutPlugin or NULL
-	 */
-	QLCOutPlugin* plugin(const QString& name);
+    /**
+     * Check, whether a certain output in a certain plugin has been mapped
+     * to a universe. Returns the mapped universe number or -1 if not
+     * mapped.
+     *
+     * @param pluginName The name of the plugin to check for
+     * @param output The particular output to check for
+     * @return Mapped universe number or -1 if not mapped
+     */
+    int mapping(const QString& pluginName, quint32 output) const;
 
 protected:
-	/** The dummy out plugin that is used for unused universes */
-	QLCOutPlugin* m_dummyOut;
+    /** Vector containing all active plugins */
+    QVector <OutputPatch*> m_patch;
 
-	/** List containing all available plugins */
-	QList <QLCOutPlugin*> m_plugins;
-
-	/*********************************************************************
-	 * Defaults
-	 *********************************************************************/
+    /*********************************************************************
+     * Plugins
+     *********************************************************************/
 public:
-	/**
-	 * Load default settings for output mapper from QLC global settings
-	 */
-	void loadDefaults();
+    /**
+     * Get a list of available Output output plugins as a string list
+     * containing the plugins' names
+     *
+     * @return QStringList containing plugins' names
+     */
+    QStringList pluginNames();
 
-	/**
-	 * Save default settings for output mapper into QLC global settings
-	 */
-	void saveDefaults();
+    /**
+     * Get the number of universes provided by the given plugin.
+     *
+     * @param pluginName Name of the plugin, whose output count to get
+     * @return A list of output names provided by the plugin.
+     */
+    QStringList pluginOutputs(const QString& pluginName);
+
+    /**
+     * Open a configuration dialog for the given plugin
+     *
+     * @param pluginName Name of the plugin to configure
+     */
+    void configurePlugin(const QString& pluginName);
+
+    /**
+     * Get a status text for the given plugin. If no plugin name is
+     * given, an overall mapping status of all universes is returned.
+     *
+     * @param pluginName Name of the plugin, whose status to get
+     * @param output Plugin's output line for getting more specific info
+     */
+    QString pluginStatus(const QString& pluginName = QString::null,
+                         quint32 output = KOutputInvalid);
+
+    /**
+     * Append the given plugin to our list of plugins. Will fail if
+     * a plugin with the same name already exists.
+     *
+     * @param outputPlugin The output plugin to append
+     * @return true if successful, otherwise false
+     */
+    bool appendPlugin(QLCOutPlugin* outputPlugin);
+
+    /**
+     * Get a plugin instance by the plugin's name
+     *
+     * @param name The name of the plugin to search for
+     * @return QLCOutPlugin or NULL
+     */
+    QLCOutPlugin* plugin(const QString& name);
+
+protected:
+    /** The dummy out plugin that is used for unused universes */
+    QLCOutPlugin* m_dummyOut;
+
+    /** List containing all available plugins */
+    QList <QLCOutPlugin*> m_plugins;
+
+    /*********************************************************************
+     * Defaults
+     *********************************************************************/
+public:
+    /**
+     * Load default settings for output mapper from QLC global settings
+     */
+    void loadDefaults();
+
+    /**
+     * Save default settings for output mapper into QLC global settings
+     */
+    void saveDefaults();
 };
 
 #endif

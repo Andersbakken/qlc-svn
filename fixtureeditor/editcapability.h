@@ -30,28 +30,30 @@ class QLCCapability;
 
 class EditCapability : public QDialog, public Ui_EditCapability
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	EditCapability(QWidget* parent, const QLCCapability* capability = NULL);
-	~EditCapability();
+    EditCapability(QWidget* parent, const QLCCapability* capability = NULL);
+    ~EditCapability();
 
-	/*********************************************************************
-	 * Capability
-	 *********************************************************************/
+    /*********************************************************************
+     * Capability
+     *********************************************************************/
 public:
-	QLCCapability* capability() const { return m_capability; }
+    QLCCapability* capability() const {
+        return m_capability;
+    }
 
 protected:
-	QLCCapability* m_capability;
+    QLCCapability* m_capability;
 
-	/*********************************************************************
-	 * UI slots
-	 *********************************************************************/
+    /*********************************************************************
+     * UI slots
+     *********************************************************************/
 public slots:
-	void slotMinSpinChanged(int value);
-	void slotMaxSpinChanged(int value);
-	void slotDescriptionEdited(const QString& text);
+    void slotMinSpinChanged(int value);
+    void slotMaxSpinChanged(int value);
+    void slotDescriptionEdited(const QString& text);
 };
 
 #endif

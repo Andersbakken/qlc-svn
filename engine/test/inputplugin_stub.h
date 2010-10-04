@@ -36,66 +36,66 @@
 
 class InputPluginStub : public QObject, public QLCInPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCInPlugin)
-	Q_DISABLE_COPY(InputPluginStub)
+    Q_OBJECT
+    Q_INTERFACES(QLCInPlugin)
+    Q_DISABLE_COPY(InputPluginStub)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	InputPluginStub();
-	~InputPluginStub();
+    InputPluginStub();
+    ~InputPluginStub();
 
-	void init();
+    void init();
 
-	/*********************************************************************
-	 * Inputs
-	 *********************************************************************/
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
 public:
-	void open(quint32 input = 0);
-	void close(quint32 input = 0);
-	QStringList inputs();
+    void open(quint32 input = 0);
+    void close(quint32 input = 0);
+    QStringList inputs();
 
-	QList <quint32> m_openLines;
+    QList <quint32> m_openLines;
 
-	/*********************************************************************
-	 * Name
-	 *********************************************************************/
+    /*********************************************************************
+     * Name
+     *********************************************************************/
 public:
-	QString name();
+    QString name();
 
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
 public:
-	void configure();
+    void configure();
 
-	/** Number of times configure() has been called */
-	int m_configureCalled;
+    /** Number of times configure() has been called */
+    int m_configureCalled;
 
-	/*********************************************************************
-	 * Status
-	 *********************************************************************/
+    /*********************************************************************
+     * Status
+     *********************************************************************/
 public:
-	QString infoText(quint32 input = KInputInvalid);
+    QString infoText(quint32 input = KInputInvalid);
 
-	/*********************************************************************
-	 * Input data listener
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data listener
+     *********************************************************************/
 public:
-	void connectInputData(QObject* listener);
+    void connectInputData(QObject* listener);
 
-	/*********************************************************************
-	 * Feedback
-	 *********************************************************************/
+    /*********************************************************************
+     * Feedback
+     *********************************************************************/
 public:
-	void feedBack(quint32 input, quint32 channel,
-			uchar value);
+    void feedBack(quint32 input, quint32 channel,
+                  uchar value);
 
-	quint32 m_feedBackInput;
-	quint32 m_feedBackChannel;
-	uchar m_feedBackValue;
+    quint32 m_feedBackInput;
+    quint32 m_feedBackChannel;
+    uchar m_feedBackValue;
 };
 
 #endif

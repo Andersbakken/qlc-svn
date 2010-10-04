@@ -36,130 +36,130 @@ class Fixture;
 
 class VCSliderProperties : public QDialog, public Ui_VCSliderProperties
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	VCSliderProperties(QWidget* parent, VCSlider* slider);
-	~VCSliderProperties();
+    VCSliderProperties(QWidget* parent, VCSlider* slider);
+    ~VCSliderProperties();
 
 private:
-	Q_DISABLE_COPY(VCSliderProperties)
+    Q_DISABLE_COPY(VCSliderProperties)
 
-	/*********************************************************************
-	 * General page
-	 *********************************************************************/
+    /*********************************************************************
+     * General page
+     *********************************************************************/
 protected slots:
-	void slotModeBusClicked();
-	void slotModeLevelClicked();
-	void slotModeSubmasterClicked();
+    void slotModeBusClicked();
+    void slotModeLevelClicked();
+    void slotModeSubmasterClicked();
 
-	void slotChooseInputClicked();
-
-protected:
-	void updateInputUniverseChannel();
+    void slotChooseInputClicked();
 
 protected:
-	quint32 m_inputUniverse;
-	quint32 m_inputChannel;
-	int m_sliderMode;
+    void updateInputUniverseChannel();
 
-	/*********************************************************************
-	 * Bus page
-	 *********************************************************************/
 protected:
-	/** Fill all buses to the combo on bus page */
-	void fillBusCombo();
+    quint32 m_inputUniverse;
+    quint32 m_inputChannel;
+    int m_sliderMode;
 
-protected slots:
-	/** Callback for bus combo item activations */
-	void slotBusComboActivated(int item);
-
-	/** Callback for bus low limit spin value changes */
-	void slotBusLowLimitSpinChanged(int value);
-
-	/** Callback for bus high limit spin value changes */
-	void slotBusHighLimitSpinChanged(int value);
-
-	/*********************************************************************
-	 * Level page
-	 *********************************************************************/
+    /*********************************************************************
+     * Bus page
+     *********************************************************************/
 protected:
-	/** Update fixtures to the listview on the level page */
-	void levelUpdateFixtures();
-
-	/** Update a fixture node in the listview on the level page */
-	void levelUpdateFixtureNode(t_fixture_id id);
-
-	/** Get a fixture node from the listview on the level page */
-	QTreeWidgetItem* levelFixtureNode(t_fixture_id id);
-
-	/** Update fixture channels to the listview on the level page */
-	void levelUpdateChannels(QTreeWidgetItem* parent, Fixture* fxi);
-
-	/** Update a fixture channel node to the listview on the level page */
-	void levelUpdateChannelNode(QTreeWidgetItem* parent,
-				    Fixture* fxi,
-				    t_channel ch);
-
-	/** Update a channel's capabilities */
-	void levelUpdateCapabilities(QTreeWidgetItem* parent,
-				     const QLCChannel* channel);
-
-	/** Update a channel's capability node */
-	void levelUpdateCapabilityNode(QTreeWidgetItem* parent,
-				       QLCCapability* cap);
-
-	/** Get a fixture channel node from the listview on the level page */
-	QTreeWidgetItem* levelChannelNode(QTreeWidgetItem* parent, t_channel ch);
-
-	/** Update channel selections from the slider's level channel list */
-	void levelUpdateChannelSelections();
-
-	/**
-	 * Select all channels matching the given group name from the listview
-	 * on the level page
-	 */
-	void levelSelectChannelsByGroup(QString group);
+    /** Fill all buses to the combo on bus page */
+    void fillBusCombo();
 
 protected slots:
-	/** Callback for low level limit spin value changes */
-	void slotLevelLowSpinChanged(int value);
+    /** Callback for bus combo item activations */
+    void slotBusComboActivated(int item);
 
-	/** Callback for high level limit spin value changes */
-	void slotLevelHighSpinChanged(int value);
+    /** Callback for bus low limit spin value changes */
+    void slotBusLowLimitSpinChanged(int value);
 
-	/** Callback for "set limits by capability" button clicks */
-	void slotLevelCapabilityButtonClicked();
+    /** Callback for bus high limit spin value changes */
+    void slotBusHighLimitSpinChanged(int value);
 
-	/** Callback for level list item clicks */
-	void slotLevelListClicked(QTreeWidgetItem* item);
-
-	/** Callback for All button clicks */
-	void slotLevelAllClicked();
-
-	/** Callback for None button clicks */
-	void slotLevelNoneClicked();
-
-	/** Callback for Invert button clicks */
-	void slotLevelInvertClicked();
-
-	/** Callback for "channel selection by group" button clicks */
-	void slotLevelByGroupClicked();
-
-	/*********************************************************************
-	 * OK & Cancel
-	 *********************************************************************/
+    /*********************************************************************
+     * Level page
+     *********************************************************************/
 protected:
-	/** Store selected channels to the slider */
-	void storeLevelChannels();
+    /** Update fixtures to the listview on the level page */
+    void levelUpdateFixtures();
+
+    /** Update a fixture node in the listview on the level page */
+    void levelUpdateFixtureNode(t_fixture_id id);
+
+    /** Get a fixture node from the listview on the level page */
+    QTreeWidgetItem* levelFixtureNode(t_fixture_id id);
+
+    /** Update fixture channels to the listview on the level page */
+    void levelUpdateChannels(QTreeWidgetItem* parent, Fixture* fxi);
+
+    /** Update a fixture channel node to the listview on the level page */
+    void levelUpdateChannelNode(QTreeWidgetItem* parent,
+                                Fixture* fxi,
+                                t_channel ch);
+
+    /** Update a channel's capabilities */
+    void levelUpdateCapabilities(QTreeWidgetItem* parent,
+                                 const QLCChannel* channel);
+
+    /** Update a channel's capability node */
+    void levelUpdateCapabilityNode(QTreeWidgetItem* parent,
+                                   QLCCapability* cap);
+
+    /** Get a fixture channel node from the listview on the level page */
+    QTreeWidgetItem* levelChannelNode(QTreeWidgetItem* parent, t_channel ch);
+
+    /** Update channel selections from the slider's level channel list */
+    void levelUpdateChannelSelections();
+
+    /**
+     * Select all channels matching the given group name from the listview
+     * on the level page
+     */
+    void levelSelectChannelsByGroup(QString group);
 
 protected slots:
-	/** Callback for OK button clicks */
-	void accept();
+    /** Callback for low level limit spin value changes */
+    void slotLevelLowSpinChanged(int value);
+
+    /** Callback for high level limit spin value changes */
+    void slotLevelHighSpinChanged(int value);
+
+    /** Callback for "set limits by capability" button clicks */
+    void slotLevelCapabilityButtonClicked();
+
+    /** Callback for level list item clicks */
+    void slotLevelListClicked(QTreeWidgetItem* item);
+
+    /** Callback for All button clicks */
+    void slotLevelAllClicked();
+
+    /** Callback for None button clicks */
+    void slotLevelNoneClicked();
+
+    /** Callback for Invert button clicks */
+    void slotLevelInvertClicked();
+
+    /** Callback for "channel selection by group" button clicks */
+    void slotLevelByGroupClicked();
+
+    /*********************************************************************
+     * OK & Cancel
+     *********************************************************************/
+protected:
+    /** Store selected channels to the slider */
+    void storeLevelChannels();
+
+protected slots:
+    /** Callback for OK button clicks */
+    void accept();
 
 protected:
-	/** The slider, whose properties are being edited */
-	VCSlider* m_slider;
+    /** The slider, whose properties are being edited */
+    VCSlider* m_slider;
 };
 
 #endif

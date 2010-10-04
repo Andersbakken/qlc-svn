@@ -28,32 +28,32 @@
 
 AboutBox::AboutBox(QWidget* parent) : QDialog (parent)
 {
-	setupUi(this);
+    setupUi(this);
 
-	m_titleLabel->setText(App::longName());
-	m_versionLabel->setText(App::version());
-	m_copyrightLabel->setText(QString("Copyright &copy; Heikki Junnila %1")
-				.arg(tr("and contributors:")));
-	m_websiteLabel->setText(tr("Website: %1").arg("<A HREF=\"http://www.sf.net/projects/qlc\">http://www.sf.net/projects/qlc</a>"));
+    m_titleLabel->setText(App::longName());
+    m_versionLabel->setText(App::version());
+    m_copyrightLabel->setText(QString("Copyright &copy; Heikki Junnila %1")
+                              .arg(tr("and contributors:")));
+    m_websiteLabel->setText(tr("Website: %1").arg("<A HREF=\"http://www.sf.net/projects/qlc\">http://www.sf.net/projects/qlc</a>"));
 
-	connect(m_contributors, SIGNAL(itemClicked(QListWidgetItem*)),
-		this, SLOT(slotItemClicked()));
-	m_contributors->clear();
-	m_contributors->addItem("Klaus Weidenbach");
-	m_contributors->addItem("Stefan Krumm");
-	m_contributors->addItem(QByteArray::fromPercentEncoding("Christian S%fchs"));
-	m_contributors->addItem("Simon Newton");
-	m_contributors->addItem("Christopher Staite");
-	m_contributors->addItem("Lutz Hillebrand");
-	m_contributors->addItem("Matthew Jaggard");
-	m_contributors->addItem("Ptit Vachon");
-	m_contributors->addItem("NiKoyes");
+    connect(m_contributors, SIGNAL(itemClicked(QListWidgetItem*)),
+            this, SLOT(slotItemClicked()));
+    m_contributors->clear();
+    m_contributors->addItem("Klaus Weidenbach");
+    m_contributors->addItem("Stefan Krumm");
+    m_contributors->addItem(QByteArray::fromPercentEncoding("Christian S%fchs"));
+    m_contributors->addItem("Simon Newton");
+    m_contributors->addItem("Christopher Staite");
+    m_contributors->addItem("Lutz Hillebrand");
+    m_contributors->addItem("Matthew Jaggard");
+    m_contributors->addItem("Ptit Vachon");
+    m_contributors->addItem("NiKoyes");
 
-	m_timer = new QTimer(this);
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
-	m_row = -1;
-	m_increment = 1;
-	m_timer->start(500);
+    m_timer = new QTimer(this);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimeout()));
+    m_row = -1;
+    m_increment = 1;
+    m_timer->start(500);
 }
 
 AboutBox::~AboutBox()
@@ -62,21 +62,21 @@ AboutBox::~AboutBox()
 
 void AboutBox::slotTimeout()
 {
-	if (m_row <= 0)
-		m_increment = 1;
-	else if (m_row >= m_contributors->count())
-		m_increment = -1;
+    if (m_row <= 0)
+        m_increment = 1;
+    else if (m_row >= m_contributors->count())
+        m_increment = -1;
 
-	m_row += m_increment;
-	m_contributors->scrollToItem(m_contributors->item(m_row));
+    m_row += m_increment;
+    m_contributors->scrollToItem(m_contributors->item(m_row));
 }
 
 void AboutBox::slotItemClicked()
 {
-	if (m_timer != NULL)
-	{
-		m_timer->stop();
-		delete m_timer;
-		m_timer = NULL;
-	}
+    if (m_timer != NULL)
+    {
+        m_timer->stop();
+        delete m_timer;
+        m_timer = NULL;
+    }
 }

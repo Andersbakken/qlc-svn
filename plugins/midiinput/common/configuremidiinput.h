@@ -29,45 +29,45 @@ class MIDIInput;
 
 class ConfigureMIDIInput : public QDialog, public Ui_ConfigureMIDIInput
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin);
-	virtual ~ConfigureMIDIInput();
+    ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin);
+    virtual ~ConfigureMIDIInput();
 
 protected:
-	/** The plugin that is being edited */
-	MIDIInput* m_plugin;
+    /** The plugin that is being edited */
+    MIDIInput* m_plugin;
 
-	/*********************************************************************
-	 * Tree widget
-	 *********************************************************************/
+    /*********************************************************************
+     * Tree widget
+     *********************************************************************/
 protected slots:
-	/** Callback for HIDInput::deviceAdded() signals. */
-	void slotDeviceAdded(MIDIDevice* device);
+    /** Callback for HIDInput::deviceAdded() signals. */
+    void slotDeviceAdded(MIDIDevice* device);
 
-	/** Callback for HIDInput::deviceRemoved() signals. */
-	void slotDeviceRemoved(MIDIDevice* device);
+    /** Callback for HIDInput::deviceRemoved() signals. */
+    void slotDeviceRemoved(MIDIDevice* device);
 
 protected:
-	/** Refresh the interface list */
-	void refreshList();
+    /** Refresh the interface list */
+    void refreshList();
 
-	/*********************************************************************
-	 * Edit
-	 *********************************************************************/
+    /*********************************************************************
+     * Edit
+     *********************************************************************/
 protected slots:
-	/** Invoke refresh for the interface list */
-	void slotRefreshClicked();
+    /** Invoke refresh for the interface list */
+    void slotRefreshClicked();
 
-	/**
-	 * Open a dialog with which to select a feedback output line, MIDI
-	 * channel and control mode.
-	 */
-	void slotEditClicked();
+    /**
+     * Open a dialog with which to select a feedback output line, MIDI
+     * channel and control mode.
+     */
+    void slotEditClicked();
 };
 
 #endif

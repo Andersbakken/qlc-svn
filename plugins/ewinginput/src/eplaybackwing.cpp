@@ -87,62 +87,62 @@ EWING_PLAYBACK_BYTE_SLIDER + 9: Slider 10 (0-255)
  ****************************************************************************/
 
 EPlaybackWing::EPlaybackWing(QObject* parent, const QHostAddress& address,
-	const QByteArray& data) : EWing(parent, address, data)
+                             const QByteArray& data) : EWing(parent, address, data)
 {
-	m_values = QByteArray(EWING_PLAYBACK_CHANNEL_COUNT, 0);
+    m_values = QByteArray(EWING_PLAYBACK_CHANNEL_COUNT, 0);
 
-	/* Playback wing keys seem to be in a somewhat weird order */
-	m_channelMap[0] = 7 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[1] = 6 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[2] = 5 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[3] = 4 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[4] = 3 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[5] = 2 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[6] = 1 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[7] = 0 + EWING_PLAYBACK_SLIDER_SIZE;
+    /* Playback wing keys seem to be in a somewhat weird order */
+    m_channelMap[0] = 7 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[1] = 6 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[2] = 5 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[3] = 4 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[4] = 3 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[5] = 2 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[6] = 1 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[7] = 0 + EWING_PLAYBACK_SLIDER_SIZE;
 
-	m_channelMap[8] = 15 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[9] = 14 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[10] = 13 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[11] = 12 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[12] = 11 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[13] = 10 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[14] = 9 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[15] = 8 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[8] = 15 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[9] = 14 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[10] = 13 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[11] = 12 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[12] = 11 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[13] = 10 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[14] = 9 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[15] = 8 + EWING_PLAYBACK_SLIDER_SIZE;
 
-	/* Weird order here */
-	m_channelMap[16] = 28 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[17] = 27 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[18] = 21 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[19] = 20 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[20] = 19 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[21] = 18 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[22] = 17 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[23] = 16 + EWING_PLAYBACK_SLIDER_SIZE;
+    /* Weird order here */
+    m_channelMap[16] = 28 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[17] = 27 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[18] = 21 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[19] = 20 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[20] = 19 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[21] = 18 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[22] = 17 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[23] = 16 + EWING_PLAYBACK_SLIDER_SIZE;
 
-	/* Weird order also here */
-	m_channelMap[24] = 31 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[25] = 30 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[26] = 26 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[27] = 25 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[28] = 24 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[29] = 23 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[30] = 22 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[31] = 29 + EWING_PLAYBACK_SLIDER_SIZE;
+    /* Weird order also here */
+    m_channelMap[24] = 31 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[25] = 30 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[26] = 26 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[27] = 25 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[28] = 24 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[29] = 23 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[30] = 22 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[31] = 29 + EWING_PLAYBACK_SLIDER_SIZE;
 
-	m_channelMap[32] = 39 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[33] = 38 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[34] = 37 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[35] = 36 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[36] = 35 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[37] = 34 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[38] = 33 + EWING_PLAYBACK_SLIDER_SIZE;
-	m_channelMap[39] = 32 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[32] = 39 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[33] = 38 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[34] = 37 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[35] = 36 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[36] = 35 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[37] = 34 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[38] = 33 + EWING_PLAYBACK_SLIDER_SIZE;
+    m_channelMap[39] = 32 + EWING_PLAYBACK_SLIDER_SIZE;
 
-	/* Take initial values from the first received datagram packet.
-	   The plugin hasn't yet connected to valueChanged() signal, so this
-	   won't cause any input events. */
-	parseData(data);
+    /* Take initial values from the first received datagram packet.
+       The plugin hasn't yet connected to valueChanged() signal, so this
+       won't cause any input events. */
+    parseData(data);
 }
 
 EPlaybackWing::~EPlaybackWing()
@@ -155,22 +155,22 @@ EPlaybackWing::~EPlaybackWing()
 
 QString EPlaybackWing::name() const
 {
-	QString name("Playback");
-	name += QString(" ") + tr("at") + QString(" ");
-	name += m_address.toString();
+    QString name("Playback");
+    name += QString(" ") + tr("at") + QString(" ");
+    name += m_address.toString();
 
-	return name;
+    return name;
 }
 
 QString EPlaybackWing::infoText() const
 {
-	QString str;
+    QString str;
 
-	str  = QString("<B>%1</B><BR>").arg(name());
-	str += tr("Firmware version %1").arg(int(m_firmware));
-	str += tr("<P>Device is operating correctly</P>");
+    str  = QString("<B>%1</B><BR>").arg(name());
+    str += tr("Firmware version %1").arg(int(m_firmware));
+    str += tr("<P>Device is operating correctly</P>");
 
-	return str;
+    return str;
 }
 
 /****************************************************************************
@@ -179,53 +179,53 @@ QString EPlaybackWing::infoText() const
 
 void EPlaybackWing::parseData(const QByteArray& data)
 {
-	char value;
-	int size;
-	int byte;
+    char value;
+    int size;
+    int byte;
 
-	/* Check that we can get all buttons from the packet */
-	size = EWING_PLAYBACK_BYTE_BUTTON + EWING_PLAYBACK_BUTTON_SIZE;
-	if (data.size() < size)
-	{
-		qWarning() << Q_FUNC_INFO << "Expected at least" << size
-			   << "bytes for buttons but got only" << data.size();
-		return;
-	}
+    /* Check that we can get all buttons from the packet */
+    size = EWING_PLAYBACK_BYTE_BUTTON + EWING_PLAYBACK_BUTTON_SIZE;
+    if (data.size() < size)
+    {
+        qWarning() << Q_FUNC_INFO << "Expected at least" << size
+        << "bytes for buttons but got only" << data.size();
+        return;
+    }
 
-	/* Read the state of each button */
-	for (byte = size - 1; byte >= EWING_PLAYBACK_BYTE_BUTTON; byte--)
-	{
-		/* Each byte has 8 button values as binary bits */
-		for (int bit = 7; bit >= 0; bit--)
-		{
-			int key;
+    /* Read the state of each button */
+    for (byte = size - 1; byte >= EWING_PLAYBACK_BYTE_BUTTON; byte--)
+    {
+        /* Each byte has 8 button values as binary bits */
+        for (int bit = 7; bit >= 0; bit--)
+        {
+            int key;
 
-			/* Calculate the key number, which is 10-49, since
-			   sliders are mapped to 0-9. */
-			key = (size - byte - 1) * 8;
-			key += bit;
+            /* Calculate the key number, which is 10-49, since
+               sliders are mapped to 0-9. */
+            key = (size - byte - 1) * 8;
+            key += bit;
 
-			/* 0 = button down, 1 = button up */
-			if ((data[byte] & (1 << bit)) == 0)
-				value = UCHAR_MAX;
-			else
-				value = 0;
+            /* 0 = button down, 1 = button up */
+            if ((data[byte] & (1 << bit)) == 0)
+                value = UCHAR_MAX;
+            else
+                value = 0;
 
-			/* Get the correct channel number for each key. */
-			setCacheValue(m_channelMap[key], value);
-		}
-	}
+            /* Get the correct channel number for each key. */
+            setCacheValue(m_channelMap[key], value);
+        }
+    }
 
-	/* Check that we can get all sliders from the packet */
-	size = EWING_PLAYBACK_BYTE_SLIDER + EWING_PLAYBACK_SLIDER_SIZE;
-	Q_ASSERT(data.size() >= size);
+    /* Check that we can get all sliders from the packet */
+    size = EWING_PLAYBACK_BYTE_SLIDER + EWING_PLAYBACK_SLIDER_SIZE;
+    Q_ASSERT(data.size() >= size);
 
-	/* Read the state of each slider. Each value takes all 8 bits. */
-	for (int slider = 0; slider < EWING_PLAYBACK_SLIDER_SIZE; slider++)
-	{
-		value = data[EWING_PLAYBACK_BYTE_SLIDER + slider];
+    /* Read the state of each slider. Each value takes all 8 bits. */
+    for (int slider = 0; slider < EWING_PLAYBACK_SLIDER_SIZE; slider++)
+    {
+        value = data[EWING_PLAYBACK_BYTE_SLIDER + slider];
 
-		/* Slider channels start from zero */
-		setCacheValue(slider, value);
-	}
+        /* Slider channels start from zero */
+        setCacheValue(slider, value);
+    }
 }

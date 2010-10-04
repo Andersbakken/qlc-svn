@@ -37,8 +37,8 @@ enum { K_UNIVERSE_SIZE = 512 };
 // Used to pass data between the threads
 typedef struct
 {
-  unsigned int universe;
-  uchar data[K_UNIVERSE_SIZE];
+    unsigned int universe;
+    uchar data[K_UNIVERSE_SIZE];
 } dmx_data;
 
 
@@ -64,32 +64,32 @@ typedef struct
  */
 class OlaOutThread : public QThread {
 public:
-  OlaOutThread():
-    m_init_run(false),
-    m_ss(NULL),
-    m_pipe(NULL),
-    m_client(NULL) {}
-  virtual ~OlaOutThread();
+    OlaOutThread():
+            m_init_run(false),
+            m_ss(NULL),
+            m_pipe(NULL),
+            m_client(NULL) {}
+    virtual ~OlaOutThread();
 
-  void run();
-  bool start(Priority priority=InheritPriority);
-  void stop();
-  int write_dmx(unsigned int universe, const QByteArray& data);
-  void new_pipe_data();
-  void pipe_closed();
+    void run();
+    bool start(Priority priority=InheritPriority);
+    void stop();
+    int write_dmx(unsigned int universe, const QByteArray& data);
+    void new_pipe_data();
+    void pipe_closed();
 
 protected:
-  bool setup_client(ola::network::ConnectedSocket *socket);
-  bool m_init_run;
-  ola::network::SelectServer *m_ss; // the select server
+    bool setup_client(ola::network::ConnectedSocket *socket);
+    bool m_init_run;
+    ola::network::SelectServer *m_ss; // the select server
 
 private:
-  virtual bool init() = 0;
-  virtual void cleanup() {};
-  ola::network::LoopbackSocket *m_pipe; // the pipe to get new dmx data on
-  ola::OlaClient *m_client;
-  dmx_data m_data;
-  ola::DmxBuffer m_buffer;
+    virtual bool init() = 0;
+    virtual void cleanup() {};
+    ola::network::LoopbackSocket *m_pipe; // the pipe to get new dmx data on
+    ola::OlaClient *m_client;
+    dmx_data m_data;
+    ola::DmxBuffer m_buffer;
 };
 
 
@@ -99,14 +99,14 @@ private:
 class OlaStandaloneClient : public OlaOutThread
 {
 public:
-  OlaStandaloneClient():
-    OlaOutThread(),
-    m_tcp_socket(NULL) {}
+    OlaStandaloneClient():
+            OlaOutThread(),
+            m_tcp_socket(NULL) {}
 
 private:
-  bool init();
-  void cleanup();
-  ola::network::TcpSocket *m_tcp_socket;
+    bool init();
+    void cleanup();
+    ola::network::TcpSocket *m_tcp_socket;
 };
 
 
@@ -116,16 +116,16 @@ private:
 class OlaEmbeddedServer : public OlaOutThread
 {
 public:
-  OlaEmbeddedServer():
-    OlaOutThread(),
-    m_daemon(NULL),
-    m_pipe_socket(NULL) {}
+    OlaEmbeddedServer():
+            OlaOutThread(),
+            m_daemon(NULL),
+            m_pipe_socket(NULL) {}
 
 private:
-  bool init();
-  void cleanup();
-  ola::OlaDaemon *m_daemon;
-  ola::network::PipeSocket *m_pipe_socket;
+    bool init();
+    void cleanup();
+    ola::OlaDaemon *m_daemon;
+    ola::network::PipeSocket *m_pipe_socket;
 };
 
 #endif

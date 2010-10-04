@@ -70,14 +70,14 @@ EWING_SHORTCUT_BYTE_BUTTON + 7: Buttons 00 - 07 (8 buttons)
  ****************************************************************************/
 
 EShortcutWing::EShortcutWing(QObject* parent, const QHostAddress& address,
-	const QByteArray& data) : EWing(parent, address, data)
+                             const QByteArray& data) : EWing(parent, address, data)
 {
-	m_values = QByteArray(EWING_SHORTCUT_CHANNEL_COUNT, 0);
-	
-	/* Take initial values from the first received datagram packet.
-	   The plugin hasn't yet connected to valueChanged() signal, so this
-	   won't cause any input events. */
-	parseData(data);
+    m_values = QByteArray(EWING_SHORTCUT_CHANNEL_COUNT, 0);
+
+    /* Take initial values from the first received datagram packet.
+       The plugin hasn't yet connected to valueChanged() signal, so this
+       won't cause any input events. */
+    parseData(data);
 }
 
 EShortcutWing::~EShortcutWing()
@@ -90,22 +90,22 @@ EShortcutWing::~EShortcutWing()
 
 QString EShortcutWing::name() const
 {
-	QString name("Shortcut");
-	name += QString(" ") + tr("at") + QString(" ");
-	name += m_address.toString();
+    QString name("Shortcut");
+    name += QString(" ") + tr("at") + QString(" ");
+    name += m_address.toString();
 
-	return name;
+    return name;
 }
 
 QString EShortcutWing::infoText() const
 {
-	QString str;
+    QString str;
 
-	str  = QString("<B>%1</B><BR>").arg(name());
-	str += tr("Firmware version %1").arg(int(m_firmware));
-	str += tr("<P>Device is operating correctly</P>");
+    str  = QString("<B>%1</B><BR>").arg(name());
+    str += tr("Firmware version %1").arg(int(m_firmware));
+    str += tr("<P>Device is operating correctly</P>");
 
-	return str;
+    return str;
 }
 
 /****************************************************************************
@@ -114,42 +114,42 @@ QString EShortcutWing::infoText() const
 
 void EShortcutWing::parseData(const QByteArray& data)
 {
-	char value;
-	int size;
+    char value;
+    int size;
 
-	/* Check that we can get all channels from the packet */
-	size = EWING_SHORTCUT_BYTE_BUTTON + EWING_SHORTCUT_BUTTON_SIZE;
-	if (data.size() < size)
-	{
-		qWarning() << Q_FUNC_INFO << "Expected at least" << size
-			   << "bytes for buttons but got only" << data.size();
-		return;
-	}
+    /* Check that we can get all channels from the packet */
+    size = EWING_SHORTCUT_BYTE_BUTTON + EWING_SHORTCUT_BUTTON_SIZE;
+    if (data.size() < size)
+    {
+        qWarning() << Q_FUNC_INFO << "Expected at least" << size
+        << "bytes for buttons but got only" << data.size();
+        return;
+    }
 
-	/* Read the state of each button */
-	for (int byte = size - 1; byte >= EWING_SHORTCUT_BYTE_BUTTON; byte--)
-	{
-		/* Each byte has 8 button values as binary bits */
-		for (int bit = 7; bit >= 0; bit--)
-		{
-			int key;
+    /* Read the state of each button */
+    for (int byte = size - 1; byte >= EWING_SHORTCUT_BYTE_BUTTON; byte--)
+    {
+        /* Each byte has 8 button values as binary bits */
+        for (int bit = 7; bit >= 0; bit--)
+        {
+            int key;
 
-			key = (size - byte - 1) * 8;
-			key += (7 - bit);
+            key = (size - byte - 1) * 8;
+            key += (7 - bit);
 
-			/* There's only 60 channels in a Shortcut Wing, but
-			   the data packet contains 64 values. So don't read
-			   the extra 4 bits. */
-			if (key > 59)
-				break;
+            /* There's only 60 channels in a Shortcut Wing, but
+               the data packet contains 64 values. So don't read
+               the extra 4 bits. */
+            if (key > 59)
+                break;
 
-			/* 0 = button down, 1 = button up */
-			if ((data[byte] & (1 << bit)) == 0)
-				value = UCHAR_MAX;
-			else
-				value = 0;
+            /* 0 = button down, 1 = button up */
+            if ((data[byte] & (1 << bit)) == 0)
+                value = UCHAR_MAX;
+            else
+                value = 0;
 
-			setCacheValue(key, value);
-		}
-	}
+            setCacheValue(key, value);
+        }
+    }
 }

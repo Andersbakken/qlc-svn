@@ -46,110 +46,110 @@
 #define KColumnName 0
 
 AddFixture::AddFixture(QWidget* parent,
-		       const QLCFixtureDefCache& fixtureDefCache,
-		       const Doc& doc,
-		       const OutputMap& outputMap,
-		       const QString& selectManufacturer,
-		       const QString& selectModel,
-		       const QString& selectMode,
-		       const QString& selectName,
-		       int selectUniverse,
-		       int selectAddress,
-		       int selectChannels)
-	: QDialog(parent),
-	m_fixtureDefCache(fixtureDefCache),
-	m_doc(doc),
-	m_outputMap(outputMap)
+                       const QLCFixtureDefCache& fixtureDefCache,
+                       const Doc& doc,
+                       const OutputMap& outputMap,
+                       const QString& selectManufacturer,
+                       const QString& selectModel,
+                       const QString& selectMode,
+                       const QString& selectName,
+                       int selectUniverse,
+                       int selectAddress,
+                       int selectChannels)
+        : QDialog(parent),
+        m_fixtureDefCache(fixtureDefCache),
+        m_doc(doc),
+        m_outputMap(outputMap)
 {
-	m_addressValue = 0;
-	m_universeValue = 0;
-	m_amountValue = 1;
-	m_gapValue = 0;
-	m_channelsValue = 1;
-	m_fixtureDef = NULL;
-	m_mode = NULL;
+    m_addressValue = 0;
+    m_universeValue = 0;
+    m_amountValue = 1;
+    m_gapValue = 0;
+    m_channelsValue = 1;
+    m_fixtureDef = NULL;
+    m_mode = NULL;
 
-	setupUi(this);
+    setupUi(this);
 
-	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-	connect(m_tree, SIGNAL(itemSelectionChanged()),
-		this, SLOT(slotSelectionChanged()));
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotTreeDoubleClicked(QTreeWidgetItem*)));
-	connect(m_modeCombo, SIGNAL(activated(const QString&)),
-		this, SLOT(slotModeActivated(const QString&)));
-	connect(m_universeCombo, SIGNAL(activated(int)),
-		this, SLOT(slotUniverseActivated(int)));
-	connect(m_addressSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotAddressChanged(int)));
-	connect(m_channelsSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotChannelsChanged(int)));
-	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
-		this, SLOT(slotNameEdited(const QString&)));
-	connect(m_gapSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotGapSpinChanged(int)));
-	connect(m_amountSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotAmountSpinChanged(int)));
+    connect(m_tree, SIGNAL(itemSelectionChanged()),
+            this, SLOT(slotSelectionChanged()));
+    connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, SLOT(slotTreeDoubleClicked(QTreeWidgetItem*)));
+    connect(m_modeCombo, SIGNAL(activated(const QString&)),
+            this, SLOT(slotModeActivated(const QString&)));
+    connect(m_universeCombo, SIGNAL(activated(int)),
+            this, SLOT(slotUniverseActivated(int)));
+    connect(m_addressSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotAddressChanged(int)));
+    connect(m_channelsSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotChannelsChanged(int)));
+    connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
+            this, SLOT(slotNameEdited(const QString&)));
+    connect(m_gapSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotGapSpinChanged(int)));
+    connect(m_amountSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotAmountSpinChanged(int)));
 
-	/* Fill fixture definition tree */
-	fillTree(selectManufacturer, selectModel);
+    /* Fill fixture definition tree */
+    fillTree(selectManufacturer, selectModel);
 
-	/* Fill universe combo with available universes */
-	m_universeCombo->addItems(m_outputMap.universeNames());
+    /* Fill universe combo with available universes */
+    m_universeCombo->addItems(m_outputMap.universeNames());
 
-	/* Simulate first selection and find the next free address */
-	slotSelectionChanged();
+    /* Simulate first selection and find the next free address */
+    slotSelectionChanged();
 
-	if (selectAddress == -1 && selectUniverse == -1)
-	{
-		slotUniverseActivated(0);
-		findAddress();
-	}
-	else
-	{
-		m_universeCombo->setCurrentIndex(selectUniverse);
-		slotUniverseActivated(selectUniverse);
+    if (selectAddress == -1 && selectUniverse == -1)
+    {
+        slotUniverseActivated(0);
+        findAddress();
+    }
+    else
+    {
+        m_universeCombo->setCurrentIndex(selectUniverse);
+        slotUniverseActivated(selectUniverse);
 
-		if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
-			m_addressSpin->setValue(selectAddress);
-		else
-			m_addressSpin->setValue(selectAddress + 1);
-		m_addressValue = selectAddress;
+        if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+            m_addressSpin->setValue(selectAddress);
+        else
+            m_addressSpin->setValue(selectAddress + 1);
+        m_addressValue = selectAddress;
 
-		m_multipleGroup->setEnabled(false);
-	}
+        m_multipleGroup->setEnabled(false);
+    }
 
-	if (selectName.isEmpty() == false)
-	{
-		m_nameEdit->setText(selectName);
-		slotNameEdited(selectName);
-	}
+    if (selectName.isEmpty() == false)
+    {
+        m_nameEdit->setText(selectName);
+        slotNameEdited(selectName);
+    }
 
-	if (selectMode.isEmpty() == false)
-	{
-		int index = m_modeCombo->findText(selectMode);
-		if (index != -1)
-		{
-			m_modeCombo->setCurrentIndex(index);
-			slotModeActivated(m_modeCombo->itemText(index));
-		}
-	}
-	else
-	{
-		m_channelsSpin->setValue(selectChannels);
-	}
+    if (selectMode.isEmpty() == false)
+    {
+        int index = m_modeCombo->findText(selectMode);
+        if (index != -1)
+        {
+            m_modeCombo->setCurrentIndex(index);
+            slotModeActivated(m_modeCombo->itemText(index));
+        }
+    }
+    else
+    {
+        m_channelsSpin->setValue(selectChannels);
+    }
 
-	QSettings settings;
-	QVariant var = settings.value(SETTINGS_GEOMETRY);
-	if (var.isValid() == true)
-		restoreGeometry(var.toByteArray());
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
 }
 
 AddFixture::~AddFixture()
 {
-	QSettings settings;
-	settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 /*****************************************************************************
@@ -157,103 +157,103 @@ AddFixture::~AddFixture()
  *****************************************************************************/
 
 void AddFixture::fillTree(const QString& selectManufacturer,
-			  const QString& selectModel)
+                          const QString& selectModel)
 {
-	QTreeWidgetItem* parent;
-	QTreeWidgetItem* child;
-	QString manuf;
-	QString model;
+    QTreeWidgetItem* parent;
+    QTreeWidgetItem* child;
+    QString manuf;
+    QString model;
 
-	/* Clear the tree of any previous data */
-	m_tree->clear();
+    /* Clear the tree of any previous data */
+    m_tree->clear();
 
-	/* Add all known fixture definitions to the tree */
-	QStringListIterator it(m_fixtureDefCache.manufacturers());
-	while (it.hasNext() == true)
-	{
-		manuf = it.next();
-		parent = new QTreeWidgetItem(m_tree);
-		parent->setText(KColumnName, manuf);
+    /* Add all known fixture definitions to the tree */
+    QStringListIterator it(m_fixtureDefCache.manufacturers());
+    while (it.hasNext() == true)
+    {
+        manuf = it.next();
+        parent = new QTreeWidgetItem(m_tree);
+        parent->setText(KColumnName, manuf);
 
-		QStringListIterator modit(m_fixtureDefCache.models(manuf));
-		while (modit.hasNext() == true)
-		{
-			model = modit.next();
-			child = new QTreeWidgetItem(parent);
-			child->setText(KColumnName, model);
+        QStringListIterator modit(m_fixtureDefCache.models(manuf));
+        while (modit.hasNext() == true)
+        {
+            model = modit.next();
+            child = new QTreeWidgetItem(parent);
+            child->setText(KColumnName, model);
 
-			if (manuf == selectManufacturer &&
-			    model == selectModel)
-			{
-				parent->setExpanded(true);
-				m_tree->setCurrentItem(child);
-			}
-		}
-	}
+            if (manuf == selectManufacturer &&
+                    model == selectModel)
+            {
+                parent->setExpanded(true);
+                m_tree->setCurrentItem(child);
+            }
+        }
+    }
 
-	/* Create a parent and a child for generic dimmer device */
-	parent = new QTreeWidgetItem(m_tree);
-	parent->setText(KColumnName, KXMLFixtureGeneric);
-	child = new QTreeWidgetItem(parent);
-	child->setText(KColumnName, KXMLFixtureGeneric);
+    /* Create a parent and a child for generic dimmer device */
+    parent = new QTreeWidgetItem(m_tree);
+    parent->setText(KColumnName, KXMLFixtureGeneric);
+    child = new QTreeWidgetItem(parent);
+    child->setText(KColumnName, KXMLFixtureGeneric);
 
-	/* Select generic dimmer by default */
-	if (selectManufacturer == KXMLFixtureGeneric &&
-	    selectModel == KXMLFixtureGeneric)
-	{
-		parent->setExpanded(true);
-		m_tree->setCurrentItem(child);
-	}
+    /* Select generic dimmer by default */
+    if (selectManufacturer == KXMLFixtureGeneric &&
+            selectModel == KXMLFixtureGeneric)
+    {
+        parent->setExpanded(true);
+        m_tree->setCurrentItem(child);
+    }
 }
 
 void AddFixture::fillModeCombo(const QString& text)
 {
-	m_modeCombo->clear();
+    m_modeCombo->clear();
 
-	if (m_fixtureDef == NULL)
-	{
-		m_modeCombo->setEnabled(false);
-		m_modeCombo->addItem(text);
-		m_modeCombo->setCurrentIndex(0);
-		m_mode = NULL;
-	}
-	else
-	{
-		m_modeCombo->setEnabled(true);
+    if (m_fixtureDef == NULL)
+    {
+        m_modeCombo->setEnabled(false);
+        m_modeCombo->addItem(text);
+        m_modeCombo->setCurrentIndex(0);
+        m_mode = NULL;
+    }
+    else
+    {
+        m_modeCombo->setEnabled(true);
 
-		QListIterator <QLCFixtureMode*> it(m_fixtureDef->modes());
-		while (it.hasNext() == true)
-			m_modeCombo->addItem(it.next()->name());
+        QListIterator <QLCFixtureMode*> it(m_fixtureDef->modes());
+        while (it.hasNext() == true)
+            m_modeCombo->addItem(it.next()->name());
 
-		/* Select the first mode by default */
-		m_modeCombo->setCurrentIndex(0);
-		slotModeActivated(m_modeCombo->currentText());
-	}
+        /* Select the first mode by default */
+        m_modeCombo->setCurrentIndex(0);
+        slotModeActivated(m_modeCombo->currentText());
+    }
 }
 
 void AddFixture::findAddress()
 {
-	/* Find the next free address space for x fixtures, each taking y
-	   channels, leaving z channels gap in-between. */
-	t_channel address = m_doc.findAddress(
-		(m_channelsValue + m_gapValue) * m_amountValue);
+    /* Find the next free address space for x fixtures, each taking y
+       channels, leaving z channels gap in-between. */
+    t_channel address = m_doc.findAddress(
+                            (m_channelsValue + m_gapValue) * m_amountValue);
 
-	/* Set the address only if the channel space was really found */
-	if (address != KChannelInvalid)
-	{
-		m_universeCombo->setCurrentIndex(address >> 9);
+    /* Set the address only if the channel space was really found */
+    if (address != KChannelInvalid)
+    {
+        m_universeCombo->setCurrentIndex(address >> 9);
 
-		if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
-			m_addressSpin->setValue(address & 0x01FF);
-		else
-			m_addressSpin->setValue((address & 0x01FF) + 1);
-	}
+        if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+            m_addressSpin->setValue(address & 0x01FF);
+        else
+            m_addressSpin->setValue((address & 0x01FF) + 1);
+    }
 }
 
 void AddFixture::updateMaximumAmount()
 {
-	m_amountSpin->setRange(1, (512 - m_addressSpin->value()) /
-		(m_channelsSpin->value() + m_gapSpin->value()));
+    m_amountSpin->setRange(1, (512 - m_addressSpin->value()) /
+                           (m_channelsSpin->value() + m_gapSpin->value()));
 }
 
 /*****************************************************************************
@@ -262,202 +262,202 @@ void AddFixture::updateMaximumAmount()
 
 void AddFixture::slotModeActivated(const QString& modeName)
 {
-	if (m_fixtureDef == NULL)
-		return;
+    if (m_fixtureDef == NULL)
+        return;
 
-	m_mode = m_fixtureDef->mode(modeName);
-	if (m_mode == NULL)
-	{
-		/* Generic dimmers don't have modes, so bail out */
-		// slotSelectionChanged();
-		return;
-	}
+    m_mode = m_fixtureDef->mode(modeName);
+    if (m_mode == NULL)
+    {
+        /* Generic dimmers don't have modes, so bail out */
+        // slotSelectionChanged();
+        return;
+    }
 
-	m_channelsSpin->setValue(m_mode->channels().size());
+    m_channelsSpin->setValue(m_mode->channels().size());
 
-	/* Show all selected mode channels in the list */
-	m_channelList->clear();
-	for (int i = 0; i < m_mode->channels().size(); i++)
-	{
-		QLCChannel* channel = m_mode->channel(i);
-		Q_ASSERT(channel != NULL);
+    /* Show all selected mode channels in the list */
+    m_channelList->clear();
+    for (int i = 0; i < m_mode->channels().size(); i++)
+    {
+        QLCChannel* channel = m_mode->channel(i);
+        Q_ASSERT(channel != NULL);
 
-		new QListWidgetItem(
-			QString("%1: %2").arg(i + 1).arg(channel->name()),
-			m_channelList);
-	}
+        new QListWidgetItem(
+            QString("%1: %2").arg(i + 1).arg(channel->name()),
+            m_channelList);
+    }
 }
 
 void AddFixture::slotUniverseActivated(int universe)
 {
-	int value = m_addressSpin->value();
-	bool zeroBaseChanged = true;
+    int value = m_addressSpin->value();
+    bool zeroBaseChanged = true;
 
-	if (m_outputMap.isDMXZeroBased(m_universeValue) ==
-	    m_outputMap.isDMXZeroBased(universe))
-	{
-		zeroBaseChanged = false;
-	}
+    if (m_outputMap.isDMXZeroBased(m_universeValue) ==
+            m_outputMap.isDMXZeroBased(universe))
+    {
+        zeroBaseChanged = false;
+    }
 
-	m_universeValue = universe;
+    m_universeValue = universe;
 
-	/* Adjust the available address range */
-	slotChannelsChanged(m_channelsValue);
+    /* Adjust the available address range */
+    slotChannelsChanged(m_channelsValue);
 
-	/* If the zero-based setting is changed, change also the current address
-	   setting accordingly (e.g. x in 0-511 is x+1 in 1-512 & vice versa) */
-	if (zeroBaseChanged == true)
-	{
-		if (m_outputMap.isDMXZeroBased(universe) == true)
-			m_addressSpin->setValue(value - 1);
-		else
-			m_addressSpin->setValue(value + 1);
-	}
+    /* If the zero-based setting is changed, change also the current address
+       setting accordingly (e.g. x in 0-511 is x+1 in 1-512 & vice versa) */
+    if (zeroBaseChanged == true)
+    {
+        if (m_outputMap.isDMXZeroBased(universe) == true)
+            m_addressSpin->setValue(value - 1);
+        else
+            m_addressSpin->setValue(value + 1);
+    }
 }
 
 void AddFixture::slotAddressChanged(int value)
 {
-	if (m_outputMap.isDMXZeroBased(m_universeCombo->currentIndex()) == true)
-		m_addressValue = value;
-	else
-		m_addressValue = value - 1;
+    if (m_outputMap.isDMXZeroBased(m_universeCombo->currentIndex()) == true)
+        m_addressValue = value;
+    else
+        m_addressValue = value - 1;
 
-	/* Set the maximum number of fixtures */
-	updateMaximumAmount();
+    /* Set the maximum number of fixtures */
+    updateMaximumAmount();
 }
 
 void AddFixture::slotChannelsChanged(int value)
 {
-	m_channelsValue = value;
+    m_channelsValue = value;
 
-	/* Set the maximum possible address so that channels cannot overflow
-	   beyond DMX's range of 512 channels */
-	if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
-		m_addressSpin->setRange(0, 512 - value);
-	else
-		m_addressSpin->setRange(1, 513 - value);
+    /* Set the maximum possible address so that channels cannot overflow
+       beyond DMX's range of 512 channels */
+    if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+        m_addressSpin->setRange(0, 512 - value);
+    else
+        m_addressSpin->setRange(1, 513 - value);
 
-	/* Set the maximum number of fixtures */
-	updateMaximumAmount();
+    /* Set the maximum number of fixtures */
+    updateMaximumAmount();
 }
 
 void AddFixture::slotNameEdited(const QString &text)
 {
-	/* If the user clears the text in the name field,
-	   start substituting the name with the model again. */
-	if (text.length() == 0)
-		m_nameEdit->setModified(false);
-	else
-		m_nameEdit->setModified(true);
-	m_nameValue = text;
+    /* If the user clears the text in the name field,
+       start substituting the name with the model again. */
+    if (text.length() == 0)
+        m_nameEdit->setModified(false);
+    else
+        m_nameEdit->setModified(true);
+    m_nameValue = text;
 }
 
 void AddFixture::slotAmountSpinChanged(int value)
 {
-	m_amountValue = value;
+    m_amountValue = value;
 }
 
 void AddFixture::slotGapSpinChanged(int value)
 {
-	m_gapValue = value;
+    m_gapValue = value;
 
-	/* Set the maximum number of fixtures */
-	updateMaximumAmount();
+    /* Set the maximum number of fixtures */
+    updateMaximumAmount();
 }
 
 void AddFixture::slotSelectionChanged()
 {
-	/* If there is no valid selection (user has selected only a
-	   manufacturer or nothing at all) don't let him press OK. */
-	QTreeWidgetItem* item = m_tree->currentItem();
-	if (item == NULL || item->parent() == NULL)
-	{
-		/* Reset the selected fixture pointer */
-		m_fixtureDef = NULL;
+    /* If there is no valid selection (user has selected only a
+       manufacturer or nothing at all) don't let him press OK. */
+    QTreeWidgetItem* item = m_tree->currentItem();
+    if (item == NULL || item->parent() == NULL)
+    {
+        /* Reset the selected fixture pointer */
+        m_fixtureDef = NULL;
 
-		/* Since there is no m_fixtureDef, mode combo is cleared */
-		fillModeCombo();
+        /* Since there is no m_fixtureDef, mode combo is cleared */
+        fillModeCombo();
 
-		/* Clear the name box unless it has been modified by user */
-		if (m_nameEdit->isModified() == false)
-			m_nameEdit->setText(QString::null);
-		m_nameEdit->setEnabled(false);
+        /* Clear the name box unless it has been modified by user */
+        if (m_nameEdit->isModified() == false)
+            m_nameEdit->setText(QString::null);
+        m_nameEdit->setEnabled(false);
 
-		m_channelsSpin->setValue(0);
-		m_channelList->clear();
-		m_addressSpin->setEnabled(false);
-		m_universeCombo->setEnabled(false);
-		
-		m_amountSpin->setEnabled(false);
-		m_gapSpin->setEnabled(false);
-		m_channelsSpin->setEnabled(false);
+        m_channelsSpin->setValue(0);
+        m_channelList->clear();
+        m_addressSpin->setEnabled(false);
+        m_universeCombo->setEnabled(false);
 
-		m_buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+        m_amountSpin->setEnabled(false);
+        m_gapSpin->setEnabled(false);
+        m_channelsSpin->setEnabled(false);
 
-		return;
-	}
+        m_buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
 
-	/* Item & its parent should be valid here */
-	QString manuf(item->parent()->text(KColumnName));
-	QString model(item->text(KColumnName));
-	if (manuf == KXMLFixtureGeneric && model == KXMLFixtureGeneric)
-	{
-		/* Generic dimmer selected. User enters number of channels. */
-		m_fixtureDef = NULL;
-		m_mode = NULL;
-		fillModeCombo(KXMLFixtureGeneric);
-		m_channelsSpin->setEnabled(true);
-		m_channelList->clear();
+        return;
+    }
 
-		/* Set the model name as the fixture's friendly name ONLY
-		   if the user hasn't modified the friendly name field. */
-		if (m_nameEdit->isModified() == false)
-			m_nameEdit->setText(KXMLFixtureDimmer +
-					    QString("s")); // Plural :)
-		m_nameEdit->setEnabled(true);
-	}
-	else
-	{
-		/* Specific fixture definition selected. */
-		m_fixtureDef = m_fixtureDefCache.fixtureDef(manuf, model);
-		Q_ASSERT(m_fixtureDef != NULL);
+    /* Item & its parent should be valid here */
+    QString manuf(item->parent()->text(KColumnName));
+    QString model(item->text(KColumnName));
+    if (manuf == KXMLFixtureGeneric && model == KXMLFixtureGeneric)
+    {
+        /* Generic dimmer selected. User enters number of channels. */
+        m_fixtureDef = NULL;
+        m_mode = NULL;
+        fillModeCombo(KXMLFixtureGeneric);
+        m_channelsSpin->setEnabled(true);
+        m_channelList->clear();
 
-		/* Put fixture def's modes to the mode combo */
-		fillModeCombo();
+        /* Set the model name as the fixture's friendly name ONLY
+           if the user hasn't modified the friendly name field. */
+        if (m_nameEdit->isModified() == false)
+            m_nameEdit->setText(KXMLFixtureDimmer +
+                                QString("s")); // Plural :)
+        m_nameEdit->setEnabled(true);
+    }
+    else
+    {
+        /* Specific fixture definition selected. */
+        m_fixtureDef = m_fixtureDefCache.fixtureDef(manuf, model);
+        Q_ASSERT(m_fixtureDef != NULL);
 
-		/* Fixture def contains number of channels, so disable the
-		   spin box to prevent user from modifying it. */
-		m_channelsSpin->setEnabled(false);
+        /* Put fixture def's modes to the mode combo */
+        fillModeCombo();
 
-		/* Set the model name as the fixture's friendly name ONLY
-		   if the user hasn't modified the friendly name field. */	
-		if (m_nameEdit->isModified() == false)
-			m_nameEdit->setText(m_fixtureDef->model());
-		m_nameEdit->setEnabled(true);
-	}
+        /* Fixture def contains number of channels, so disable the
+           spin box to prevent user from modifying it. */
+        m_channelsSpin->setEnabled(false);
 
-	/* Set the maximum number of fixtures */
-	updateMaximumAmount();
+        /* Set the model name as the fixture's friendly name ONLY
+           if the user hasn't modified the friendly name field. */
+        if (m_nameEdit->isModified() == false)
+            m_nameEdit->setText(m_fixtureDef->model());
+        m_nameEdit->setEnabled(true);
+    }
 
-	/* Guide the user to edit the friendly name field */
-	m_nameEdit->setSelection(0, m_nameEdit->text().length());
-	m_nameEdit->setFocus();
+    /* Set the maximum number of fixtures */
+    updateMaximumAmount();
 
-	m_addressSpin->setEnabled(true);
-	m_universeCombo->setEnabled(true);
+    /* Guide the user to edit the friendly name field */
+    m_nameEdit->setSelection(0, m_nameEdit->text().length());
+    m_nameEdit->setFocus();
 
-	m_amountSpin->setEnabled(true);
-	m_gapSpin->setEnabled(true);
+    m_addressSpin->setEnabled(true);
+    m_universeCombo->setEnabled(true);
 
-	/* OK is again possible */
-	m_buttonBox->setStandardButtons(QDialogButtonBox::Ok |
-					QDialogButtonBox::Cancel);
+    m_amountSpin->setEnabled(true);
+    m_gapSpin->setEnabled(true);
+
+    /* OK is again possible */
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok |
+                                    QDialogButtonBox::Cancel);
 }
 
 void AddFixture::slotTreeDoubleClicked(QTreeWidgetItem* item)
 {
-	/* Select and accept (click OK for the user) */
-	slotSelectionChanged();
-	if (item != NULL && item->parent() != NULL)
-		accept();
+    /* Select and accept (click OK for the user) */
+    slotSelectionChanged();
+    if (item != NULL && item->parent() != NULL)
+        accept();
 }

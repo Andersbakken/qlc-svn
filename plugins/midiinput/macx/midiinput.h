@@ -40,98 +40,102 @@ class MIDIInput;
 
 class MIDIInput : public QObject, public QLCInPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCInPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCInPlugin)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** \reimp */
-	void init();
+    /** \reimp */
+    void init();
 
-	/** \reimp */
-	virtual ~MIDIInput();
+    /** \reimp */
+    virtual ~MIDIInput();
 
-	/** \reimp */
-	void open(quint32 input = 0);
+    /** \reimp */
+    void open(quint32 input = 0);
 
-	/** \reimp */
-	void close(quint32 input = 0);
+    /** \reimp */
+    void close(quint32 input = 0);
 
-	const MIDIClientRef client() const { return m_client; }
+    const MIDIClientRef client() const {
+        return m_client;
+    }
 
 protected:
-	MIDIClientRef m_client;
+    MIDIClientRef m_client;
 
-	/*********************************************************************
-	 * Devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Devices
+     *********************************************************************/
 public:
-	void rescanDevices();
+    void rescanDevices();
 
-	MIDIDevice* deviceByUID(SInt32 uid);
-	MIDIDevice* device(quint32 input);
+    MIDIDevice* deviceByUID(SInt32 uid);
+    MIDIDevice* device(quint32 input);
 
-	void addDevice(MIDIDevice* device);
-	void removeDevice(MIDIDevice* device);
+    void addDevice(MIDIDevice* device);
+    void removeDevice(MIDIDevice* device);
 
-	const QList <MIDIDevice*>& devices() const { return m_devices; }
+    const QList <MIDIDevice*>& devices() const {
+        return m_devices;
+    }
 
 signals:
-	void deviceAdded(MIDIDevice* device);
-	void deviceRemoved(MIDIDevice* device);
-	void configurationChanged();
+    void deviceAdded(MIDIDevice* device);
+    void deviceRemoved(MIDIDevice* device);
+    void configurationChanged();
 
 protected:
-	QList <MIDIDevice*> m_devices;
+    QList <MIDIDevice*> m_devices;
 
-	/*********************************************************************
-	 * Name
-	 *********************************************************************/
+    /*********************************************************************
+     * Name
+     *********************************************************************/
 public:
-	/** \reimp */
-	QString name();
+    /** \reimp */
+    QString name();
 
-	/*********************************************************************
-	 * Inputs
-	 *********************************************************************/
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
 public:
-	/** \reimp */
-	QStringList inputs();
+    /** \reimp */
+    QStringList inputs();
 
-	/*********************************************************************
-	 * Configuration
-	 *********************************************************************/
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
 public:
-	/** \reimp */
-	void configure();
+    /** \reimp */
+    void configure();
 
-	/*********************************************************************
-	 * Status
-	 *********************************************************************/
+    /*********************************************************************
+     * Status
+     *********************************************************************/
 public:
-	/** \reimp */
-	QString infoText(quint32 input = KInputInvalid);
+    /** \reimp */
+    QString infoText(quint32 input = KInputInvalid);
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 protected slots:
-	/** Receives MIDI input data from MIDIDevices */
-	void slotDeviceValueChanged(MIDIDevice* device, quint32 channel, uchar value);
+    /** Receives MIDI input data from MIDIDevices */
+    void slotDeviceValueChanged(MIDIDevice* device, quint32 channel, uchar value);
 
 signals:
-	/** \reimp */
-	void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
-			  uchar value);
+    /** \reimp */
+    void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
+                      uchar value);
 
 public:
-	/** \reimp */
-	void connectInputData(QObject* listener);
+    /** \reimp */
+    void connectInputData(QObject* listener);
 
-	/** \reimp */
-	void feedBack(quint32 input, quint32 channel, uchar value);
+    /** \reimp */
+    void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

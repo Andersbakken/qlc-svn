@@ -42,11 +42,11 @@ extern App* _app;
 
 FixtureConsole::FixtureConsole(QWidget* parent) : QWidget(parent)
 {
-	m_fixture = Fixture::invalidId();
-	m_channelsCheckable = false;
-	m_externalInputEnabled = false;
+    m_fixture = Fixture::invalidId();
+    m_channelsCheckable = false;
+    m_externalInputEnabled = false;
 
-	new QHBoxLayout(this);
+    new QHBoxLayout(this);
 }
 
 FixtureConsole::~FixtureConsole()
@@ -59,33 +59,33 @@ FixtureConsole::~FixtureConsole()
 
 void FixtureConsole::setFixture(t_fixture_id id)
 {
-	ConsoleChannel* cc = NULL;
-	Fixture* fxi = NULL;
+    ConsoleChannel* cc = NULL;
+    Fixture* fxi = NULL;
 
-	/* Get rid of any previous channels */
-	while (m_channels.isEmpty() == false)
-		delete m_channels.takeFirst();
+    /* Get rid of any previous channels */
+    while (m_channels.isEmpty() == false)
+        delete m_channels.takeFirst();
 
-	m_fixture = id;
+    m_fixture = id;
 
-	fxi = _app->doc()->fixture(m_fixture);
-	Q_ASSERT(fxi != NULL);
+    fxi = _app->doc()->fixture(m_fixture);
+    Q_ASSERT(fxi != NULL);
 
-	/* Create channel units */
-	for (unsigned int i = 0; i < fxi->channels(); i++)
-	{
-		cc = new ConsoleChannel(this, m_fixture, i);
-		cc->setCheckable(m_channelsCheckable);
-		layout()->addWidget(cc);
+    /* Create channel units */
+    for (unsigned int i = 0; i < fxi->channels(); i++)
+    {
+        cc = new ConsoleChannel(this, m_fixture, i);
+        cc->setCheckable(m_channelsCheckable);
+        layout()->addWidget(cc);
 
-		connect(cc, SIGNAL(valueChanged(t_channel,uchar,bool)),
-			this, SLOT(slotValueChanged(t_channel,uchar,bool)));
+        connect(cc, SIGNAL(valueChanged(t_channel,uchar,bool)),
+                this, SLOT(slotValueChanged(t_channel,uchar,bool)));
 
-		m_channels.append(cc);
-	}
+        m_channels.append(cc);
+    }
 
-	/* Make a spacer item eat excess space to justify channels left */
-	layout()->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
+    /* Make a spacer item eat excess space to justify channels left */
+    layout()->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
 }
 
 /*****************************************************************************
@@ -94,111 +94,111 @@ void FixtureConsole::setFixture(t_fixture_id id)
 
 void FixtureConsole::setChannelsCheckable(bool checkable)
 {
-	m_channelsCheckable = checkable;
+    m_channelsCheckable = checkable;
 
-	QMutableListIterator <ConsoleChannel*> it(m_channels);
-	while (it.hasNext() == true)
-		it.next()->setCheckable(checkable);
+    QMutableListIterator <ConsoleChannel*> it(m_channels);
+    while (it.hasNext() == true)
+        it.next()->setCheckable(checkable);
 }
 
 void FixtureConsole::enableAllChannels(bool enable)
 {
-	/* All of this' children are ConsoleChannel objects, except layout */
-	QListIterator <QObject*> it(children());
-	while (it.hasNext() == true)
-	{
-		ConsoleChannel* cc = qobject_cast<ConsoleChannel*> (it.next());
-		if (cc != NULL)
-			cc->enable(enable);
-	}
+    /* All of this' children are ConsoleChannel objects, except layout */
+    QListIterator <QObject*> it(children());
+    while (it.hasNext() == true)
+    {
+        ConsoleChannel* cc = qobject_cast<ConsoleChannel*> (it.next());
+        if (cc != NULL)
+            cc->enable(enable);
+    }
 }
 
 void FixtureConsole::setOutputDMX(bool state)
 {
-	/* All of this' children are ConsoleChannel objects, except layout */
-	QListIterator <QObject*> it(children());
-	while (it.hasNext() == true)
-	{
-		ConsoleChannel* cc = qobject_cast<ConsoleChannel*> (it.next());
-		if (cc != NULL)
-			cc->setOutputDMX(state);
-	}
+    /* All of this' children are ConsoleChannel objects, except layout */
+    QListIterator <QObject*> it(children());
+    while (it.hasNext() == true)
+    {
+        ConsoleChannel* cc = qobject_cast<ConsoleChannel*> (it.next());
+        if (cc != NULL)
+            cc->setOutputDMX(state);
+    }
 }
 
 void FixtureConsole::setSceneValue(const SceneValue& scv)
 {
-	Q_ASSERT(scv.fxi == m_fixture);
+    Q_ASSERT(scv.fxi == m_fixture);
 
-	QListIterator <QObject*> it(children());
-	while (it.hasNext() == true)
-	{
-		ConsoleChannel* cc = qobject_cast<ConsoleChannel*> (it.next());
-		if (cc != NULL && cc->channel() == scv.channel)
-		{
-			cc->enable(true);
-			cc->setValue(scv.value);
-		}
-	}
+    QListIterator <QObject*> it(children());
+    while (it.hasNext() == true)
+    {
+        ConsoleChannel* cc = qobject_cast<ConsoleChannel*> (it.next());
+        if (cc != NULL && cc->channel() == scv.channel)
+        {
+            cc->enable(true);
+            cc->setValue(scv.value);
+        }
+    }
 }
 
 void FixtureConsole::slotValueChanged(t_channel channel, uchar value,
-				      bool enabled)
+                                      bool enabled)
 {
-	emit valueChanged(m_fixture, channel, value, enabled);
+    emit valueChanged(m_fixture, channel, value, enabled);
 }
 
 QList <SceneValue> FixtureConsole::values() const
 {
-	QList <SceneValue> list;
+    QList <SceneValue> list;
 
-	QListIterator <QObject*> it(children());
-	while (it.hasNext() == true)
-	{
-		ConsoleChannel* cc;
+    QListIterator <QObject*> it(children());
+    while (it.hasNext() == true)
+    {
+        ConsoleChannel* cc;
 
-		cc = qobject_cast<ConsoleChannel*> (it.next());
-		if (cc != NULL && cc->isEnabled() == true)
-		{
-			list.append(SceneValue(m_fixture, cc->channel(),
-						cc->sliderValue()));
-		}
-	}
+        cc = qobject_cast<ConsoleChannel*> (it.next());
+        if (cc != NULL && cc->isEnabled() == true)
+        {
+            list.append(SceneValue(m_fixture, cc->channel(),
+                                   cc->sliderValue()));
+        }
+    }
 
-	return list;
+    return list;
 }
 
 void FixtureConsole::setValues(const QList <SceneValue>& list)
 {
-	enableAllChannels(false);
+    enableAllChannels(false);
 
-	QListIterator <SceneValue> it(list);
-	while (it.hasNext() == true)
-	{
-		SceneValue val(it.next());
-		if (val.channel < children().count())
-		{
-			ConsoleChannel* cc = channel(val.channel);
-			if (cc != NULL)
-			{
-				cc->enable(true);
-				cc->setValue(val.value);
-			}
-		}
-	}
+    QListIterator <SceneValue> it(list);
+    while (it.hasNext() == true)
+    {
+        SceneValue val(it.next());
+        if (val.channel < children().count())
+        {
+            ConsoleChannel* cc = channel(val.channel);
+            if (cc != NULL)
+            {
+                cc->enable(true);
+                cc->setValue(val.value);
+            }
+        }
+    }
 }
 
 ConsoleChannel* FixtureConsole::channel(t_channel ch)
 {
-	QListIterator <QObject*> it(children());
-	while (it.hasNext() == true)
-	{
-		ConsoleChannel* cc;
-		cc = qobject_cast<ConsoleChannel*> (it.next());
-		if (cc != NULL && cc->channel() == ch)
-			return cc;
-	}
+    QListIterator <QObject*> it(children());
+    while (it.hasNext() == true)
+    {
+        ConsoleChannel* cc;
+        cc = qobject_cast<ConsoleChannel*> (it.next());
+        if (cc != NULL && cc->channel() == ch)
+            return cc;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 /*****************************************************************************
@@ -207,44 +207,44 @@ ConsoleChannel* FixtureConsole::channel(t_channel ch)
 
 void FixtureConsole::enableExternalInput(bool enable)
 {
-	if (enable == true && m_externalInputEnabled == false)
-	{
-		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(quint32,
-						 quint32,
-						 uchar)),
-			this, SLOT(slotInputValueChanged(quint32,
-							 quint32,
-							 uchar)));
-		m_externalInputEnabled = true;
-	}
-	else if (enable == false && m_externalInputEnabled == true)
-	{
-		disconnect(_app->inputMap(),
-			   SIGNAL(inputValueChanged(quint32,
-						    quint32,
-						    uchar)),
-			   this,
-			   SLOT(slotInputValueChanged(quint32,
-						      quint32,
-						      uchar)));
-		m_externalInputEnabled = false;
-	}
+    if (enable == true && m_externalInputEnabled == false)
+    {
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,
+                                         quint32,
+                                         uchar)),
+                this, SLOT(slotInputValueChanged(quint32,
+                                                 quint32,
+                                                 uchar)));
+        m_externalInputEnabled = true;
+    }
+    else if (enable == false && m_externalInputEnabled == true)
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,
+                                            quint32,
+                                            uchar)),
+                   this,
+                   SLOT(slotInputValueChanged(quint32,
+                                              quint32,
+                                              uchar)));
+        m_externalInputEnabled = false;
+    }
 }
 
 void FixtureConsole::slotInputValueChanged(quint32 uni,
-					   quint32 ch,
-					   uchar value)
+        quint32 ch,
+        uchar value)
 {
-	if (uni == _app->inputMap()->editorUniverse())
-	{
-		ConsoleChannel* cc;
+    if (uni == _app->inputMap()->editorUniverse())
+    {
+        ConsoleChannel* cc;
 
-		cc = channel(ch);
-		if (cc != NULL)
-		{
-			cc->setValue(value);
-			cc->setChecked(true);
-		}
-	}
+        cc = channel(ch);
+        if (cc != NULL)
+        {
+            cc->setValue(value);
+            cc->setChecked(true);
+        }
+    }
 }

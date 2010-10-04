@@ -27,196 +27,196 @@
 
 void Bus_Test::initTestCase()
 {
-	QVERIFY(Bus::instance() == NULL);
-	Bus::init(this);
-	QVERIFY(Bus::instance() != NULL);
+    QVERIFY(Bus::instance() == NULL);
+    Bus::init(this);
+    QVERIFY(Bus::instance() != NULL);
 }
 
 void Bus_Test::defaults()
 {
-	QVERIFY(Bus::count() == 32);
-	QVERIFY(Bus::defaultFade() == 0);
-	QVERIFY(Bus::defaultHold() == 1);
-	QVERIFY(Bus::instance()->name(0) == QString("Fade"));
-	QVERIFY(Bus::instance()->name(1) == QString("Hold"));
+    QVERIFY(Bus::count() == 32);
+    QVERIFY(Bus::defaultFade() == 0);
+    QVERIFY(Bus::defaultHold() == 1);
+    QVERIFY(Bus::instance()->name(0) == QString("Fade"));
+    QVERIFY(Bus::instance()->name(1) == QString("Hold"));
 }
 
 void Bus_Test::value()
 {
-	QSignalSpy spy(Bus::instance(), SIGNAL(valueChanged(quint32,quint32)));
+    QSignalSpy spy(Bus::instance(), SIGNAL(valueChanged(quint32,quint32)));
 
-	/* Setting bus value should produce a signal */
-	Bus::instance()->setValue(0, 15);
-	QVERIFY(Bus::instance()->value(0) == 15);
-	QVERIFY(spy.count() == 1);
-	QVERIFY(spy.at(0).count() == 2);
-	QVERIFY(spy.at(0).at(0).toUInt() == 0);
-	QVERIFY(spy.at(0).at(1).toUInt() == 15);
+    /* Setting bus value should produce a signal */
+    Bus::instance()->setValue(0, 15);
+    QVERIFY(Bus::instance()->value(0) == 15);
+    QVERIFY(spy.count() == 1);
+    QVERIFY(spy.at(0).count() == 2);
+    QVERIFY(spy.at(0).at(0).toUInt() == 0);
+    QVERIFY(spy.at(0).at(1).toUInt() == 15);
 
-	/* Another bus should change only one bus value */
-	Bus::instance()->setValue(5, 30);
-	QVERIFY(Bus::instance()->value(0) == 15);
-	QVERIFY(Bus::instance()->value(5) == 30);
-	QVERIFY(spy.count() == 2);
-	QVERIFY(spy.at(1).at(0).toUInt() == 5);
-	QVERIFY(spy.at(1).at(1).toUInt() == 30);
+    /* Another bus should change only one bus value */
+    Bus::instance()->setValue(5, 30);
+    QVERIFY(Bus::instance()->value(0) == 15);
+    QVERIFY(Bus::instance()->value(5) == 30);
+    QVERIFY(spy.count() == 2);
+    QVERIFY(spy.at(1).at(0).toUInt() == 5);
+    QVERIFY(spy.at(1).at(1).toUInt() == 30);
 
-	/* Invalid bus shouldn't produce signals */
-	Bus::instance()->setValue(Bus::count(), 30);
-	QVERIFY(Bus::instance()->value(0) == 15);
-	QVERIFY(Bus::instance()->value(5) == 30);
-	QVERIFY(spy.count() == 2);
+    /* Invalid bus shouldn't produce signals */
+    Bus::instance()->setValue(Bus::count(), 30);
+    QVERIFY(Bus::instance()->value(0) == 15);
+    QVERIFY(Bus::instance()->value(5) == 30);
+    QVERIFY(spy.count() == 2);
 
-	/* Invalid bus shouldn't produce signals */
-	Bus::instance()->setValue(0, UINT_MAX);
-	QVERIFY(Bus::instance()->value(0) == UINT_MAX);
-	QVERIFY(Bus::instance()->value(5) == 30);
-	QVERIFY(spy.count() == 3);
-	QVERIFY(spy.at(2).at(0).toUInt() == 0);
-	QVERIFY(spy.at(2).at(1).toUInt() == UINT_MAX);
+    /* Invalid bus shouldn't produce signals */
+    Bus::instance()->setValue(0, UINT_MAX);
+    QVERIFY(Bus::instance()->value(0) == UINT_MAX);
+    QVERIFY(Bus::instance()->value(5) == 30);
+    QVERIFY(spy.count() == 3);
+    QVERIFY(spy.at(2).at(0).toUInt() == 0);
+    QVERIFY(spy.at(2).at(1).toUInt() == UINT_MAX);
 }
 
 void Bus_Test::name()
 {
-	QSignalSpy spy(Bus::instance(), SIGNAL(nameChanged(quint32,QString)));
+    QSignalSpy spy(Bus::instance(), SIGNAL(nameChanged(quint32,QString)));
 
-	/* Setting bus name should produce a signal */
-	QVERIFY(Bus::instance()->name(0) == QString("Fade"));
-	Bus::instance()->setName(0, "Foo");
-	QVERIFY(Bus::instance()->name(0) == QString("Foo"));
-	QVERIFY(spy.count() == 1);
-	QVERIFY(spy.at(0).at(0).toUInt() == 0);
-	QVERIFY(spy.at(0).at(1).toString() == QString("Foo"));
+    /* Setting bus name should produce a signal */
+    QVERIFY(Bus::instance()->name(0) == QString("Fade"));
+    Bus::instance()->setName(0, "Foo");
+    QVERIFY(Bus::instance()->name(0) == QString("Foo"));
+    QVERIFY(spy.count() == 1);
+    QVERIFY(spy.at(0).at(0).toUInt() == 0);
+    QVERIFY(spy.at(0).at(1).toString() == QString("Foo"));
 
-	/* Invalid bus should not produce a signal */
-	Bus::instance()->setName(5000, "Bar");
-	QVERIFY(spy.count() == 1);
+    /* Invalid bus should not produce a signal */
+    Bus::instance()->setName(5000, "Bar");
+    QVERIFY(spy.count() == 1);
 }
 
 void Bus_Test::idName()
 {
-	Bus::instance()->setName(0, "Fade");
+    Bus::instance()->setName(0, "Fade");
 
-	QCOMPARE(Bus::instance()->idName(0), QString("Fade"));
-	QCOMPARE(Bus::instance()->idName(1), QString("Hold"));
-	QCOMPARE(Bus::instance()->idName(5), QString("Bus 6"));
-	QCOMPARE(Bus::instance()->idName(Bus::count()), QString());
+    QCOMPARE(Bus::instance()->idName(0), QString("Fade"));
+    QCOMPARE(Bus::instance()->idName(1), QString("Hold"));
+    QCOMPARE(Bus::instance()->idName(5), QString("Bus 6"));
+    QCOMPARE(Bus::instance()->idName(Bus::count()), QString());
 
-	QStringList idNames(Bus::instance()->idNames());
-	QCOMPARE(idNames.size(), int(Bus::count()));
-	QCOMPARE(idNames[0], QString("Fade"));
-	QCOMPARE(idNames[1], QString("Hold"));
-	QCOMPARE(idNames[5], QString("Bus 6"));
+    QStringList idNames(Bus::instance()->idNames());
+    QCOMPARE(idNames.size(), int(Bus::count()));
+    QCOMPARE(idNames[0], QString("Fade"));
+    QCOMPARE(idNames[1], QString("Hold"));
+    QCOMPARE(idNames[5], QString("Bus 6"));
 }
 
 void Bus_Test::tap()
 {
-	QSignalSpy spy(Bus::instance(), SIGNAL(tapped(quint32)));
+    QSignalSpy spy(Bus::instance(), SIGNAL(tapped(quint32)));
 
-	/* Tapping an existing bus should produce a signal */
-	Bus::instance()->tap(17);
-	QVERIFY(spy.count() == 1);
-	QVERIFY(spy.at(0).at(0).toUInt() == 17);
+    /* Tapping an existing bus should produce a signal */
+    Bus::instance()->tap(17);
+    QVERIFY(spy.count() == 1);
+    QVERIFY(spy.at(0).at(0).toUInt() == 17);
 
-	/* Tapping a non-existing bus should produce a signal */
-	Bus::instance()->tap(6342);
-	QVERIFY(spy.count() == 1);
-	QVERIFY(spy.at(0).at(0).toUInt() == 17);
+    /* Tapping a non-existing bus should produce a signal */
+    Bus::instance()->tap(6342);
+    QVERIFY(spy.count() == 1);
+    QVERIFY(spy.at(0).at(0).toUInt() == 17);
 }
 
 void Bus_Test::loadWrongRoot()
 {
-	QDomDocument doc;
+    QDomDocument doc;
 
-	QDomElement root = doc.createElement("Bush");
-	doc.appendChild(root);
-	QVERIFY(Bus::instance()->loadXML(&root) == false);
+    QDomElement root = doc.createElement("Bush");
+    doc.appendChild(root);
+    QVERIFY(Bus::instance()->loadXML(&root) == false);
 }
 
 void Bus_Test::load()
 {
-	QDomDocument doc;
+    QDomDocument doc;
 
-	QDomElement root = doc.createElement("Bus");
-	doc.appendChild(root);
-	root.setAttribute("ID", 0);
+    QDomElement root = doc.createElement("Bus");
+    doc.appendChild(root);
+    root.setAttribute("ID", 0);
 
-	QDomElement name = doc.createElement("Name");
-	QDomText nameText = doc.createTextNode("Foo");
-	name.appendChild(nameText);
-	root.appendChild(name);
+    QDomElement name = doc.createElement("Name");
+    QDomText nameText = doc.createTextNode("Foo");
+    name.appendChild(nameText);
+    root.appendChild(name);
 
-	QDomElement value = doc.createElement("Value");
-	QDomText valueText = doc.createTextNode("142");
-	value.appendChild(valueText);
-	root.appendChild(value);
+    QDomElement value = doc.createElement("Value");
+    QDomText valueText = doc.createTextNode("142");
+    value.appendChild(valueText);
+    root.appendChild(value);
 
-	QDomElement foo = doc.createElement("Foobar");
-	QDomText fooText = doc.createTextNode("Xyzzy");
-	foo.appendChild(fooText);
-	root.appendChild(foo);
+    QDomElement foo = doc.createElement("Foobar");
+    QDomText fooText = doc.createTextNode("Xyzzy");
+    foo.appendChild(fooText);
+    root.appendChild(foo);
 
-	QVERIFY(Bus::instance()->loadXML(&root) == true);
-	QVERIFY(Bus::instance()->value(0) == 142);
-	QVERIFY(Bus::instance()->name(0) == "Foo");
+    QVERIFY(Bus::instance()->loadXML(&root) == true);
+    QVERIFY(Bus::instance()->value(0) == 142);
+    QVERIFY(Bus::instance()->name(0) == "Foo");
 }
 
 void Bus_Test::loadWrongID()
 {
-	QDomDocument doc;
+    QDomDocument doc;
 
-	QDomElement root = doc.createElement("Bus");
-	doc.appendChild(root);
-	root.setAttribute("ID", Bus::count());
+    QDomElement root = doc.createElement("Bus");
+    doc.appendChild(root);
+    root.setAttribute("ID", Bus::count());
 
-	QDomElement name = doc.createElement("Name");
-	QDomText nameText = doc.createTextNode("Foo");
-	name.appendChild(nameText);
-	root.appendChild(name);
+    QDomElement name = doc.createElement("Name");
+    QDomText nameText = doc.createTextNode("Foo");
+    name.appendChild(nameText);
+    root.appendChild(name);
 
-	QDomElement value = doc.createElement("Value");
-	QDomText valueText = doc.createTextNode("142");
-	value.appendChild(valueText);
-	root.appendChild(value);
+    QDomElement value = doc.createElement("Value");
+    QDomText valueText = doc.createTextNode("142");
+    value.appendChild(valueText);
+    root.appendChild(value);
 
-	QVERIFY(Bus::instance()->loadXML(&root) == false);
-	QVERIFY(Bus::instance()->value(0) == 142);
-	QVERIFY(Bus::instance()->name(0) == "Foo");
+    QVERIFY(Bus::instance()->loadXML(&root) == false);
+    QVERIFY(Bus::instance()->value(0) == 142);
+    QVERIFY(Bus::instance()->name(0) == "Foo");
 }
 
 void Bus_Test::save()
 {
-	quint32 i;
+    quint32 i;
 
-	for (i = 0; i < Bus::count(); i++)
-	{
-		Bus::instance()->setName(i, QString("Bus %1").arg(i));
-		Bus::instance()->setValue(i, Bus::count() - i);
-	}
+    for (i = 0; i < Bus::count(); i++)
+    {
+        Bus::instance()->setName(i, QString("Bus %1").arg(i));
+        Bus::instance()->setValue(i, Bus::count() - i);
+    }
 
-	QDomDocument doc;
-	QDomElement root = doc.createElement("TestRoot");
+    QDomDocument doc;
+    QDomElement root = doc.createElement("TestRoot");
 
-	QVERIFY(Bus::instance()->saveXML(&doc, &root) == true);
-	QDomNode node = root.firstChild();
-	for (i = 0; i < Bus::count(); i++)
-	{
-		QDomElement e = node.toElement();
-		QVERIFY(e.attribute("ID").toUInt() == i);
+    QVERIFY(Bus::instance()->saveXML(&doc, &root) == true);
+    QDomNode node = root.firstChild();
+    for (i = 0; i < Bus::count(); i++)
+    {
+        QDomElement e = node.toElement();
+        QVERIFY(e.attribute("ID").toUInt() == i);
 
-		QVERIFY(e.firstChild().toElement().text()
-						== Bus::instance()->name(i));
+        QVERIFY(e.firstChild().toElement().text()
+                == Bus::instance()->name(i));
 
-		QVERIFY(e.firstChild().nextSibling().toElement().text().toUInt()
-						== Bus::instance()->value(i));
+        QVERIFY(e.firstChild().nextSibling().toElement().text().toUInt()
+                == Bus::instance()->value(i));
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 }
 
 void Bus_Test::cleanupTestCase()
 {
-	QVERIFY(Bus::instance() != NULL);
-	delete Bus::instance();
-	QVERIFY(Bus::instance() == NULL);
+    QVERIFY(Bus::instance() != NULL);
+    delete Bus::instance();
+    QVERIFY(Bus::instance() == NULL);
 }

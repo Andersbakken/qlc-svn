@@ -35,48 +35,50 @@ class QLabel;
 
 class MonitorFixture : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MonitorFixture(QWidget* parent = NULL);
-	virtual ~MonitorFixture();
+    MonitorFixture(QWidget* parent = NULL);
+    virtual ~MonitorFixture();
 
-	/** Less-than operator for qSort() */
-	bool operator<(const MonitorFixture& mof);
+    /** Less-than operator for qSort() */
+    bool operator<(const MonitorFixture& mof);
 
-	/** Update channel and value label styles */
-	void updateLabelStyles();
+    /** Update channel and value label styles */
+    void updateLabelStyles();
 
-	/********************************************************************
-	 * Fixture
-	 ********************************************************************/
+    /********************************************************************
+     * Fixture
+     ********************************************************************/
 public:
-	void setFixture(t_fixture_id fxi_id);
-	t_fixture_id fixture() const { return m_fixture; }
+    void setFixture(t_fixture_id fxi_id);
+    t_fixture_id fixture() const {
+        return m_fixture;
+    }
 
 public slots:
-	void slotChannelStyleChanged(Monitor::ChannelStyle style);
-	void slotFixtureChanged(t_fixture_id fxi_id);
-	void slotFixtureRemoved(t_fixture_id fxi_id);
+    void slotChannelStyleChanged(Monitor::ChannelStyle style);
+    void slotFixtureChanged(t_fixture_id fxi_id);
+    void slotFixtureRemoved(t_fixture_id fxi_id);
 
 protected:
-	t_fixture_id m_fixture;
-	Monitor::ChannelStyle m_channelStyle;
-	QLabel* m_fixtureLabel;
-	QList <QLabel*> m_channelLabels;
+    t_fixture_id m_fixture;
+    Monitor::ChannelStyle m_channelStyle;
+    QLabel* m_fixtureLabel;
+    QList <QLabel*> m_channelLabels;
 
-	/********************************************************************
-	 * Values
-	 ********************************************************************/
+    /********************************************************************
+     * Values
+     ********************************************************************/
 public:
-	void updateValues(const QByteArray& universes);
+    void updateValues(const QByteArray& universes);
 
 public slots:
-	void slotValueStyleChanged(Monitor::ValueStyle style);
+    void slotValueStyleChanged(Monitor::ValueStyle style);
 
 protected:
-	QList <QLabel*> m_valueLabels;
-	Monitor::ValueStyle m_valueStyle;
+    QList <QLabel*> m_valueLabels;
+    Monitor::ValueStyle m_valueStyle;
 };
 
 #endif

@@ -28,29 +28,29 @@ class Doc;
 
 class Function_Stub : public Function
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	Function_Stub(Doc* doc);
-	~Function_Stub();
+    Function_Stub(Doc* doc);
+    ~Function_Stub();
 
-	Function* createCopy(Doc* parent);
+    Function* createCopy(Doc* parent);
 
-	Function::Type type() const;
+    Function::Type type() const;
 
-	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
-	bool loadXML(const QDomElement* root);
+    bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+    bool loadXML(const QDomElement* root);
 
-	void arm();
-	void disarm();
+    void arm();
+    void disarm();
 
-	void preRun(MasterTimer* timer);
-	void write(MasterTimer* timer, QByteArray* universes);
-	void postRun(MasterTimer* timer, QByteArray* universes);
+    void preRun(MasterTimer* timer);
+    void write(MasterTimer* timer, QByteArray* universes);
+    void postRun(MasterTimer* timer, QByteArray* universes);
 
-	int m_writeCalls;
-	int m_preRunCalls;
-	int m_postRunCalls;
+    int m_writeCalls;
+    int m_preRunCalls;
+    int m_postRunCalls;
 };
 
 #endif

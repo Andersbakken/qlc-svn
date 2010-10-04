@@ -26,13 +26,13 @@
 
 class VCWidgetProperties_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void stateAndVisibility();
-	void xy();
-	void wh();
-	void load();
+    void stateAndVisibility();
+    void xy();
+    void wh();
+    void load();
 };
 
 #endif

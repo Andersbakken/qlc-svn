@@ -34,53 +34,53 @@
 
 int main(int argc, char** argv)
 {
-	QCoreApplication app(argc, argv);
-	int r;
+    QCoreApplication app(argc, argv);
+    int r;
 
-	QLCMacros_Test macros;
-	r = QTest::qExec(&macros, argc, argv);
-	if (r != 0)
-		return r;
+    QLCMacros_Test macros;
+    r = QTest::qExec(&macros, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCPhysical_Test physical;
-	r = QTest::qExec(&physical, argc, argv);
-	if (r != 0)
-		return r;
+    QLCPhysical_Test physical;
+    r = QTest::qExec(&physical, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCCapability_Test capability;
-	r = QTest::qExec(&capability, argc, argv);
-	if (r != 0)
-		return r;
+    QLCCapability_Test capability;
+    r = QTest::qExec(&capability, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCChannel_Test channel;
-	r = QTest::qExec(&channel, argc, argv);
-	if (r != 0)
-		return r;
+    QLCChannel_Test channel;
+    r = QTest::qExec(&channel, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCFixtureMode_Test mode;
-	r = QTest::qExec(&mode, argc, argv);
-	if (r != 0)
-		return r;
+    QLCFixtureMode_Test mode;
+    r = QTest::qExec(&mode, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCFixtureDef_Test fixtureDef;
-	r = QTest::qExec(&fixtureDef, argc, argv);
-	if (r != 0)
-		return r;
+    QLCFixtureDef_Test fixtureDef;
+    r = QTest::qExec(&fixtureDef, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCFixtureDefCache_Test fixtureDefCache;
-	r = QTest::qExec(&fixtureDefCache, argc, argv);
-	if (r != 0)
-		return r;
+    QLCFixtureDefCache_Test fixtureDefCache;
+    r = QTest::qExec(&fixtureDefCache, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCInputChannel_Test inputChannel;
-	r = QTest::qExec(&inputChannel, argc, argv);
-	if (r != 0)
-		return r;
+    QLCInputChannel_Test inputChannel;
+    r = QTest::qExec(&inputChannel, argc, argv);
+    if (r != 0)
+        return r;
 
-	QLCInputProfile_Test inputProfile;
-	r = QTest::qExec(&inputProfile, argc, argv);
-	if (r != 0)
-		return r;
+    QLCInputProfile_Test inputProfile;
+    r = QTest::qExec(&inputProfile, argc, argv);
+    if (r != 0)
+        return r;
 
-	return 0;
+    return 0;
 }

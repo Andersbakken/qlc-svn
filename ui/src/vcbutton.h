@@ -51,244 +51,259 @@ class QEvent;
 
 class VCButton : public VCWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	static const QSize defaultSize;
+    static const QSize defaultSize;
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	VCButton(QWidget* parent);
-	~VCButton();
+    VCButton(QWidget* parent);
+    ~VCButton();
 
 private:
-	Q_DISABLE_COPY(VCButton)
+    Q_DISABLE_COPY(VCButton)
 
-	/*********************************************************************
-	 * Clipboard
-	 *********************************************************************/
+    /*********************************************************************
+     * Clipboard
+     *********************************************************************/
 public:
-	/** Create a copy of this widget to the given parent */
-	VCWidget* createCopy(VCWidget* parent);
+    /** Create a copy of this widget to the given parent */
+    VCWidget* createCopy(VCWidget* parent);
 
 protected:
-	/** Copy the contents for this widget from another widget */
-	bool copyFrom(VCWidget* widget);
+    /** Copy the contents for this widget from another widget */
+    bool copyFrom(VCWidget* widget);
 
-	/*********************************************************************
-	 * Properties
-	 *********************************************************************/
+    /*********************************************************************
+     * Properties
+     *********************************************************************/
 public:
-	/** Edit this widget's properties */
-	void editProperties();
+    /** Edit this widget's properties */
+    void editProperties();
 
-	/*********************************************************************
-	 * Background image
-	 *********************************************************************/
+    /*********************************************************************
+     * Background image
+     *********************************************************************/
 public:
-	/* Don't allow background image setting for buttons */
-	void setBackgroundImage(const QString& path) { Q_UNUSED(path); }
+    /* Don't allow background image setting for buttons */
+    void setBackgroundImage(const QString& path) {
+        Q_UNUSED(path);
+    }
 
-	/*********************************************************************
-	 * Background color
-	 *********************************************************************/
+    /*********************************************************************
+     * Background color
+     *********************************************************************/
 public:
-	/** Set the button's background color */
-	void setBackgroundColor(const QColor& color);
+    /** Set the button's background color */
+    void setBackgroundColor(const QColor& color);
 
-	/** Get the button's background color */
-	QColor backgroundColor() const
-		{ return palette().color(QPalette::Button); }
+    /** Get the button's background color */
+    QColor backgroundColor() const
+    {
+        return palette().color(QPalette::Button);
+    }
 
-	/** Reset the button's background color to whatever the platform uses */
-	void resetBackgroundColor();
+    /** Reset the button's background color to whatever the platform uses */
+    void resetBackgroundColor();
 
-	/*********************************************************************
-	 * Foreground color
-	 *********************************************************************/
+    /*********************************************************************
+     * Foreground color
+     *********************************************************************/
 public:
-	/** Set the button's foreground color */
-	void setForegroundColor(const QColor& color);
+    /** Set the button's foreground color */
+    void setForegroundColor(const QColor& color);
 
-	/** Get the button's foreground color */
-	QColor foregroundColor() const {
-		return palette().color(QPalette::ButtonText); }
+    /** Get the button's foreground color */
+    QColor foregroundColor() const {
+        return palette().color(QPalette::ButtonText);
+    }
 
-	/** Reset the button's foreground color to whatever the platform uses */
-	virtual void resetForegroundColor();
+    /** Reset the button's foreground color to whatever the platform uses */
+    virtual void resetForegroundColor();
 
-	/*********************************************************************
-	 * Button icon
-	 *********************************************************************/
+    /*********************************************************************
+     * Button icon
+     *********************************************************************/
 public:
-	QString icon() const { return m_icon; }
-	void setIcon(const QString& icon);
+    QString icon() const {
+        return m_icon;
+    }
+    void setIcon(const QString& icon);
 
 public slots:
-	void slotChooseIcon();
-	void slotResetIcon();
+    void slotChooseIcon();
+    void slotResetIcon();
 
 protected:
-	QString m_icon;
-	QAction* m_chooseIconAction;
-	QAction* m_resetIconAction;
+    QString m_icon;
+    QAction* m_chooseIconAction;
+    QAction* m_resetIconAction;
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
 public:
-	/**
-	 * Create and load a new VCButton from an XML document
-	 *
-	 * @param btn_root A VCButton XML root node
-	 * @param parent A parent VCFrame for the new VCButton
-	 * @return true if successful; otherwise false
-	 */
-	static bool loader(const QDomElement* btn_root, QWidget* parent);
+    /**
+     * Create and load a new VCButton from an XML document
+     *
+     * @param btn_root A VCButton XML root node
+     * @param parent A parent VCFrame for the new VCButton
+     * @return true if successful; otherwise false
+     */
+    static bool loader(const QDomElement* btn_root, QWidget* parent);
 
-	/**
-	 * Load a VCButton's properties from an XML document node
-	 *
-	 * @param doc An XML document to load from
-	 * @param btn_root A VCButton XML root node containing button properties
-	 * @return true if successful; otherwise false
-	 */
-	bool loadXML(const QDomElement* btn_root);
+    /**
+     * Load a VCButton's properties from an XML document node
+     *
+     * @param doc An XML document to load from
+     * @param btn_root A VCButton XML root node containing button properties
+     * @return true if successful; otherwise false
+     */
+    bool loadXML(const QDomElement* btn_root);
 
-	/**
-	 * Save a VCButton's properties to an XML document node
-	 *
-	 * @param doc The master XML document to save to
-	 * @param frame_root The button's VCFrame XML parent node to save to
-	 */
-	bool saveXML(QDomDocument* doc, QDomElement* frame_root);
+    /**
+     * Save a VCButton's properties to an XML document node
+     *
+     * @param doc The master XML document to save to
+     * @param frame_root The button's VCFrame XML parent node to save to
+     */
+    bool saveXML(QDomDocument* doc, QDomElement* frame_root);
 
 protected:
-	/** Load a legacy KeyBind node */
-	bool loadKeyBind(const QDomElement* key_root);
+    /** Load a legacy KeyBind node */
+    bool loadKeyBind(const QDomElement* key_root);
 
-	/*********************************************************************
-	 * Button state
-	 *********************************************************************/
+    /*********************************************************************
+     * Button state
+     *********************************************************************/
 public:
-	void setOn(bool on);
-	bool isOn() const { return m_on; }
+    void setOn(bool on);
+    bool isOn() const {
+        return m_on;
+    }
 
 protected:
-	bool m_on;
+    bool m_on;
 
-	/*********************************************************************
-	 * Key sequence handler
-	 *********************************************************************/
+    /*********************************************************************
+     * Key sequence handler
+     *********************************************************************/
 public:
-	void setKeySequence(const QKeySequence& keySequence);
-	QKeySequence keySequence() const { return m_keySequence; }
+    void setKeySequence(const QKeySequence& keySequence);
+    QKeySequence keySequence() const {
+        return m_keySequence;
+    }
 
 protected slots:
-	void slotKeyPressed(const QKeySequence& keySequence);
-	void slotKeyReleased(const QKeySequence& keySequence);
+    void slotKeyPressed(const QKeySequence& keySequence);
+    void slotKeyReleased(const QKeySequence& keySequence);
 
 protected:
-	QKeySequence m_keySequence;
+    QKeySequence m_keySequence;
 
-	/*********************************************************************
-	 * External input
-	 *********************************************************************/
+    /*********************************************************************
+     * External input
+     *********************************************************************/
 protected slots:
-	void slotInputValueChanged(quint32 universe,
-				   quint32 channel,
-				   uchar value);
+    void slotInputValueChanged(quint32 universe,
+                               quint32 channel,
+                               uchar value);
 
-	/*********************************************************************
-	 * Function attachment
-	 *********************************************************************/
+    /*********************************************************************
+     * Function attachment
+     *********************************************************************/
 public:
-	/**
-	 * Attach a function to a VCButton. This function is started when the
-	 * button is pressed down.
-	 *
-	 * @param function An ID of a function to attach
-	 */
-	void setFunction(t_function_id function);
+    /**
+     * Attach a function to a VCButton. This function is started when the
+     * button is pressed down.
+     *
+     * @param function An ID of a function to attach
+     */
+    void setFunction(t_function_id function);
 
-	/**
-	 * Get the ID of the function attached to a VCButton
-	 *
-	 * @return The ID of the attached function or Function::invalidId()
-	 *         if there isn't one
-	 */
-	t_function_id function() const { return m_function; }
-
-protected slots:
-	/** Invalidates the button's function if the function is destroyed */
-	void slotFunctionRemoved(t_function_id fid);
-
-protected:
-	/** The function that this button is controlling */
-	t_function_id m_function;
-
-	/*********************************************************************
-	 * Button action
-	 *********************************************************************/
-public:
-	/**
-	 * Toggle: Start/stop the assigned function.
-	 * Flash: Keep the function running as long as the button is kept down.
-	 */
-	enum Action { Toggle, Flash };
-
-	/** Set this button's action */
-	void setAction(Action action);
-
-	/** Get this button's action */
-	Action action() const { return m_action; }
-
-	static QString actionToString(Action action);
-	static Action stringToAction(const QString& str);
-
-protected:
-	Action m_action;
-
-	/*********************************************************************
-	 * Button press / release handlers
-	 *********************************************************************/
-protected:
-	/** Handler for button presses (mouse/key)button down, not click */
-	void pressFunction();
-
-	/** Handler for button releases (mouse/key)button up, not click */
-	void releaseFunction();
+    /**
+     * Get the ID of the function attached to a VCButton
+     *
+     * @return The ID of the attached function or Function::invalidId()
+     *         if there isn't one
+     */
+    t_function_id function() const {
+        return m_function;
+    }
 
 protected slots:
-	/** Handler for function running signal */
-	void slotFunctionRunning(t_function_id fid);
+    /** Invalidates the button's function if the function is destroyed */
+    void slotFunctionRemoved(t_function_id fid);
 
-	/** Handler for function stop signal */
-	void slotFunctionStopped(t_function_id fid);
-
-	/** Basically the same as slotFunctionStopped() but for flash signal */
-	void slotFunctionFlashing(t_function_id fid, bool state);
-
-	/** Slot for brief widget blink when controlled function stops */
-	void slotBlinkReady();
-
-	/*********************************************************************
-	* Custom menu
-	*********************************************************************/
-public:
-	/** Get a custom menu specific to this widget. Must be deleted. */
-	QMenu* customMenu(QMenu* parentMenu);
-
-	/*********************************************************************
-	 * Event Handlers
-	 *********************************************************************/
 protected:
-	void paintEvent(QPaintEvent* e);
+    /** The function that this button is controlling */
+    t_function_id m_function;
 
-	void mousePressEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
+    /*********************************************************************
+     * Button action
+     *********************************************************************/
+public:
+    /**
+     * Toggle: Start/stop the assigned function.
+     * Flash: Keep the function running as long as the button is kept down.
+     */
+    enum Action { Toggle, Flash };
+
+    /** Set this button's action */
+    void setAction(Action action);
+
+    /** Get this button's action */
+    Action action() const {
+        return m_action;
+    }
+
+    static QString actionToString(Action action);
+    static Action stringToAction(const QString& str);
+
+protected:
+    Action m_action;
+
+    /*********************************************************************
+     * Button press / release handlers
+     *********************************************************************/
+protected:
+    /** Handler for button presses (mouse/key)button down, not click */
+    void pressFunction();
+
+    /** Handler for button releases (mouse/key)button up, not click */
+    void releaseFunction();
+
+protected slots:
+    /** Handler for function running signal */
+    void slotFunctionRunning(t_function_id fid);
+
+    /** Handler for function stop signal */
+    void slotFunctionStopped(t_function_id fid);
+
+    /** Basically the same as slotFunctionStopped() but for flash signal */
+    void slotFunctionFlashing(t_function_id fid, bool state);
+
+    /** Slot for brief widget blink when controlled function stops */
+    void slotBlinkReady();
+
+    /*********************************************************************
+    * Custom menu
+    *********************************************************************/
+public:
+    /** Get a custom menu specific to this widget. Must be deleted. */
+    QMenu* customMenu(QMenu* parentMenu);
+
+    /*********************************************************************
+     * Event Handlers
+     *********************************************************************/
+protected:
+    void paintEvent(QPaintEvent* e);
+
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
 };
 
 #endif

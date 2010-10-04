@@ -33,58 +33,58 @@ class MIDIInput;
 
 class MIDIPoller : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	/**
-	 * Construct a new MIDIReader thread. The parent object will receive
-	 * all input events, so it must not be NULL.
-	 */
-	MIDIPoller(MIDIInput* parent);
+    /**
+     * Construct a new MIDIReader thread. The parent object will receive
+     * all input events, so it must not be NULL.
+     */
+    MIDIPoller(MIDIInput* parent);
 
-	/** Destructor */
-	virtual ~MIDIPoller();
+    /** Destructor */
+    virtual ~MIDIPoller();
 
-	/*********************************************************************
-	 * Polled devices
-	 *********************************************************************/
+    /*********************************************************************
+     * Polled devices
+     *********************************************************************/
 public:
-	/** Convert an address into a quint64 that can be used as a hash key */
-	quint64 addressHash(const snd_seq_addr_t* address) const;
+    /** Convert an address into a quint64 that can be used as a hash key */
+    quint64 addressHash(const snd_seq_addr_t* address) const;
 
-	/** Add a new MIDI device to be polled for events */
-	bool addDevice(MIDIDevice* device);
+    /** Add a new MIDI device to be polled for events */
+    bool addDevice(MIDIDevice* device);
 
-	/** Remove the given device from the poller list */
-	bool removeDevice(MIDIDevice* device);
-
-protected:
-	/** Subscribe a device's events to come thru to the plugin's port */
-	void subscribeDevice(MIDIDevice* device);
-
-	/** Unsubscribe a device's events */
-	void unsubscribeDevice(MIDIDevice* device);
+    /** Remove the given device from the poller list */
+    bool removeDevice(MIDIDevice* device);
 
 protected:
-	QHash <quint64, MIDIDevice*> m_devices;
+    /** Subscribe a device's events to come thru to the plugin's port */
+    void subscribeDevice(MIDIDevice* device);
 
-	/*********************************************************************
-	 * Poller thread
-	 *********************************************************************/
+    /** Unsubscribe a device's events */
+    void unsubscribeDevice(MIDIDevice* device);
+
+protected:
+    QHash <quint64, MIDIDevice*> m_devices;
+
+    /*********************************************************************
+     * Poller thread
+     *********************************************************************/
 public:
-	void stop();
+    void stop();
 
 protected:
-	/** Poller thread method */
-	void run();
+    /** Poller thread method */
+    void run();
 
-	/** Read events from the sequencer interface */
-	void readEvent(snd_seq_t* alsa);
+    /** Read events from the sequencer interface */
+    void readEvent(snd_seq_t* alsa);
 
 protected:
-	bool m_running;
-	bool m_changed;
-	QMutex m_mutex;
+    bool m_running;
+    bool m_changed;
+    QMutex m_mutex;
 };
 
 #endif

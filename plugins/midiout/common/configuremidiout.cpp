@@ -39,29 +39,29 @@
 #define KColumnMode        3
 
 ConfigureMIDIOut::ConfigureMIDIOut(QWidget* parent, MIDIOut* plugin)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	Q_ASSERT(plugin != NULL);
-	m_plugin = plugin;
+    Q_ASSERT(plugin != NULL);
+    m_plugin = plugin;
 
-	/* Setup UI controls */
-	setupUi(this);
-	m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
+    /* Setup UI controls */
+    setupUi(this);
+    m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-	connect(m_refreshButton, SIGNAL(clicked()),
-		this, SLOT(slotRefreshClicked()));
-	connect(m_editButton, SIGNAL(clicked()),
-		this, SLOT(slotEditClicked()));
-	connect(m_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditClicked()));
+    connect(m_refreshButton, SIGNAL(clicked()),
+            this, SLOT(slotRefreshClicked()));
+    connect(m_editButton, SIGNAL(clicked()),
+            this, SLOT(slotEditClicked()));
+    connect(m_list, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, SLOT(slotEditClicked()));
 
-	/* Listen to device additions/removals */
-	connect(plugin, SIGNAL(deviceRemoved(MIDIDevice*)),
-		this, SLOT(slotDeviceRemoved(MIDIDevice*)));
-	connect(plugin, SIGNAL(deviceAdded(MIDIDevice*)),
-		this, SLOT(slotDeviceAdded(MIDIDevice*)));
+    /* Listen to device additions/removals */
+    connect(plugin, SIGNAL(deviceRemoved(MIDIDevice*)),
+            this, SLOT(slotDeviceRemoved(MIDIDevice*)));
+    connect(plugin, SIGNAL(deviceAdded(MIDIDevice*)),
+            this, SLOT(slotDeviceAdded(MIDIDevice*)));
 
-	refreshList();
+    refreshList();
 }
 
 ConfigureMIDIOut::~ConfigureMIDIOut()
@@ -74,71 +74,71 @@ ConfigureMIDIOut::~ConfigureMIDIOut()
 
 void ConfigureMIDIOut::slotRefreshClicked()
 {
-	Q_ASSERT(m_plugin != NULL);
-	m_plugin->rescanDevices();
+    Q_ASSERT(m_plugin != NULL);
+    m_plugin->rescanDevices();
 }
 
 void ConfigureMIDIOut::refreshList()
 {
-	QTreeWidgetItem* item;
-	MIDIDevice* dev;
-	int i = 1;
+    QTreeWidgetItem* item;
+    MIDIDevice* dev;
+    int i = 1;
 
-	m_list->clear();
+    m_list->clear();
 
-	QListIterator <MIDIDevice*> it(m_plugin->m_devices);
-	while (it.hasNext() == true)
-	{
-		dev = it.next();
+    QListIterator <MIDIDevice*> it(m_plugin->m_devices);
+    while (it.hasNext() == true)
+    {
+        dev = it.next();
 
-		item = new QTreeWidgetItem(m_list);
-		item->setText(KColumnNumber, QString("%1").arg(i++));
-		item->setText(KColumnName, dev->name());
-		item->setText(KColumnMIDIChannel,
-			      QString("%1").arg(dev->midiChannel() + 1));
-		item->setText(KColumnMode,
-			      MIDIDevice::modeToString(dev->mode()));
-	}
+        item = new QTreeWidgetItem(m_list);
+        item->setText(KColumnNumber, QString("%1").arg(i++));
+        item->setText(KColumnName, dev->name());
+        item->setText(KColumnMIDIChannel,
+                      QString("%1").arg(dev->midiChannel() + 1));
+        item->setText(KColumnMode,
+                      MIDIDevice::modeToString(dev->mode()));
+    }
 }
 
 void ConfigureMIDIOut::slotEditClicked()
 {
-	QTreeWidgetItem* item;
-	MIDIDevice* device;
+    QTreeWidgetItem* item;
+    MIDIDevice* device;
 
-	item = m_list->currentItem();
-	if (item == NULL)
-		return;
+    item = m_list->currentItem();
+    if (item == NULL)
+        return;
 
-	device = m_plugin->device(item->text(KColumnNumber).toInt() - 1);
-	if (device == NULL)
-		return;
+    device = m_plugin->device(item->text(KColumnNumber).toInt() - 1);
+    if (device == NULL)
+        return;
 
-	ConfigureMIDIDevice cmd(this, device);
-	if (cmd.exec() == QDialog::Accepted)
-	{
-		/* Update the tree item */
-		item->setText(KColumnMIDIChannel,
-			      QString("%1").arg(device->midiChannel() + 1));
-		item->setText(KColumnMode,
-			      MIDIDevice::modeToString(device->mode()));
+    ConfigureMIDIDevice cmd(this, device);
+    if (cmd.exec() == QDialog::Accepted)
+    {
+        /* Update the tree item */
+        item->setText(KColumnMIDIChannel,
+                      QString("%1").arg(device->midiChannel() + 1));
+        item->setText(KColumnMode,
+                      MIDIDevice::modeToString(device->mode()));
 
-		/* Save as global settings */
-		device->saveSettings();
-	}
+        /* Save as global settings */
+        device->saveSettings();
+    }
 }
 
 void ConfigureMIDIOut::slotDeviceAdded(MIDIDevice* device)
 {
-	Q_UNUSED(device);
-	refreshList();
+    Q_UNUSED(device);
+    refreshList();
 }
 
 void ConfigureMIDIOut::slotDeviceRemoved(MIDIDevice* device)
 {
-	QListIterator <QTreeWidgetItem*> it(m_list->findItems(device->name(),
-							      Qt::MatchExactly,
-							      KColumnName));
-	while (it.hasNext() == true)
-		delete it.next();
+    QListIterator <QTreeWidgetItem*> it(m_list->findItems(device->name(),
+                                        Qt::MatchExactly,
+                                        KColumnName));
+    while (it.hasNext() == true)
+        delete it.next();
 }

@@ -31,12 +31,12 @@
 
 QLCInputChannel::QLCInputChannel()
 {
-	m_type = Button;
+    m_type = Button;
 }
 
 QLCInputChannel::QLCInputChannel(const QLCInputChannel& channel)
 {
-	*this = channel;
+    *this = channel;
 }
 
 QLCInputChannel::~QLCInputChannel()
@@ -45,14 +45,14 @@ QLCInputChannel::~QLCInputChannel()
 
 QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
 {
-	if (this != &channel)
-	{
-		m_name = channel.m_name;
-		m_type = channel.m_type;
-		//m_channel = channel.m_channel;
-	}
+    if (this != &channel)
+    {
+        m_name = channel.m_name;
+        m_type = channel.m_type;
+        //m_channel = channel.m_channel;
+    }
 
-	return *this;
+    return *this;
 }
 
 /****************************************************************************
@@ -70,50 +70,50 @@ void QLCInputChannel::setChannel(quint32 channel)
 
 void QLCInputChannel::setType(Type type)
 {
-	m_type = type;
+    m_type = type;
 }
 
 QString QLCInputChannel::typeToString(Type type)
 {
-	QString str;
+    QString str;
 
-	switch (type)
-	{
-	case Button:
-		str = QString(KXMLQLCInputChannelButton);
-		break;
-	case Knob:
-		str = QString(KXMLQLCInputChannelKnob);
-		break;
-	case Slider:
-		str = QString(KXMLQLCInputChannelSlider);
-		break;
-	default:
-		str = QString(KXMLQLCInputChannelNone);
-	}
+    switch (type)
+    {
+    case Button:
+        str = QString(KXMLQLCInputChannelButton);
+        break;
+    case Knob:
+        str = QString(KXMLQLCInputChannelKnob);
+        break;
+    case Slider:
+        str = QString(KXMLQLCInputChannelSlider);
+        break;
+    default:
+        str = QString(KXMLQLCInputChannelNone);
+    }
 
-	return str;
+    return str;
 }
 
 QLCInputChannel::Type QLCInputChannel::stringToType(const QString& type)
 {
-	if (type == KXMLQLCInputChannelButton)
-		return Button;
-	else if (type == KXMLQLCInputChannelKnob)
-		return Knob;
-	else if (type == KXMLQLCInputChannelSlider)
-		return Slider;
-	else
-		return NoType;
+    if (type == KXMLQLCInputChannelButton)
+        return Button;
+    else if (type == KXMLQLCInputChannelKnob)
+        return Knob;
+    else if (type == KXMLQLCInputChannelSlider)
+        return Slider;
+    else
+        return NoType;
 }
 
 QStringList QLCInputChannel::types()
 {
-	QStringList list;
-	list << KXMLQLCInputChannelSlider;
-	list << KXMLQLCInputChannelKnob;
-	list << KXMLQLCInputChannelButton;
-	return list;
+    QStringList list;
+    list << KXMLQLCInputChannelSlider;
+    list << KXMLQLCInputChannelKnob;
+    list << KXMLQLCInputChannelButton;
+    return list;
 }
 
 /****************************************************************************
@@ -122,7 +122,7 @@ QStringList QLCInputChannel::types()
 
 void QLCInputChannel::setName(const QString& name)
 {
-	m_name = name;
+    m_name = name;
 }
 
 /****************************************************************************
@@ -131,76 +131,76 @@ void QLCInputChannel::setName(const QString& name)
 
 bool QLCInputChannel::loadXML(const QDomElement* root)
 {
-	QDomElement tag;
-	QDomNode node;
+    QDomElement tag;
+    QDomNode node;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	/* Verify that the tag contains an input channel */
-	if (root->tagName() != KXMLQLCInputChannel)
-	{
-		qWarning() << "Channel node not found";
-		return false;
-	}
+    /* Verify that the tag contains an input channel */
+    if (root->tagName() != KXMLQLCInputChannel)
+    {
+        qWarning() << "Channel node not found";
+        return false;
+    }
 
-	/* Get the channel number */
-	// setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
+    /* Get the channel number */
+    // setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
 
-	/* Go thru all sub tags */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCInputChannelName)
-		{
-			setName(tag.text());
-		}
-		else if (tag.tagName() == KXMLQLCInputChannelType)
-		{
-			setType(stringToType(tag.text()));
-		}
-		else
-		{
-			qDebug() << "Unknown input channel tag"
-				 << tag.tagName();
-		}
+    /* Go thru all sub tags */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == KXMLQLCInputChannelName)
+        {
+            setName(tag.text());
+        }
+        else if (tag.tagName() == KXMLQLCInputChannelType)
+        {
+            setType(stringToType(tag.text()));
+        }
+        else
+        {
+            qDebug() << "Unknown input channel tag"
+            << tag.tagName();
+        }
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }
 
 bool QLCInputChannel::saveXML(QDomDocument* doc, QDomElement* root,
-			      quint32 channelNumber) const
+                              quint32 channelNumber) const
 {
-	QDomElement subtag;
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement subtag;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(root != NULL);
 
-	/* The channel tag */
-	tag = doc->createElement(KXMLQLCInputChannel);
-	root->appendChild(tag);
+    /* The channel tag */
+    tag = doc->createElement(KXMLQLCInputChannel);
+    root->appendChild(tag);
 
-	/* Channel number attribute */
-	tag.setAttribute(KXMLQLCInputChannelNumber,
-			 QString("%1").arg(channelNumber));
+    /* Channel number attribute */
+    tag.setAttribute(KXMLQLCInputChannelNumber,
+                     QString("%1").arg(channelNumber));
 
-	/* Name */
-	subtag = doc->createElement(KXMLQLCInputChannelName);
-	tag.appendChild(subtag);
-	text = doc->createTextNode(m_name);
-	subtag.appendChild(text);
+    /* Name */
+    subtag = doc->createElement(KXMLQLCInputChannelName);
+    tag.appendChild(subtag);
+    text = doc->createTextNode(m_name);
+    subtag.appendChild(text);
 
-	/* Type */
-	subtag = doc->createElement(KXMLQLCInputChannelType);
-	tag.appendChild(subtag);
-	text = doc->createTextNode(typeToString(m_type));
-	subtag.appendChild(text);
+    /* Type */
+    subtag = doc->createElement(KXMLQLCInputChannelType);
+    tag.appendChild(subtag);
+    text = doc->createTextNode(typeToString(m_type));
+    subtag.appendChild(text);
 
-	return true;
+    return true;
 }

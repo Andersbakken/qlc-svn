@@ -41,20 +41,20 @@ MonitorLayoutItem::~MonitorLayoutItem()
 
 bool MonitorLayoutItem::operator<(const MonitorLayoutItem& item)
 {
-	MonitorLayoutItem& ncitem = const_cast<MonitorLayoutItem&> (item);
-	MonitorFixture* item_mof;
-	MonitorFixture* mof;
+    MonitorLayoutItem& ncitem = const_cast<MonitorLayoutItem&> (item);
+    MonitorFixture* item_mof;
+    MonitorFixture* mof;
 
-	mof = qobject_cast<MonitorFixture*> (widget());
-	Q_ASSERT(mof != NULL);
+    mof = qobject_cast<MonitorFixture*> (widget());
+    Q_ASSERT(mof != NULL);
 
-	item_mof = qobject_cast<MonitorFixture*> (ncitem.widget());
-	Q_ASSERT(item_mof != NULL);
+    item_mof = qobject_cast<MonitorFixture*> (ncitem.widget());
+    Q_ASSERT(item_mof != NULL);
 
-	if ((*mof) < (*item_mof))
-		return true;
-	else
-		return false;
+    if ((*mof) < (*item_mof))
+        return true;
+    else
+        return false;
 }
 
 /****************************************************************************
@@ -67,8 +67,8 @@ MonitorLayout::MonitorLayout(QWidget *parent) : QLayout(parent)
 
 MonitorLayout::~MonitorLayout()
 {
-	while (m_items.isEmpty() == false)
-		delete m_items.takeFirst();
+    while (m_items.isEmpty() == false)
+        delete m_items.takeFirst();
 }
 
 /****************************************************************************
@@ -77,40 +77,40 @@ MonitorLayout::~MonitorLayout()
 
 void MonitorLayout::addItem(QLayoutItem* item)
 {
-	m_items.append(static_cast<MonitorLayoutItem*> (item));
-	sort();
-	update();
+    m_items.append(static_cast<MonitorLayoutItem*> (item));
+    sort();
+    update();
 }
 
 int MonitorLayout::count() const
 {
-	return m_items.size();
+    return m_items.size();
 }
 
 MonitorLayoutItem* MonitorLayout::itemAt(int index) const
 {
-	return m_items.value(index);
+    return m_items.value(index);
 }
 
 MonitorLayoutItem* MonitorLayout::takeAt(int index)
 {
-	if (index >= 0 && index < m_items.size())
-		return m_items.takeAt(index);
-	else
-		return NULL;
+    if (index >= 0 && index < m_items.size())
+        return m_items.takeAt(index);
+    else
+        return NULL;
 }
 
 static bool MonitorLayoutLessThan(MonitorLayoutItem* i1, MonitorLayoutItem* i2)
 {
-	if ((*i1) < (*i2))
-		return true;
-	else
-		return false;
+    if ((*i1) < (*i2))
+        return true;
+    else
+        return false;
 }
 
 void MonitorLayout::sort()
 {
-	qSort(m_items.begin(), m_items.end(), MonitorLayoutLessThan);
+    qSort(m_items.begin(), m_items.end(), MonitorLayoutLessThan);
 }
 
 /****************************************************************************
@@ -119,71 +119,71 @@ void MonitorLayout::sort()
 
 Qt::Orientations MonitorLayout::expandingDirections() const
 {
-	return 0;
+    return 0;
 }
 
 bool MonitorLayout::hasHeightForWidth() const
 {
-	return true;
+    return true;
 }
 
 int MonitorLayout::heightForWidth(int width) const
 {
-	int height = doLayout(QRect(0, 0, width, 0), true);
-	return height;
+    int height = doLayout(QRect(0, 0, width, 0), true);
+    return height;
 }
 
 void MonitorLayout::setGeometry(const QRect& rect)
 {
-	QLayout::setGeometry(rect);
-	doLayout(rect, false);
+    QLayout::setGeometry(rect);
+    doLayout(rect, false);
 }
 
 QSize MonitorLayout::sizeHint() const
 {
-	return minimumSize();
+    return minimumSize();
 }
 
 QSize MonitorLayout::minimumSize() const
 {
-	QSize size;
-	QLayoutItem* item;
+    QSize size;
+    QLayoutItem* item;
 
-	foreach (item, m_items)
-		size = size.expandedTo(item->minimumSize());
+    foreach (item, m_items)
+    size = size.expandedTo(item->minimumSize());
 
-	size += QSize(2 * margin(), 2 * margin());
+    size += QSize(2 * margin(), 2 * margin());
 
-	return size;
+    return size;
 }
 
 int MonitorLayout::doLayout(const QRect& rect, bool testOnly) const
 {
-	int x = rect.x();
-	int y = rect.y();
-	int lineHeight = 0;
-	QLayoutItem* item;
+    int x = rect.x();
+    int y = rect.y();
+    int lineHeight = 0;
+    QLayoutItem* item;
 
-	foreach (item, m_items)
-	{
-		int nextX = x + item->sizeHint().width() + spacing();
-		if (nextX - spacing() > rect.right() && lineHeight > 0)
-		{
-			x = rect.x();
-			y = y + lineHeight + spacing();
-			nextX = x + item->sizeHint().width() + spacing();
-			lineHeight = 0;
-		}
+    foreach (item, m_items)
+    {
+        int nextX = x + item->sizeHint().width() + spacing();
+        if (nextX - spacing() > rect.right() && lineHeight > 0)
+        {
+            x = rect.x();
+            y = y + lineHeight + spacing();
+            nextX = x + item->sizeHint().width() + spacing();
+            lineHeight = 0;
+        }
 
-		if (testOnly == false)
-		{
-			item->setGeometry(QRect(QPoint(x, y),
-					  item->sizeHint()));
-		}
+        if (testOnly == false)
+        {
+            item->setGeometry(QRect(QPoint(x, y),
+                                    item->sizeHint()));
+        }
 
-		x = nextX;
-		lineHeight = qMax(lineHeight, item->sizeHint().height());
-	}
+        x = nextX;
+        lineHeight = qMax(lineHeight, item->sizeHint().height());
+    }
 
-	return y + lineHeight - rect.y();
+    return y + lineHeight - rect.y();
 }

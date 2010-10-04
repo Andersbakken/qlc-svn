@@ -53,64 +53,64 @@ class QLCFixtureDef;
 class QLCFixtureDefCache
 {
 public:
-	/**
-	 * Create a new fixture definition cache instance.
-	 */
-	QLCFixtureDefCache();
+    /**
+     * Create a new fixture definition cache instance.
+     */
+    QLCFixtureDefCache();
 
-	/**
-	 * Destroy a fixture definition cache instance.
-	 */
-	~QLCFixtureDefCache();
+    /**
+     * Destroy a fixture definition cache instance.
+     */
+    ~QLCFixtureDefCache();
 
-	/**
-	 * Get a fixture definition by its manufacturer and model. Only
-	 * const methods can be accessed for returned fixture definitions.
-	 *
-	 * @param manufacturer The fixture definition's manufacturer
-	 * @param model The fixture definition's model
-	 * @return A matching fixture definition or NULL if not found
-	 */
-	const QLCFixtureDef* fixtureDef(const QString& manufacturer,
-					const QString& model) const;
+    /**
+     * Get a fixture definition by its manufacturer and model. Only
+     * const methods can be accessed for returned fixture definitions.
+     *
+     * @param manufacturer The fixture definition's manufacturer
+     * @param model The fixture definition's model
+     * @return A matching fixture definition or NULL if not found
+     */
+    const QLCFixtureDef* fixtureDef(const QString& manufacturer,
+                                    const QString& model) const;
 
-	/**
-	 * Get a list of available manufacturer names.
-	 */
-	QStringList manufacturers() const;
+    /**
+     * Get a list of available manufacturer names.
+     */
+    QStringList manufacturers() const;
 
-	/**
-	 * Get a list of available model names for the given manufacturer.
-	 */
-	QStringList models(const QString& manufacturer) const;
+    /**
+     * Get a list of available model names for the given manufacturer.
+     */
+    QStringList models(const QString& manufacturer) const;
 
-	/**
-	 * Add a fixture definition to the model map.
-	 *
-	 * @param fixtureDef The fixture definition to add
-	 * @return true, if $fixtureDef was added, otherwise false
-	 */
-	bool addFixtureDef(QLCFixtureDef* fixtureDef);
+    /**
+     * Add a fixture definition to the model map.
+     *
+     * @param fixtureDef The fixture definition to add
+     * @return true, if $fixtureDef was added, otherwise false
+     */
+    bool addFixtureDef(QLCFixtureDef* fixtureDef);
 
-	/**
-	 * Load fixture definitions from the given path. Ignores duplicates.
-	 * Returns true even if $fixturePath doesn't contain any fixtures,
-	 * if it is still accessible (and exists).
-	 *
-	 * @param path The fixturePath to load from.
-	 * @return true, if the path could be accessed, otherwise false.
-	 */
-	bool load(const QString& fixturePath);
+    /**
+     * Load fixture definitions from the given path. Ignores duplicates.
+     * Returns true even if $fixturePath doesn't contain any fixtures,
+     * if it is still accessible (and exists).
+     *
+     * @param path The fixturePath to load from.
+     * @return true, if the path could be accessed, otherwise false.
+     */
+    bool load(const QString& fixturePath);
 
-	/**
-	 * Cleans the contents of the fixture definition cache, deleting
-	 * all fixture definitions.
-	 */
-	void clear();
+    /**
+     * Cleans the contents of the fixture definition cache, deleting
+     * all fixture definitions.
+     */
+    void clear();
 
 protected:
-	/** Map of manufacturers (key) and their models (value) */
-	QMap <QString, QMap <QString,QLCFixtureDef*> > m_models;
+    /** Map of manufacturers (key) and their models (value) */
+    QMap <QString, QMap <QString,QLCFixtureDef*> > m_models;
 };
 
 #endif

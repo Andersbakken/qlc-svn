@@ -39,39 +39,43 @@ class OutputMap;
 
 class OutputPatch : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(OutputPatch)
+    Q_OBJECT
+    Q_DISABLE_COPY(OutputPatch)
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	OutputPatch(QObject* parent);
-	virtual ~OutputPatch();
+    OutputPatch(QObject* parent);
+    virtual ~OutputPatch();
 
-	/********************************************************************
-	 * Plugin & output
-	 ********************************************************************/
+    /********************************************************************
+     * Plugin & output
+     ********************************************************************/
 public:
-	void set(QLCOutPlugin* plugin, quint32 output);
+    void set(QLCOutPlugin* plugin, quint32 output);
 
-	QLCOutPlugin* plugin() const { return m_plugin; }
-	QString pluginName() const;
+    QLCOutPlugin* plugin() const {
+        return m_plugin;
+    }
+    QString pluginName() const;
 
-	quint32 output() const { return m_output; }
-	QString outputName() const;
+    quint32 output() const {
+        return m_output;
+    }
+    QString outputName() const;
 
 protected:
-	QLCOutPlugin* m_plugin;
-	quint32 m_output;
+    QLCOutPlugin* m_plugin;
+    quint32 m_output;
 
-	/********************************************************************
-	 * Value dump
-	 ********************************************************************/
+    /********************************************************************
+     * Value dump
+     ********************************************************************/
 public:
-	/** Write the contents of a 512 channel value buffer to the plugin.
-	  * Called periodically by OutputMap. No need to call manually. */
-	void dump(const QByteArray& universe);
+    /** Write the contents of a 512 channel value buffer to the plugin.
+      * Called periodically by OutputMap. No need to call manually. */
+    void dump(const QByteArray& universe);
 };
 
 #endif

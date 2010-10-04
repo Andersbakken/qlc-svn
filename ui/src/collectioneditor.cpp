@@ -42,96 +42,96 @@ extern App* _app;
 #define KColumnFunctionID 1
 
 CollectionEditor::CollectionEditor(QWidget* parent, Collection* fc)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	Q_ASSERT(fc != NULL);
-	m_original = fc;
+    Q_ASSERT(fc != NULL);
+    m_original = fc;
 
-	setupUi(this);
+    setupUi(this);
 
-	connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
-		this, SLOT(slotNameEdited(const QString&)));
-	connect(m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
-	connect(m_remove, SIGNAL(clicked()), this, SLOT(slotRemove()));
+    connect(m_nameEdit, SIGNAL(textEdited(const QString&)),
+            this, SLOT(slotNameEdited(const QString&)));
+    connect(m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
+    connect(m_remove, SIGNAL(clicked()), this, SLOT(slotRemove()));
 
-	m_fc = new Collection(_app->doc());
-	m_fc->copyFrom(fc);
-	Q_ASSERT(m_fc != NULL);
+    m_fc = new Collection(_app->doc());
+    m_fc->copyFrom(fc);
+    Q_ASSERT(m_fc != NULL);
 
-	m_nameEdit->setText(m_fc->name());
-	slotNameEdited(m_fc->name());
+    m_nameEdit->setText(m_fc->name());
+    slotNameEdited(m_fc->name());
 
-	updateFunctionList();
+    updateFunctionList();
 }
 
 CollectionEditor::~CollectionEditor()
 {
-	Q_ASSERT(m_fc != NULL);
-	delete m_fc;
-	m_fc = NULL;
+    Q_ASSERT(m_fc != NULL);
+    delete m_fc;
+    m_fc = NULL;
 }
 
 void CollectionEditor::slotNameEdited(const QString& text)
 {
-	setWindowTitle(tr("Collection - %1").arg(text));
+    setWindowTitle(tr("Collection - %1").arg(text));
 }
 
 void CollectionEditor::slotAdd()
 {
-	FunctionSelection sel(this, true, m_original->id());
-	if (sel.exec() == QDialog::Accepted)
-	{
-		t_function_id fid;
+    FunctionSelection sel(this, true, m_original->id());
+    if (sel.exec() == QDialog::Accepted)
+    {
+        t_function_id fid;
 
-		QListIterator <t_function_id> it(sel.selection());
-		while (it.hasNext() == true)
-		{
-			fid = it.next();
-			m_fc->addFunction(fid);
-		}
+        QListIterator <t_function_id> it(sel.selection());
+        while (it.hasNext() == true)
+        {
+            fid = it.next();
+            m_fc->addFunction(fid);
+        }
 
-		updateFunctionList();
-	}
+        updateFunctionList();
+    }
 }
 
 void CollectionEditor::slotRemove()
 {
-	QTreeWidgetItem* item = m_tree->currentItem();
-	if (item != NULL)
-	{
-		t_function_id id = item->text(KColumnFunctionID).toInt();
-		m_fc->removeFunction(id);
-		delete item;
-	}
+    QTreeWidgetItem* item = m_tree->currentItem();
+    if (item != NULL)
+    {
+        t_function_id id = item->text(KColumnFunctionID).toInt();
+        m_fc->removeFunction(id);
+        delete item;
+    }
 }
 
 void CollectionEditor::accept()
 {
-	m_fc->setName(m_nameEdit->text());
-	m_original->copyFrom(m_fc);
-	_app->doc()->setModified();
+    m_fc->setName(m_nameEdit->text());
+    m_original->copyFrom(m_fc);
+    _app->doc()->setModified();
 
-	QDialog::accept();
+    QDialog::accept();
 }
 
 void CollectionEditor::updateFunctionList()
 {
-	m_tree->clear();
+    m_tree->clear();
 
-	QListIterator <t_function_id> it(m_fc->functions());
-	while (it.hasNext() == true)
-	{
-		QTreeWidgetItem* item;
-		Function* function;
-		t_function_id fid;
-		QString s;
+    QListIterator <t_function_id> it(m_fc->functions());
+    while (it.hasNext() == true)
+    {
+        QTreeWidgetItem* item;
+        Function* function;
+        t_function_id fid;
+        QString s;
 
-		fid = it.next();
-		function = _app->doc()->function(fid);
-		Q_ASSERT(function != NULL);
+        fid = it.next();
+        function = _app->doc()->function(fid);
+        Q_ASSERT(function != NULL);
 
-		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnFunction, function->name());
-		item->setText(KColumnFunctionID, s.setNum(fid));
-	}
+        item = new QTreeWidgetItem(m_tree);
+        item->setText(KColumnFunction, function->name());
+        item->setText(KColumnFunctionID, s.setNum(fid));
+    }
 }

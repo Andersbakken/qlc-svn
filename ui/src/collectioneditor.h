@@ -32,27 +32,27 @@ class Collection;
 
 class CollectionEditor : public QDialog, public Ui_CollectionEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	CollectionEditor(QWidget* parent, Collection* fc);
-	~CollectionEditor();
+    CollectionEditor(QWidget* parent, Collection* fc);
+    ~CollectionEditor();
 
 private:
-	Q_DISABLE_COPY(CollectionEditor)
+    Q_DISABLE_COPY(CollectionEditor)
 
 protected slots:
-	void slotNameEdited(const QString& text);
-	void slotAdd();
-	void slotRemove();
-	void accept();
+    void slotNameEdited(const QString& text);
+    void slotAdd();
+    void slotRemove();
+    void accept();
 
 protected:
-	void updateFunctionList();
+    void updateFunctionList();
 
 protected:
-	Collection* m_fc;
-	Collection* m_original;
+    Collection* m_fc;
+    Collection* m_original;
 };
 
 #endif

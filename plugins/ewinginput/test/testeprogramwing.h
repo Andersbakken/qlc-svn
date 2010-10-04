@@ -8,30 +8,30 @@ class EProgramWing;
 
 class TestEProgramWing : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 protected:
-	QByteArray data();
+    QByteArray data();
 
 private slots:
-	void initTestCase();
+    void initTestCase();
 
-	void firmware();
-	void address();
-	void isOutputData();
-	void name();
-	void infoText();
+    void firmware();
+    void address();
+    void isOutputData();
+    void name();
+    void infoText();
 
-	void buttons_data();
-	void buttons();
+    void buttons_data();
+    void buttons();
 
-	void encoders_data();
-	void encoders();
+    void encoders_data();
+    void encoders();
 
-	void cleanupTestCase();
+    void cleanupTestCase();
 
 private:
-	EProgramWing* m_ewing;
+    EProgramWing* m_ewing;
 };
 
 #endif

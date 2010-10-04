@@ -53,110 +53,110 @@ OutputManager* OutputManager::s_instance = NULL;
  ****************************************************************************/
 
 OutputManager::OutputManager(QWidget* parent, Qt::WindowFlags flags)
-	: QWidget(parent, flags)
+        : QWidget(parent, flags)
 {
-	/* Create a new layout for this widget */
-	new QVBoxLayout(this);
+    /* Create a new layout for this widget */
+    new QVBoxLayout(this);
 
-	/* Toolbar */
-	m_toolbar = new QToolBar(tr("Output Manager"), this);
-	m_toolbar->addAction(QIcon(":/edit.png"), tr("Edit Mapping"),
-			     this, SLOT(slotEditClicked()));
-	layout()->addWidget(m_toolbar);
+    /* Toolbar */
+    m_toolbar = new QToolBar(tr("Output Manager"), this);
+    m_toolbar->addAction(QIcon(":/edit.png"), tr("Edit Mapping"),
+                         this, SLOT(slotEditClicked()));
+    layout()->addWidget(m_toolbar);
 
-	/* Tree */
-	m_tree = new QTreeWidget(this);
-	layout()->addWidget(m_tree);
-	m_tree->setRootIsDecorated(false);
-	m_tree->setItemsExpandable(false);
-	m_tree->setSortingEnabled(false);
-	m_tree->setAllColumnsShowFocus(true);
+    /* Tree */
+    m_tree = new QTreeWidget(this);
+    layout()->addWidget(m_tree);
+    m_tree->setRootIsDecorated(false);
+    m_tree->setItemsExpandable(false);
+    m_tree->setSortingEnabled(false);
+    m_tree->setAllColumnsShowFocus(true);
 
-	QStringList columns;
-	columns << tr("Universe") << tr("Plugin") << tr("Output");
-	m_tree->setHeaderLabels(columns);
+    QStringList columns;
+    columns << tr("Universe") << tr("Plugin") << tr("Output");
+    m_tree->setHeaderLabels(columns);
 
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditClicked()));
+    connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, SLOT(slotEditClicked()));
 
-	/* Listen to document changes */
-	connect(_app, SIGNAL(documentChanged(Doc*)),
-		this, SLOT(slotDocumentChanged(Doc*)));
-	/* Use the initial document */
-	slotDocumentChanged(_app->doc());
+    /* Listen to document changes */
+    connect(_app, SIGNAL(documentChanged(Doc*)),
+            this, SLOT(slotDocumentChanged(Doc*)));
+    /* Use the initial document */
+    slotDocumentChanged(_app->doc());
 }
 
 OutputManager::~OutputManager()
 {
-        QSettings settings;
+    QSettings settings;
 #ifdef __APPLE__
-        settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
-        settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
+    settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
-	OutputManager::s_instance = NULL;
+    OutputManager::s_instance = NULL;
 }
 
 void OutputManager::create(QWidget* parent)
 {
-	QWidget* window;
+    QWidget* window;
 
-	/* Must not create more than one instance */
-	if (s_instance != NULL)
-		return;
+    /* Must not create more than one instance */
+    if (s_instance != NULL)
+        return;
 
 #ifdef __APPLE__
-	/* Create a separate window for OSX */
-	s_instance = new OutputManager(parent, Qt::Window);
-	window = s_instance;
+    /* Create a separate window for OSX */
+    s_instance = new OutputManager(parent, Qt::Window);
+    window = s_instance;
 #else
-	/* Create an MDI window for X11 & Win32 */
-	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
-	Q_ASSERT(area != NULL);
-	s_instance = new OutputManager(parent);
-	window = area->addSubWindow(s_instance);
+    /* Create an MDI window for X11 & Win32 */
+    QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+    Q_ASSERT(area != NULL);
+    s_instance = new OutputManager(parent);
+    window = area->addSubWindow(s_instance);
 #endif
 
-	/* Set some common properties for the window and show it */
-	window->setAttribute(Qt::WA_DeleteOnClose);
-	window->setWindowIcon(QIcon(":/output.png"));
-	window->setWindowTitle(tr("Output Manager"));
-	window->setContextMenuPolicy(Qt::CustomContextMenu);
-	window->show();
+    /* Set some common properties for the window and show it */
+    window->setAttribute(Qt::WA_DeleteOnClose);
+    window->setWindowIcon(QIcon(":/output.png"));
+    window->setWindowTitle(tr("Output Manager"));
+    window->setContextMenuPolicy(Qt::CustomContextMenu);
+    window->show();
 
-	QSettings settings;
-	QVariant var = settings.value(SETTINGS_GEOMETRY);
-	if (var.isValid() == true)
-	{
-		window->restoreGeometry(var.toByteArray());
-	}
-	else
-	{
-		QVariant w = settings.value("outputmanager/width");
-		QVariant h = settings.value("outputmanager/height");
-		if (w.isValid() == true && h.isValid() == true)
-			window->resize(w.toInt(), h.toInt());
-		else
-			window->resize(700, 300);
-	}
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+    {
+        window->restoreGeometry(var.toByteArray());
+    }
+    else
+    {
+        QVariant w = settings.value("outputmanager/width");
+        QVariant h = settings.value("outputmanager/height");
+        if (w.isValid() == true && h.isValid() == true)
+            window->resize(w.toInt(), h.toInt());
+        else
+            window->resize(700, 300);
+    }
 }
 
 void OutputManager::slotModeChanged(Doc::Mode mode)
 {
-	/* Close this when entering operate mode */
-	if (mode == Doc::Operate)
+    /* Close this when entering operate mode */
+    if (mode == Doc::Operate)
 #ifdef __APPLE__
-		deleteLater();
+        deleteLater();
 #else
-		parent()->deleteLater();
+        parent()->deleteLater();
 #endif
 }
 
 void OutputManager::slotDocumentChanged(Doc* doc)
 {
-	connect(doc, SIGNAL(modeChanged(Doc::Mode)),
-		this, SLOT(slotModeChanged(Doc::Mode)));
-	updateTree();
+    connect(doc, SIGNAL(modeChanged(Doc::Mode)),
+            this, SLOT(slotModeChanged(Doc::Mode)));
+    updateTree();
 }
 
 /*****************************************************************************
@@ -165,24 +165,24 @@ void OutputManager::slotDocumentChanged(Doc* doc)
 
 void OutputManager::updateTree()
 {
-	m_tree->clear();
-	for (int uni = 0; uni < KUniverseCount; uni++)
-	{
-		OutputPatch* op = _app->outputMap()->patch(uni);
-		updateItem(new QTreeWidgetItem(m_tree), op, uni);
-	}
+    m_tree->clear();
+    for (int uni = 0; uni < KUniverseCount; uni++)
+    {
+        OutputPatch* op = _app->outputMap()->patch(uni);
+        updateItem(new QTreeWidgetItem(m_tree), op, uni);
+    }
 }
 
 void OutputManager::updateItem(QTreeWidgetItem* item, OutputPatch* op,
-			       int universe)
+                               int universe)
 {
-	Q_ASSERT(item != NULL);
-	Q_ASSERT(op != NULL);
+    Q_ASSERT(item != NULL);
+    Q_ASSERT(op != NULL);
 
-	item->setText(KColumnUniverse, QString("%1").arg(universe + 1));
-	item->setText(KColumnPlugin, op->pluginName());
-	item->setText(KColumnOutputName, op->outputName());
-	item->setText(KColumnOutput, QString("%1").arg(op->output() + 1));
+    item->setText(KColumnUniverse, QString("%1").arg(universe + 1));
+    item->setText(KColumnPlugin, op->pluginName());
+    item->setText(KColumnOutputName, op->outputName());
+    item->setText(KColumnOutput, QString("%1").arg(op->output() + 1));
 }
 
 /****************************************************************************
@@ -191,19 +191,19 @@ void OutputManager::updateItem(QTreeWidgetItem* item, OutputPatch* op,
 
 void OutputManager::slotEditClicked()
 {
-	QTreeWidgetItem* item;
-	OutputPatch* patch;
-	int universe;
+    QTreeWidgetItem* item;
+    OutputPatch* patch;
+    int universe;
 
-	item = m_tree->currentItem();
-	if (item == NULL)
-		return;
+    item = m_tree->currentItem();
+    if (item == NULL)
+        return;
 
-	universe = item->text(KColumnUniverse).toInt() - 1;
-	patch = _app->outputMap()->patch(universe);
-	Q_ASSERT(patch != NULL);
+    universe = item->text(KColumnUniverse).toInt() - 1;
+    patch = _app->outputMap()->patch(universe);
+    Q_ASSERT(patch != NULL);
 
-	OutputPatchEditor ope(this, universe, patch);
-	if (ope.exec() == QDialog::Accepted)
-		updateItem(item, patch, universe);
+    OutputPatchEditor ope(this, universe, patch);
+    if (ope.exec() == QDialog::Accepted)
+        updateItem(item, patch, universe);
 }

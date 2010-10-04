@@ -30,110 +30,110 @@
 
 class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/**
-	 * Construct a new DMXUSBPro object with the given parent and
-	 * FTDI device context. Neither can be NULL.
-	 *
-	 * @param parent The owner of this object
-	 * @param name The name of the device
-	 * @param serial The device's unique serial number
-	 */
-	EnttecDMXUSBPro(QObject* parent, const QString& name,
-			const QString& serial);
+    /**
+     * Construct a new DMXUSBPro object with the given parent and
+     * FTDI device context. Neither can be NULL.
+     *
+     * @param parent The owner of this object
+     * @param name The name of the device
+     * @param serial The device's unique serial number
+     */
+    EnttecDMXUSBPro(QObject* parent, const QString& name,
+                    const QString& serial);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~EnttecDMXUSBPro();
+    /**
+     * Destructor
+     */
+    virtual ~EnttecDMXUSBPro();
 
 protected:
-	struct ftdi_context m_context;
+    struct ftdi_context m_context;
 
-	/********************************************************************
-	 * Open & close
-	 ********************************************************************/
+    /********************************************************************
+     * Open & close
+     ********************************************************************/
 public:
-	/**
-	 * Open widget for further operations.
-	 *
-	 * @return true if widget was opened successfully (or was already open)
-	 */
-        bool open();
+    /**
+     * Open widget for further operations.
+     *
+     * @return true if widget was opened successfully (or was already open)
+     */
+    bool open();
 
-	/**
-	 * Close widget, preventing any further operations
-	 *
-	 * @param true if widget was closed successfully (or was already closed)
-	 */
-        bool close();
+    /**
+     * Close widget, preventing any further operations
+     *
+     * @param true if widget was closed successfully (or was already closed)
+     */
+    bool close();
 
-	/**
-	 * Check, whether widget has been opened
-	 *
-	 * @return true if widget is open, otherwise false
-	 */
-        bool isOpen();
+    /**
+     * Check, whether widget has been opened
+     *
+     * @return true if widget is open, otherwise false
+     */
+    bool isOpen();
 
-	/********************************************************************
-	 * Serial & name
-	 ********************************************************************/
+    /********************************************************************
+     * Serial & name
+     ********************************************************************/
 public:
-	/**
-	 * Get the device's friendly name, which is not unique, but only
-	 * tells the product name (e.g. "DMX USB PRO")
-	 *
-	 * @return widget's name
-	 */
-	QString name() const;
+    /**
+     * Get the device's friendly name, which is not unique, but only
+     * tells the product name (e.g. "DMX USB PRO")
+     *
+     * @return widget's name
+     */
+    QString name() const;
 
-	/**
-	 * Get the FTDI chip's serial number as a string. Can be used to
-	 * uniquely identify widgets.
-	 *
-	 * @return widget's serial number in string form
-	 */
-        QString serial() const;
+    /**
+     * Get the FTDI chip's serial number as a string. Can be used to
+     * uniquely identify widgets.
+     *
+     * @return widget's serial number in string form
+     */
+    QString serial() const;
 
-	/**
-	 * Get the widget's ENTTEC serial number as a string. The same serial
-	 * should be printed on the actual physical device.
-	 */
-	QString enttecSerial() const;
+    /**
+     * Get the widget's ENTTEC serial number as a string. The same serial
+     * should be printed on the actual physical device.
+     */
+    QString enttecSerial() const;
 
-	/**
-	 * Get the widget's unique name
-	 *
-	 * @return widget's unique name as: "<name> (S/N: <enttecserial>)"
-	 */
-	QString uniqueName() const;
+    /**
+     * Get the widget's unique name
+     *
+     * @return widget's unique name as: "<name> (S/N: <enttecserial>)"
+     */
+    QString uniqueName() const;
 
 protected:
-	/** Extract the widget's ENTTEC serial number */
-	bool extractEnttecSerial();
+    /** Extract the widget's ENTTEC serial number */
+    bool extractEnttecSerial();
 
 protected:
-	QString m_name;
-	QString m_serial;
-	QString m_enttecSerial;
+    QString m_name;
+    QString m_serial;
+    QString m_enttecSerial;
 
-	/********************************************************************
-	 * DMX operations
-	 ********************************************************************/
+    /********************************************************************
+     * DMX operations
+     ********************************************************************/
 public:
-	/**
-	 * Send the given universe-ful of DMX data to widget. The universe must
-	 * be at least 25 bytes but no more than 513 bytes long.
-	 *
-	 * @param universe The DMX universe to send
-	 * @return true if the values were sent successfully, otherwise false
-	 */
-	bool sendDMX(const QByteArray& universe);
+    /**
+     * Send the given universe-ful of DMX data to widget. The universe must
+     * be at least 25 bytes but no more than 513 bytes long.
+     *
+     * @param universe The DMX universe to send
+     * @return true if the values were sent successfully, otherwise false
+     */
+    bool sendDMX(const QByteArray& universe);
 };
 
 #endif

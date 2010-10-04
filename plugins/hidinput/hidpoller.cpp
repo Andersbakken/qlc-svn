@@ -37,14 +37,14 @@
 
 HIDPoller::HIDPoller(HIDInput* parent) : QThread(parent)
 {
-	Q_ASSERT(parent != NULL);
-	m_running = false;
+    Q_ASSERT(parent != NULL);
+    m_running = false;
 }
 
 HIDPoller::~HIDPoller()
 {
-	m_devices.clear();
-	stop();
+    m_devices.clear();
+    stop();
 }
 
 /*****************************************************************************
@@ -53,51 +53,51 @@ HIDPoller::~HIDPoller()
 
 bool HIDPoller::addDevice(HIDDevice* device)
 {
-	Q_ASSERT(device != NULL);
+    Q_ASSERT(device != NULL);
 
-	m_mutex.lock();
+    m_mutex.lock();
 
-	if (m_devices.contains(device->handle()) == true)
-	{
-		m_mutex.unlock();
-		return false;
-	}
+    if (m_devices.contains(device->handle()) == true)
+    {
+        m_mutex.unlock();
+        return false;
+    }
 
-	if (device->open() == true)
-	{
-		m_devices[device->handle()] = device;
-		m_changed = true;
-	}
+    if (device->open() == true)
+    {
+        m_devices[device->handle()] = device;
+        m_changed = true;
+    }
 
-	if (m_running == false)
-	{
-		m_running = true;
-		start();
-	}
+    if (m_running == false)
+    {
+        m_running = true;
+        start();
+    }
 
-	m_mutex.unlock();
+    m_mutex.unlock();
 
-	return true;
+    return true;
 }
 
 bool HIDPoller::removeDevice(HIDDevice* device)
 {
-	bool r = false;
+    bool r = false;
 
-	Q_ASSERT(device != NULL);
+    Q_ASSERT(device != NULL);
 
-	m_mutex.lock();
+    m_mutex.lock();
 
-	if (m_devices.remove(device->handle()) > 0)
-	{
-		device->close();
-		m_changed = true;
-		r = true;
-	}
+    if (m_devices.remove(device->handle()) > 0)
+    {
+        device->close();
+        m_changed = true;
+        r = true;
+    }
 
-	m_mutex.unlock();
+    m_mutex.unlock();
 
-	return r;
+    return r;
 }
 
 /*****************************************************************************
@@ -106,87 +106,87 @@ bool HIDPoller::removeDevice(HIDDevice* device)
 
 void HIDPoller::stop()
 {
-	m_running = false;
-	wait();
+    m_running = false;
+    wait();
 }
 
 void HIDPoller::run()
 {
-	struct pollfd* fds = NULL;
-	int num = 0;
-	int r;
-	int i;
+    struct pollfd* fds = NULL;
+    int num = 0;
+    int r;
+    int i;
 
-	m_mutex.lock();
+    m_mutex.lock();
 
-	while (m_running == true)
-	{
-		/* If the list of polled devices has changed, reload all
-		   devices into the array of pollfd's */
-		if (m_changed == true)
-		{
-			if (fds != NULL)
-				delete [] fds;
+    while (m_running == true)
+    {
+        /* If the list of polled devices has changed, reload all
+           devices into the array of pollfd's */
+        if (m_changed == true)
+        {
+            if (fds != NULL)
+                delete [] fds;
 
-			num = m_devices.count();
-			if (num == 0)
-				break;
+            num = m_devices.count();
+            if (num == 0)
+                break;
 
-			fds = new struct pollfd[num];
-			memset(fds, 0, num);
-			i = 0;
+            fds = new struct pollfd[num];
+            memset(fds, 0, num);
+            i = 0;
 
-			QMapIterator<int, HIDDevice*> it(m_devices);
-			while (it.hasNext() == true)
-			{
-				it.next();
-				fds[i].fd = it.key();
-				fds[i].events = POLLIN;
-				i++;
-			}
+            QMapIterator<int, HIDDevice*> it(m_devices);
+            while (it.hasNext() == true)
+            {
+                it.next();
+                fds[i].fd = it.key();
+                fds[i].events = POLLIN;
+                i++;
+            }
 
-			m_changed = false;
-		}
+            m_changed = false;
+        }
 
-		m_mutex.unlock();
-		r = poll(fds, num, KPollTimeout);
-		m_mutex.lock();
+        m_mutex.unlock();
+        r = poll(fds, num, KPollTimeout);
+        m_mutex.lock();
 
-		if (r < 0 && errno != EINTR)
-		{
-			/* Print abnormal errors. EINTR may happen often. */
-			perror("poll");
-		}
-		else if (r != 0)
-		{
-			/* If the device map has changed, we can't trust
-			   that any of the devices are valid. */
-			if (m_changed == false)
-			{
-				for (i = 0; i < num; i++)
-				{
-					if (fds[i].revents != 0)
-						readEvent(fds[i]);
-				}
-			}
-		}
-	}
+        if (r < 0 && errno != EINTR)
+        {
+            /* Print abnormal errors. EINTR may happen often. */
+            perror("poll");
+        }
+        else if (r != 0)
+        {
+            /* If the device map has changed, we can't trust
+               that any of the devices are valid. */
+            if (m_changed == false)
+            {
+                for (i = 0; i < num; i++)
+                {
+                    if (fds[i].revents != 0)
+                        readEvent(fds[i]);
+                }
+            }
+        }
+    }
 
-	m_running = false;
-	m_mutex.unlock();
+    m_running = false;
+    m_mutex.unlock();
 }
 
 void HIDPoller::readEvent(struct pollfd pfd)
 {
-	HIDDevice* device = m_devices[pfd.fd];
-	Q_ASSERT(device != NULL);
+    HIDDevice* device = m_devices[pfd.fd];
+    Q_ASSERT(device != NULL);
 
-	if (device->readEvent() == false)
-	{
-		if (m_devices.remove(device->handle()) > 0)
-		{
-			device->close();
-			m_changed = true;
-		}
-	}
+    if (device->readEvent() == false)
+    {
+        if (m_devices.remove(device->handle()) > 0)
+        {
+            device->close();
+            m_changed = true;
+        }
+    }
 }

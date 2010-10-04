@@ -43,11 +43,11 @@ extern App* _app;
 
 SelectInputChannel::SelectInputChannel(QWidget* parent) : QDialog(parent)
 {
-	m_universe = KInputUniverseInvalid;
-	m_channel = KInputChannelInvalid;
+    m_universe = KInputUniverseInvalid;
+    m_channel = KInputChannelInvalid;
 
-	setupUi(this);
-	fillTree();
+    setupUi(this);
+    fillTree();
 }
 
 SelectInputChannel::~SelectInputChannel()
@@ -56,17 +56,17 @@ SelectInputChannel::~SelectInputChannel()
 
 void SelectInputChannel::accept()
 {
-	QTreeWidgetItem* item;
+    QTreeWidgetItem* item;
 
-	/* Extract data from the selected item */
-	item = m_tree->currentItem();
-	if (item != NULL)
-	{
-		m_universe = item->text(KColumnUniverse).toInt();
-		m_channel = item->text(KColumnChannel).toInt();
-	}
+    /* Extract data from the selected item */
+    item = m_tree->currentItem();
+    if (item != NULL)
+    {
+        m_universe = item->text(KColumnUniverse).toInt();
+        m_channel = item->text(KColumnChannel).toInt();
+    }
 
-	QDialog::accept();
+    QDialog::accept();
 }
 
 /****************************************************************************
@@ -75,154 +75,154 @@ void SelectInputChannel::accept()
 
 void SelectInputChannel::fillTree()
 {
-	QLCInputChannel* channel;
-	QTreeWidgetItem* uniItem;
-	QTreeWidgetItem* chItem;
-	QLCInputProfile* profile;
-	quint32 uni;
-	InputPatch* patch;
+    QLCInputChannel* channel;
+    QTreeWidgetItem* uniItem;
+    QTreeWidgetItem* chItem;
+    QLCInputProfile* profile;
+    quint32 uni;
+    InputPatch* patch;
 
-	/* Add an option to select no input at all */
-	chItem = new QTreeWidgetItem(m_tree);
-	chItem->setText(KColumnName, KInputNone);
-	chItem->setText(KColumnUniverse, QString("%1")
-					 .arg(KInputUniverseInvalid));
-	chItem->setText(KColumnChannel, QString("%1")
-					.arg(KInputChannelInvalid));
+    /* Add an option to select no input at all */
+    chItem = new QTreeWidgetItem(m_tree);
+    chItem->setText(KColumnName, KInputNone);
+    chItem->setText(KColumnUniverse, QString("%1")
+                    .arg(KInputUniverseInvalid));
+    chItem->setText(KColumnChannel, QString("%1")
+                    .arg(KInputChannelInvalid));
 
-	for (uni = 0; uni < _app->inputMap()->universes(); uni++)
-	{
-		/* Get the patch associated to the current universe */
-		patch = _app->inputMap()->patch(uni);
-		Q_ASSERT(patch != NULL);
+    for (uni = 0; uni < _app->inputMap()->universes(); uni++)
+    {
+        /* Get the patch associated to the current universe */
+        patch = _app->inputMap()->patch(uni);
+        Q_ASSERT(patch != NULL);
 
-		/* Make an item for each universe */
-		uniItem = new QTreeWidgetItem(m_tree);
-		updateUniverseItem(uniItem, uni, patch);
+        /* Make an item for each universe */
+        uniItem = new QTreeWidgetItem(m_tree);
+        updateUniverseItem(uniItem, uni, patch);
 
-		if (patch->plugin() != NULL && patch->input() != KInputInvalid)
-		{
-			/* Add a manual option to each patched universe */
-			chItem = new QTreeWidgetItem(uniItem);
-			updateChannelItem(chItem, uni, NULL, NULL);
-		}
+        if (patch->plugin() != NULL && patch->input() != KInputInvalid)
+        {
+            /* Add a manual option to each patched universe */
+            chItem = new QTreeWidgetItem(uniItem);
+            updateChannelItem(chItem, uni, NULL, NULL);
+        }
 
-		/* Add known channels from profile (if any) */
-		profile = patch->profile();
-		if (profile != NULL)
-		{
-			QMapIterator <quint32, QLCInputChannel*>
-				it(profile->channels());
-			while (it.hasNext() == true)
-			{
-				channel = it.next().value();
-				Q_ASSERT(channel != NULL);
+        /* Add known channels from profile (if any) */
+        profile = patch->profile();
+        if (profile != NULL)
+        {
+            QMapIterator <quint32, QLCInputChannel*>
+            it(profile->channels());
+            while (it.hasNext() == true)
+            {
+                channel = it.next().value();
+                Q_ASSERT(channel != NULL);
 
-				chItem = new QTreeWidgetItem(uniItem);
-				updateChannelItem(chItem, uni, channel,
-						  profile);
-			}
-		}
-	}
+                chItem = new QTreeWidgetItem(uniItem);
+                updateChannelItem(chItem, uni, channel,
+                                  profile);
+            }
+        }
+    }
 
-	/* Listen to item changed signals so that we can catch user's
-	   manual input for <...> nodes. Connect AFTER filling the tree
-	   so all the initial item->setText()'s won't get caught here. */
-	connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-		this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
+    /* Listen to item changed signals so that we can catch user's
+       manual input for <...> nodes. Connect AFTER filling the tree
+       so all the initial item->setText()'s won't get caught here. */
+    connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+            this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
 }
 
 void SelectInputChannel::updateChannelItem(QTreeWidgetItem* item,
-					   quint32 universe,
-					   const QLCInputChannel* channel,
-					   const QLCInputProfile* profile)
+        quint32 universe,
+        const QLCInputChannel* channel,
+        const QLCInputProfile* profile)
 {
-	Q_ASSERT(item != NULL);
+    Q_ASSERT(item != NULL);
 
-	/* Add a manual option to each universe */
-	item->setText(KColumnUniverse, QString("%1").arg(universe));
-	if (channel == NULL && profile == NULL)
-	{
-		item->setFlags(item->flags() | Qt::ItemIsEditable);
-		item->setText(KColumnName,
-		   tr("<Double click here to enter channel number manually>"));
-		item->setText(KColumnChannel,
-			      QString("%1").arg(KInputChannelInvalid));
-	}
-	else
-	{
-		item->setText(KColumnName, QString("%1: %2")
-				.arg(profile->channelNumber(channel) + 1)
-				.arg(channel->name()));
-		item->setText(KColumnChannel, QString("%1")
-				.arg(profile->channelNumber(channel)));
+    /* Add a manual option to each universe */
+    item->setText(KColumnUniverse, QString("%1").arg(universe));
+    if (channel == NULL && profile == NULL)
+    {
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        item->setText(KColumnName,
+                      tr("<Double click here to enter channel number manually>"));
+        item->setText(KColumnChannel,
+                      QString("%1").arg(KInputChannelInvalid));
+    }
+    else
+    {
+        item->setText(KColumnName, QString("%1: %2")
+                      .arg(profile->channelNumber(channel) + 1)
+                      .arg(channel->name()));
+        item->setText(KColumnChannel, QString("%1")
+                      .arg(profile->channelNumber(channel)));
 
-		/* Display nice icons to indicate channel type */
-		if (channel->type() == QLCInputChannel::Slider)
-			item->setIcon(KColumnName, QIcon(":/slider.png"));
-		else if (channel->type() == QLCInputChannel::Knob)
-			item->setIcon(KColumnName, QIcon(":/knob.png"));
-		else if (channel->type() == QLCInputChannel::Button)
-			item->setIcon(KColumnName, QIcon(":/button.png"));
-	}
+        /* Display nice icons to indicate channel type */
+        if (channel->type() == QLCInputChannel::Slider)
+            item->setIcon(KColumnName, QIcon(":/slider.png"));
+        else if (channel->type() == QLCInputChannel::Knob)
+            item->setIcon(KColumnName, QIcon(":/knob.png"));
+        else if (channel->type() == QLCInputChannel::Button)
+            item->setIcon(KColumnName, QIcon(":/button.png"));
+    }
 }
 
 void SelectInputChannel::updateUniverseItem(QTreeWidgetItem* item,
-					    quint32 universe,
-					    InputPatch* patch)
+        quint32 universe,
+        InputPatch* patch)
 {
-	QString name;
+    QString name;
 
-	Q_ASSERT(item != NULL);
+    Q_ASSERT(item != NULL);
 
-	if (patch == NULL || patch->plugin() == NULL)
-	{
-		/* The current universe doesn't have anything assigned to it */
-		name = QString("%1: %2").arg(universe + 1).arg(KInputNone);
-		item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-		item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
-	}
-	else
-	{
-		/* The current universe has something assigned to it. Check,
-		   whether it has an input profile. */
-		if (patch->profile() != NULL)
-		{
-			name = QString("%1: %2").arg(universe + 1)
-						.arg(patch->profileName());
-		}
-		else
-		{
-			name = QString("%1: %2 / %3").arg(universe + 1)
-						     .arg(patch->pluginName())
-						     .arg(patch->inputName());
-		}
-	}
+    if (patch == NULL || patch->plugin() == NULL)
+    {
+        /* The current universe doesn't have anything assigned to it */
+        name = QString("%1: %2").arg(universe + 1).arg(KInputNone);
+        item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+        item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+    }
+    else
+    {
+        /* The current universe has something assigned to it. Check,
+           whether it has an input profile. */
+        if (patch->profile() != NULL)
+        {
+            name = QString("%1: %2").arg(universe + 1)
+                   .arg(patch->profileName());
+        }
+        else
+        {
+            name = QString("%1: %2 / %3").arg(universe + 1)
+                   .arg(patch->pluginName())
+                   .arg(patch->inputName());
+        }
+    }
 
-	item->setText(KColumnName, name);
-	item->setText(KColumnUniverse, QString("%1").arg(universe));
-	item->setText(KColumnChannel, QString("%1").arg(KInputChannelInvalid));
+    item->setText(KColumnName, name);
+    item->setText(KColumnUniverse, QString("%1").arg(universe));
+    item->setText(KColumnChannel, QString("%1").arg(KInputChannelInvalid));
 }
 
 void SelectInputChannel::slotItemChanged(QTreeWidgetItem* item, int column)
 {
-	quint32 channel;
+    quint32 channel;
 
-	Q_ASSERT(item != NULL);
-	if (column != KColumnName)
-		return;
+    Q_ASSERT(item != NULL);
+    if (column != KColumnName)
+        return;
 
-	/* Extract only numbers from the input data */
-	channel = item->text(KColumnName).toInt();
+    /* Extract only numbers from the input data */
+    channel = item->text(KColumnName).toInt();
 
-	/* Put the entered channel number also to the channel column */
-	item->setText(KColumnChannel, QString("%1").arg(channel - 1));
+    /* Put the entered channel number also to the channel column */
+    item->setText(KColumnChannel, QString("%1").arg(channel - 1));
 }
 
 void SelectInputChannel::slotItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
-	Q_UNUSED(column);
+    Q_UNUSED(column);
 
-	if (!(item->flags() & Qt::ItemIsEditable))
-		accept();
+    if (!(item->flags() & Qt::ItemIsEditable))
+        accept();
 }

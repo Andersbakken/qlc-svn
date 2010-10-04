@@ -41,108 +41,120 @@ class QString;
 
 class MIDIDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	MIDIDevice(MIDIOut* parent, MIDIEntityRef entity);
-	virtual ~MIDIDevice();
+    MIDIDevice(MIDIOut* parent, MIDIEntityRef entity);
+    virtual ~MIDIDevice();
 
-        /** Get the device's unique ID and store it to m_uid */
-        bool extractUID();
+    /** Get the device's unique ID and store it to m_uid */
+    bool extractUID();
 
-        /** Get the device's name and store it to m_name */
-        bool extractName();
+    /** Get the device's name and store it to m_name */
+    bool extractName();
 
-	/** Load global settings */
-	void loadSettings();
+    /** Load global settings */
+    void loadSettings();
 
-	/** Save global settings */
-	void saveSettings();
+    /** Save global settings */
+    void saveSettings();
 
-        /*********************************************************************
-         * File operations
-         *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-        /** Open the device for output data */
-        bool open();
+    /** Open the device for output data */
+    bool open();
 
-        /** Close the output device */
-        void close();
+    /** Close the output device */
+    void close();
 
 protected:
-        /** Reference to the MIDI entity that owns the destination */
-        MIDIEntityRef m_entity;
+    /** Reference to the MIDI entity that owns the destination */
+    MIDIEntityRef m_entity;
 
-        /** Reference to the opened MIDI destination */
-        MIDIEndpointRef m_destination;
+    /** Reference to the opened MIDI destination */
+    MIDIEndpointRef m_destination;
 
-        /** Reference to a virtual port that sends data to the destination */
-        MIDIPortRef m_outPort;
+    /** Reference to a virtual port that sends data to the destination */
+    MIDIPortRef m_outPort;
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	QString infoText() const;
-	QString name() const { return m_name; }
-	SInt32 uid() const { return m_uid; }
+    QString infoText() const;
+    QString name() const {
+        return m_name;
+    }
+    SInt32 uid() const {
+        return m_uid;
+    }
 
 protected:
-	QString m_name;
-	SInt32 m_uid;
+    QString m_name;
+    SInt32 m_uid;
 
-	/*********************************************************************
-	 * Operational mode
-	 *********************************************************************/
+    /*********************************************************************
+     * Operational mode
+     *********************************************************************/
 public:
-	/**
-	 * This device's operational mode.
-	 *
-	 * @ControlChange: Use MIDI ControlChange ID's as DMX channels
-	 * @Note: Use MIDI Note ON/OFF commands as DMX channels
-	 */
-	enum Mode
-	{
-		ControlChange,
-		Note
-	};
+    /**
+     * This device's operational mode.
+     *
+     * @ControlChange: Use MIDI ControlChange ID's as DMX channels
+     * @Note: Use MIDI Note ON/OFF commands as DMX channels
+     */
+    enum Mode
+    {
+        ControlChange,
+        Note
+    };
 
-	/** Get this device's operational mode */
-	Mode mode() const { return m_mode; }
+    /** Get this device's operational mode */
+    Mode mode() const {
+        return m_mode;
+    }
 
-	/** Set this device's operational mode */
-	void setMode(Mode m) { m_mode = m; }
+    /** Set this device's operational mode */
+    void setMode(Mode m) {
+        m_mode = m;
+    }
 
-	static QString modeToString(Mode mode);
-	static Mode stringToMode(const QString& mode);
+    static QString modeToString(Mode mode);
+    static Mode stringToMode(const QString& mode);
 
 protected:
-	Mode m_mode;
+    Mode m_mode;
 
-	/*********************************************************************
-	 * MIDI channel
-	 *********************************************************************/
+    /*********************************************************************
+     * MIDI channel
+     *********************************************************************/
 public:
-	/** Get this device's MIDI channel */
-	t_channel midiChannel() const { return m_midiChannel; }
+    /** Get this device's MIDI channel */
+    t_channel midiChannel() const {
+        return m_midiChannel;
+    }
 
-	/** Set this device's MIDI channel */
-	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
+    /** Set this device's MIDI channel */
+    void setMidiChannel(t_channel channel) {
+        m_midiChannel = channel;
+    }
 
 protected:
-	t_channel m_midiChannel;
+    t_channel m_midiChannel;
 
-	/********************************************************************
-	 * Write
-	 ********************************************************************/
+    /********************************************************************
+     * Write
+     ********************************************************************/
 public:
-	void outputDMX(const QByteArray& universe);
+    void outputDMX(const QByteArray& universe);
 
 protected:
-	uchar m_values[MAX_MIDI_DMX_CHANNELS];
+    uchar m_values[MAX_MIDI_DMX_CHANNELS];
 };
 
 #endif

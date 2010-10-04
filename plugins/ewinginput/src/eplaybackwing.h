@@ -34,64 +34,64 @@
 
 class QLC_DECLSPEC EPlaybackWing : public EWing
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/**
-	 * Construct a new EPlaybackWing object. This object represents an
-	 * ENTTEC Playback Wing at the given IP address.
-	 *
-	 * @param parent The parent object that owns the new wing object.
-	 * @param address The address of the physical wing board.
-	 * @param data A UDP datagram packet originating from a wing.
-	 */
-	EPlaybackWing(QObject* parent, const QHostAddress& address,
-		      const QByteArray& data);
+    /**
+     * Construct a new EPlaybackWing object. This object represents an
+     * ENTTEC Playback Wing at the given IP address.
+     *
+     * @param parent The parent object that owns the new wing object.
+     * @param address The address of the physical wing board.
+     * @param data A UDP datagram packet originating from a wing.
+     */
+    EPlaybackWing(QObject* parent, const QHostAddress& address,
+                  const QByteArray& data);
 
-	/**
-	 * Destructor.
-	 */
-	~EPlaybackWing();
+    /**
+     * Destructor.
+     */
+    ~EPlaybackWing();
 
-	/********************************************************************
-	 * Data
-	 ********************************************************************/
+    /********************************************************************
+     * Data
+     ********************************************************************/
 public:
-	/**
-	 * Return the name of the wing.
-	 *
-	 * @return The name of the device in the form "Playback at <address>"
-	 */
-	QString name() const;
+    /**
+     * Return the name of the wing.
+     *
+     * @return The name of the device in the form "Playback at <address>"
+     */
+    QString name() const;
 
-	/**
-	 * Return an info string describing the device's state.
-	 *
-	 * @return Information string.
-	 */
-	QString infoText() const;
+    /**
+     * Return an info string describing the device's state.
+     *
+     * @return Information string.
+     */
+    QString infoText() const;
 
-	/********************************************************************
-	 * Input data
-	 ********************************************************************/
+    /********************************************************************
+     * Input data
+     ********************************************************************/
 public:
-	/**
-	 * Parse input data and generate signals for each changed value.
-	 *
-	 * @param data The data packet to parse
-	 */
-	void parseData(const QByteArray& data);
+    /**
+     * Parse input data and generate signals for each changed value.
+     *
+     * @param data The data packet to parse
+     */
+    void parseData(const QByteArray& data);
 
 protected:
-	/**
-	 * Since some of the channels in a playback wing seem to be in a weird
-	 * order, this map is used to convert this weird order to a sequential
-	 * order.
-	 */
-	QMap <int,int> m_channelMap;
+    /**
+     * Since some of the channels in a playback wing seem to be in a weird
+     * order, this map is used to convert this weird order to a sequential
+     * order.
+     */
+    QMap <int,int> m_channelMap;
 };
 
 #endif

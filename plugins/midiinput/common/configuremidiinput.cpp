@@ -39,41 +39,41 @@
 #define KColumnFeedBack 4
 
 ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	QStringList headerLabels;
+    QStringList headerLabels;
 
-	Q_ASSERT(plugin != NULL);
-	m_plugin = plugin;
+    Q_ASSERT(plugin != NULL);
+    m_plugin = plugin;
 
-	setupUi(this);
-	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+    setupUi(this);
+    m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-	/* One needs to choose the particular output line for feedback only
-	   in windows, where input & output lines don't have the same ID. */
-	headerLabels << tr("Input") << tr("Name") << tr("MIDI Channel")
-		     << tr("Mode");
+    /* One needs to choose the particular output line for feedback only
+       in windows, where input & output lines don't have the same ID. */
+    headerLabels << tr("Input") << tr("Name") << tr("MIDI Channel")
+    << tr("Mode");
 #ifdef WIN32
-	headerLabels << tr("Feedback line");
+    headerLabels << tr("Feedback line");
 #endif
-	m_tree->setHeaderLabels(headerLabels);
+    m_tree->setHeaderLabels(headerLabels);
 
-	/* Enable the configuration button only for windows because ALSA
-	   uses the same address for input and output. */
-	connect(m_editButton, SIGNAL(clicked()),
-		this, SLOT(slotEditClicked()));
-	connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEditClicked()));
-	connect(m_refreshButton, SIGNAL(clicked()),
-		this, SLOT(slotRefreshClicked()));
+    /* Enable the configuration button only for windows because ALSA
+       uses the same address for input and output. */
+    connect(m_editButton, SIGNAL(clicked()),
+            this, SLOT(slotEditClicked()));
+    connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, SLOT(slotEditClicked()));
+    connect(m_refreshButton, SIGNAL(clicked()),
+            this, SLOT(slotRefreshClicked()));
 
-	/* Listen to device additions/removals */
-	connect(plugin, SIGNAL(deviceRemoved(MIDIDevice*)),
-		this, SLOT(slotDeviceRemoved(MIDIDevice*)));
-	connect(plugin, SIGNAL(deviceAdded(MIDIDevice*)),
-		this, SLOT(slotDeviceAdded(MIDIDevice*)));
+    /* Listen to device additions/removals */
+    connect(plugin, SIGNAL(deviceRemoved(MIDIDevice*)),
+            this, SLOT(slotDeviceRemoved(MIDIDevice*)));
+    connect(plugin, SIGNAL(deviceAdded(MIDIDevice*)),
+            this, SLOT(slotDeviceAdded(MIDIDevice*)));
 
-	refreshList();
+    refreshList();
 }
 
 ConfigureMIDIInput::~ConfigureMIDIInput()
@@ -86,54 +86,54 @@ ConfigureMIDIInput::~ConfigureMIDIInput()
 
 void ConfigureMIDIInput::refreshList()
 {
-	int i = 1;
+    int i = 1;
 
-	m_tree->clear();
+    m_tree->clear();
 
-	QListIterator <MIDIDevice*> it(m_plugin->devices());
-	while (it.hasNext() == true)
-	{
-		QTreeWidgetItem* item;
-		MIDIDevice* dev;
+    QListIterator <MIDIDevice*> it(m_plugin->devices());
+    while (it.hasNext() == true)
+    {
+        QTreeWidgetItem* item;
+        MIDIDevice* dev;
 
-		dev = it.next();
-		Q_ASSERT(dev != NULL);
+        dev = it.next();
+        Q_ASSERT(dev != NULL);
 
-		item = new QTreeWidgetItem(m_tree);
-		item->setText(KColumnNumber, QString("%1").arg(i++));
-		item->setText(KColumnName, dev->name());
-		item->setText(KColumnChannel,
-			      QString("%1").arg(dev->midiChannel() + 1));
-		item->setText(KColumnMode,
-			      MIDIDevice::modeToString(dev->mode()));
+        item = new QTreeWidgetItem(m_tree);
+        item->setText(KColumnNumber, QString("%1").arg(i++));
+        item->setText(KColumnName, dev->name());
+        item->setText(KColumnChannel,
+                      QString("%1").arg(dev->midiChannel() + 1));
+        item->setText(KColumnMode,
+                      MIDIDevice::modeToString(dev->mode()));
 
 #ifdef WIN32
-		if (dev->feedBackId() != UINT_MAX)
-		{
-			item->setText(KColumnFeedBack,
-				MIDIDevice::feedBackNames()[dev->feedBackId()]);
-		}
-		else
-		{
-			item->setText(KColumnFeedBack, tr("None"));
-		}
+        if (dev->feedBackId() != UINT_MAX)
+        {
+            item->setText(KColumnFeedBack,
+                          MIDIDevice::feedBackNames()[dev->feedBackId()]);
+        }
+        else
+        {
+            item->setText(KColumnFeedBack, tr("None"));
+        }
 #endif
-	}
+    }
 }
 
 void ConfigureMIDIInput::slotDeviceAdded(MIDIDevice* device)
 {
-	Q_UNUSED(device);
-	refreshList();
+    Q_UNUSED(device);
+    refreshList();
 }
 
 void ConfigureMIDIInput::slotDeviceRemoved(MIDIDevice* device)
 {
-	QListIterator <QTreeWidgetItem*> it(m_tree->findItems(device->name(),
-							      Qt::MatchExactly,
-							      KColumnName));
-	while (it.hasNext() == true)
-		delete it.next();
+    QListIterator <QTreeWidgetItem*> it(m_tree->findItems(device->name(),
+                                        Qt::MatchExactly,
+                                        KColumnName));
+    while (it.hasNext() == true)
+        delete it.next();
 }
 
 /*****************************************************************************
@@ -142,28 +142,28 @@ void ConfigureMIDIInput::slotDeviceRemoved(MIDIDevice* device)
 
 void ConfigureMIDIInput::slotRefreshClicked()
 {
-	Q_ASSERT(m_plugin != NULL);
-	m_plugin->rescanDevices();
+    Q_ASSERT(m_plugin != NULL);
+    m_plugin->rescanDevices();
 }
 
 void ConfigureMIDIInput::slotEditClicked()
 {
-	QTreeWidgetItem* item;
-	MIDIDevice* device;
-	quint32 input;
+    QTreeWidgetItem* item;
+    MIDIDevice* device;
+    quint32 input;
 
-	/* Get the currently selected tree widget item */
-	item = m_tree->currentItem();
-	if (item == NULL)
-		return;
+    /* Get the currently selected tree widget item */
+    item = m_tree->currentItem();
+    if (item == NULL)
+        return;
 
-	/* Get the device represented by the selected item */
-	input = item->text(KColumnNumber).toInt() - 1;
-	device = m_plugin->device(input);
-	Q_ASSERT(device != NULL);
+    /* Get the device represented by the selected item */
+    input = item->text(KColumnNumber).toInt() - 1;
+    device = m_plugin->device(input);
+    Q_ASSERT(device != NULL);
 
-	/* Configure the device */
-	ConfigureMIDILine cml(this, device);
-	if (cml.exec() == QDialog::Accepted)
-		refreshList();
+    /* Configure the device */
+    ConfigureMIDILine cml(this, device);
+    if (cml.exec() == QDialog::Accepted)
+        refreshList();
 }

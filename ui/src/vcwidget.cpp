@@ -55,40 +55,40 @@ extern App* _app;
 
 VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 {
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(parent != NULL);
 
-	/* Set the class name "VCWidget" as the object name as well */
-	setObjectName(VCWidget::staticMetaObject.className());
+    /* Set the class name "VCWidget" as the object name as well */
+    setObjectName(VCWidget::staticMetaObject.className());
 
-	setMinimumSize(QSize(20, 20));
+    setMinimumSize(QSize(20, 20));
 
-	m_backgroundImage = QString::null;
-	m_hasCustomBackgroundColor = false;
-	m_hasCustomForegroundColor = false;
-	m_hasCustomFont = false;
-	m_frameStyle = KVCFrameStyleNone;
+    m_backgroundImage = QString::null;
+    m_hasCustomBackgroundColor = false;
+    m_hasCustomForegroundColor = false;
+    m_hasCustomFont = false;
+    m_frameStyle = KVCFrameStyleNone;
 
-	m_resizeMode = false;
+    m_resizeMode = false;
 
-	setBackgroundRole(QPalette::Window);
-	setAutoFillBackground(true);
-	setEnabled(true);
+    setBackgroundRole(QPalette::Window);
+    setAutoFillBackground(true);
+    setEnabled(true);
 
-	m_inputUniverse = KInputUniverseInvalid;
-	m_inputChannel = KInputChannelInvalid;
+    m_inputUniverse = KInputUniverseInvalid;
+    m_inputChannel = KInputChannelInvalid;
 
-	connect(_app->doc(), SIGNAL(modeChanged(Doc::Mode)),
-		this, SLOT(slotModeChanged(Doc::Mode)));
-	m_mode = Doc::Design;
+    connect(_app->doc(), SIGNAL(modeChanged(Doc::Mode)),
+            this, SLOT(slotModeChanged(Doc::Mode)));
+    m_mode = Doc::Design;
 
-	/* Listen to parent's (only VCWidget-kind) key signals */
-	if (parent->inherits(metaObject()->className()) == true)
-	{
-		connect(parent, SIGNAL(keyPressed(const QKeySequence&)),
-			this, SLOT(slotKeyPressed(const QKeySequence&)));
-		connect(parent,	SIGNAL(keyReleased(const QKeySequence&)),
-			this, SLOT(slotKeyReleased(const QKeySequence&)));
-	}
+    /* Listen to parent's (only VCWidget-kind) key signals */
+    if (parent->inherits(metaObject()->className()) == true)
+    {
+        connect(parent, SIGNAL(keyPressed(const QKeySequence&)),
+                this, SLOT(slotKeyPressed(const QKeySequence&)));
+        connect(parent,	SIGNAL(keyReleased(const QKeySequence&)),
+                this, SLOT(slotKeyReleased(const QKeySequence&)));
+    }
 }
 
 VCWidget::~VCWidget()
@@ -101,32 +101,32 @@ VCWidget::~VCWidget()
 
 bool VCWidget::copyFrom(const VCWidget* widget)
 {
-	if (widget == NULL)
-		return false;
+    if (widget == NULL)
+        return false;
 
-	m_backgroundImage = widget->m_backgroundImage;
+    m_backgroundImage = widget->m_backgroundImage;
 
-	m_hasCustomBackgroundColor = widget->m_hasCustomBackgroundColor;
-	if (m_hasCustomBackgroundColor == true)
-		setBackgroundColor(widget->backgroundColor());
+    m_hasCustomBackgroundColor = widget->m_hasCustomBackgroundColor;
+    if (m_hasCustomBackgroundColor == true)
+        setBackgroundColor(widget->backgroundColor());
 
-	m_hasCustomForegroundColor = widget->m_hasCustomForegroundColor;
-	if (m_hasCustomForegroundColor == true)
-		setForegroundColor(widget->foregroundColor());
+    m_hasCustomForegroundColor = widget->m_hasCustomForegroundColor;
+    if (m_hasCustomForegroundColor == true)
+        setForegroundColor(widget->foregroundColor());
 
-	m_hasCustomFont = widget->m_hasCustomFont;
-	if (m_hasCustomFont == true)
-		setFont(widget->font());
+    m_hasCustomFont = widget->m_hasCustomFont;
+    if (m_hasCustomFont == true)
+        setFont(widget->font());
 
-	m_frameStyle = widget->m_frameStyle;
+    m_frameStyle = widget->m_frameStyle;
 
-	setGeometry(widget->geometry());
-	setCaption(widget->caption());
+    setGeometry(widget->geometry());
+    setCaption(widget->caption());
 
-	m_inputUniverse = widget->m_inputUniverse;
-	m_inputChannel = widget->m_inputChannel;
+    m_inputUniverse = widget->m_inputUniverse;
+    m_inputChannel = widget->m_inputChannel;
 
-	return true;
+    return true;
 }
 
 /*****************************************************************************
@@ -135,16 +135,16 @@ bool VCWidget::copyFrom(const VCWidget* widget)
 
 void VCWidget::setBackgroundImage(const QString& path)
 {
-	QPalette pal = palette();
+    QPalette pal = palette();
 
-	m_hasCustomBackgroundColor = false;
-	m_backgroundImage = path;
+    m_hasCustomBackgroundColor = false;
+    m_backgroundImage = path;
 
-	/* setAutoFillBackground(true); */
-	pal.setBrush(QPalette::Window, QBrush(QPixmap(path)));
-	setPalette(pal);
+    /* setAutoFillBackground(true); */
+    pal.setBrush(QPalette::Window, QBrush(QPixmap(path)));
+    setPalette(pal);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -153,41 +153,41 @@ void VCWidget::setBackgroundImage(const QString& path)
 
 void VCWidget::setBackgroundColor(const QColor& color)
 {
-	QPalette pal = palette();
+    QPalette pal = palette();
 
-	m_hasCustomBackgroundColor = true;
-	m_backgroundImage = QString::null;
+    m_hasCustomBackgroundColor = true;
+    m_backgroundImage = QString::null;
 
-	pal.setColor(QPalette::Window, color);
-	setPalette(pal);
+    pal.setColor(QPalette::Window, color);
+    setPalette(pal);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 void VCWidget::resetBackgroundColor()
 {
-	QColor fg;
+    QColor fg;
 
-	m_hasCustomBackgroundColor = false;
-	m_backgroundImage = QString::null;
+    m_hasCustomBackgroundColor = false;
+    m_backgroundImage = QString::null;
 
-	/* Store foreground color */
-	if (m_hasCustomForegroundColor == true)
-		fg = palette().color(QPalette::WindowText);
+    /* Store foreground color */
+    if (m_hasCustomForegroundColor == true)
+        fg = palette().color(QPalette::WindowText);
 
-	/* Reset the whole palette to application palette */
-	setPalette(QApplication::palette());
-	/* setAutoFillBackground(false); */
+    /* Reset the whole palette to application palette */
+    setPalette(QApplication::palette());
+    /* setAutoFillBackground(false); */
 
-	/* Restore foreground color */
-	if (fg.isValid() == true)
-	{
-		QPalette pal = palette();
-		pal.setColor(QPalette::WindowText, fg);
-		setPalette(pal);
-	}
+    /* Restore foreground color */
+    if (fg.isValid() == true)
+    {
+        QPalette pal = palette();
+        pal.setColor(QPalette::WindowText, fg);
+        setPalette(pal);
+    }
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -196,36 +196,36 @@ void VCWidget::resetBackgroundColor()
 
 void VCWidget::setForegroundColor(const QColor& color)
 {
-	QPalette pal = palette();
+    QPalette pal = palette();
 
-	m_hasCustomForegroundColor = true;
+    m_hasCustomForegroundColor = true;
 
-	pal.setColor(QPalette::WindowText, color);
-	setPalette(pal);
+    pal.setColor(QPalette::WindowText, color);
+    setPalette(pal);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 void VCWidget::resetForegroundColor()
 {
-	QColor bg;
+    QColor bg;
 
-	m_hasCustomForegroundColor = false;
+    m_hasCustomForegroundColor = false;
 
-	/* Store background color */
-	if (m_hasCustomBackgroundColor == true)
-		bg = palette().color(QPalette::Window);
+    /* Store background color */
+    if (m_hasCustomBackgroundColor == true)
+        bg = palette().color(QPalette::Window);
 
-	/* Reset the whole palette to application palette */
-	setPalette(QApplication::palette());
+    /* Reset the whole palette to application palette */
+    setPalette(QApplication::palette());
 
-	/* Restore foreground color */
-	if (bg.isValid() == true)
-		setBackgroundColor(bg);
-	else if (m_backgroundImage.isEmpty() == false)
-		setBackgroundImage(m_backgroundImage);
+    /* Restore foreground color */
+    if (bg.isValid() == true)
+        setBackgroundColor(bg);
+    else if (m_backgroundImage.isEmpty() == false)
+        setBackgroundImage(m_backgroundImage);
 
-	_app->doc()->setModified();
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -234,16 +234,16 @@ void VCWidget::resetForegroundColor()
 
 void VCWidget::setFont(const QFont& font)
 {
-	m_hasCustomFont = true;
-	QWidget::setFont(font);
-	_app->doc()->setModified();
+    m_hasCustomFont = true;
+    QWidget::setFont(font);
+    _app->doc()->setModified();
 }
 
 void VCWidget::resetFont()
 {
-	m_hasCustomFont = false;
-	setFont(QFont());
-	_app->doc()->setModified();
+    m_hasCustomFont = false;
+    setFont(QFont());
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -252,9 +252,9 @@ void VCWidget::resetFont()
 
 void VCWidget::setCaption(const QString& text)
 {
-	setWindowTitle(text);
-	update();
-	_app->doc()->setModified();
+    setWindowTitle(text);
+    update();
+    _app->doc()->setModified();
 }
 
 /*****************************************************************************
@@ -263,34 +263,34 @@ void VCWidget::setCaption(const QString& text)
 
 void VCWidget::setFrameStyle(int style)
 {
-	m_frameStyle = style;
-	update();
-	_app->doc()->setModified();
+    m_frameStyle = style;
+    update();
+    _app->doc()->setModified();
 }
 
 void VCWidget::resetFrameStyle()
 {
-	setFrameStyle(KVCFrameStyleNone);
+    setFrameStyle(KVCFrameStyleNone);
 }
 
 QString VCWidget::frameStyleToString(int style)
 {
-	if (style == KVCFrameStyleSunken)
-		return "Sunken";
-	else if (style == KVCFrameStyleRaised)
-		return "Raised";
-	else
-		return "None";
+    if (style == KVCFrameStyleSunken)
+        return "Sunken";
+    else if (style == KVCFrameStyleRaised)
+        return "Raised";
+    else
+        return "None";
 }
 
 int VCWidget::stringToFrameStyle(const QString& style)
 {
-	if (style == "Sunken")
-		return KVCFrameStyleSunken;
-	else if (style == "Raised")
-		return KVCFrameStyleRaised;
-	else
-		return KVCFrameStyleNone;
+    if (style == "Sunken")
+        return KVCFrameStyleSunken;
+    else if (style == "Raised")
+        return KVCFrameStyleRaised;
+    else
+        return KVCFrameStyleNone;
 }
 
 /*****************************************************************************
@@ -299,8 +299,8 @@ int VCWidget::stringToFrameStyle(const QString& style)
 
 void VCWidget::editProperties()
 {
-	QMessageBox::information(_app, staticMetaObject.className(),
-				 tr("This widget has no properties"));
+    QMessageBox::information(_app, staticMetaObject.className(),
+                             tr("This widget has no properties"));
 }
 
 /*****************************************************************************
@@ -309,60 +309,60 @@ void VCWidget::editProperties()
 
 void VCWidget::setInputSource(quint32 uni, quint32 ch)
 {
-	if (uni == KInputUniverseInvalid || ch == KInputChannelInvalid)
-	{
-		/* If either one of the new values is invalid we end up here
-		   to disconnect from inputmap and setting both of the values
-		   invalid. */
-		m_inputUniverse = KInputUniverseInvalid;
-		m_inputChannel = KInputChannelInvalid;
+    if (uni == KInputUniverseInvalid || ch == KInputChannelInvalid)
+    {
+        /* If either one of the new values is invalid we end up here
+           to disconnect from inputmap and setting both of the values
+           invalid. */
+        m_inputUniverse = KInputUniverseInvalid;
+        m_inputChannel = KInputChannelInvalid;
 
-		/* Even though we might not be connected, it is safe to do a
-		   disconnect in any case. */
-		disconnect(_app->inputMap(),
-			   SIGNAL(inputValueChanged(quint32,
-						    quint32,
-						    uchar)),
-			   this, SLOT(slotInputValueChanged(quint32,
-							    quint32,
-							    uchar)));
-	}
-	else if (m_inputUniverse == KInputUniverseInvalid ||
-		 m_inputChannel == KInputChannelInvalid)
-	{
-		/* Execution comes here only if both of the new values
-		   are valid and the existing values are invalid, in which
-		   case a new connection must be made. */
-		m_inputUniverse = uni;
-		m_inputChannel = ch;
+        /* Even though we might not be connected, it is safe to do a
+           disconnect in any case. */
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,
+                                            quint32,
+                                            uchar)),
+                   this, SLOT(slotInputValueChanged(quint32,
+                                                    quint32,
+                                                    uchar)));
+    }
+    else if (m_inputUniverse == KInputUniverseInvalid ||
+             m_inputChannel == KInputChannelInvalid)
+    {
+        /* Execution comes here only if both of the new values
+           are valid and the existing values are invalid, in which
+           case a new connection must be made. */
+        m_inputUniverse = uni;
+        m_inputChannel = ch;
 
-		connect(_app->inputMap(),
-			SIGNAL(inputValueChanged(quint32,
-						 quint32,
-						 uchar)),
-			this,
-			SLOT(slotInputValueChanged(quint32,
-						   quint32,
-						   uchar)));
-	}
-	else
-	{
-		/* Execution comes here only if the current uni & channel are
-		 * valid and the new ones are valid as well. So we don't do a
-		 * new connection, which would end up in duplicate values.
-		 * Just update the new values and get it over with. */
-		 m_inputUniverse = uni;
-		 m_inputChannel = ch;
-	}
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,
+                                         quint32,
+                                         uchar)),
+                this,
+                SLOT(slotInputValueChanged(quint32,
+                                           quint32,
+                                           uchar)));
+    }
+    else
+    {
+        /* Execution comes here only if the current uni & channel are
+         * valid and the new ones are valid as well. So we don't do a
+         * new connection, which would end up in duplicate values.
+         * Just update the new values and get it over with. */
+        m_inputUniverse = uni;
+        m_inputChannel = ch;
+    }
 }
 
 void VCWidget::slotInputValueChanged(quint32 universe,
-				     quint32 channel,
-				     uchar value)
+                                     quint32 channel,
+                                     uchar value)
 {
-	Q_UNUSED(universe);
-	Q_UNUSED(channel);
-	Q_UNUSED(value);
+    Q_UNUSED(universe);
+    Q_UNUSED(channel);
+    Q_UNUSED(value);
 }
 
 /*****************************************************************************
@@ -371,12 +371,12 @@ void VCWidget::slotInputValueChanged(quint32 universe,
 
 void VCWidget::slotKeyPressed(const QKeySequence& keySequence)
 {
-	emit keyPressed(keySequence);
+    emit keyPressed(keySequence);
 }
 
 void VCWidget::slotKeyReleased(const QKeySequence& keySequence)
 {
-	emit keyReleased(keySequence);
+    emit keyReleased(keySequence);
 }
 
 /*****************************************************************************
@@ -385,223 +385,223 @@ void VCWidget::slotKeyReleased(const QKeySequence& keySequence)
 
 bool VCWidget::loadXMLAppearance(const QDomElement* root)
 {
-	QDomNode node;
-	QDomElement tag;
-	QString str;
+    QDomNode node;
+    QDomElement tag;
+    QString str;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCVCAppearance)
-	{
-		qDebug() << "Appearance node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCAppearance)
+    {
+        qDebug() << "Appearance node not found!";
+        return false;
+    }
 
-	/* Children */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCVCFrameStyle)
-		{
-			setFrameStyle(stringToFrameStyle(tag.text()));
-		}
-		else if (tag.tagName() == KXMLQLCVCWidgetForegroundColor)
-		{
-			if (tag.text() != KXMLQLCVCWidgetColorDefault)
-				setForegroundColor(QColor(tag.text().toUInt()));
-		}
-		else if (tag.tagName() == KXMLQLCVCWidgetBackgroundColor)
-		{
-			if (tag.text() != KXMLQLCVCWidgetColorDefault)
-				setBackgroundColor(QColor(tag.text().toUInt()));
-		}
-		else if (tag.tagName() == KXMLQLCVCWidgetBackgroundImage)
-		{
-			if (tag.text() != KXMLQLCVCWidgetBackgroundImageNone)
-				setBackgroundImage(tag.text());
-		}
-		else if (tag.tagName() == KXMLQLCVCWidgetFont)
-		{
-			if (tag.text() != KXMLQLCVCWidgetFontDefault)
-			{
-				QFont font;
-				font.fromString(tag.text());
-				setFont(font);
-			}
-		}
-		else
-		{
-			qDebug() << "Unknown appearance tag:" << tag.tagName();
-		}
+    /* Children */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == KXMLQLCVCFrameStyle)
+        {
+            setFrameStyle(stringToFrameStyle(tag.text()));
+        }
+        else if (tag.tagName() == KXMLQLCVCWidgetForegroundColor)
+        {
+            if (tag.text() != KXMLQLCVCWidgetColorDefault)
+                setForegroundColor(QColor(tag.text().toUInt()));
+        }
+        else if (tag.tagName() == KXMLQLCVCWidgetBackgroundColor)
+        {
+            if (tag.text() != KXMLQLCVCWidgetColorDefault)
+                setBackgroundColor(QColor(tag.text().toUInt()));
+        }
+        else if (tag.tagName() == KXMLQLCVCWidgetBackgroundImage)
+        {
+            if (tag.text() != KXMLQLCVCWidgetBackgroundImageNone)
+                setBackgroundImage(tag.text());
+        }
+        else if (tag.tagName() == KXMLQLCVCWidgetFont)
+        {
+            if (tag.text() != KXMLQLCVCWidgetFontDefault)
+            {
+                QFont font;
+                font.fromString(tag.text());
+                setFont(font);
+            }
+        }
+        else
+        {
+            qDebug() << "Unknown appearance tag:" << tag.tagName();
+        }
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }
 
 bool VCWidget::loadXMLInput(const QDomElement* root)
 {
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCVCWidgetInput)
-	{
-		qDebug() << "Input node not found!";
-		return false;
-	}
-	else
-	{
-		quint32 uni;
-		quint32 ch;
+    if (root->tagName() != KXMLQLCVCWidgetInput)
+    {
+        qDebug() << "Input node not found!";
+        return false;
+    }
+    else
+    {
+        quint32 uni;
+        quint32 ch;
 
-		uni = root->attribute(KXMLQLCVCWidgetInputUniverse).toInt();
-		ch = root->attribute(KXMLQLCVCWidgetInputChannel).toInt();
+        uni = root->attribute(KXMLQLCVCWidgetInputUniverse).toInt();
+        ch = root->attribute(KXMLQLCVCWidgetInputChannel).toInt();
 
-		setInputSource(uni, ch);
-	}
+        setInputSource(uni, ch);
+    }
 
-	return true;
+    return true;
 }
 
 bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 {
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement root;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(frame_root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(frame_root != NULL);
 
-	/* VC Label entry */
-	root = doc->createElement(KXMLQLCVCWidgetAppearance);
-	frame_root->appendChild(root);
+    /* VC Label entry */
+    root = doc->createElement(KXMLQLCVCWidgetAppearance);
+    frame_root->appendChild(root);
 
-	/* Frame style */
-	tag = doc->createElement(KXMLQLCVCFrameStyle);
-	root.appendChild(tag);
-	text = doc->createTextNode(frameStyleToString(frameStyle()));
-	tag.appendChild(text);
+    /* Frame style */
+    tag = doc->createElement(KXMLQLCVCFrameStyle);
+    root.appendChild(tag);
+    text = doc->createTextNode(frameStyleToString(frameStyle()));
+    tag.appendChild(text);
 
-	/* Foreground color */
-	tag = doc->createElement(KXMLQLCVCWidgetForegroundColor);
-	root.appendChild(tag);
-	if (hasCustomForegroundColor() == true)
-		str.setNum(foregroundColor().rgb());
-	else
-		str = KXMLQLCVCWidgetColorDefault;
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
+    /* Foreground color */
+    tag = doc->createElement(KXMLQLCVCWidgetForegroundColor);
+    root.appendChild(tag);
+    if (hasCustomForegroundColor() == true)
+        str.setNum(foregroundColor().rgb());
+    else
+        str = KXMLQLCVCWidgetColorDefault;
+    text = doc->createTextNode(str);
+    tag.appendChild(text);
 
-	/* Background color */
-	tag = doc->createElement(KXMLQLCVCWidgetBackgroundColor);
-	root.appendChild(tag);
-	if (hasCustomBackgroundColor() == true)
-		str.setNum(backgroundColor().rgb());
-	else
-		str = KXMLQLCVCWidgetColorDefault;
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
+    /* Background color */
+    tag = doc->createElement(KXMLQLCVCWidgetBackgroundColor);
+    root.appendChild(tag);
+    if (hasCustomBackgroundColor() == true)
+        str.setNum(backgroundColor().rgb());
+    else
+        str = KXMLQLCVCWidgetColorDefault;
+    text = doc->createTextNode(str);
+    tag.appendChild(text);
 
-	/* Background image */
-	tag = doc->createElement(KXMLQLCVCWidgetBackgroundImage);
-	root.appendChild(tag);
-	if (backgroundImage() != QString::null)
-		str = m_backgroundImage;
-	else
-		str = KXMLQLCVCWidgetBackgroundImageNone;
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
+    /* Background image */
+    tag = doc->createElement(KXMLQLCVCWidgetBackgroundImage);
+    root.appendChild(tag);
+    if (backgroundImage() != QString::null)
+        str = m_backgroundImage;
+    else
+        str = KXMLQLCVCWidgetBackgroundImageNone;
+    text = doc->createTextNode(str);
+    tag.appendChild(text);
 
-	/* Font */
-	tag = doc->createElement(KXMLQLCVCWidgetFont);
-	root.appendChild(tag);
-	if (hasCustomFont() == true)
-		str = font().toString();
-	else
-		str = KXMLQLCVCWidgetFontDefault;
-	text = doc->createTextNode(str);
-	tag.appendChild(text);
+    /* Font */
+    tag = doc->createElement(KXMLQLCVCWidgetFont);
+    root.appendChild(tag);
+    if (hasCustomFont() == true)
+        str = font().toString();
+    else
+        str = KXMLQLCVCWidgetFontDefault;
+    text = doc->createTextNode(str);
+    tag.appendChild(text);
 
-	return true;
+    return true;
 }
 
 bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
 {
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (m_inputUniverse != KInputUniverseInvalid &&
-	    m_inputChannel != KInputChannelInvalid)
-	{
-		QDomElement tag;
-		QDomText text;
+    if (m_inputUniverse != KInputUniverseInvalid &&
+            m_inputChannel != KInputChannelInvalid)
+    {
+        QDomElement tag;
+        QDomText text;
 
-		tag = doc->createElement(KXMLQLCVCWidgetInput);
-		root->appendChild(tag);
-		tag.setAttribute(KXMLQLCVCWidgetInputUniverse,
-				 QString("%1").arg(inputUniverse()));
-		tag.setAttribute(KXMLQLCVCWidgetInputChannel,
-				 QString("%1").arg(inputChannel()));
-	}
+        tag = doc->createElement(KXMLQLCVCWidgetInput);
+        root->appendChild(tag);
+        tag.setAttribute(KXMLQLCVCWidgetInputUniverse,
+                         QString("%1").arg(inputUniverse()));
+        tag.setAttribute(KXMLQLCVCWidgetInputChannel,
+                         QString("%1").arg(inputChannel()));
+    }
 
-	return true;
+    return true;
 }
 
 bool VCWidget::saveXMLWindowState(QDomDocument* doc, QDomElement* root)
 {
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	if (doc == NULL || root == NULL)
-		return false;
+    if (doc == NULL || root == NULL)
+        return false;
 
-	/* Window state tag */
-	tag = doc->createElement(KXMLQLCWindowState);
-	root->appendChild(tag);
+    /* Window state tag */
+    tag = doc->createElement(KXMLQLCWindowState);
+    root->appendChild(tag);
 
-	/* Visible status */
-	if (isVisible() == true)
-		tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCTrue);
-	else
-		tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCFalse);
+    /* Visible status */
+    if (isVisible() == true)
+        tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCTrue);
+    else
+        tag.setAttribute(KXMLQLCWindowStateVisible, KXMLQLCFalse);
 
-	tag.setAttribute(KXMLQLCWindowStateX, QString::number(x()));
-	tag.setAttribute(KXMLQLCWindowStateY, QString::number(y()));
-	tag.setAttribute(KXMLQLCWindowStateWidth, QString::number(width()));
-	tag.setAttribute(KXMLQLCWindowStateHeight, QString::number(height()));
+    tag.setAttribute(KXMLQLCWindowStateX, QString::number(x()));
+    tag.setAttribute(KXMLQLCWindowStateY, QString::number(y()));
+    tag.setAttribute(KXMLQLCWindowStateWidth, QString::number(width()));
+    tag.setAttribute(KXMLQLCWindowStateHeight, QString::number(height()));
 
-	return true;
+    return true;
 }
 
 bool VCWidget::loadXMLWindowState(const QDomElement* tag, int* x, int* y,
-				  int* w, int* h, bool* visible)
+                                  int* w, int* h, bool* visible)
 {
-	if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL ||
-	    visible == NULL)
-		return false;
+    if (tag == NULL || x == NULL || y == NULL || w == NULL || h == NULL ||
+            visible == NULL)
+        return false;
 
-	if (tag->tagName() == KXMLQLCWindowState)
-	{
-		*x = tag->attribute(KXMLQLCWindowStateX).toInt();
-		*y = tag->attribute(KXMLQLCWindowStateY).toInt();
-		*w = tag->attribute(KXMLQLCWindowStateWidth).toInt();
-		*h = tag->attribute(KXMLQLCWindowStateHeight).toInt();
+    if (tag->tagName() == KXMLQLCWindowState)
+    {
+        *x = tag->attribute(KXMLQLCWindowStateX).toInt();
+        *y = tag->attribute(KXMLQLCWindowStateY).toInt();
+        *w = tag->attribute(KXMLQLCWindowStateWidth).toInt();
+        *h = tag->attribute(KXMLQLCWindowStateHeight).toInt();
 
-		if (tag->attribute(KXMLQLCWindowStateVisible) == KXMLQLCTrue)
-			*visible = true;
-		else
-			*visible = false;
+        if (tag->attribute(KXMLQLCWindowStateVisible) == KXMLQLCTrue)
+            *visible = true;
+        else
+            *visible = false;
 
-		return true;
-	}
-	else
-	{
-		qDebug() << "Window state not found!";
-		return false;
-	}
+        return true;
+    }
+    else
+    {
+        qDebug() << "Window state not found!";
+        return false;
+    }
 }
 
 /*****************************************************************************
@@ -610,13 +610,13 @@ bool VCWidget::loadXMLWindowState(const QDomElement* tag, int* x, int* y,
 
 void VCWidget::slotModeChanged(Doc::Mode mode)
 {
-	m_mode = mode;
+    m_mode = mode;
 
-	/* Reset mouse cursor */
-	unsetCursor();
+    /* Reset mouse cursor */
+    unsetCursor();
 
-	/* Force an update to get rid of selection markers */
-	update();
+    /* Force an update to get rid of selection markers */
+    update();
 }
 
 /*****************************************************************************
@@ -625,14 +625,14 @@ void VCWidget::slotModeChanged(Doc::Mode mode)
 
 void VCWidget::invokeMenu(const QPoint& point)
 {
-	/* No point coming here if there is no VC instance */
-	VirtualConsole* vc = VirtualConsole::instance();
-	if (vc == NULL)
-		return;
+    /* No point coming here if there is no VC instance */
+    VirtualConsole* vc = VirtualConsole::instance();
+    if (vc == NULL)
+        return;
 
-	QMenu* menu = vc->editMenu();
-	Q_ASSERT(menu != NULL);
-	menu->exec(point);
+    QMenu* menu = vc->editMenu();
+    Q_ASSERT(menu != NULL);
+    menu->exec(point);
 }
 
 /*****************************************************************************
@@ -641,8 +641,8 @@ void VCWidget::invokeMenu(const QPoint& point)
 
 QMenu* VCWidget::customMenu(QMenu* parentMenu)
 {
-	Q_UNUSED(parentMenu);
-	return NULL;
+    Q_UNUSED(parentMenu);
+    return NULL;
 }
 
 /*****************************************************************************
@@ -650,48 +650,48 @@ QMenu* VCWidget::customMenu(QMenu* parentMenu)
  *****************************************************************************/
 void VCWidget::resize(const QSize& size)
 {
-	QSize sz(size);
+    QSize sz(size);
 
-	// Force grid settings, if applicable
-	if (VirtualConsole::properties().isGridEnabled() == true)
-	{
-		sz.setWidth(size.width() -
-			(size.width() % VirtualConsole::properties().gridX()));
-		sz.setHeight(size.height() -
-			(size.height() % VirtualConsole::properties().gridY()));
-	}
+    // Force grid settings, if applicable
+    if (VirtualConsole::properties().isGridEnabled() == true)
+    {
+        sz.setWidth(size.width() -
+                    (size.width() % VirtualConsole::properties().gridX()));
+        sz.setHeight(size.height() -
+                     (size.height() % VirtualConsole::properties().gridY()));
+    }
 
-	// Resize
-	QWidget::resize(sz);
+    // Resize
+    QWidget::resize(sz);
 }
 
 void VCWidget::move(const QPoint& point)
 {
-	QPoint pt(point);
+    QPoint pt(point);
 
-	// Force grid settings, if applicable
-	if (VirtualConsole::properties().isGridEnabled() == true)
-	{
-		pt.setX(point.x() - 
-			(point.x() % VirtualConsole::properties().gridX()));
-		pt.setY(point.y() - 
-			(point.y() % VirtualConsole::properties().gridY()));
-	}
+    // Force grid settings, if applicable
+    if (VirtualConsole::properties().isGridEnabled() == true)
+    {
+        pt.setX(point.x() -
+                (point.x() % VirtualConsole::properties().gridX()));
+        pt.setY(point.y() -
+                (point.y() % VirtualConsole::properties().gridY()));
+    }
 
-	// Don't move beyond left or right
-	if (pt.x() < 0)
-		pt.setX(0);
-	else if (pt.x() + rect().width() > parentWidget()->width())
-		pt.setX(parentWidget()->width() - rect().width());
+    // Don't move beyond left or right
+    if (pt.x() < 0)
+        pt.setX(0);
+    else if (pt.x() + rect().width() > parentWidget()->width())
+        pt.setX(parentWidget()->width() - rect().width());
 
-	// Don't move beyond top or bottom
-	if (pt.y() < 0)
-		pt.setY(0);
-	else if (pt.y() + rect().height() > parentWidget()->height())
-		pt.setY(parentWidget()->height() - rect().height());
+    // Don't move beyond top or bottom
+    if (pt.y() < 0)
+        pt.setY(0);
+    else if (pt.y() + rect().height() > parentWidget()->height())
+        pt.setY(parentWidget()->height() - rect().height());
 
-	// Move
-	QWidget::move(pt);
+    // Move
+    QWidget::move(pt);
 }
 
 
@@ -701,178 +701,178 @@ void VCWidget::move(const QPoint& point)
 
 void VCWidget::paintEvent(QPaintEvent* e)
 {
-	Q_UNUSED(e);
+    Q_UNUSED(e);
 
-	/* No point coming here if there is no VC instance */
-	VirtualConsole* vc = VirtualConsole::instance();
-	if (vc == NULL)
-		return;
+    /* No point coming here if there is no VC instance */
+    VirtualConsole* vc = VirtualConsole::instance();
+    if (vc == NULL)
+        return;
 
-	QPainter painter(this);
+    QPainter painter(this);
 
-	/* Draw frame according to style */
-	QStyleOptionFrame option;
-	option.initFrom(this);
-	if (frameStyle() == KVCFrameStyleSunken)
-		option.state = QStyle::State_Sunken;
-	else if (frameStyle() == KVCFrameStyleRaised)
-		option.state = QStyle::State_Raised;
-	else
-		option.state = QStyle::State_None;
+    /* Draw frame according to style */
+    QStyleOptionFrame option;
+    option.initFrom(this);
+    if (frameStyle() == KVCFrameStyleSunken)
+        option.state = QStyle::State_Sunken;
+    else if (frameStyle() == KVCFrameStyleRaised)
+        option.state = QStyle::State_Raised;
+    else
+        option.state = QStyle::State_None;
 
-	/* Draw a frame border if such is specified for this widget */
-	if (option.state != QStyle::State_None)
-	{
-		style()->drawPrimitive(QStyle::PE_Frame, &option,
-				       &painter, this);
-	}
+    /* Draw a frame border if such is specified for this widget */
+    if (option.state != QStyle::State_None)
+    {
+        style()->drawPrimitive(QStyle::PE_Frame, &option,
+                               &painter, this);
+    }
 
-	QWidget::paintEvent(e);
+    QWidget::paintEvent(e);
 
-	/* Draw selection frame */
-	if (mode() == Doc::Design && vc->isWidgetSelected(this) == true)
-	{
-		/* Draw a dotted line around the widget */
-		QPen pen(Qt::DotLine);
-		pen.setCapStyle(Qt::RoundCap);
-		pen.setWidth(0);
-		painter.setPen(pen);
-		painter.drawRect(0, 0, rect().width(), rect().height());
+    /* Draw selection frame */
+    if (mode() == Doc::Design && vc->isWidgetSelected(this) == true)
+    {
+        /* Draw a dotted line around the widget */
+        QPen pen(Qt::DotLine);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setWidth(0);
+        painter.setPen(pen);
+        painter.drawRect(0, 0, rect().width(), rect().height());
 
-		/* Draw a resize handle */
-		QIcon icon(":/resize.png");
-		painter.drawPixmap(rect().width() - 16, rect().height() - 16,
-			icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
-	}
+        /* Draw a resize handle */
+        QIcon icon(":/resize.png");
+        painter.drawPixmap(rect().width() - 16, rect().height() - 16,
+                           icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
+    }
 }
 
 void VCWidget::mousePressEvent(QMouseEvent* e)
 {
-	Q_ASSERT(e != NULL);
+    Q_ASSERT(e != NULL);
 
-	if (mode() == Doc::Operate)
-	{
-		QWidget::mousePressEvent(e);
-		return;
-	}
+    if (mode() == Doc::Operate)
+    {
+        QWidget::mousePressEvent(e);
+        return;
+    }
 
-	/* Perform widget de/selection in virtualconsole's selection buffer */
-	handleWidgetSelection(e);
+    /* Perform widget de/selection in virtualconsole's selection buffer */
+    handleWidgetSelection(e);
 
-	/* Resize mode */
-	if (m_resizeMode == true)
-	{
-		setMouseTracking(false);
-		m_resizeMode = false;
-	}
+    /* Resize mode */
+    if (m_resizeMode == true)
+    {
+        setMouseTracking(false);
+        m_resizeMode = false;
+    }
 
-	/* Move, resize or context menu invocation */
-	if (e->button() & Qt::LeftButton || e->button() & Qt::MidButton)
-	{
-		/* Start moving or resizing based on where the click landed */
-		if (e->x() > rect().width() - 10 &&
-		    e->y() > rect().height() - 10)
-		{
-			m_resizeMode = true;
-			setMouseTracking(true);
-			setCursor(QCursor(Qt::SizeFDiagCursor));
-		}
-		else
-		{
-			m_mousePressPoint = QPoint(e->x(), e->y());
-			setCursor(QCursor(Qt::SizeAllCursor));
-		}
-	}
-	else if (e->button() & Qt::RightButton)
-	{
-		/* Menu invocation */
-		m_mousePressPoint = QPoint(e->x(), e->y());
-		invokeMenu(mapToGlobal(e->pos()));
-	}
+    /* Move, resize or context menu invocation */
+    if (e->button() & Qt::LeftButton || e->button() & Qt::MidButton)
+    {
+        /* Start moving or resizing based on where the click landed */
+        if (e->x() > rect().width() - 10 &&
+                e->y() > rect().height() - 10)
+        {
+            m_resizeMode = true;
+            setMouseTracking(true);
+            setCursor(QCursor(Qt::SizeFDiagCursor));
+        }
+        else
+        {
+            m_mousePressPoint = QPoint(e->x(), e->y());
+            setCursor(QCursor(Qt::SizeAllCursor));
+        }
+    }
+    else if (e->button() & Qt::RightButton)
+    {
+        /* Menu invocation */
+        m_mousePressPoint = QPoint(e->x(), e->y());
+        invokeMenu(mapToGlobal(e->pos()));
+    }
 }
 
 void VCWidget::handleWidgetSelection(QMouseEvent* e)
 {
-	/* No point coming here if there is no VC */
-	VirtualConsole* vc = VirtualConsole::instance();
-	if (vc == NULL)
-		return;
+    /* No point coming here if there is no VC */
+    VirtualConsole* vc = VirtualConsole::instance();
+    if (vc == NULL)
+        return;
 
-	/* Widget selection logic (like in Qt Designer) */
-	if (e->button() == Qt::LeftButton)
-	{
-		if (e->modifiers() & Qt::ShiftModifier)
-		{
-			/* Toggle selection with LMB when shift is pressed */
-			bool selected = vc->isWidgetSelected(this);
-			vc->setWidgetSelected(this, !selected);
-		}
-		else
-		{
-			if (vc->isWidgetSelected(this) == false)
-			{
-				/* Select only this */
-				vc->clearWidgetSelection();
-				vc->setWidgetSelected(this, true);
-			}
-		}
-	}
-	else if (e->button() == Qt::RightButton)
-	{
-		if (vc->isWidgetSelected(this) == false)
-		{
-			/* Select only this */
-			vc->clearWidgetSelection();
-			vc->setWidgetSelected(this, true);
-		}
-	}
+    /* Widget selection logic (like in Qt Designer) */
+    if (e->button() == Qt::LeftButton)
+    {
+        if (e->modifiers() & Qt::ShiftModifier)
+        {
+            /* Toggle selection with LMB when shift is pressed */
+            bool selected = vc->isWidgetSelected(this);
+            vc->setWidgetSelected(this, !selected);
+        }
+        else
+        {
+            if (vc->isWidgetSelected(this) == false)
+            {
+                /* Select only this */
+                vc->clearWidgetSelection();
+                vc->setWidgetSelected(this, true);
+            }
+        }
+    }
+    else if (e->button() == Qt::RightButton)
+    {
+        if (vc->isWidgetSelected(this) == false)
+        {
+            /* Select only this */
+            vc->clearWidgetSelection();
+            vc->setWidgetSelected(this, true);
+        }
+    }
 }
 
 void VCWidget::mouseReleaseEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Design)
-	{
-		unsetCursor();
-		m_resizeMode = false;
-		setMouseTracking(false);
-	}
-	else
-	{
-		QWidget::mouseReleaseEvent(e);
-	}
+    if (mode() == Doc::Design)
+    {
+        unsetCursor();
+        m_resizeMode = false;
+        setMouseTracking(false);
+    }
+    else
+    {
+        QWidget::mouseReleaseEvent(e);
+    }
 }
 
 void VCWidget::mouseDoubleClickEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Design)
-		editProperties();
-	else
-		QWidget::mouseDoubleClickEvent(e);
+    if (mode() == Doc::Design)
+        editProperties();
+    else
+        QWidget::mouseDoubleClickEvent(e);
 }
 
 void VCWidget::mouseMoveEvent(QMouseEvent* e)
 {
-	if (mode() == Doc::Design)
-	{
-		if (m_resizeMode == true)
-		{
-			QPoint p(mapFromGlobal(QCursor::pos()));
-			resize(QSize(p.x(), p.y()));
-			_app->doc()->setModified();
-		}
-		else if (e->buttons() & Qt::LeftButton ||
-			 e->buttons() & Qt::MidButton)
-		{
-			QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
-			p.setX(p.x() - m_mousePressPoint.x());
-			p.setY(p.y() - m_mousePressPoint.y());
+    if (mode() == Doc::Design)
+    {
+        if (m_resizeMode == true)
+        {
+            QPoint p(mapFromGlobal(QCursor::pos()));
+            resize(QSize(p.x(), p.y()));
+            _app->doc()->setModified();
+        }
+        else if (e->buttons() & Qt::LeftButton ||
+                 e->buttons() & Qt::MidButton)
+        {
+            QPoint p(parentWidget()->mapFromGlobal(QCursor::pos()));
+            p.setX(p.x() - m_mousePressPoint.x());
+            p.setY(p.y() - m_mousePressPoint.y());
 
-			move(p);
-			_app->doc()->setModified();
-		}
-	}
-	else
-	{
-		QWidget::mouseMoveEvent(e);
-	}
+            move(p);
+            _app->doc()->setModified();
+        }
+    }
+    else
+    {
+        QWidget::mouseMoveEvent(e);
+    }
 }

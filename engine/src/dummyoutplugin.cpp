@@ -47,7 +47,7 @@ void DummyOutPlugin::init()
 
 QString DummyOutPlugin::name()
 {
-	return QString("Dummy Output");
+    return QString("Dummy Output");
 }
 
 /*****************************************************************************
@@ -56,22 +56,22 @@ QString DummyOutPlugin::name()
 
 void DummyOutPlugin::open(quint32 output)
 {
-	Q_UNUSED(output);
+    Q_UNUSED(output);
 }
 
 void DummyOutPlugin::close(quint32 output)
 {
-	Q_UNUSED(output);
+    Q_UNUSED(output);
 }
 
 QStringList DummyOutPlugin::outputs()
 {
-	QStringList list;
+    QStringList list;
 
-	for (int i = 0; i < KUniverseCount; i++)
-		list << QString("%1: Dummy Out %1").arg(i + 1);
+    for (int i = 0; i < KUniverseCount; i++)
+        list << QString("%1: Dummy Out %1").arg(i + 1);
 
-	return list;
+    return list;
 }
 
 /*****************************************************************************
@@ -88,33 +88,33 @@ void DummyOutPlugin::configure()
 
 QString DummyOutPlugin::infoText(quint32 output)
 {
-	QString str;
+    QString str;
 
-	str += QString("<HTML>");
-	str += QString("<HEAD>");
-	str += QString("<TITLE>%1</TITLE>").arg(name());
-	str += QString("</HEAD>");
-	str += QString("<BODY>");
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
 
-	if (output == KOutputInvalid)
-		str += QString("<H3>%1</H3>").arg(name());
-	else
-		str += QString("<H3>%1 %2</H3>").arg(name()).arg(output + 1);
-	str += QString("<P>");
-	str += QString("This plugin does absolutely nothing; you can use ");
-	str += QString("it if you don't have DMX output plugins or ");
-	str += QString("hardware installed. You can download output plugins from ");
-	str += QString("<A HREF=\"http://www.sf.net/projects/qlc/files\">");
-	str += QString("http://www.sf.net/projects/qlc/files</a>.");
-	str += QString("</P>");
-	str += QString("<P>");
-	str += QString("This plugin has no configurable options.");
-	str += QString("</P>");
+    if (output == KOutputInvalid)
+        str += QString("<H3>%1</H3>").arg(name());
+    else
+        str += QString("<H3>%1 %2</H3>").arg(name()).arg(output + 1);
+    str += QString("<P>");
+    str += QString("This plugin does absolutely nothing; you can use ");
+    str += QString("it if you don't have DMX output plugins or ");
+    str += QString("hardware installed. You can download output plugins from ");
+    str += QString("<A HREF=\"http://www.sf.net/projects/qlc/files\">");
+    str += QString("http://www.sf.net/projects/qlc/files</a>.");
+    str += QString("</P>");
+    str += QString("<P>");
+    str += QString("This plugin has no configurable options.");
+    str += QString("</P>");
 
-	str += QString("</BODY>");
-	str += QString("</HTML>");
+    str += QString("</BODY>");
+    str += QString("</HTML>");
 
-	return str;
+    return str;
 }
 
 /*****************************************************************************
@@ -123,6 +123,6 @@ QString DummyOutPlugin::infoText(quint32 output)
 
 void DummyOutPlugin::outputDMX(quint32 output, const QByteArray& universe)
 {
-	Q_UNUSED(output);
-	Q_UNUSED(universe);
+    Q_UNUSED(output);
+    Q_UNUSED(universe);
 }

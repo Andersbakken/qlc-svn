@@ -43,77 +43,77 @@ class HIDInput;
 
 class HIDEventDevice : public HIDDevice
 {
-	Q_OBJECT
-		
+    Q_OBJECT
+
 public:
-	HIDEventDevice(HIDInput* parent, quint32 line, const QString& path);
-	virtual ~HIDEventDevice();
+    HIDEventDevice(HIDInput* parent, quint32 line, const QString& path);
+    virtual ~HIDEventDevice();
 
 protected:
-	/**
-	 * Initialize the device, find out its capabilities etc.
-	 */
-	void init();
+    /**
+     * Initialize the device, find out its capabilities etc.
+     */
+    void init();
 
-	/**
-	 * Find out the HID device's capabilities
-	 */
-	void getCapabilities(uint8_t* mask);
+    /**
+     * Find out the HID device's capabilities
+     */
+    void getCapabilities(uint8_t* mask);
 
-	/**
-	 * Find out the capabilities of absolute axes
-	 */
-	void getAbsoluteAxesCapabilities();
+    /**
+     * Find out the capabilities of absolute axes
+     */
+    void getAbsoluteAxesCapabilities();
 
-	/*********************************************************************
-	 * File operations
-	 *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-	/**
-	 * Attempt to open the HID device in RW mode and fall back to RO
-	 * if that fails.
-	 *
-	 * @return true if the file was opened RW/RO
-	 */
-	bool open();
+    /**
+     * Attempt to open the HID device in RW mode and fall back to RO
+     * if that fails.
+     *
+     * @return true if the file was opened RW/RO
+     */
+    bool open();
 
-	/**
-	 * Close the HID device
-	 */
-	void close();
+    /**
+     * Close the HID device
+     */
+    void close();
 
-	/**
-	 * Get the full path of this HID device
-	 */
-	QString path() const;
+    /**
+     * Get the full path of this HID device
+     */
+    QString path() const;
 
-	/**
-	 * Read one event and emit it
-	 */
-	bool readEvent();
+    /**
+     * Read one event and emit it
+     */
+    bool readEvent();
 
 protected:
-	/** Scaling values for absolute/relative axes */
-	QHash <int, struct input_absinfo> m_scales;
+    /** Scaling values for absolute/relative axes */
+    QHash <int, struct input_absinfo> m_scales;
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	/**
-	 * Get HID device information string to be used in plugin manager
-	 */
-	QString infoText();
+    /**
+     * Get HID device information string to be used in plugin manager
+     */
+    QString infoText();
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 public:
-	/**
-	 * Send an input value back the HID device to move motorized sliders
-	 * and such.
-	 */
-	void feedBack(quint32 channel, uchar value);
+    /**
+     * Send an input value back the HID device to move motorized sliders
+     * and such.
+     */
+    void feedBack(quint32 channel, uchar value);
 };
 
 #endif

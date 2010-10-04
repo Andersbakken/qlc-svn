@@ -30,47 +30,47 @@
 
 QLCChannel::QLCChannel()
 {
-	m_name = QString::null;
-	m_group = QString(KQLCChannelGroupIntensity);
-	m_controlByte = 0;
+    m_name = QString::null;
+    m_group = QString(KQLCChannelGroupIntensity);
+    m_controlByte = 0;
 }
 
 QLCChannel::QLCChannel(const QLCChannel* channel)
 {
-	m_name = QString::null;
-	m_group = QString(KQLCChannelGroupIntensity);
-	m_controlByte = 0;
+    m_name = QString::null;
+    m_group = QString(KQLCChannelGroupIntensity);
+    m_controlByte = 0;
 
-	if (channel != NULL)
-		*this = *channel;
+    if (channel != NULL)
+        *this = *channel;
 }
 
 QLCChannel::~QLCChannel()
 {
-	while (m_capabilities.isEmpty() == false)
-		delete m_capabilities.takeFirst();
+    while (m_capabilities.isEmpty() == false)
+        delete m_capabilities.takeFirst();
 }
 
 QLCChannel& QLCChannel::operator=(const QLCChannel& channel)
 {
-	if (this != &channel)
-	{
-		QListIterator<QLCCapability*> it(channel.m_capabilities);
+    if (this != &channel)
+    {
+        QListIterator<QLCCapability*> it(channel.m_capabilities);
 
-		m_name = channel.m_name;
-		m_group = channel.m_group;
-		m_controlByte = channel.m_controlByte;
+        m_name = channel.m_name;
+        m_group = channel.m_group;
+        m_controlByte = channel.m_controlByte;
 
-		/* Clear old capabilities */
-		while (m_capabilities.isEmpty() == false)
-			delete m_capabilities.takeFirst();
+        /* Clear old capabilities */
+        while (m_capabilities.isEmpty() == false)
+            delete m_capabilities.takeFirst();
 
-		/* Copy new capabilities from the other channel */
-		while (it.hasNext() == true)
-			m_capabilities.append(new QLCCapability(it.next()));
-	}
+        /* Copy new capabilities from the other channel */
+        while (it.hasNext() == true)
+            m_capabilities.append(new QLCCapability(it.next()));
+    }
 
-	return *this;
+    return *this;
 }
 
 /*****************************************************************************
@@ -78,71 +78,84 @@ QLCChannel& QLCChannel::operator=(const QLCChannel& channel)
  *****************************************************************************/
 QStringList QLCChannel::groupList()
 {
-	QStringList list;
+    QStringList list;
 
-	list.append(KQLCChannelGroupBeam);
-	list.append(KQLCChannelGroupColour);
-	list.append(KQLCChannelGroupEffect);
-	list.append(KQLCChannelGroupGobo);
-	list.append(KQLCChannelGroupIntensity);
-	list.append(KQLCChannelGroupMaintenance);
-	list.append(KQLCChannelGroupNothing);
-	list.append(KQLCChannelGroupPan);
-	list.append(KQLCChannelGroupPrism);
-	list.append(KQLCChannelGroupShutter);
-	list.append(KQLCChannelGroupSpeed);
-	list.append(KQLCChannelGroupTilt);
+    list.append(KQLCChannelGroupBeam);
+    list.append(KQLCChannelGroupColour);
+    list.append(KQLCChannelGroupEffect);
+    list.append(KQLCChannelGroupGobo);
+    list.append(KQLCChannelGroupIntensity);
+    list.append(KQLCChannelGroupMaintenance);
+    list.append(KQLCChannelGroupNothing);
+    list.append(KQLCChannelGroupPan);
+    list.append(KQLCChannelGroupPrism);
+    list.append(KQLCChannelGroupShutter);
+    list.append(KQLCChannelGroupSpeed);
+    list.append(KQLCChannelGroupTilt);
 
-	return list;
+    return list;
 }
 
 int QLCChannel::groupToIndex(QString group)
 {
-	if (group == KQLCChannelGroupBeam)
-		return 0;
-	else if (group == KQLCChannelGroupColour)
-		return 1;
-	else if (group == KQLCChannelGroupEffect)
-		return 2;
-	else if (group == KQLCChannelGroupGobo)
-		return 3;
-	else if (group == KQLCChannelGroupIntensity)
-		return 4;
-	else if (group == KQLCChannelGroupMaintenance)
-		return 5;
-	else if (group == KQLCChannelGroupNothing)
-		return 6;
-	else if (group == KQLCChannelGroupPan)
-		return 7;
-	else if (group == KQLCChannelGroupPrism)
-		return 8;
-	else if (group == KQLCChannelGroupShutter)
-		return 9;
-	else if (group == KQLCChannelGroupSpeed)
-		return 10;
-	else if (group == KQLCChannelGroupTilt)
-		return 11;
-	else
-		return -1;
+    if (group == KQLCChannelGroupBeam)
+        return 0;
+    else if (group == KQLCChannelGroupColour)
+        return 1;
+    else if (group == KQLCChannelGroupEffect)
+        return 2;
+    else if (group == KQLCChannelGroupGobo)
+        return 3;
+    else if (group == KQLCChannelGroupIntensity)
+        return 4;
+    else if (group == KQLCChannelGroupMaintenance)
+        return 5;
+    else if (group == KQLCChannelGroupNothing)
+        return 6;
+    else if (group == KQLCChannelGroupPan)
+        return 7;
+    else if (group == KQLCChannelGroupPrism)
+        return 8;
+    else if (group == KQLCChannelGroupShutter)
+        return 9;
+    else if (group == KQLCChannelGroupSpeed)
+        return 10;
+    else if (group == KQLCChannelGroupTilt)
+        return 11;
+    else
+        return -1;
 }
 
 QString QLCChannel::indexToGroup(int index)
 {
-	switch (index)
-	{
-	case 0: return KQLCChannelGroupBeam;
-	case 1: return KQLCChannelGroupColour;
-	case 2: return KQLCChannelGroupEffect;
-	case 3: return KQLCChannelGroupGobo;
-	case 4: return KQLCChannelGroupIntensity;
-	case 5: return KQLCChannelGroupMaintenance;
-	default: case 6: return KQLCChannelGroupNothing;
-	case 7: return KQLCChannelGroupPan;
-	case 8: return KQLCChannelGroupPrism;
-	case 9: return KQLCChannelGroupShutter;
-	case 10: return KQLCChannelGroupSpeed;
-	case 11: return KQLCChannelGroupTilt;
-	}
+    switch (index)
+    {
+    case 0:
+        return KQLCChannelGroupBeam;
+    case 1:
+        return KQLCChannelGroupColour;
+    case 2:
+        return KQLCChannelGroupEffect;
+    case 3:
+        return KQLCChannelGroupGobo;
+    case 4:
+        return KQLCChannelGroupIntensity;
+    case 5:
+        return KQLCChannelGroupMaintenance;
+    default:
+    case 6:
+        return KQLCChannelGroupNothing;
+    case 7:
+        return KQLCChannelGroupPan;
+    case 8:
+        return KQLCChannelGroupPrism;
+    case 9:
+        return KQLCChannelGroupShutter;
+    case 10:
+        return KQLCChannelGroupSpeed;
+    case 11:
+        return KQLCChannelGroupTilt;
+    }
 }
 
 /*****************************************************************************
@@ -151,75 +164,75 @@ QString QLCChannel::indexToGroup(int index)
 
 QLCCapability* QLCChannel::searchCapability(uchar value) const
 {
-	QListIterator <QLCCapability*> it(m_capabilities);
-	while (it.hasNext() == true)
-	{
-		QLCCapability* capability = it.next();
-		if (capability->min() <= value && capability->max() >= value)
-			return capability;
-	}
+    QListIterator <QLCCapability*> it(m_capabilities);
+    while (it.hasNext() == true)
+    {
+        QLCCapability* capability = it.next();
+        if (capability->min() <= value && capability->max() >= value)
+            return capability;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 QLCCapability* QLCChannel::searchCapability(const QString& name,
-					    bool exactMatch) const
+        bool exactMatch) const
 {
-	QListIterator <QLCCapability*> it(m_capabilities);
-	while (it.hasNext() == true)
-	{
-		QLCCapability* capability = it.next();
-		if (exactMatch == true && capability->name() == name)
-			return capability;
-		else if (exactMatch == false &&
-			 capability->name().contains(name) == true)
-			return capability;
-	}
+    QListIterator <QLCCapability*> it(m_capabilities);
+    while (it.hasNext() == true)
+    {
+        QLCCapability* capability = it.next();
+        if (exactMatch == true && capability->name() == name)
+            return capability;
+        else if (exactMatch == false &&
+                 capability->name().contains(name) == true)
+            return capability;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 bool QLCChannel::addCapability(QLCCapability* cap)
 {
-	Q_ASSERT(cap != NULL);
+    Q_ASSERT(cap != NULL);
 
-	/* Check for overlapping values */
-	foreach (QLCCapability* another, m_capabilities)
-	{
-		if (another->overlaps(cap) == true)
-			return false;
-	}
+    /* Check for overlapping values */
+    foreach (QLCCapability* another, m_capabilities)
+    {
+        if (another->overlaps(cap) == true)
+            return false;
+    }
 
-	m_capabilities.append(cap);
-	return true;
+    m_capabilities.append(cap);
+    return true;
 }
 
 bool QLCChannel::removeCapability(QLCCapability* cap)
 {
-	Q_ASSERT(cap != NULL);
+    Q_ASSERT(cap != NULL);
 
-	QMutableListIterator <QLCCapability*> it(m_capabilities);
-	while (it.hasNext() == true)
-	{
-		if (it.next() == cap)
-		{
-			it.remove();
-			delete cap;
-			return true;
-		}
-	}
+    QMutableListIterator <QLCCapability*> it(m_capabilities);
+    while (it.hasNext() == true)
+    {
+        if (it.next() == cap)
+        {
+            it.remove();
+            delete cap;
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 static bool capsort(const QLCCapability* cap1, const QLCCapability* cap2)
 {
-	return (*cap1) < (*cap2);
+    return (*cap1) < (*cap2);
 }
 
 void QLCChannel::sortCapabilities()
 {
-	qSort(m_capabilities.begin(), m_capabilities.end(), capsort);
+    qSort(m_capabilities.begin(), m_capabilities.end(), capsort);
 }
 
 /*****************************************************************************
@@ -228,97 +241,97 @@ void QLCChannel::sortCapabilities()
 
 bool QLCChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 {
-	QDomElement chtag;
-	QDomElement grptag;
-	QDomText text;
-	QString str;
+    QDomElement chtag;
+    QDomElement grptag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc);
-	Q_ASSERT(root);
+    Q_ASSERT(doc);
+    Q_ASSERT(root);
 
-	/* Channel entry */
-	chtag = doc->createElement(KXMLQLCChannel);
-	chtag.setAttribute(KXMLQLCChannelName, m_name);
-	root->appendChild(chtag);
+    /* Channel entry */
+    chtag = doc->createElement(KXMLQLCChannel);
+    chtag.setAttribute(KXMLQLCChannelName, m_name);
+    root->appendChild(chtag);
 
-	/* Group */
-	grptag = doc->createElement(KXMLQLCChannelGroup);
-	text = doc->createTextNode(m_group);
-	grptag.appendChild(text);
+    /* Group */
+    grptag = doc->createElement(KXMLQLCChannelGroup);
+    text = doc->createTextNode(m_group);
+    grptag.appendChild(text);
 
-	/* Group control byte */
-	str.setNum(m_controlByte);
-	grptag.setAttribute(KXMLQLCChannelGroupByte, str);
+    /* Group control byte */
+    str.setNum(m_controlByte);
+    grptag.setAttribute(KXMLQLCChannelGroupByte, str);
 
-	chtag.appendChild(grptag);
+    chtag.appendChild(grptag);
 
-	/* Capabilities */
-	QListIterator <QLCCapability*> it(m_capabilities);
-	while (it.hasNext() == true)
-		it.next()->saveXML(doc, &chtag);
+    /* Capabilities */
+    QListIterator <QLCCapability*> it(m_capabilities);
+    while (it.hasNext() == true)
+        it.next()->saveXML(doc, &chtag);
 
-	return true;
+    return true;
 }
 
 bool QLCChannel::loadXML(const QDomElement* root)
 {
-	QDomNode node;
-	QDomElement tag;
-	QString str;
+    QDomNode node;
+    QDomElement tag;
+    QString str;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCChannel)
-	{
-		qWarning() << "Channel node not found.";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCChannel)
+    {
+        qWarning() << "Channel node not found.";
+        return false;
+    }
 
-	/* Get channel name */
-	str = root->attribute(KXMLQLCChannelName);
-	if (str == QString::null)
-		return false;
-	else
-		setName(str);
+    /* Get channel name */
+    str = root->attribute(KXMLQLCChannelName);
+    if (str == QString::null)
+        return false;
+    else
+        setName(str);
 
-	/* Subtags */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
+    /* Subtags */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
 
-		if (tag.tagName() == KXMLQLCCapability)
-		{
-			/* Create a new capability and attempt to load it */
-			QLCCapability* cap = new QLCCapability();
-			if (cap->loadXML(&tag) == true)
-			{
-				/* Loading succeeded */
-				if (addCapability(cap) == false)
-				{
-					/* Value overlaps with existing value */
-					delete cap;
-				}
-			}
-			else
-			{
-				/* Loading failed */
-				delete cap;
-			}
-		}
-		else if (tag.tagName() == KXMLQLCChannelGroup)
-		{
-			str = tag.attribute(KXMLQLCChannelGroupByte);
-			setControlByte(str.toInt());
-			setGroup(tag.text());
-		}
-		else
-		{
-			qDebug() << "Unknown Channel tag: " << tag.tagName();
-		}
+        if (tag.tagName() == KXMLQLCCapability)
+        {
+            /* Create a new capability and attempt to load it */
+            QLCCapability* cap = new QLCCapability();
+            if (cap->loadXML(&tag) == true)
+            {
+                /* Loading succeeded */
+                if (addCapability(cap) == false)
+                {
+                    /* Value overlaps with existing value */
+                    delete cap;
+                }
+            }
+            else
+            {
+                /* Loading failed */
+                delete cap;
+            }
+        }
+        else if (tag.tagName() == KXMLQLCChannelGroup)
+        {
+            str = tag.attribute(KXMLQLCChannelGroupByte);
+            setControlByte(str.toInt());
+            setGroup(tag.text());
+        }
+        else
+        {
+            qDebug() << "Unknown Channel tag: " << tag.tagName();
+        }
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }

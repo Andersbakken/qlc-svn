@@ -26,12 +26,12 @@
 
 class OutputPatch_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void defaults();
-	void patch();
-	void dump();
+    void defaults();
+    void patch();
+    void dump();
 };
 
 #endif

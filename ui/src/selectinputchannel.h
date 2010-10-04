@@ -34,57 +34,61 @@ class InputPatch;
 
 class SelectInputChannel : public QDialog, public Ui_SelectInputChannel
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(SelectInputChannel)
+    Q_OBJECT
+    Q_DISABLE_COPY(SelectInputChannel)
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	SelectInputChannel(QWidget* parent);
-	~SelectInputChannel();
+    SelectInputChannel(QWidget* parent);
+    ~SelectInputChannel();
 
 protected slots:
-	void accept();
+    void accept();
 
-	/********************************************************************
-	 * Selection
-	 ********************************************************************/
+    /********************************************************************
+     * Selection
+     ********************************************************************/
 public:
-	/** Get the selected universe */
-	quint32 universe() const { return m_universe; }
+    /** Get the selected universe */
+    quint32 universe() const {
+        return m_universe;
+    }
 
-	/** Get the selected channel within the selected universe */
-	quint32 channel() const { return m_channel; }
+    /** Get the selected channel within the selected universe */
+    quint32 channel() const {
+        return m_channel;
+    }
 
 protected:
-	quint32 m_universe;
-	quint32 m_channel;
+    quint32 m_universe;
+    quint32 m_channel;
 
-	/********************************************************************
-	 * Tree widget
-	 ********************************************************************/
+    /********************************************************************
+     * Tree widget
+     ********************************************************************/
 protected:
-	/** Fill the tree with available input universes & channels */
-	void fillTree();
+    /** Fill the tree with available input universes & channels */
+    void fillTree();
 
-	/** Update the contents of a universe item */
-	void updateUniverseItem(QTreeWidgetItem* item,
-				quint32 uni,
-				InputPatch* patch);
+    /** Update the contents of a universe item */
+    void updateUniverseItem(QTreeWidgetItem* item,
+                            quint32 uni,
+                            InputPatch* patch);
 
-	/** Update the contents of a channel item */
-	void updateChannelItem(QTreeWidgetItem* item,
-			       quint32 universe,
-			       const QLCInputChannel* channel,
-			       const QLCInputProfile* profile);
+    /** Update the contents of a channel item */
+    void updateChannelItem(QTreeWidgetItem* item,
+                           quint32 universe,
+                           const QLCInputChannel* channel,
+                           const QLCInputProfile* profile);
 
 protected slots:
-	/** Receives changed information for items with manual input enabled */
-	void slotItemChanged(QTreeWidgetItem* item, int column);
+    /** Receives changed information for items with manual input enabled */
+    void slotItemChanged(QTreeWidgetItem* item, int column);
 
-	/** Receives item double clicks */
-	void slotItemDoubleClicked(QTreeWidgetItem* item, int column);
+    /** Receives item double clicks */
+    void slotItemDoubleClicked(QTreeWidgetItem* item, int column);
 };
 
 #endif

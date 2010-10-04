@@ -44,39 +44,45 @@ class QDomElement;
 
 class InputPatch : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(InputPatch);
+    Q_OBJECT
+    Q_DISABLE_COPY(InputPatch);
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	InputPatch(QObject* parent);
-	virtual ~InputPatch();
+    InputPatch(QObject* parent);
+    virtual ~InputPatch();
 
-	/********************************************************************
-	 * Properties
-	 ********************************************************************/
+    /********************************************************************
+     * Properties
+     ********************************************************************/
 public:
-	void set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
-		 QLCInputProfile* profile);
+    void set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
+             QLCInputProfile* profile);
 
-	QLCInPlugin* plugin() const { return m_plugin; }
-	QString pluginName() const;
+    QLCInPlugin* plugin() const {
+        return m_plugin;
+    }
+    QString pluginName() const;
 
-	quint32 input() const;
-	QString inputName() const;
+    quint32 input() const;
+    QString inputName() const;
 
-	QLCInputProfile* profile() const { return m_profile; }
-	QString profileName() const;
+    QLCInputProfile* profile() const {
+        return m_profile;
+    }
+    QString profileName() const;
 
-	bool feedbackEnabled() const { return m_feedbackEnabled; }
+    bool feedbackEnabled() const {
+        return m_feedbackEnabled;
+    }
 
 protected:
-	QLCInPlugin* m_plugin;
-	quint32 m_input;
-	QLCInputProfile* m_profile;
-	bool m_feedbackEnabled;
+    QLCInPlugin* m_plugin;
+    quint32 m_input;
+    QLCInputProfile* m_profile;
+    bool m_feedbackEnabled;
 };
 
 #endif

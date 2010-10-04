@@ -34,23 +34,23 @@
 
 OLAOut::OLAOut()
 {
-  m_embedServer = false;
-  m_thread = NULL;
-  m_log_destination = new ola::QLCLogDestination();
-  ola::InitLogging(ola::OLA_LOG_WARN, m_log_destination);
+    m_embedServer = false;
+    m_thread = NULL;
+    m_log_destination = new ola::QLCLogDestination();
+    ola::InitLogging(ola::OLA_LOG_WARN, m_log_destination);
 }
 
 OLAOut::~OLAOut() {
-  if (m_thread != NULL)
-  {
-    m_thread->stop();
-    delete m_thread;
-  }
-  if (m_log_destination)
-  {
-    ola::InitLogging(ola::OLA_LOG_WARN, NULL);
-    delete m_log_destination;
-  }
+    if (m_thread != NULL)
+    {
+        m_thread->stop();
+        delete m_thread;
+    }
+    if (m_log_destination)
+    {
+        ola::InitLogging(ola::OLA_LOG_WARN, NULL);
+        delete m_log_destination;
+    }
 }
 
 /*
@@ -59,16 +59,16 @@ OLAOut::~OLAOut() {
  */
 void OLAOut::init()
 {
-  // TODO: load this from a savefile at some point
-  for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
-    m_output_list.append(i);
+    // TODO: load this from a savefile at some point
+    for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
+        m_output_list.append(i);
 
-  QSettings settings;
-  bool es = settings.value("OLAOut/embedded").toBool();
-  // Make sure the thread is started the first time round
-  m_embedServer = !es;
-  // This should load from the settings when it is made
-  setServerEmbedded(es);
+    QSettings settings;
+    bool es = settings.value("OLAOut/embedded").toBool();
+    // Make sure the thread is started the first time round
+    m_embedServer = !es;
+    // This should load from the settings when it is made
+    setServerEmbedded(es);
 }
 
 /*
@@ -76,7 +76,7 @@ void OLAOut::init()
  */
 bool OLAOut::isServerEmbedded()
 {
-  return m_embedServer;
+    return m_embedServer;
 }
 
 /*
@@ -84,28 +84,28 @@ bool OLAOut::isServerEmbedded()
  */
 void OLAOut::setServerEmbedded(bool embedServer)
 {
-  if (embedServer != m_embedServer) {
-    if (m_thread != NULL)
-    {
-      m_thread->stop();
-      delete m_thread;
+    if (embedServer != m_embedServer) {
+        if (m_thread != NULL)
+        {
+            m_thread->stop();
+            delete m_thread;
+        }
+        m_embedServer = embedServer;
+        if (m_embedServer)
+        {
+            qWarning() << "olaout: running as embedded";
+            m_thread = new OlaEmbeddedServer();
+        } else
+        {
+            m_thread = new OlaStandaloneClient();
+        }
+        if (!m_thread->start())
+        {
+            qWarning() << "olaout: start thread failed";
+        }
+        QSettings settings;
+        settings.setValue("OLAOut/embedded", m_embedServer);
     }
-    m_embedServer = embedServer;
-    if (m_embedServer)
-    {
-      qWarning() << "olaout: running as embedded";
-      m_thread = new OlaEmbeddedServer();
-    } else
-    {
-      m_thread = new OlaStandaloneClient();
-    }
-    if (!m_thread->start())
-    {
-      qWarning() << "olaout: start thread failed";
-    }
-    QSettings settings;
-    settings.setValue("OLAOut/embedded", m_embedServer);
-  }
 }
 
 /*
@@ -114,11 +114,11 @@ void OLAOut::setServerEmbedded(bool embedServer)
  */
 void OLAOut::open(quint32 output)
 {
-  if (output >= K_UNIVERSE_COUNT)
-  {
-    qWarning() << "olaout: output " << output << " out of range";
-    return;
-  }
+    if (output >= K_UNIVERSE_COUNT)
+    {
+        qWarning() << "olaout: output " << output << " out of range";
+        return;
+    }
 }
 
 
@@ -128,11 +128,11 @@ void OLAOut::open(quint32 output)
  */
 void OLAOut::close(quint32 output)
 {
-  if (output >= K_UNIVERSE_COUNT)
-  {
-    qWarning() << "olaout: output " << output << " out of range";
-    return;
-  }
+    if (output >= K_UNIVERSE_COUNT)
+    {
+        qWarning() << "olaout: output " << output << " out of range";
+        return;
+    }
 }
 
 
@@ -142,14 +142,14 @@ void OLAOut::close(quint32 output)
  */
 QStringList OLAOut::outputs()
 {
-  QStringList list;
-  for (int i = 0; i != m_output_list.size(); ++i)
-  {
-    QString s;
-    s.sprintf("OLA Output %d", i+1);
-    list << s;
-  }
-  return list;
+    QStringList list;
+    for (int i = 0; i != m_output_list.size(); ++i)
+    {
+        QString s;
+        s.sprintf("OLA Output %d", i+1);
+        list << s;
+    }
+    return list;
 }
 
 
@@ -158,7 +158,7 @@ QStringList OLAOut::outputs()
  */
 QString OLAOut::name()
 {
-  return QString("OLA Output Plugin");
+    return QString("OLA Output Plugin");
 }
 
 
@@ -173,8 +173,8 @@ QString OLAOut::name()
  */
 void OLAOut::configure()
 {
-  ConfigureOLAOut conf(NULL, this);
-  conf.exec();
+    ConfigureOLAOut conf(NULL, this);
+    conf.exec();
 }
 
 
@@ -183,45 +183,45 @@ void OLAOut::configure()
  */
 QString OLAOut::infoText(quint32 output)
 {
-  QString str;
+    QString str;
 
-  str += QString("<HTML>");
-  str += QString("<HEAD>");
-  str += QString("<TITLE>%1</TITLE>").arg(name());
-  str += QString("</HEAD>");
-  str += QString("<BODY>");
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
 
-  if (output == KOutputInvalid)
-  {
-    str += QString("<H3>%1</H3>").arg(name());
-    str += QString("<P>");
-    str += QString("This plugin provides DMX output support for ");
-    str += QString("the Open Lighting Architecture (OLA). See ");
-    str += QString("<a href=\"http://code.google.com/p/linux-lighting/\">");
-    str += QString("http://code.google.com/p/linux-lighting/</a> for more ");
-    str += QString("information.");
-    str += QString("</P>");
-  }
-  else
-  {
-    str += QString("<H3>%1</H3>").arg(outputs()[output]);
-    str += QString("<P>");
-    str += QString("This is the output for OLA universe %1").arg(output + 1);
-    str += QString("</P>");
-  }
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support for ");
+        str += QString("the Open Lighting Architecture (OLA). See ");
+        str += QString("<a href=\"http://code.google.com/p/linux-lighting/\">");
+        str += QString("http://code.google.com/p/linux-lighting/</a> for more ");
+        str += QString("information.");
+        str += QString("</P>");
+    }
+    else
+    {
+        str += QString("<H3>%1</H3>").arg(outputs()[output]);
+        str += QString("<P>");
+        str += QString("This is the output for OLA universe %1").arg(output + 1);
+        str += QString("</P>");
+    }
 
-  str += QString("</BODY>");
-  str += QString("</HTML>");
-  return str;
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+    return str;
 }
 
 
 void OLAOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-  if (output > K_UNIVERSE_COUNT || !m_thread)
-    return;
+    if (output > K_UNIVERSE_COUNT || !m_thread)
+        return;
 
-  m_thread->write_dmx(m_output_list[output], universe);
+    m_thread->write_dmx(m_output_list[output], universe);
 }
 
 /*
@@ -229,7 +229,7 @@ void OLAOut::outputDMX(quint32 output, const QByteArray& universe)
  */
 const OutputList OLAOut::outputMapping() const
 {
-  return m_output_list;
+    return m_output_list;
 }
 
 
@@ -240,9 +240,9 @@ const OutputList OLAOut::outputMapping() const
  */
 void OLAOut::setOutputUniverse(quint32 output, unsigned int universe)
 {
-  if (output > K_UNIVERSE_COUNT)
-    return;
-  m_output_list[output] = universe;
+    if (output > K_UNIVERSE_COUNT)
+        return;
+    m_output_list[output] = universe;
 }
 
 Q_EXPORT_PLUGIN2(olaout, OLAOut)

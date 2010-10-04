@@ -29,52 +29,52 @@
 #define KSettingsGeometry "editcapability/geometry"
 
 EditCapability::EditCapability(QWidget* parent, const QLCCapability* cap)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	m_capability = new QLCCapability(cap);
+    m_capability = new QLCCapability(cap);
 
-	setupUi(this);
+    setupUi(this);
 
-	m_minSpin->setValue(m_capability->min());
-	m_maxSpin->setValue(m_capability->max());
-	m_descriptionEdit->setText(m_capability->name());
-	m_minSpin->setFocus();
-	m_minSpin->selectAll();
+    m_minSpin->setValue(m_capability->min());
+    m_maxSpin->setValue(m_capability->max());
+    m_descriptionEdit->setText(m_capability->name());
+    m_minSpin->setFocus();
+    m_minSpin->selectAll();
 
-	connect(m_minSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotMinSpinChanged(int)));
-	connect(m_maxSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(slotMaxSpinChanged(int)));
-	connect(m_descriptionEdit, SIGNAL(textEdited(const QString&)),
-		this, SLOT(slotDescriptionEdited(const QString&)));
+    connect(m_minSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotMinSpinChanged(int)));
+    connect(m_maxSpin, SIGNAL(valueChanged(int)),
+            this, SLOT(slotMaxSpinChanged(int)));
+    connect(m_descriptionEdit, SIGNAL(textEdited(const QString&)),
+            this, SLOT(slotDescriptionEdited(const QString&)));
 
-	QSettings settings;
-	QVariant var = settings.value(KSettingsGeometry);
-	if (var.isValid() == true)
-		restoreGeometry(var.toByteArray());
+    QSettings settings;
+    QVariant var = settings.value(KSettingsGeometry);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
 }
 
 EditCapability::~EditCapability()
 {
-	QSettings settings;
-	settings.setValue(KSettingsGeometry, saveGeometry());
+    QSettings settings;
+    settings.setValue(KSettingsGeometry, saveGeometry());
 
-	if (m_capability != NULL)
-		delete m_capability;
+    if (m_capability != NULL)
+        delete m_capability;
 }
 
 void EditCapability::slotMinSpinChanged(int value)
 {
-	m_capability->setMin(value);
+    m_capability->setMin(value);
 }
 
 void EditCapability::slotMaxSpinChanged(int value)
 {
-	m_capability->setMax(value);
+    m_capability->setMax(value);
 }
 
 void EditCapability::slotDescriptionEdited(const QString& text)
 {
-	m_capability->setName(text);
+    m_capability->setName(text);
 }
 

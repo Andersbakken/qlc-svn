@@ -27,17 +27,17 @@
 #include "hiddevice.h"
 #include "hidinput.h"
 
-HIDDevice::HIDDevice(HIDInput* parent, quint32 line, const QString& path) 
-	: QObject(parent)
+HIDDevice::HIDDevice(HIDInput* parent, quint32 line, const QString& path)
+        : QObject(parent)
 {
-	Q_ASSERT(path.length() > 0);
-	m_file.setFileName(path);
-	m_line = line;
+    Q_ASSERT(path.length() > 0);
+    m_file.setFileName(path);
+    m_line = line;
 }
 
 HIDDevice::~HIDDevice()
 {
-	close();
+    close();
 }
 
 /*****************************************************************************
@@ -46,7 +46,7 @@ HIDDevice::~HIDDevice()
 
 bool HIDDevice::open()
 {
-	return false;
+    return false;
 }
 
 void HIDDevice::close()
@@ -55,12 +55,12 @@ void HIDDevice::close()
 
 QString HIDDevice::path() const
 {
-	return QString::null;
+    return QString::null;
 }
 
 int HIDDevice::handle() const
 {
-	return m_file.handle();
+    return m_file.handle();
 }
 
 /*****************************************************************************
@@ -69,12 +69,12 @@ int HIDDevice::handle() const
 
 QString HIDDevice::infoText()
 {
-	return QString::null;
+    return QString::null;
 }
 
 QString HIDDevice::name()
 {
-	return m_name;
+    return m_name;
 }
 
 /*****************************************************************************

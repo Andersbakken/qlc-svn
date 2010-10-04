@@ -67,98 +67,98 @@ FunctionManager* FunctionManager::s_instance = NULL;
  *****************************************************************************/
 
 FunctionManager::FunctionManager(QWidget* parent, Qt::WindowFlags flags)
-	: QWidget(parent, flags)
+        : QWidget(parent, flags)
 {
-	new QVBoxLayout(this);
+    new QVBoxLayout(this);
 
-	initActions();
-	initMenu();
-	initToolbar();
+    initActions();
+    initMenu();
+    initToolbar();
 
-	initTree();
-	updateActionStatus();
+    initTree();
+    updateActionStatus();
 
-	/* Listen to document changes */
-	connect(_app, SIGNAL(documentChanged(Doc*)),
-		this, SLOT(slotDocumentChanged(Doc*)));
-	/* Use the initial document */
-	slotDocumentChanged(_app->doc());
+    /* Listen to document changes */
+    connect(_app, SIGNAL(documentChanged(Doc*)),
+            this, SLOT(slotDocumentChanged(Doc*)));
+    /* Use the initial document */
+    slotDocumentChanged(_app->doc());
 
-	m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+    m_tree->sortItems(KColumnName, Qt::AscendingOrder);
 }
 
 FunctionManager::~FunctionManager()
 {
-        QSettings settings;
+    QSettings settings;
 #ifdef __APPLE__
-        settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
-        settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
+    settings.setValue(SETTINGS_GEOMETRY, parentWidget()->saveGeometry());
 #endif
-	FunctionManager::s_instance = NULL;
+    FunctionManager::s_instance = NULL;
 }
 
 void FunctionManager::create(QWidget* parent)
 {
-	QWidget* window;
+    QWidget* window;
 
-	/* Must not create more than one instance */
-	if (s_instance != NULL)
-		return;
+    /* Must not create more than one instance */
+    if (s_instance != NULL)
+        return;
 
 #ifdef __APPLE__
-	/* Create a separate window for OSX */
-	s_instance = new FunctionManager(parent, Qt::Window);
-	window = s_instance;
+    /* Create a separate window for OSX */
+    s_instance = new FunctionManager(parent, Qt::Window);
+    window = s_instance;
 #else
-	/* Create an MDI window for X11 & Win32 */
-	QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
-	Q_ASSERT(area != NULL);
-	s_instance = new FunctionManager(parent);
-	window = area->addSubWindow(s_instance);
+    /* Create an MDI window for X11 & Win32 */
+    QMdiArea* area = qobject_cast<QMdiArea*> (_app->centralWidget());
+    Q_ASSERT(area != NULL);
+    s_instance = new FunctionManager(parent);
+    window = area->addSubWindow(s_instance);
 #endif
 
-	/* Set some common properties for the window and show it */
-	window->setAttribute(Qt::WA_DeleteOnClose);
-	window->setWindowIcon(QIcon(":/function.png"));
-	window->setWindowTitle(tr("Function Manager"));
-	window->setContextMenuPolicy(Qt::CustomContextMenu);
-	window->show();
+    /* Set some common properties for the window and show it */
+    window->setAttribute(Qt::WA_DeleteOnClose);
+    window->setWindowIcon(QIcon(":/function.png"));
+    window->setWindowTitle(tr("Function Manager"));
+    window->setContextMenuPolicy(Qt::CustomContextMenu);
+    window->show();
 
-	QSettings settings;
-	QVariant var = settings.value(SETTINGS_GEOMETRY);
-	if (var.isValid() == true)
-	{
-		window->restoreGeometry(var.toByteArray());
-	}
-	else
-	{
-		/* Backwards compatibility */
-		QVariant w = settings.value("functionmanager/width");
-		QVariant h = settings.value("functionmanager/height");
-		if (w.isValid() == true && h.isValid() == true)
-			window->resize(w.toInt(), h.toInt());
-		else
-			window->resize(600, 400);
-	}
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+    {
+        window->restoreGeometry(var.toByteArray());
+    }
+    else
+    {
+        /* Backwards compatibility */
+        QVariant w = settings.value("functionmanager/width");
+        QVariant h = settings.value("functionmanager/height");
+        if (w.isValid() == true && h.isValid() == true)
+            window->resize(w.toInt(), h.toInt());
+        else
+            window->resize(600, 400);
+    }
 }
 
 void FunctionManager::slotModeChanged(Doc::Mode mode)
 {
-	/* Close this when entering operate mode */
-	if (mode == Doc::Operate)
+    /* Close this when entering operate mode */
+    if (mode == Doc::Operate)
 #ifdef __APPLE__
-		deleteLater();
+        deleteLater();
 #else
-		parent()->deleteLater();
+        parent()->deleteLater();
 #endif
 }
 
 void FunctionManager::slotDocumentChanged(Doc* doc)
 {
-	connect(doc, SIGNAL(modeChanged(Doc::Mode)),
-		this, SLOT(slotModeChanged(Doc::Mode)));
-	updateTree();
+    connect(doc, SIGNAL(modeChanged(Doc::Mode)),
+            this, SLOT(slotModeChanged(Doc::Mode)));
+    updateTree();
 }
 
 /*****************************************************************************
@@ -167,368 +167,368 @@ void FunctionManager::slotDocumentChanged(Doc* doc)
 
 void FunctionManager::initActions()
 {
-	/* Manage actions */
-	m_addSceneAction = new QAction(QIcon(":/scene.png"),
-				       tr("New &scene"), this);
-	m_addSceneAction->setShortcut(QKeySequence("CTRL+S"));
-	connect(m_addSceneAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotAddScene()));
+    /* Manage actions */
+    m_addSceneAction = new QAction(QIcon(":/scene.png"),
+                                   tr("New &scene"), this);
+    m_addSceneAction->setShortcut(QKeySequence("CTRL+S"));
+    connect(m_addSceneAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotAddScene()));
 
-	m_addChaserAction = new QAction(QIcon(":/chaser.png"),
-					tr("New c&haser"), this);
-	m_addChaserAction->setShortcut(QKeySequence("CTRL+H"));
-	connect(m_addChaserAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotAddChaser()));
+    m_addChaserAction = new QAction(QIcon(":/chaser.png"),
+                                    tr("New c&haser"), this);
+    m_addChaserAction->setShortcut(QKeySequence("CTRL+H"));
+    connect(m_addChaserAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotAddChaser()));
 
-	m_addCollectionAction = new QAction(QIcon(":/collection.png"),
-					    tr("New c&ollection"), this);
-	m_addCollectionAction->setShortcut(QKeySequence("CTRL+O"));
-	connect(m_addCollectionAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotAddCollection()));
+    m_addCollectionAction = new QAction(QIcon(":/collection.png"),
+                                        tr("New c&ollection"), this);
+    m_addCollectionAction->setShortcut(QKeySequence("CTRL+O"));
+    connect(m_addCollectionAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotAddCollection()));
 
-	m_addEFXAction = new QAction(QIcon(":/efx.png"),
-				     tr("New E&FX"), this);
-	m_addEFXAction->setShortcut(QKeySequence("CTRL+F"));
-	connect(m_addEFXAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotAddEFX()));
+    m_addEFXAction = new QAction(QIcon(":/efx.png"),
+                                 tr("New E&FX"), this);
+    m_addEFXAction->setShortcut(QKeySequence("CTRL+F"));
+    connect(m_addEFXAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotAddEFX()));
 
-	m_wizardAction = new QAction(QIcon(":/wizard.png"),
-				     tr("Function Wizard"), this);
-	m_wizardAction->setShortcut(QKeySequence("CTRL+A"));
-	connect(m_wizardAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotWizard()));
+    m_wizardAction = new QAction(QIcon(":/wizard.png"),
+                                 tr("Function Wizard"), this);
+    m_wizardAction->setShortcut(QKeySequence("CTRL+A"));
+    connect(m_wizardAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotWizard()));
 
-	/* Edit actions */
-	m_editAction = new QAction(QIcon(":/edit.png"),
-				   tr("&Edit"), this);
-	m_editAction->setShortcut(QKeySequence("CTRL+E"));
-	connect(m_editAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotEdit()));
+    /* Edit actions */
+    m_editAction = new QAction(QIcon(":/edit.png"),
+                               tr("&Edit"), this);
+    m_editAction->setShortcut(QKeySequence("CTRL+E"));
+    connect(m_editAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotEdit()));
 
-	m_cloneAction = new QAction(QIcon(":/editcopy.png"),
-				    tr("&Clone"), this);
-	m_cloneAction->setShortcut(QKeySequence("CTRL+C"));
-	connect(m_cloneAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotClone()));
+    m_cloneAction = new QAction(QIcon(":/editcopy.png"),
+                                tr("&Clone"), this);
+    m_cloneAction->setShortcut(QKeySequence("CTRL+C"));
+    connect(m_cloneAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotClone()));
 
-	m_deleteAction = new QAction(QIcon(":/editdelete.png"),
-				     tr("&Delete"), this);
-	m_deleteAction->setShortcut(QKeySequence("Delete"));
-	connect(m_deleteAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotDelete()));
+    m_deleteAction = new QAction(QIcon(":/editdelete.png"),
+                                 tr("&Delete"), this);
+    m_deleteAction->setShortcut(QKeySequence("Delete"));
+    connect(m_deleteAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotDelete()));
 
-	m_selectAllAction = new QAction(QIcon(":/selectall.png"),
-					tr("Select &all"), this);
-	m_selectAllAction->setShortcut(QKeySequence("CTRL+A"));
-	connect(m_selectAllAction, SIGNAL(triggered(bool)),
-		this, SLOT(slotSelectAll()));
+    m_selectAllAction = new QAction(QIcon(":/selectall.png"),
+                                    tr("Select &all"), this);
+    m_selectAllAction->setShortcut(QKeySequence("CTRL+A"));
+    connect(m_selectAllAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotSelectAll()));
 }
 
 void FunctionManager::initMenu()
 {
-	QAction* action;
+    QAction* action;
 
-	// layout()->setMenuBar(new QMenuBar(this));
+    // layout()->setMenuBar(new QMenuBar(this));
 
-	/* Function menu */
-	m_addMenu = new QMenu(this);
-	m_addMenu->setTitle(tr("&Add"));
-	m_addMenu->addAction(m_addSceneAction);
-	m_addMenu->addAction(m_addChaserAction);
-	m_addMenu->addAction(m_addEFXAction);
-	m_addMenu->addAction(m_addCollectionAction);
-	m_addMenu->addSeparator();
-	m_addMenu->addAction(m_wizardAction);
+    /* Function menu */
+    m_addMenu = new QMenu(this);
+    m_addMenu->setTitle(tr("&Add"));
+    m_addMenu->addAction(m_addSceneAction);
+    m_addMenu->addAction(m_addChaserAction);
+    m_addMenu->addAction(m_addEFXAction);
+    m_addMenu->addAction(m_addCollectionAction);
+    m_addMenu->addSeparator();
+    m_addMenu->addAction(m_wizardAction);
 
-	/* Edit menu */
-	m_editMenu = new QMenu(this);
-	m_editMenu->setTitle("&Edit");
-	m_editMenu->addAction(m_editAction);
-	m_editMenu->addSeparator();
-	m_editMenu->addAction(m_cloneAction);
-	m_editMenu->addAction(m_selectAllAction);
-	m_editMenu->addSeparator();
-	m_editMenu->addAction(m_deleteAction);
-	m_editMenu->addSeparator();
+    /* Edit menu */
+    m_editMenu = new QMenu(this);
+    m_editMenu->setTitle("&Edit");
+    m_editMenu->addAction(m_editAction);
+    m_editMenu->addSeparator();
+    m_editMenu->addAction(m_cloneAction);
+    m_editMenu->addAction(m_selectAllAction);
+    m_editMenu->addSeparator();
+    m_editMenu->addAction(m_deleteAction);
+    m_editMenu->addSeparator();
 
-	/* Bus menu */
-	m_busGroup = new QActionGroup(this);
-	m_busGroup->setExclusive(false);
-	m_busMenu = new QMenu(this);
-	m_busMenu->setTitle("Assign &bus");
-	for (quint32 id = 0; id < Bus::count(); id++)
-	{
-		/* <xx>: <name> */
-		action = new QAction(Bus::instance()->idName(id), this);
-		action->setCheckable(false);
-		action->setData(id);
-		m_busGroup->addAction(action);
-		m_busMenu->addAction(action);
-	}
+    /* Bus menu */
+    m_busGroup = new QActionGroup(this);
+    m_busGroup->setExclusive(false);
+    m_busMenu = new QMenu(this);
+    m_busMenu->setTitle("Assign &bus");
+    for (quint32 id = 0; id < Bus::count(); id++)
+    {
+        /* <xx>: <name> */
+        action = new QAction(Bus::instance()->idName(id), this);
+        action->setCheckable(false);
+        action->setData(id);
+        m_busGroup->addAction(action);
+        m_busMenu->addAction(action);
+    }
 
-	/* Catch bus assignment changes */
-	connect(m_busGroup, SIGNAL(triggered(QAction*)),
-		this, SLOT(slotBusTriggered(QAction*)));
+    /* Catch bus assignment changes */
+    connect(m_busGroup, SIGNAL(triggered(QAction*)),
+            this, SLOT(slotBusTriggered(QAction*)));
 
-	/* Catch bus name changes */
-	connect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
-		this, SLOT(slotBusNameChanged(quint32, const QString&)));
+    /* Catch bus name changes */
+    connect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
+            this, SLOT(slotBusNameChanged(quint32, const QString&)));
 
-	/* Construct menu bar */
-	//static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
-	//static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_editMenu);
-	m_editMenu->addMenu(m_busMenu);
+    /* Construct menu bar */
+    //static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
+    //static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_editMenu);
+    m_editMenu->addMenu(m_busMenu);
 }
 
 void FunctionManager::initToolbar()
 {
-	// Add a toolbar to the dock area
-	m_toolbar = new QToolBar("Function Manager", this);
-	m_toolbar->setFloatable(false);
-	m_toolbar->setMovable(false);
-	layout()->addWidget(m_toolbar);
-	m_toolbar->addAction(m_addSceneAction);
-	m_toolbar->addAction(m_addChaserAction);
-	m_toolbar->addAction(m_addEFXAction);
-	m_toolbar->addAction(m_addCollectionAction);
-	m_toolbar->addSeparator();
-	m_toolbar->addAction(m_wizardAction);
-	m_toolbar->addSeparator();
-	m_toolbar->addAction(m_editAction);
-	m_toolbar->addAction(m_cloneAction);
-	m_toolbar->addSeparator();
-	m_toolbar->addAction(m_deleteAction);
+    // Add a toolbar to the dock area
+    m_toolbar = new QToolBar("Function Manager", this);
+    m_toolbar->setFloatable(false);
+    m_toolbar->setMovable(false);
+    layout()->addWidget(m_toolbar);
+    m_toolbar->addAction(m_addSceneAction);
+    m_toolbar->addAction(m_addChaserAction);
+    m_toolbar->addAction(m_addEFXAction);
+    m_toolbar->addAction(m_addCollectionAction);
+    m_toolbar->addSeparator();
+    m_toolbar->addAction(m_wizardAction);
+    m_toolbar->addSeparator();
+    m_toolbar->addAction(m_editAction);
+    m_toolbar->addAction(m_cloneAction);
+    m_toolbar->addSeparator();
+    m_toolbar->addAction(m_deleteAction);
 }
 
 void FunctionManager::slotBusTriggered(QAction* action)
 {
-	quint32 bus;
+    quint32 bus;
 
-	Q_ASSERT(action != NULL);
+    Q_ASSERT(action != NULL);
 
-	bus = action->data().toUInt();
+    bus = action->data().toUInt();
 
-	/* Set the selected bus to all selected functions */
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	while (it.hasNext() == true)
-	{
-		QTreeWidgetItem* item;
-		Function* function;
+    /* Set the selected bus to all selected functions */
+    QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+    while (it.hasNext() == true)
+    {
+        QTreeWidgetItem* item;
+        Function* function;
 
-		item = it.next();
-		Q_ASSERT(item != NULL);
+        item = it.next();
+        Q_ASSERT(item != NULL);
 
-		function = _app->doc()->function(item->text(KColumnID).toInt());
-		Q_ASSERT(function != NULL);
+        function = _app->doc()->function(item->text(KColumnID).toInt());
+        Q_ASSERT(function != NULL);
 
-		function->setBus(bus);
-		updateFunctionItem(item, function);
-	}
+        function->setBus(bus);
+        updateFunctionItem(item, function);
+    }
 }
 
 void FunctionManager::slotBusNameChanged(quint32 id, const QString& name)
 {
-	/* Change the menu item's name to reflect the new bus name */
-	QListIterator <QAction*> it(m_busGroup->actions());
-	while (it.hasNext() == true)
-	{
-		QAction* action = it.next();
-		Q_ASSERT(action != NULL);
+    /* Change the menu item's name to reflect the new bus name */
+    QListIterator <QAction*> it(m_busGroup->actions());
+    while (it.hasNext() == true)
+    {
+        QAction* action = it.next();
+        Q_ASSERT(action != NULL);
 
-		if (action->data().toUInt() == id)
-		{
-			action->setText(QString("%1: %2")
-					.arg(id + 1).arg(name));
-			break;
-		}
-	}
+        if (action->data().toUInt() == id)
+        {
+            action->setText(QString("%1: %2")
+                            .arg(id + 1).arg(name));
+            break;
+        }
+    }
 
-	/* Change all affected function item's bus names as well */
-	QListIterator <QTreeWidgetItem*> twit(
-			m_tree->findItems(QString("%1: ").arg(id + 1),
-						  Qt::MatchStartsWith,
-						  KColumnBus));
-	while (twit.hasNext() == true)
-		twit.next()->setText(KColumnBus,
-				     QString("%1: %2").arg(id + 1).arg(name));
+    /* Change all affected function item's bus names as well */
+    QListIterator <QTreeWidgetItem*> twit(
+        m_tree->findItems(QString("%1: ").arg(id + 1),
+                          Qt::MatchStartsWith,
+                          KColumnBus));
+    while (twit.hasNext() == true)
+        twit.next()->setText(KColumnBus,
+                             QString("%1: %2").arg(id + 1).arg(name));
 }
 
 void FunctionManager::slotAddScene()
 {
-	Function* f = new Scene(_app->doc());
-	if (_app->doc()->addFunction(f) == true)
-	{
-		addFunction(f);
-	}
-	else if (_app->doc()->functions() >= KFunctionArraySize)
-	{
-		QMessageBox::critical(this, tr("Too many functions"),
-			tr("You can't create more than %1 functions.")
-			.arg(KFunctionArraySize));
-	}
-	else
-	{
-		QMessageBox::critical(this, tr("Function creation failed"),
-			tr("Unable to create new function."));
-	}
+    Function* f = new Scene(_app->doc());
+    if (_app->doc()->addFunction(f) == true)
+    {
+        addFunction(f);
+    }
+    else if (_app->doc()->functions() >= KFunctionArraySize)
+    {
+        QMessageBox::critical(this, tr("Too many functions"),
+                              tr("You can't create more than %1 functions.")
+                              .arg(KFunctionArraySize));
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Function creation failed"),
+                              tr("Unable to create new function."));
+    }
 }
 
 void FunctionManager::slotAddChaser()
 {
-	Function* f = new Chaser(_app->doc());
-	if (_app->doc()->addFunction(f) == true)
-	{
-		addFunction(f);
-	}
-	else if (_app->doc()->functions() >= KFunctionArraySize)
-	{
-		QMessageBox::critical(this, tr("Too many functions"),
-			tr("You can't create more than %1 functions.")
-			.arg(KFunctionArraySize));
-	}
-	else
-	{
-		QMessageBox::critical(this, tr("Function creation failed"),
-			tr("Unable to create new function."));
-	}
+    Function* f = new Chaser(_app->doc());
+    if (_app->doc()->addFunction(f) == true)
+    {
+        addFunction(f);
+    }
+    else if (_app->doc()->functions() >= KFunctionArraySize)
+    {
+        QMessageBox::critical(this, tr("Too many functions"),
+                              tr("You can't create more than %1 functions.")
+                              .arg(KFunctionArraySize));
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Function creation failed"),
+                              tr("Unable to create new function."));
+    }
 }
 
 void FunctionManager::slotAddCollection()
 {
-	Function* f = new Collection(_app->doc());
-	if (_app->doc()->addFunction(f) == true)
-	{
-		addFunction(f);
-	}
-	else if (_app->doc()->functions() >= KFunctionArraySize)
-	{
-		QMessageBox::critical(this, tr("Too many functions"),
-			tr("You can't create more than %1 functions.")
-			.arg(KFunctionArraySize));
-	}
-	else
-	{
-		QMessageBox::critical(this, tr("Function creation failed"),
-			tr("Unable to create new function."));
-	}
+    Function* f = new Collection(_app->doc());
+    if (_app->doc()->addFunction(f) == true)
+    {
+        addFunction(f);
+    }
+    else if (_app->doc()->functions() >= KFunctionArraySize)
+    {
+        QMessageBox::critical(this, tr("Too many functions"),
+                              tr("You can't create more than %1 functions.")
+                              .arg(KFunctionArraySize));
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Function creation failed"),
+                              tr("Unable to create new function."));
+    }
 }
 
 void FunctionManager::slotAddEFX()
 {
-	Function* f = new EFX(_app->doc());
-	if (_app->doc()->addFunction(f) == true)
-	{
-		addFunction(f);
-	}
-	else if (_app->doc()->functions() >= KFunctionArraySize)
-	{
-		QMessageBox::critical(this, tr("Too many functions"),
-			tr("You can't create more than %1 functions.")
-			.arg(KFunctionArraySize));
-	}
-	else
-	{
-		QMessageBox::critical(this, tr("Function creation failed"),
-			tr("Unable to create new function."));
-	}
+    Function* f = new EFX(_app->doc());
+    if (_app->doc()->addFunction(f) == true)
+    {
+        addFunction(f);
+    }
+    else if (_app->doc()->functions() >= KFunctionArraySize)
+    {
+        QMessageBox::critical(this, tr("Too many functions"),
+                              tr("You can't create more than %1 functions.")
+                              .arg(KFunctionArraySize));
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Function creation failed"),
+                              tr("Unable to create new function."));
+    }
 }
 
 void FunctionManager::slotWizard()
 {
-	FunctionWizard fw(this);
-	if (fw.exec() == QDialog::Accepted)
-		updateTree();
+    FunctionWizard fw(this);
+    if (fw.exec() == QDialog::Accepted)
+        updateTree();
 }
 
 int FunctionManager::slotEdit()
 {
-	QTreeWidgetItem* item;
-	Function* function;
-	int result;
+    QTreeWidgetItem* item;
+    Function* function;
+    int result;
 
-	if (m_tree->selectedItems().isEmpty() == true)
-		return QDialog::Rejected;
+    if (m_tree->selectedItems().isEmpty() == true)
+        return QDialog::Rejected;
 
-	item = m_tree->selectedItems().first();
-	Q_ASSERT(item != NULL);
+    item = m_tree->selectedItems().first();
+    Q_ASSERT(item != NULL);
 
-	// Find the selected function
-	function = _app->doc()->function(item->text(KColumnID).toInt());
-	if (function == NULL)
-		return QDialog::Rejected;
+    // Find the selected function
+    function = _app->doc()->function(item->text(KColumnID).toInt());
+    if (function == NULL)
+        return QDialog::Rejected;
 
-	// Edit the selected function
-	result = editFunction(function);
+    // Edit the selected function
+    result = editFunction(function);
 
-	updateFunctionItem(item, function);
+    updateFunctionItem(item, function);
 
-	return result;
+    return result;
 }
 
 void FunctionManager::slotClone()
 {
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	while (it.hasNext() == true)
-		copyFunction(it.next()->text(KColumnID).toInt());
+    QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+    while (it.hasNext() == true)
+        copyFunction(it.next()->text(KColumnID).toInt());
 }
 
 void FunctionManager::slotDelete()
 {
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	QString msg;
+    QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+    QString msg;
 
-	if (it.hasNext() == false)
-		return;
+    if (it.hasNext() == false)
+        return;
 
-	msg = "Do you want to DELETE:\n";
+    msg = "Do you want to DELETE:\n";
 
-	// Append functions' names to the message
-	while (it.hasNext() == true)
-		msg += it.next()->text(KColumnName) + QString("\n");
+    // Append functions' names to the message
+    while (it.hasNext() == true)
+        msg += it.next()->text(KColumnName) + QString("\n");
 
-	// Ask for user's confirmation
-	if (QMessageBox::question(this, "Delete Functions", msg,
-				  QMessageBox::Yes, QMessageBox::No)
-	    == QMessageBox::Yes)
-	{
-		deleteSelectedFunctions();
-		updateActionStatus();
-	}
+    // Ask for user's confirmation
+    if (QMessageBox::question(this, "Delete Functions", msg,
+                              QMessageBox::Yes, QMessageBox::No)
+            == QMessageBox::Yes)
+    {
+        deleteSelectedFunctions();
+        updateActionStatus();
+    }
 }
 
 void FunctionManager::slotSelectAll()
 {
-	/* This has to be done thru an intermediary slot because the tree
-	   widget hasn't been created when actions are being created and
-	   so a direct slot collection to m_tree is not possible. */
-	m_tree->selectAll();
+    /* This has to be done thru an intermediary slot because the tree
+       widget hasn't been created when actions are being created and
+       so a direct slot collection to m_tree is not possible. */
+    m_tree->selectAll();
 }
 
 void FunctionManager::updateActionStatus()
 {
-	if (m_tree->selectedItems().isEmpty() == false)
-	{
-		/* At least one function has been selected, so
-		   editing is possible. */
-		m_editAction->setEnabled(true);
-		m_cloneAction->setEnabled(true);
+    if (m_tree->selectedItems().isEmpty() == false)
+    {
+        /* At least one function has been selected, so
+           editing is possible. */
+        m_editAction->setEnabled(true);
+        m_cloneAction->setEnabled(true);
 
-		m_deleteAction->setEnabled(true);
-		m_selectAllAction->setEnabled(true);
+        m_deleteAction->setEnabled(true);
+        m_selectAllAction->setEnabled(true);
 
-		m_busGroup->setEnabled(true);
-	}
-	else
-	{
-		/* No functions selected */
-		m_editAction->setEnabled(false);
-		m_cloneAction->setEnabled(false);
+        m_busGroup->setEnabled(true);
+    }
+    else
+    {
+        /* No functions selected */
+        m_editAction->setEnabled(false);
+        m_cloneAction->setEnabled(false);
 
-		m_deleteAction->setEnabled(false);
-		m_selectAllAction->setEnabled(false);
+        m_deleteAction->setEnabled(false);
+        m_selectAllAction->setEnabled(false);
 
-		m_busGroup->setEnabled(false);
-	}
+        m_busGroup->setEnabled(false);
+    }
 }
 
 /****************************************************************************
@@ -537,113 +537,113 @@ void FunctionManager::updateActionStatus()
 
 void FunctionManager::initTree()
 {
-	m_tree = new QTreeWidget(this);
-	layout()->addWidget(m_tree);
+    m_tree = new QTreeWidget(this);
+    layout()->addWidget(m_tree);
 
-	// Add two columns for function and bus
-	QStringList labels;
-	labels << "Function" << "Bus";
-	m_tree->setHeaderLabels(labels);
-	m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
-	m_tree->setRootIsDecorated(false);
-	m_tree->setAllColumnsShowFocus(true);
-	m_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	m_tree->setContextMenuPolicy(Qt::CustomContextMenu);
-	m_tree->setSortingEnabled(true);
-	m_tree->sortByColumn(KColumnName, Qt::AscendingOrder);
+    // Add two columns for function and bus
+    QStringList labels;
+    labels << "Function" << "Bus";
+    m_tree->setHeaderLabels(labels);
+    m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+    m_tree->setRootIsDecorated(false);
+    m_tree->setAllColumnsShowFocus(true);
+    m_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_tree->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_tree->setSortingEnabled(true);
+    m_tree->sortByColumn(KColumnName, Qt::AscendingOrder);
 
-	// Catch selection changes
-	connect(m_tree, SIGNAL(itemSelectionChanged()),
-		this, SLOT(slotTreeSelectionChanged()));
+    // Catch selection changes
+    connect(m_tree, SIGNAL(itemSelectionChanged()),
+            this, SLOT(slotTreeSelectionChanged()));
 
-	// Catch mouse double clicks
-	connect(m_tree,	SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-		this, SLOT(slotEdit()));
+    // Catch mouse double clicks
+    connect(m_tree,	SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, SLOT(slotEdit()));
 
-	// Catch right-mouse clicks
-	connect(m_tree,
-		SIGNAL(customContextMenuRequested(const QPoint&)),
-		this,
-		SLOT(slotTreeContextMenuRequested(const QPoint&)));
+    // Catch right-mouse clicks
+    connect(m_tree,
+            SIGNAL(customContextMenuRequested(const QPoint&)),
+            this,
+            SLOT(slotTreeContextMenuRequested(const QPoint&)));
 }
 
 void FunctionManager::updateTree()
 {
-	m_tree->clear();
-	for (t_function_id fid = 0; fid < KFunctionArraySize; fid++)
-	{
-		Function* function = _app->doc()->function(fid);
-		if (function != NULL)
-		{
-			QTreeWidgetItem* item;
-			item = new QTreeWidgetItem(m_tree);
-			updateFunctionItem(item, function);
-		}
-	}
+    m_tree->clear();
+    for (t_function_id fid = 0; fid < KFunctionArraySize; fid++)
+    {
+        Function* function = _app->doc()->function(fid);
+        if (function != NULL)
+        {
+            QTreeWidgetItem* item;
+            item = new QTreeWidgetItem(m_tree);
+            updateFunctionItem(item, function);
+        }
+    }
 }
 
 void FunctionManager::updateFunctionItem(QTreeWidgetItem* item,
-					 Function* function)
+        Function* function)
 {
-	Q_ASSERT(item != NULL);
-	Q_ASSERT(function != NULL);
+    Q_ASSERT(item != NULL);
+    Q_ASSERT(function != NULL);
 
-	item->setText(KColumnName, function->name());
-	item->setIcon(KColumnName, functionIcon(function));
-	item->setText(KColumnBus, Bus::instance()->idName(function->busID()));
-	item->setText(KColumnID, QString("%1").arg(function->id()));
+    item->setText(KColumnName, function->name());
+    item->setIcon(KColumnName, functionIcon(function));
+    item->setText(KColumnBus, Bus::instance()->idName(function->busID()));
+    item->setText(KColumnID, QString("%1").arg(function->id()));
 }
 
 QIcon FunctionManager::functionIcon(const Function* function) const
 {
-	switch (function->type())
-	{
-		case Function::Scene:
-			return QIcon(":/scene.png");
-		case Function::Chaser:
-			return QIcon(":/chaser.png");
-		case Function::EFX:
-			return QIcon(":/efx.png");
-		case Function::Collection:
-			return QIcon(":/collection.png");
-		default:
-			return QIcon(":/function.png");
-	}
+    switch (function->type())
+    {
+    case Function::Scene:
+        return QIcon(":/scene.png");
+    case Function::Chaser:
+        return QIcon(":/chaser.png");
+    case Function::EFX:
+        return QIcon(":/efx.png");
+    case Function::Collection:
+        return QIcon(":/collection.png");
+    default:
+        return QIcon(":/function.png");
+    }
 }
 
 void FunctionManager::deleteSelectedFunctions()
 {
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	while (it.hasNext() == true)
-	{
-		QTreeWidgetItem* item;
-		t_function_id fid;
+    QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+    while (it.hasNext() == true)
+    {
+        QTreeWidgetItem* item;
+        t_function_id fid;
 
-		item = it.next();
-		fid = item->text(KColumnID).toInt();
-		_app->doc()->deleteFunction(fid);
+        item = it.next();
+        fid = item->text(KColumnID).toInt();
+        _app->doc()->deleteFunction(fid);
 
-		delete item;
-	}
+        delete item;
+    }
 
 }
 
 void FunctionManager::slotTreeSelectionChanged()
 {
-	updateActionStatus();
+    updateActionStatus();
 }
 
 void FunctionManager::slotTreeContextMenuRequested(const QPoint& point)
 {
-	Q_UNUSED(point);
+    Q_UNUSED(point);
 
-	QMenu contextMenu(this);
-	contextMenu.addMenu(m_addMenu);
-	contextMenu.addMenu(m_editMenu);
+    QMenu contextMenu(this);
+    contextMenu.addMenu(m_addMenu);
+    contextMenu.addMenu(m_editMenu);
 
-	updateActionStatus();
+    updateActionStatus();
 
-	contextMenu.exec(QCursor::pos());
+    contextMenu.exec(QCursor::pos());
 }
 
 /*****************************************************************************
@@ -652,89 +652,89 @@ void FunctionManager::slotTreeContextMenuRequested(const QPoint& point)
 
 void FunctionManager::copyFunction(t_function_id fid)
 {
-	Function* function = _app->doc()->function(fid);
-	Q_ASSERT(function != NULL);
+    Function* function = _app->doc()->function(fid);
+    Q_ASSERT(function != NULL);
 
-	/* Attempt to create a copy of the function to Doc */
-	Function* copy = function->createCopy(_app->doc());
-	if (copy != NULL)
-	{
-	        /* Create a new item for the copied function */
-		QTreeWidgetItem* item;
-		item = new QTreeWidgetItem(m_tree);
-		updateFunctionItem(item, copy);
-	}
-	else if (_app->doc()->functions() >= KFunctionArraySize)
-	{
-		QMessageBox::critical(this, tr("Too many functions"),
-			tr("You can't create more than %1 functions.")
-			.arg(KFunctionArraySize));
-	}
-	else
-	{
-		QMessageBox::critical(this, tr("Function creation failed"),
-			tr("Unable to create new function."));
-	}
+    /* Attempt to create a copy of the function to Doc */
+    Function* copy = function->createCopy(_app->doc());
+    if (copy != NULL)
+    {
+        /* Create a new item for the copied function */
+        QTreeWidgetItem* item;
+        item = new QTreeWidgetItem(m_tree);
+        updateFunctionItem(item, copy);
+    }
+    else if (_app->doc()->functions() >= KFunctionArraySize)
+    {
+        QMessageBox::critical(this, tr("Too many functions"),
+                              tr("You can't create more than %1 functions.")
+                              .arg(KFunctionArraySize));
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Function creation failed"),
+                              tr("Unable to create new function."));
+    }
 }
 
 void FunctionManager::addFunction(Function* function)
 {
-	QTreeWidgetItem* item;
+    QTreeWidgetItem* item;
 
-	Q_ASSERT(function != NULL);
-	
-	/* Create a new item for the function */
-	item = new QTreeWidgetItem(m_tree);
-	updateFunctionItem(item, function);
+    Q_ASSERT(function != NULL);
 
-	/* Clear current selection and select only the new one */
-	m_tree->clearSelection();
-	item->setSelected(true);
+    /* Create a new item for the function */
+    item = new QTreeWidgetItem(m_tree);
+    updateFunctionItem(item, function);
 
-	/* Start editing immediately */
-	if (slotEdit() == QDialog::Rejected)
-	{
-		/* Edit dialog was rejected -> delete function */
-		deleteSelectedFunctions();
-	}
-	else
-	{
-		m_tree->sortItems(KColumnName, Qt::AscendingOrder);
-		m_tree->scrollToItem(item);
-	}
+    /* Clear current selection and select only the new one */
+    m_tree->clearSelection();
+    item->setSelected(true);
+
+    /* Start editing immediately */
+    if (slotEdit() == QDialog::Rejected)
+    {
+        /* Edit dialog was rejected -> delete function */
+        deleteSelectedFunctions();
+    }
+    else
+    {
+        m_tree->sortItems(KColumnName, Qt::AscendingOrder);
+        m_tree->scrollToItem(item);
+    }
 }
 
 int FunctionManager::editFunction(Function* function)
 {
-	int result = QDialog::Rejected;
+    int result = QDialog::Rejected;
 
-	Q_ASSERT(function != NULL);
+    Q_ASSERT(function != NULL);
 
-	if (function->type() == Function::Scene)
-	{
-		SceneEditor editor(this, qobject_cast<Scene*> (function));
-		result = editor.exec();
-	}
-	else if (function->type() == Function::Chaser)
-	{
-		ChaserEditor editor(this, qobject_cast<Chaser*> (function));
-		result = editor.exec();
-	}
-	else if (function->type() == Function::Collection)
-	{
-		CollectionEditor editor(this,
-					qobject_cast<Collection*> (function));
-		result = editor.exec();
-	}
-	else if (function->type() == Function::EFX)
-	{
-		EFXEditor editor(this, qobject_cast<EFX*> (function));
-		result = editor.exec();
-	}
-	else
-	{
-		result = QDialog::Rejected;
-	}
+    if (function->type() == Function::Scene)
+    {
+        SceneEditor editor(this, qobject_cast<Scene*> (function));
+        result = editor.exec();
+    }
+    else if (function->type() == Function::Chaser)
+    {
+        ChaserEditor editor(this, qobject_cast<Chaser*> (function));
+        result = editor.exec();
+    }
+    else if (function->type() == Function::Collection)
+    {
+        CollectionEditor editor(this,
+                                qobject_cast<Collection*> (function));
+        result = editor.exec();
+    }
+    else if (function->type() == Function::EFX)
+    {
+        EFXEditor editor(this, qobject_cast<EFX*> (function));
+        result = editor.exec();
+    }
+    else
+    {
+        result = QDialog::Rejected;
+    }
 
-	return result;
+    return result;
 }

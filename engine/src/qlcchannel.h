@@ -71,107 +71,121 @@ class QLCChannel;
 class QLCChannel
 {
 public:
-	/** Standard constructor */
-	QLCChannel();
+    /** Standard constructor */
+    QLCChannel();
 
-	/** Copy constructor */
-	QLCChannel(const QLCChannel* channel);
+    /** Copy constructor */
+    QLCChannel(const QLCChannel* channel);
 
-	/** Destructor */
-	~QLCChannel();
+    /** Destructor */
+    ~QLCChannel();
 
-	/** Assignment operator */
-	QLCChannel& operator=(const QLCChannel& lc);
+    /** Assignment operator */
+    QLCChannel& operator=(const QLCChannel& lc);
 
-	/*********************************************************************
-	 * Channel groups
-	 *********************************************************************/
+    /*********************************************************************
+     * Channel groups
+     *********************************************************************/
 public:
-	/** Get a list of possible channel groups */
-	static QStringList groupList();
+    /** Get a list of possible channel groups */
+    static QStringList groupList();
 
-	/** Convert a group name to an index, to be used with menus etc. */
-	static int groupToIndex(QString group);
+    /** Convert a group name to an index, to be used with menus etc. */
+    static int groupToIndex(QString group);
 
-	/** Convert an index to a group name, to be used with menus etc. */
-	static QString indexToGroup(int index);
+    /** Convert an index to a group name, to be used with menus etc. */
+    static QString indexToGroup(int index);
 
-	/*********************************************************************
-	 * Properties
-	 *********************************************************************/
+    /*********************************************************************
+     * Properties
+     *********************************************************************/
 public:
-	/** Get the channel's name */
-	QString name() const { return m_name; }
+    /** Get the channel's name */
+    QString name() const {
+        return m_name;
+    }
 
-	/** Set the channel's name */
-	void setName(const QString &name) { m_name = name; }
+    /** Set the channel's name */
+    void setName(const QString &name) {
+        m_name = name;
+    }
 
-	/** Get the channel's group */
-	QString group() const { return m_group; }
+    /** Get the channel's group */
+    QString group() const {
+        return m_group;
+    }
 
-	/** Set the channel's group */
-	void setGroup(const QString& group) { m_group = group; }
+    /** Set the channel's group */
+    void setGroup(const QString& group) {
+        m_group = group;
+    }
 
-	/** Set the channel's control byte */
-	void setControlByte(t_controlbyte byte) { m_controlByte = byte; }
+    /** Set the channel's control byte */
+    void setControlByte(t_controlbyte byte) {
+        m_controlByte = byte;
+    }
 
-	/** Get the channel's control byte */
-	t_controlbyte controlByte() const { return m_controlByte; }
+    /** Get the channel's control byte */
+    t_controlbyte controlByte() const {
+        return m_controlByte;
+    }
 
-	/*********************************************************************
-	 * Capabilities
-	 *********************************************************************/
+    /*********************************************************************
+     * Capabilities
+     *********************************************************************/
 public:
-	/** Get a list of channel's capabilities */
-	const QList <QLCCapability*> capabilities() const { return m_capabilities; }
+    /** Get a list of channel's capabilities */
+    const QList <QLCCapability*> capabilities() const {
+        return m_capabilities;
+    }
 
-	/** Search for a particular capability by its channel value */
-	QLCCapability* searchCapability(uchar value) const;
+    /** Search for a particular capability by its channel value */
+    QLCCapability* searchCapability(uchar value) const;
 
-	/**
-	 * Search for a particular capability by its name. If exactMatch = true,
-	 * the first exact match is returned. If exactMatch = false, the
-	 * first capability whose name _contains_ the given string is
-	 * returned.
-	 *
-	 * @param name The name to search for
-	 * @param exactMatch if true, only exact matches are returned,
-	 *                   otherwise a "contains" comparison is made.
-	 * @return QLCCapability or NULL
-	 */
-	QLCCapability* searchCapability(const QString& name,
-					bool exactMatch = true) const;
+    /**
+     * Search for a particular capability by its name. If exactMatch = true,
+     * the first exact match is returned. If exactMatch = false, the
+     * first capability whose name _contains_ the given string is
+     * returned.
+     *
+     * @param name The name to search for
+     * @param exactMatch if true, only exact matches are returned,
+     *                   otherwise a "contains" comparison is made.
+     * @return QLCCapability or NULL
+     */
+    QLCCapability* searchCapability(const QString& name,
+                                    bool exactMatch = true) const;
 
-	/** Add a new capability to the channel */
-	bool addCapability(QLCCapability* cap);
+    /** Add a new capability to the channel */
+    bool addCapability(QLCCapability* cap);
 
-	/** Remove a capability from the channel */
-	bool removeCapability(QLCCapability* cap);
+    /** Remove a capability from the channel */
+    bool removeCapability(QLCCapability* cap);
 
-	/** Sort capabilities to ascending order by their values */
-	void sortCapabilities();
+    /** Sort capabilities to ascending order by their values */
+    void sortCapabilities();
 
-	/*********************************************************************
-	 * File operations
-	 *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-	/** Save the channel to a QDomDocument, under the given element */
-	bool saveXML(QDomDocument* doc, QDomElement* root) const;
+    /** Save the channel to a QDomDocument, under the given element */
+    bool saveXML(QDomDocument* doc, QDomElement* root) const;
 
-	/** Load channel contents from an XML element */
-	bool loadXML(const QDomElement* tag);
+    /** Load channel contents from an XML element */
+    bool loadXML(const QDomElement* tag);
 
 protected:
-	/** Name */
-	QString m_name;
+    /** Name */
+    QString m_name;
 
-	/** List of channel's capabilities */
-	QList <QLCCapability*> m_capabilities;
+    /** List of channel's capabilities */
+    QList <QLCCapability*> m_capabilities;
 
-	/** Channel's group */
-	QString m_group;
+    /** Channel's group */
+    QString m_group;
 
-	t_controlbyte m_controlByte;
+    t_controlbyte m_controlByte;
 };
 
 #endif

@@ -45,20 +45,20 @@ UDMXOut::~UDMXOut()
 
 void UDMXOut::init()
 {
-	usb_init();
-	rescanDevices();
+    usb_init();
+    rescanDevices();
 }
 
 void UDMXOut::open(quint32 output)
 {
-	if (output < quint32(m_devices.size()))
-		m_devices.at(output)->open();
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->open();
 }
 
 void UDMXOut::close(quint32 output)
 {
-	if (output < quint32(m_devices.size()))
-		m_devices.at(output)->close();
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->close();
 }
 
 /*****************************************************************************
@@ -67,62 +67,62 @@ void UDMXOut::close(quint32 output)
 
 void UDMXOut::rescanDevices()
 {
-	struct usb_device* dev;
-	struct usb_bus* bus;
+    struct usb_device* dev;
+    struct usb_bus* bus;
 
-	/* Treat all devices as dead first, until we find them again. Those
-	   that aren't found, get destroyed at the end of this function. */
-	QList <UDMXDevice*> destroyList(m_devices);
+    /* Treat all devices as dead first, until we find them again. Those
+       that aren't found, get destroyed at the end of this function. */
+    QList <UDMXDevice*> destroyList(m_devices);
 
-	usb_find_busses();
-	usb_find_devices();
+    usb_find_busses();
+    usb_find_devices();
 
-	/* Iterate thru all buses */
-	for (bus = usb_get_busses(); bus != NULL; bus = bus->next)
-	{
-		/* Iterate thru all devices in each bus */
-		for (dev = bus->devices; dev != NULL; dev = dev->next)
-		{
-			UDMXDevice* udev;
+    /* Iterate thru all buses */
+    for (bus = usb_get_busses(); bus != NULL; bus = bus->next)
+    {
+        /* Iterate thru all devices in each bus */
+        for (dev = bus->devices; dev != NULL; dev = dev->next)
+        {
+            UDMXDevice* udev;
 
-			udev = device(dev);
-			if (udev != NULL)
-			{
-				/* We already have this device and it's still
-				   there. Remove from the destroy list and
-				   continue iterating. */
-				destroyList.removeAll(udev);
-				continue;
-			}
-			else if (UDMXDevice::isUDMXDevice(dev) == true)
-			{
-				/* This is a new device. Create and append. */
-				udev = new UDMXDevice(this, dev);
-				m_devices.append(udev);
-			}
-		}
-	}
+            udev = device(dev);
+            if (udev != NULL)
+            {
+                /* We already have this device and it's still
+                   there. Remove from the destroy list and
+                   continue iterating. */
+                destroyList.removeAll(udev);
+                continue;
+            }
+            else if (UDMXDevice::isUDMXDevice(dev) == true)
+            {
+                /* This is a new device. Create and append. */
+                udev = new UDMXDevice(this, dev);
+                m_devices.append(udev);
+            }
+        }
+    }
 
-	/* Destroy those devices that were no longer found. */
-	while (destroyList.isEmpty() == false)
-	{
-		UDMXDevice* udev = destroyList.takeFirst();
-		m_devices.removeAll(udev);
-		delete udev;
-	}
+    /* Destroy those devices that were no longer found. */
+    while (destroyList.isEmpty() == false)
+    {
+        UDMXDevice* udev = destroyList.takeFirst();
+        m_devices.removeAll(udev);
+        delete udev;
+    }
 }
 
 UDMXDevice* UDMXOut::device(struct usb_device* usbdev)
 {
-	QListIterator <UDMXDevice*> it(m_devices);
-	while (it.hasNext() == true)
-	{
-		UDMXDevice* udev = it.next();
-		if (udev->device() == usbdev)
-			return udev;
-	}
+    QListIterator <UDMXDevice*> it(m_devices);
+    while (it.hasNext() == true)
+    {
+        UDMXDevice* udev = it.next();
+        if (udev->device() == usbdev)
+            return udev;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 /*****************************************************************************
@@ -131,13 +131,13 @@ UDMXDevice* UDMXOut::device(struct usb_device* usbdev)
 
 QStringList UDMXOut::outputs()
 {
-	QStringList list;
-	int i = 1;
+    QStringList list;
+    int i = 1;
 
-	QListIterator <UDMXDevice*> it(m_devices);
-	while (it.hasNext() == true)
-		list << QString("%1: %2").arg(i++).arg(it.next()->name());
-	return list;
+    QListIterator <UDMXDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << QString("%1: %2").arg(i++).arg(it.next()->name());
+    return list;
 }
 
 /*****************************************************************************
@@ -146,7 +146,7 @@ QStringList UDMXOut::outputs()
 
 QString UDMXOut::name()
 {
-	return QString("uDMX Output");
+    return QString("uDMX Output");
 }
 
 /*****************************************************************************
@@ -155,11 +155,11 @@ QString UDMXOut::name()
 
 void UDMXOut::configure()
 {
-	int r = QMessageBox::question(NULL, name(),
-				tr("Do you wish to re-scan your hardware?"),
-				QMessageBox::Yes, QMessageBox::No);
-	if (r == QMessageBox::Yes)
-		rescanDevices();
+    int r = QMessageBox::question(NULL, name(),
+                                  tr("Do you wish to re-scan your hardware?"),
+                                  QMessageBox::Yes, QMessageBox::No);
+    if (r == QMessageBox::Yes)
+        rescanDevices();
 }
 
 /*****************************************************************************
@@ -168,33 +168,33 @@ void UDMXOut::configure()
 
 QString UDMXOut::infoText(quint32 output)
 {
-	QString str;
+    QString str;
 
-	str += QString("<HTML>");
-	str += QString("<HEAD>");
-	str += QString("<TITLE>%1</TITLE>").arg(name());
-	str += QString("</HEAD>");
-	str += QString("<BODY>");
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
 
-	if (output == KOutputInvalid)
-	{
-		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("This plugin provides DMX output support for ");
-		str += QString("uDMX devices. See ");
-		str += QString("<a href=\"http://www.anyma.ch/research/udmx\">");
-		str += QString("http://www.anyma.ch</a> for more information.");
-		str += QString("</P>");
-	}
-	else if (output < quint32(m_devices.size()))
-	{
-		str += m_devices.at(output)->infoText();
-	}
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support for ");
+        str += QString("uDMX devices. See ");
+        str += QString("<a href=\"http://www.anyma.ch/research/udmx\">");
+        str += QString("http://www.anyma.ch</a> for more information.");
+        str += QString("</P>");
+    }
+    else if (output < quint32(m_devices.size()))
+    {
+        str += m_devices.at(output)->infoText();
+    }
 
-	str += QString("</BODY>");
-	str += QString("</HTML>");
+    str += QString("</BODY>");
+    str += QString("</HTML>");
 
-	return str;
+    return str;
 }
 
 /*****************************************************************************
@@ -203,8 +203,8 @@ QString UDMXOut::infoText(quint32 output)
 
 void UDMXOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output < quint32(m_devices.size()))
-		m_devices.at(output)->outputDMX(universe);
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->outputDMX(universe);
 }
 
 /*****************************************************************************

@@ -30,38 +30,38 @@ class QHideEvent;
 
 class VCDockArea : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	VCDockArea(QWidget* parent);
-	~VCDockArea();
+    VCDockArea(QWidget* parent);
+    ~VCDockArea();
 
 private:
-	Q_DISABLE_COPY(VCDockArea)
+    Q_DISABLE_COPY(VCDockArea)
 
-	/*********************************************************************
-	 * Sliders
-	 *********************************************************************/
+    /*********************************************************************
+     * Sliders
+     *********************************************************************/
 public:
-	/** Refresh slider properties */
-	void refreshProperties();
+    /** Refresh slider properties */
+    void refreshProperties();
 
 protected:
-	VCDockSlider* m_fade;
-	VCDockSlider* m_hold;
+    VCDockSlider* m_fade;
+    VCDockSlider* m_hold;
 
-	/*********************************************************************
-	 * Event Handlers & Signals
-	 *********************************************************************/
+    /*********************************************************************
+     * Event Handlers & Signals
+     *********************************************************************/
 protected:
-	void showEvent(QShowEvent* event);
-	void hideEvent(QHideEvent* event);
+    void showEvent(QShowEvent* event);
+    void hideEvent(QHideEvent* event);
 
 signals:
-	void visibilityChanged(bool isVisible);
+    void visibilityChanged(bool isVisible);
 };
 
 #endif

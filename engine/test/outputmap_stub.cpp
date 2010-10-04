@@ -28,7 +28,7 @@
 
 OutputMapStub::OutputMapStub(QObject* parent) : OutputMap(parent)
 {
-	m_unis = NULL;
+    m_unis = NULL;
 }
 
 OutputMapStub::~OutputMapStub()
@@ -37,12 +37,12 @@ OutputMapStub::~OutputMapStub()
 
 void OutputMapStub::setUniverses(QByteArray* unis)
 {
-	m_unis = unis;
+    m_unis = unis;
 }
 
 QByteArray* OutputMapStub::claimUniverses()
 {
-	return m_unis;
+    return m_unis;
 }
 
 void OutputMapStub::releaseUniverses()

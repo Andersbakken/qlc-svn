@@ -35,190 +35,192 @@ class EFX;
 
 class EFXFixture
 {
-	friend class EFX;
+    friend class EFX;
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Constructor */
-	EFXFixture(EFX* parent);
+    /** Constructor */
+    EFXFixture(EFX* parent);
 
-	/** Destructor */
-	~EFXFixture();
+    /** Destructor */
+    ~EFXFixture();
 
-	/** Copy contents from another EFXFixture */
-	void copyFrom(const EFXFixture* ef);
+    /** Copy contents from another EFXFixture */
+    void copyFrom(const EFXFixture* ef);
 
 protected:
-	/** The EFX function that this fixture belongs to */
-	EFX* m_parent;
+    /** The EFX function that this fixture belongs to */
+    EFX* m_parent;
 
-	/********************************************************************
-	 * Public properties
-	 ********************************************************************/
+    /********************************************************************
+     * Public properties
+     ********************************************************************/
 public:
-	/** Set the fixture that this EFXFixture represents */
-	void setFixture(t_fixture_id fxi_id);
+    /** Set the fixture that this EFXFixture represents */
+    void setFixture(t_fixture_id fxi_id);
 
-	/** Get the fixture that this EFXFixture represents */
-	t_fixture_id fixture() const;
+    /** Get the fixture that this EFXFixture represents */
+    t_fixture_id fixture() const;
 
-	/** Set this fixture's direction */
-	void setDirection(Function::Direction dir);
+    /** Set this fixture's direction */
+    void setDirection(Function::Direction dir);
 
-	/** Get this fixture's direction */
-	Function::Direction direction() const;
+    /** Get this fixture's direction */
+    Function::Direction direction() const;
 
 protected:
-	/** The ID of the fixture this EFXFixture represents */
-	t_fixture_id m_fixture;
+    /** The ID of the fixture this EFXFixture represents */
+    t_fixture_id m_fixture;
 
-	/** This fixture's original running direction */
-	Function::Direction m_direction;
+    /** This fixture's original running direction */
+    Function::Direction m_direction;
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
 public:
-	/** Load public properties from an EFXFixture node */
-	bool loadXML(const QDomElement* root);
+    /** Load public properties from an EFXFixture node */
+    bool loadXML(const QDomElement* root);
 
-	/** Save public properties under an EFX node */
-	bool saveXML(QDomDocument* doc, QDomElement* efx_root) const;
+    /** Save public properties under an EFX node */
+    bool saveXML(QDomDocument* doc, QDomElement* efx_root) const;
 
-	 /********************************************************************
-	 * Protected run-time-only properties
-	 ********************************************************************/
+    /********************************************************************
+    * Protected run-time-only properties
+    ********************************************************************/
 protected:
-	/** Set the order number in serial propagation mode */
-	void setSerialNumber(int number);
+    /** Set the order number in serial propagation mode */
+    void setSerialNumber(int number);
 
-	/** Get the order number in serial propagation mode */
-	int serialNumber() const;
+    /** Get the order number in serial propagation mode */
+    int serialNumber() const;
 
-	/** Set the scene that is used to initialize the fixture */
-	void setStartScene(Scene* scene);
+    /** Set the scene that is used to initialize the fixture */
+    void setStartScene(Scene* scene);
 
-	/** Get the scene that is used to initialize the fixture */
-	Scene* startScene() const;
+    /** Get the scene that is used to initialize the fixture */
+    Scene* startScene() const;
 
-	/** Set the scene that is used to de-initialize the fixture */
-	void setStopScene(Scene* scene);
+    /** Set the scene that is used to de-initialize the fixture */
+    void setStopScene(Scene* scene);
 
-	/** Get the scene that is used to de-initialize the fixture */
-	Scene* stopScene() const;
+    /** Get the scene that is used to de-initialize the fixture */
+    Scene* stopScene() const;
 
-	/** Set the low byte channel for pan movement */
-	void setLsbPanChannel(t_channel ch);
+    /** Set the low byte channel for pan movement */
+    void setLsbPanChannel(t_channel ch);
 
-	/** Set the high byte channel for pan movement */
-	void setMsbPanChannel(t_channel ch);
+    /** Set the high byte channel for pan movement */
+    void setMsbPanChannel(t_channel ch);
 
-	/** Set the low byte channel for tilt movement */
-	void setLsbTiltChannel(t_channel ch);
+    /** Set the low byte channel for tilt movement */
+    void setLsbTiltChannel(t_channel ch);
 
-	/** Set the high byte channel for pan movement */
-	void setMsbTiltChannel(t_channel ch);
+    /** Set the high byte channel for pan movement */
+    void setMsbTiltChannel(t_channel ch);
 
-	/** Update the waiting threshold value for serial operation */
-	void updateSkipThreshold();
+    /** Update the waiting threshold value for serial operation */
+    void updateSkipThreshold();
 
-	/** Check that this object has a fixture ID and at least LSB channels
-	    for pan and tilt. */
-	bool isValid();
+    /** Check that this object has a fixture ID and at least LSB channels
+        for pan and tilt. */
+    bool isValid();
 
-	/* Run the start scene if necessary */
-	void start(QByteArray* universes);
+    /* Run the start scene if necessary */
+    void start(QByteArray* universes);
 
-	/* Run the stop scene if necessary */
-	void stop(QByteArray* universes);
+    /* Run the stop scene if necessary */
+    void stop(QByteArray* universes);
 
-	/** Reset the fixture when the EFX is stopped */
-	void reset();
+    /** Reset the fixture when the EFX is stopped */
+    void reset();
 
-	/** Check, whether this EFXFixture is ready (no more events).
-	    This can happen basically only if SingleShot mode is enabled. */
-	bool isReady() const { return m_ready; }
+    /** Check, whether this EFXFixture is ready (no more events).
+        This can happen basically only if SingleShot mode is enabled. */
+    bool isReady() const {
+        return m_ready;
+    }
 
 protected:
-	/** This fixture's order number in serial propagation mode */
-	int m_serialNumber;
+    /** This fixture's order number in serial propagation mode */
+    int m_serialNumber;
 
-	/** This fixture's current run-time direction */
-	Function::Direction m_runTimeDirection;
+    /** This fixture's current run-time direction */
+    Function::Direction m_runTimeDirection;
 
-	/** The scene that is used to initialize the fixtures involved */
-	Scene* m_startScene;
+    /** The scene that is used to initialize the fixtures involved */
+    Scene* m_startScene;
 
-	/** The scene that is used to de-initialize the fixtures involved */
-	Scene* m_stopScene;
+    /** The scene that is used to de-initialize the fixtures involved */
+    Scene* m_stopScene;
 
-	/** When the start scene is run, the EFXFixture has been initialized */
-	bool m_initialized;
+    /** When the start scene is run, the EFXFixture has been initialized */
+    bool m_initialized;
 
-	/** When running in single shot mode, the fixture is marked ready
-	    after it has completed a full cycle. */
-	bool m_ready;
+    /** When running in single shot mode, the fixture is marked ready
+        after it has completed a full cycle. */
+    bool m_ready;
 
-	/**
-	 * This fixture's current position in the pattern (a point on a
-	 * circle's circumference)
-	 */
-	qreal m_iterator;
+    /**
+     * This fixture's current position in the pattern (a point on a
+     * circle's circumference)
+     */
+    qreal m_iterator;
 
-	/**
-	 * This iterator is incremented until it is >= m_skipThreshold.
-	 * After that, m_iterator is incremented. Used for serial propagation.
-	 */
-	qreal m_skipIterator;
+    /**
+     * This iterator is incremented until it is >= m_skipThreshold.
+     * After that, m_iterator is incremented. Used for serial propagation.
+     */
+    qreal m_skipIterator;
 
-	/**
-	 * This is basically the index of a point in the EFX's pattern,
-	 * where this fixture will start doing its stuff. Used for serial
-	 * propagation.
-	 */
-	qreal m_skipThreshold;
+    /**
+     * This is basically the index of a point in the EFX's pattern,
+     * where this fixture will start doing its stuff. Used for serial
+     * propagation.
+     */
+    qreal m_skipThreshold;
 
-	/**
-	 * The current pan value
-	 */
-	qreal m_panValue;
+    /**
+     * The current pan value
+     */
+    qreal m_panValue;
 
-	/**
-	 * The current tilt value
-	 */
-	qreal m_tiltValue;
+    /**
+     * The current tilt value
+     */
+    qreal m_tiltValue;
 
-	/**
-	 * Universe channel for LSB pan data
-	 */
-	t_channel m_lsbPanChannel;
+    /**
+     * Universe channel for LSB pan data
+     */
+    t_channel m_lsbPanChannel;
 
-	/**
-	 * Universe channel for MSB pan data
-	 */
-	t_channel m_msbPanChannel;
+    /**
+     * Universe channel for MSB pan data
+     */
+    t_channel m_msbPanChannel;
 
-	/**
-	 * Universe channel for LSB tilt data
-	 */
-	t_channel m_lsbTiltChannel;
+    /**
+     * Universe channel for LSB tilt data
+     */
+    t_channel m_lsbTiltChannel;
 
-	/**
-	 * Universe channel for MSB tilt data
-	 */
-	t_channel m_msbTiltChannel;
+    /**
+     * Universe channel for MSB tilt data
+     */
+    t_channel m_msbTiltChannel;
 
-	/*********************************************************************
-	 * Running
-	 *********************************************************************/
+    /*********************************************************************
+     * Running
+     *********************************************************************/
 protected:
-	/** Calculate the next step data for this fixture */
-	void nextStep(QByteArray* universes);
+    /** Calculate the next step data for this fixture */
+    void nextStep(QByteArray* universes);
 
-	/** Write this EFXFixture's channel data to universes */
-	void setPoint(QByteArray* universes);
+    /** Write this EFXFixture's channel data to universes */
+    void setPoint(QByteArray* universes);
 };
 
 #endif

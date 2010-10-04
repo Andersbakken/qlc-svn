@@ -37,134 +37,142 @@ class QEvent;
 
 class MIDIDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MIDIDevice(MIDIInput* parent, UINT id);
-	virtual ~MIDIDevice();
+    MIDIDevice(MIDIInput* parent, UINT id);
+    virtual ~MIDIDevice();
 
-	/** Load global settings */
-	void loadSettings();
+    /** Load global settings */
+    void loadSettings();
 
-	/** Save global settings */
-	void saveSettings();
+    /** Save global settings */
+    void saveSettings();
 
-	/*********************************************************************
-	 * File operations
-	 *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-	/** Open the device for input data */
-	bool open();
+    /** Open the device for input data */
+    bool open();
 
-	/** Close the input device */
-	void close();
+    /** Close the input device */
+    void close();
 
 protected:
-	/** Handle to the opened MIDI input device */
-	HMIDIIN m_handle;
+    /** Handle to the opened MIDI input device */
+    HMIDIIN m_handle;
 
-	/** The ID of the windows MIDI input that this device represents */
-	UINT m_id;
+    /** The ID of the windows MIDI input that this device represents */
+    UINT m_id;
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	/**
-	 * Get device information string to be used in plugin manager
-	 */
-	QString infoText();
+    /**
+     * Get device information string to be used in plugin manager
+     */
+    QString infoText();
 
-	/**
-	 * Get the device's name
-	 */
-	QString name();
-
-protected:
-	void extractName();
+    /**
+     * Get the device's name
+     */
+    QString name();
 
 protected:
-	QString m_name;
-	bool m_isOK;
-	
-	/*********************************************************************
-	 * Operational mode
-	 *********************************************************************/
+    void extractName();
+
+protected:
+    QString m_name;
+    bool m_isOK;
+
+    /*********************************************************************
+     * Operational mode
+     *********************************************************************/
 public:
-	/**
-	 * This device's operational mode.
-	 *
-	 * @ControlChange: Use MIDI ControlChange ID's as input channels
-	 * @Note: Use MIDI Note ON/OFF commands as input channels
-	 */
-	enum Mode
-	{
-		ControlChange,
-		Note
-	};
+    /**
+     * This device's operational mode.
+     *
+     * @ControlChange: Use MIDI ControlChange ID's as input channels
+     * @Note: Use MIDI Note ON/OFF commands as input channels
+     */
+    enum Mode
+    {
+        ControlChange,
+        Note
+    };
 
-	/** Get this device's operational mode */
-	Mode mode() const { return m_mode; }
+    /** Get this device's operational mode */
+    Mode mode() const {
+        return m_mode;
+    }
 
-	/** Set this device's operational mode */
-	void setMode(Mode m) { m_mode = m; }
+    /** Set this device's operational mode */
+    void setMode(Mode m) {
+        m_mode = m;
+    }
 
-	static QString modeToString(Mode mode);
-	static Mode stringToMode(const QString& mode);
+    static QString modeToString(Mode mode);
+    static Mode stringToMode(const QString& mode);
 
 protected:
-	Mode m_mode;
+    Mode m_mode;
 
-	/*********************************************************************
-	 * MIDI channel
-	 *********************************************************************/
+    /*********************************************************************
+     * MIDI channel
+     *********************************************************************/
 public:
-	/** Get this device's MIDI channel */
-	t_channel midiChannel() const { return m_midiChannel; }
+    /** Get this device's MIDI channel */
+    t_channel midiChannel() const {
+        return m_midiChannel;
+    }
 
-	/** Set this device's MIDI channel */
-	void setMidiChannel(t_channel channel) { m_midiChannel = channel; }
+    /** Set this device's MIDI channel */
+    void setMidiChannel(t_channel channel) {
+        m_midiChannel = channel;
+    }
 
 protected:
-	t_channel m_midiChannel;
+    t_channel m_midiChannel;
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 protected:
-	void customEvent(QEvent* event);
+    void customEvent(QEvent* event);
 
 signals:
-	/** Signal that is emitted when an input channel's value is changed */
-	void valueChanged(MIDIDevice* device, quint32 channel,
-			  uchar value);
+    /** Signal that is emitted when an input channel's value is changed */
+    void valueChanged(MIDIDevice* device, quint32 channel,
+                      uchar value);
 
-	/*********************************************************************
-	 * Feedback
-	 *********************************************************************/
+    /*********************************************************************
+     * Feedback
+     *********************************************************************/
 public:
-	/** Get this input device's feedback output line number */
-	UINT feedBackId() const;
+    /** Get this input device's feedback output line number */
+    UINT feedBackId() const;
 
-	/** Set this input device's feedback output line number */
-	void setFeedBackId(UINT id);
+    /** Set this input device's feedback output line number */
+    void setFeedBackId(UINT id);
 
-	/** Open the device for feedback output */
-	void openOutput();
+    /** Open the device for feedback output */
+    void openOutput();
 
-	/** Close the feedback device */
-	void closeOutput();
+    /** Close the feedback device */
+    void closeOutput();
 
-	/** Get a list of available outputs for feedback */
-	static QStringList feedBackNames();
+    /** Get a list of available outputs for feedback */
+    static QStringList feedBackNames();
 
 public:
-	/** Send input values back to the device to move motorized faders */
-	void feedBack(quint32 channel, uchar value);
+    /** Send input values back to the device to move motorized faders */
+    void feedBack(quint32 channel, uchar value);
 
 protected:
-	UINT m_feedBackId;
-	HMIDIOUT m_feedBackHandle;
+    UINT m_feedBackId;
+    HMIDIOUT m_feedBackHandle;
 };
 
 #endif

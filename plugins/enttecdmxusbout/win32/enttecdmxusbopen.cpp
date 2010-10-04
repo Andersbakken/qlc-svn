@@ -28,21 +28,21 @@
  ****************************************************************************/
 
 EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent,
-				   const FT_DEVICE_LIST_INFO_NODE& info,
-				   DWORD id)
-	: QThread(parent),
-	m_handle(0),
-	m_id(id),
-	m_serial(QString(info.SerialNumber)),
-	m_name(QString(info.Description)),
-	m_running(false),
-	m_universe(QByteArray(513, 0))
+                                   const FT_DEVICE_LIST_INFO_NODE& info,
+                                   DWORD id)
+        : QThread(parent),
+        m_handle(0),
+        m_id(id),
+        m_serial(QString(info.SerialNumber)),
+        m_name(QString(info.Description)),
+        m_running(false),
+        m_universe(QByteArray(513, 0))
 {
 }
 
 EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
 {
-	close();
+    close();
 }
 
 /****************************************************************************
@@ -51,118 +51,118 @@ EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
 
 bool EnttecDMXUSBOpen::open()
 {
-	if (isOpen() == false)
-	{
-		/* Attempt to open the device */
-		FT_STATUS status = FT_Open(m_id, &m_handle);
-		if (status == FT_OK)
-		{
-			if (initializePort() == false)
-			{
-				qWarning() << "Unable to initialize port."
-					   << "Closing widget.";
-				close();
-				return false;
-			}
+    if (isOpen() == false)
+    {
+        /* Attempt to open the device */
+        FT_STATUS status = FT_Open(m_id, &m_handle);
+        if (status == FT_OK)
+        {
+            if (initializePort() == false)
+            {
+                qWarning() << "Unable to initialize port."
+                << "Closing widget.";
+                close();
+                return false;
+            }
 
-			if (isRunning() == false)
-				start();
+            if (isRunning() == false)
+                start();
 
-			return true;
-		}
-		else
-		{
-			qWarning() << "Unable to open" << name()
-				   << ". Error:" << status;
-			return false;
-		}
-	}
-	else
-	{
-		/* Already open */
-		return true;
-	}
+            return true;
+        }
+        else
+        {
+            qWarning() << "Unable to open" << name()
+            << ". Error:" << status;
+            return false;
+        }
+    }
+    else
+    {
+        /* Already open */
+        return true;
+    }
 }
 
 bool EnttecDMXUSBOpen::close()
 {
-	if (isOpen() == true)
-	{
-		/* Stop the writer thread */
-		if (isRunning() == true)
-			stop();
+    if (isOpen() == true)
+    {
+        /* Stop the writer thread */
+        if (isRunning() == true)
+            stop();
 
-		FT_STATUS status = FT_Close(m_handle);
-		if (status == FT_OK)
-		{
-			m_handle = 0;
-			return true;
-		}
-		else
-		{
-			qWarning() << "Unable to close" << name()
-				   << ". Error:" << status;
-			return false;
-		}
-	}
-	else
-	{
-		return true;
-	}
+        FT_STATUS status = FT_Close(m_handle);
+        if (status == FT_OK)
+        {
+            m_handle = 0;
+            return true;
+        }
+        else
+        {
+            qWarning() << "Unable to close" << name()
+            << ". Error:" << status;
+            return false;
+        }
+    }
+    else
+    {
+        return true;
+    }
 }
 
 bool EnttecDMXUSBOpen::isOpen()
 {
-	if (m_handle != 0)
-		return true;
-	else
-		return false;
+    if (m_handle != 0)
+        return true;
+    else
+        return false;
 }
 
 bool EnttecDMXUSBOpen::initializePort()
 {
-	FT_STATUS status = FT_OK;
+    FT_STATUS status = FT_OK;
 
-	/* Reset the widget */
-	status = FT_ResetDevice(m_handle);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_ResetDevice:" << status;
-		return false;
-	}
+    /* Reset the widget */
+    status = FT_ResetDevice(m_handle);
+    if (status != FT_OK)
+    {
+        qWarning() << "FT_ResetDevice:" << status;
+        return false;
+    }
 
-	/* Set the baud rate. 12 will give us 250Kbits */
-	status = FT_SetDivisor(m_handle, 12);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_SetDivisor:" << status;
-		return false;
-	}
+    /* Set the baud rate. 12 will give us 250Kbits */
+    status = FT_SetDivisor(m_handle, 12);
+    if (status != FT_OK)
+    {
+        qWarning() << "FT_SetDivisor:" << status;
+        return false;
+    }
 
-	/* Set data characteristics */
-	status = FT_SetDataCharacteristics(m_handle, FT_BITS_8,
-					   FT_STOP_BITS_2, FT_PARITY_NONE);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_SetDataCharacteristics:" << status;
-		return false;
-	}
+    /* Set data characteristics */
+    status = FT_SetDataCharacteristics(m_handle, FT_BITS_8,
+                                       FT_STOP_BITS_2, FT_PARITY_NONE);
+    if (status != FT_OK)
+    {
+        qWarning() << "FT_SetDataCharacteristics:" << status;
+        return false;
+    }
 
-	/* Set flow control */
-	status = FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0);
-	if (status != FT_OK)
-	{
-		qWarning() << "FT_SetFlowControl:" << status;
-		return false;
-	}
+    /* Set flow control */
+    status = FT_SetFlowControl(m_handle, FT_FLOW_NONE, 0, 0);
+    if (status != FT_OK)
+    {
+        qWarning() << "FT_SetFlowControl:" << status;
+        return false;
+    }
 
-	/* Set RS485 for sending */
-	FT_ClrRts(m_handle);
+    /* Set RS485 for sending */
+    FT_ClrRts(m_handle);
 
-	/* Clear TX RX buffers */
-	FT_Purge(m_handle, FT_PURGE_TX | FT_PURGE_RX);
+    /* Clear TX RX buffers */
+    FT_Purge(m_handle, FT_PURGE_TX | FT_PURGE_RX);
 
-	return true;
+    return true;
 }
 
 /****************************************************************************
@@ -171,17 +171,17 @@ bool EnttecDMXUSBOpen::initializePort()
 
 QString EnttecDMXUSBOpen::name() const
 {
-	return m_name;
+    return m_name;
 }
 
 QString EnttecDMXUSBOpen::serial() const
 {
-	return m_serial;
+    return m_serial;
 }
 
 QString EnttecDMXUSBOpen::uniqueName() const
 {
-	return QString("%1 (S/N: %2)").arg(name()).arg(serial());
+    return QString("%1 (S/N: %2)").arg(name()).arg(serial());
 }
 
 /****************************************************************************
@@ -190,10 +190,10 @@ QString EnttecDMXUSBOpen::uniqueName() const
 
 bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 {
-	m_mutex.lock();
-	m_universe = m_universe.replace(1, universe.size(), universe);
-	m_mutex.unlock();
-	return true;
+    m_mutex.lock();
+    m_universe = m_universe.replace(1, universe.size(), universe);
+    m_mutex.unlock();
+    return true;
 }
 
 /****************************************************************************
@@ -202,62 +202,62 @@ bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 
 void EnttecDMXUSBOpen::stop()
 {
-	if (isRunning() == true)
-	{
-		m_running = false;
-		wait();
-	}
+    if (isRunning() == true)
+    {
+        m_running = false;
+        wait();
+    }
 }
 
 void EnttecDMXUSBOpen::run()
 {
-	/* Wait for device to settle if the port was opened just recently */
-	usleep(1000);
+    /* Wait for device to settle if the port was opened just recently */
+    usleep(1000);
 
-	m_running = true;
-	while (m_running == true)
-	{
-		ULONG written = 0;
-		FT_STATUS status = FT_OK;
+    m_running = true;
+    while (m_running == true)
+    {
+        ULONG written = 0;
+        FT_STATUS status = FT_OK;
 
-		if (isOpen() == false)
-		{
-			qWarning() << "Writer thread terminated."
-				   << "Port closed unexpectedly.";
-			m_running = false;
-			return;
-		}
+        if (isOpen() == false)
+        {
+            qWarning() << "Writer thread terminated."
+            << "Port closed unexpectedly.";
+            m_running = false;
+            return;
+        }
 
-		status = FT_SetBreakOn(m_handle);
-		if (status != FT_OK)
-		{
-			qWarning() << "FT_SetBreakOn:" << status;
-			goto framesleep;
-		}
+        status = FT_SetBreakOn(m_handle);
+        if (status != FT_OK)
+        {
+            qWarning() << "FT_SetBreakOn:" << status;
+            goto framesleep;
+        }
 
-		usleep(88);
+        usleep(88);
 
-		status = FT_SetBreakOff(m_handle);
-		if (status != FT_OK)
-		{
-			qWarning() << "FT_SetBreakOff:" << status;
-			goto framesleep;
-		}
+        status = FT_SetBreakOff(m_handle);
+        if (status != FT_OK)
+        {
+            qWarning() << "FT_SetBreakOff:" << status;
+            goto framesleep;
+        }
 
-		usleep(8);
+        usleep(8);
 
-		m_mutex.lock();
-		status = FT_Write(m_handle, m_universe.data(),
-				  m_universe.size(), &written);
-		m_mutex.unlock();
-		if (status != FT_OK)
-		{
-			qWarning() << "FT_Write universe:" << status;
-			goto framesleep;
-		}
+        m_mutex.lock();
+        status = FT_Write(m_handle, m_universe.data(),
+                          m_universe.size(), &written);
+        m_mutex.unlock();
+        if (status != FT_OK)
+        {
+            qWarning() << "FT_Write universe:" << status;
+            goto framesleep;
+        }
 
 framesleep:
-		usleep(22754);
-	}
+        usleep(22754);
+    }
 }
 

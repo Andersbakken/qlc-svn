@@ -29,34 +29,34 @@ class Doc;
 
 class EFXFixture_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void init();
-	void cleanup();
+    void initTestCase();
+    void init();
+    void cleanup();
 
-	void initial();
-	void copyFrom();
-	void publicProperties();
-	void loadSuccess();
-	void loadWrongRoot();
-	void loadWrongDirection();
-	void loadExtraTag();
-	void save();
-	void protectedProperties();
-	void updateSkipThreshold();
-	void isValid();
-	void reset();
-	void startStop();
-	void setPoint8bit();
-	void setPoint16bit();
-	void nextStepLoop();
-	void nextStepSingleShot();
+    void initial();
+    void copyFrom();
+    void publicProperties();
+    void loadSuccess();
+    void loadWrongRoot();
+    void loadWrongDirection();
+    void loadExtraTag();
+    void save();
+    void protectedProperties();
+    void updateSkipThreshold();
+    void isValid();
+    void reset();
+    void startStop();
+    void setPoint8bit();
+    void setPoint16bit();
+    void nextStepLoop();
+    void nextStepSingleShot();
 
 private:
-	Doc* m_doc;
-	QLCFixtureDefCache m_cache;
+    Doc* m_doc;
+    QLCFixtureDefCache m_cache;
 };
 
 #endif

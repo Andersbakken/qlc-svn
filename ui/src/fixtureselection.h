@@ -36,43 +36,43 @@ class Doc;
 
 class FixtureSelection : public QDialog, public Ui_FixtureSelection
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	/**
-	 * Constructor
-	 *
-	 * @param parent The parent widget
-	 * @param doc The Doc* object holding all fixtures
-	 * @param multiple Set true to enable multiple selection
-	 * @param disabled List of fixture IDs to disable (already present
-	 *                 fixtures etc...)
-	 */
-	FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
-			 QList <t_fixture_id> disabled);
+    /**
+     * Constructor
+     *
+     * @param parent The parent widget
+     * @param doc The Doc* object holding all fixtures
+     * @param multiple Set true to enable multiple selection
+     * @param disabled List of fixture IDs to disable (already present
+     *                 fixtures etc...)
+     */
+    FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
+                     QList <t_fixture_id> disabled);
 
-	/**
-	 * Destructor
-	 */
-	~FixtureSelection();
+    /**
+     * Destructor
+     */
+    ~FixtureSelection();
 
-	/**
-	 * List of selected fixture IDs
-	 */
-	QList <t_fixture_id> selection;
+    /**
+     * List of selected fixture IDs
+     */
+    QList <t_fixture_id> selection;
 
 private:
-	Q_DISABLE_COPY(FixtureSelection)
+    Q_DISABLE_COPY(FixtureSelection)
 
 protected slots:
-	/**
-	 * Item double clicks
-	 */
-	void slotItemDoubleClicked(QTreeWidgetItem* item);
+    /**
+     * Item double clicks
+     */
+    void slotItemDoubleClicked(QTreeWidgetItem* item);
 
-	/**
-	 * OK button click
-	 */
-	void accept();
+    /**
+     * OK button click
+     */
+    void accept();
 };
 
 #endif

@@ -43,220 +43,220 @@ class QDomElement;
 
 class InputMap : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(InputMap)
+    Q_OBJECT
+    Q_DISABLE_COPY(InputMap)
 
-	friend class InputPatch;
-	friend class InputMapEditor;
-	friend class InputPatchEditor;
+    friend class InputPatch;
+    friend class InputMapEditor;
+    friend class InputPatchEditor;
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/**
-	 * Create a new InputMap object, with the given amount of input
-	 * universes.
-	 */
-	InputMap(QObject* parent,
-		 quint32 universes = KInputUniverseCount);
+    /**
+     * Create a new InputMap object, with the given amount of input
+     * universes.
+     */
+    InputMap(QObject* parent,
+             quint32 universes = KInputUniverseCount);
 
-	/**
-	 * Destroy an InputMap object
-	 */
-	virtual ~InputMap();
+    /**
+     * Destroy an InputMap object
+     */
+    virtual ~InputMap();
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 public slots:
-	/** Slot that catches input plugins' value changes */
-	void slotValueChanged(QLCInPlugin* plugin, quint32 input,
-			      quint32 channel, uchar value);
+    /** Slot that catches input plugins' value changes */
+    void slotValueChanged(QLCInPlugin* plugin, quint32 input,
+                          quint32 channel, uchar value);
 
-	/** Slot that catches plugin configuration change notifications */
-	void slotConfigurationChanged();
+    /** Slot that catches plugin configuration change notifications */
+    void slotConfigurationChanged();
 
 public:
-	/** Send feedback value to the input profile e.g. to move a motorized
-	    sliders & knobs, set indicator leds etc. */
-	bool feedBack(quint32 universe, quint32 channel,
-		      uchar value);
+    /** Send feedback value to the input profile e.g. to move a motorized
+        sliders & knobs, set indicator leds etc. */
+    bool feedBack(quint32 universe, quint32 channel,
+                  uchar value);
 
 signals:
-	/** Everyone interested in input data should connect to this signal */
-	void inputValueChanged(quint32 universe,
-			       quint32 channel, uchar value);
+    /** Everyone interested in input data should connect to this signal */
+    void inputValueChanged(quint32 universe,
+                           quint32 channel, uchar value);
 
-	/** Notifies (InputManager) of plugin configuration changes */
-	void pluginConfigurationChanged(const QString& pluginName);
+    /** Notifies (InputManager) of plugin configuration changes */
+    void pluginConfigurationChanged(const QString& pluginName);
 
-	/*********************************************************************
-	 * Patch
-	 *********************************************************************/
+    /*********************************************************************
+     * Patch
+     *********************************************************************/
 public:
-	/**
-	 * Get the number of supported input universes
-	 */
-	quint32 universes() const;
+    /**
+     * Get the number of supported input universes
+     */
+    quint32 universes() const;
 
-	/**
-	 * Get the universe that is used for editing functions etc.
-	 */
-	quint32 editorUniverse() const;
+    /**
+     * Get the universe that is used for editing functions etc.
+     */
+    quint32 editorUniverse() const;
 
-	/**
-	 * Set the universe that is used for editing functions etc.
-	 */
-	void setEditorUniverse(quint32 uni);
+    /**
+     * Set the universe that is used for editing functions etc.
+     */
+    void setEditorUniverse(quint32 uni);
 
-	/**
-	 * Patch the given universe to go thru the given plugin
-	 *
-	 * @param universe The input universe to patch
-	 * @param pluginName The name of the plugin to patch to the universe
-	 * @param input An input universe provided by the plugin to patch to
-	 * @param enableFeedback enable/disable feedback data sending
-	 * @param profileName The name of an input profile
-	 * @return true if successful, otherwise false
-	 */
-	bool setPatch(quint32 universe, const QString& pluginName,
-		      quint32 input, bool enableFeedback,
-		      const QString& profileName = QString::null);
+    /**
+     * Patch the given universe to go thru the given plugin
+     *
+     * @param universe The input universe to patch
+     * @param pluginName The name of the plugin to patch to the universe
+     * @param input An input universe provided by the plugin to patch to
+     * @param enableFeedback enable/disable feedback data sending
+     * @param profileName The name of an input profile
+     * @return true if successful, otherwise false
+     */
+    bool setPatch(quint32 universe, const QString& pluginName,
+                  quint32 input, bool enableFeedback,
+                  const QString& profileName = QString::null);
 
-	/**
-	 * Get mapping for an input universe.
-	 *
-	 * @param universe The internal input universe to get mapping for
-	 */
-	InputPatch* patch(quint32 universe) const;
+    /**
+     * Get mapping for an input universe.
+     *
+     * @param universe The internal input universe to get mapping for
+     */
+    InputPatch* patch(quint32 universe) const;
 
-	/**
-	 * Check, whether a certain input in a certain plugin has been mapped
-	 * to a universe. Returns the mapped universe number or -1 if not
-	 * mapped.
-	 *
-	 * @param pluginName The name of the plugin to check for
-	 * @param input The particular input to check for
-	 * @return Mapped universe number or -1 if not mapped
-	 */
-	quint32 mapping(const QString& pluginName, quint32 input) const;
-
-protected:
-	/** Initialize the patch table */
-	void initPatch();
+    /**
+     * Check, whether a certain input in a certain plugin has been mapped
+     * to a universe. Returns the mapped universe number or -1 if not
+     * mapped.
+     *
+     * @param pluginName The name of the plugin to check for
+     * @param input The particular input to check for
+     * @return Mapped universe number or -1 if not mapped
+     */
+    quint32 mapping(const QString& pluginName, quint32 input) const;
 
 protected:
-	/** Vector containing all active input plugins and the internal
-	    universes that they are associated to. */
-	QVector <InputPatch*> m_patch;
+    /** Initialize the patch table */
+    void initPatch();
 
-	/** Total number of supported input universes */
-	quint32 m_universes;
+protected:
+    /** Vector containing all active input plugins and the internal
+        universes that they are associated to. */
+    QVector <InputPatch*> m_patch;
 
-	/** The universe used to edit functions etc. */
-	quint32 m_editorUniverse;
+    /** Total number of supported input universes */
+    quint32 m_universes;
 
-	/*********************************************************************
-	 * Plugins
-	 *********************************************************************/
+    /** The universe used to edit functions etc. */
+    quint32 m_editorUniverse;
+
+    /*********************************************************************
+     * Plugins
+     *********************************************************************/
 public:
-	/**
-	 * Load all input plugins from the input plugin directory
-	 */
-	void loadPlugins();
+    /**
+     * Load all input plugins from the input plugin directory
+     */
+    void loadPlugins();
 
-	/**
-	 * Get a list of available input plugins as a string list
-	 * containing the plugins' names
-	 *
-	 * @return QStringList containing plugins' names
-	 */
-	QStringList pluginNames();
+    /**
+     * Get a list of available input plugins as a string list
+     * containing the plugins' names
+     *
+     * @return QStringList containing plugins' names
+     */
+    QStringList pluginNames();
 
-	/**
-	 * Get the names of all input lines provided by the given plugin.
-	 *
-	 * @param pluginName Name of the plugin, whose input count to get
-	 * @return A QStringList containing the names of each input line
-	 *
-	 */
-	QStringList pluginInputs(const QString& pluginName);
+    /**
+     * Get the names of all input lines provided by the given plugin.
+     *
+     * @param pluginName Name of the plugin, whose input count to get
+     * @return A QStringList containing the names of each input line
+     *
+     */
+    QStringList pluginInputs(const QString& pluginName);
 
-	/**
-	 * Open a configuration dialog for the given plugin
-	 *
-	 * @param pluginName Name of the plugin to configure
-	 */
-	void configurePlugin(const QString& pluginName);
+    /**
+     * Open a configuration dialog for the given plugin
+     *
+     * @param pluginName Name of the plugin to configure
+     */
+    void configurePlugin(const QString& pluginName);
 
-	/**
-	 * Get a status text for the given plugin.
-	 *
-	 * @param pluginName Name of the plugin, whose status to get
-	 * @param input A specific input identifier
-	 */
-	QString pluginStatus(const QString& pluginName = QString::null,
-			     quint32 input = KInputInvalid);
+    /**
+     * Get a status text for the given plugin.
+     *
+     * @param pluginName Name of the plugin, whose status to get
+     * @param input A specific input identifier
+     */
+    QString pluginStatus(const QString& pluginName = QString::null,
+                         quint32 input = KInputInvalid);
 
-	/**
-	 * Append the given plugin to our list of plugins. Will fail if
-	 * a plugin with the same name already exists.
-	 *
-	 * @param inputPlugin The input plugin to append
-	 * @return true if successful, otherwise false
-	 */
-	bool appendPlugin(QLCInPlugin* inputPlugin);
-
-protected:
-	/**
-	 * Get a plugin instance by the plugin's name
-	 *
-	 * @param name The name of the plugin to search for
-	 * @return QLCInPlugin or NULL
-	 */
-	QLCInPlugin* plugin(const QString& name);
+    /**
+     * Append the given plugin to our list of plugins. Will fail if
+     * a plugin with the same name already exists.
+     *
+     * @param inputPlugin The input plugin to append
+     * @return true if successful, otherwise false
+     */
+    bool appendPlugin(QLCInPlugin* inputPlugin);
 
 protected:
-	/** List containing all available input plugins */
-	QList <QLCInPlugin*> m_plugins;
+    /**
+     * Get a plugin instance by the plugin's name
+     *
+     * @param name The name of the plugin to search for
+     * @return QLCInPlugin or NULL
+     */
+    QLCInPlugin* plugin(const QString& name);
 
-	/*********************************************************************
-	 * Input profiles
-	 *********************************************************************/
+protected:
+    /** List containing all available input plugins */
+    QList <QLCInPlugin*> m_plugins;
+
+    /*********************************************************************
+     * Input profiles
+     *********************************************************************/
 public:
-	/** Load all profile profiles from the given path */
-	void loadProfiles(const QString& profilePath);
+    /** Load all profile profiles from the given path */
+    void loadProfiles(const QString& profilePath);
 
-	/** Get a list of available profile names */
-	QStringList profileNames();
+    /** Get a list of available profile names */
+    QStringList profileNames();
 
-	/** Get a profile by its name */
-	QLCInputProfile* profile(const QString& name);
+    /** Get a profile by its name */
+    QLCInputProfile* profile(const QString& name);
 
-	/** Add a new profile */
-	bool addProfile(QLCInputProfile* profile);
+    /** Add a new profile */
+    bool addProfile(QLCInputProfile* profile);
 
-	/** Remove an existing profile by its name and delete it */
-	bool removeProfile(const QString& name);
+    /** Remove an existing profile by its name and delete it */
+    bool removeProfile(const QString& name);
 
 protected:
-	/** List that contains all available profiles */
-	QList <QLCInputProfile*> m_profiles;
+    /** List that contains all available profiles */
+    QList <QLCInputProfile*> m_profiles;
 
-	/*********************************************************************
-	 * Defaults
-	 *********************************************************************/
+    /*********************************************************************
+     * Defaults
+     *********************************************************************/
 public:
-	/**
-	 * Load default settings for input mapper from QLC global settings
-	 */
-	void loadDefaults();
+    /**
+     * Load default settings for input mapper from QLC global settings
+     */
+    void loadDefaults();
 
-	/**
-	 * Save default settings for input mapper into QLC global settings
-	 */
-	void saveDefaults();
+    /**
+     * Save default settings for input mapper into QLC global settings
+     */
+    void saveDefaults();
 };
 
 #endif

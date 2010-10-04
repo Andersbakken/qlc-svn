@@ -33,52 +33,52 @@ class QByteArray;
 
 class PeperoniDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	PeperoniDevice(QObject* parent, struct usb_device* device);
-	virtual ~PeperoniDevice();
+    PeperoniDevice(QObject* parent, struct usb_device* device);
+    virtual ~PeperoniDevice();
 
-	/** Find out, whether the given USB device is a Peperoni device */
-	static bool isPeperoniDevice(const struct usb_device* device);
+    /** Find out, whether the given USB device is a Peperoni device */
+    static bool isPeperoniDevice(const struct usb_device* device);
 
-	/********************************************************************
-	 * Device information
-	 ********************************************************************/
+    /********************************************************************
+     * Device information
+     ********************************************************************/
 public:
-	QString name() const;
-	QString infoText() const;
+    QString name() const;
+    QString infoText() const;
 
 protected:
-	void extractName();
+    void extractName();
 
 protected:
-	QString m_name;
+    QString m_name;
 
-	/********************************************************************
-	 * Open & close
-	 ********************************************************************/
+    /********************************************************************
+     * Open & close
+     ********************************************************************/
 public:
-	void open();
-	void close();
+    void open();
+    void close();
 
-	const struct usb_device* device() const;
-	const usb_dev_handle* handle() const;
+    const struct usb_device* device() const;
+    const usb_dev_handle* handle() const;
 
 protected:
-	struct usb_device* m_device;
-	usb_dev_handle* m_handle;
-	int m_firmwareVersion;
-	QByteArray m_bulkBuffer;
+    struct usb_device* m_device;
+    usb_dev_handle* m_handle;
+    int m_firmwareVersion;
+    QByteArray m_bulkBuffer;
 
-	/********************************************************************
-	 * Write
-	 ********************************************************************/
+    /********************************************************************
+     * Write
+     ********************************************************************/
 public:
-	void outputDMX(const QByteArray& universe);
+    void outputDMX(const QByteArray& universe);
 };
 
 #endif

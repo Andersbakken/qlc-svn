@@ -38,93 +38,95 @@ class HIDInput;
 
 class HIDDevice : public QObject
 {
-	Q_OBJECT
-		
+    Q_OBJECT
+
 public:
-	HIDDevice(HIDInput* parent, quint32 line, const QString& path);
-	virtual ~HIDDevice();
+    HIDDevice(HIDInput* parent, quint32 line, const QString& path);
+    virtual ~HIDDevice();
 
-	/*********************************************************************
-	 * File operations
-	 *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-	/**
-	 * Attempt to open the HID device in RW mode and fall back to RO
-	 * if that fails.
-	 *
-	 * @return true if the file was opened RW/RO
-	 */
-	virtual bool open();
+    /**
+     * Attempt to open the HID device in RW mode and fall back to RO
+     * if that fails.
+     *
+     * @return true if the file was opened RW/RO
+     */
+    virtual bool open();
 
-	/**
-	 * Close the HID device
-	 */
-	virtual void close();
+    /**
+     * Close the HID device
+     */
+    virtual void close();
 
-	/**
-	 * Get the full path of this HID device
-	 */
-	virtual QString path() const;
+    /**
+     * Get the full path of this HID device
+     */
+    virtual QString path() const;
 
-	/**
-	 * Get the device's file descriptor
-	 */
-	virtual int handle() const;
+    /**
+     * Get the device's file descriptor
+     */
+    virtual int handle() const;
 
-	/**
-	 * Read one event and emit it.
-	 */
-	virtual bool readEvent() = 0;
+    /**
+     * Read one event and emit it.
+     */
+    virtual bool readEvent() = 0;
 
 protected:
-	QFile m_file;
+    QFile m_file;
 
-	/*********************************************************************
-	 * Line
-	 *********************************************************************/
+    /*********************************************************************
+     * Line
+     *********************************************************************/
 public:
-	quint32 line() const { return m_line; }
+    quint32 line() const {
+        return m_line;
+    }
 
 protected:
-	quint32 m_line;
+    quint32 m_line;
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	/**
-	 * Get HID device information string to be used in plugin manager
-	 */
-	virtual QString infoText();
+    /**
+     * Get HID device information string to be used in plugin manager
+     */
+    virtual QString infoText();
 
-	/**
-	 * Get the device's name
-	 */
-	virtual QString name();
+    /**
+     * Get the device's name
+     */
+    virtual QString name();
 
 protected:
-	QString m_name;
+    QString m_name;
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 signals:
-	/**
-	 * Signal that is emitted when an input channel's value is changed
-	 *
-	 * @param device The eventing HIDDevice
-	 * @param channel The channel whose value has changed
-	 * @param value The changed value
-	 */
-	void valueChanged(HIDDevice* device, quint32 channel,
-			  uchar value);
+    /**
+     * Signal that is emitted when an input channel's value is changed
+     *
+     * @param device The eventing HIDDevice
+     * @param channel The channel whose value has changed
+     * @param value The changed value
+     */
+    void valueChanged(HIDDevice* device, quint32 channel,
+                      uchar value);
 
 public:
-	/**
-	 * Send an input value back the HID device to move motorized sliders
-	 * and such.
-	 */
-	virtual void feedBack(quint32 channel, uchar value);
+    /**
+     * Send an input value back the HID device to move motorized sliders
+     * and such.
+     */
+    virtual void feedBack(quint32 channel, uchar value);
 };
 
 #endif

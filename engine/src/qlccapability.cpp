@@ -29,19 +29,19 @@
 
 QLCCapability::QLCCapability(uchar min, uchar max, const QString& name)
 {
-	m_min = min;
-	m_max = max;
-	m_name = name;
+    m_min = min;
+    m_max = max;
+    m_name = name;
 }
 
 QLCCapability::QLCCapability(const QLCCapability* capability)
 {
-	m_min = 0;
-	m_max = UCHAR_MAX;
-	m_name = QString::null;
+    m_min = 0;
+    m_max = UCHAR_MAX;
+    m_name = QString::null;
 
-	if (capability != NULL)
-		*this = *capability;
+    if (capability != NULL)
+        *this = *capability;
 }
 
 QLCCapability::~QLCCapability()
@@ -50,115 +50,115 @@ QLCCapability::~QLCCapability()
 
 QLCCapability& QLCCapability::operator=(const QLCCapability& capability)
 {
-	if (this != &capability)
-	{
-		m_min = capability.m_min;
-		m_max = capability.m_max;
-		m_name = capability.m_name;
-	}
+    if (this != &capability)
+    {
+        m_min = capability.m_min;
+        m_max = capability.m_max;
+        m_name = capability.m_name;
+    }
 
-	return *this;
+    return *this;
 }
 
 bool QLCCapability::operator<(const QLCCapability& capability) const
 {
-	if (m_min < capability.m_min)
-		return true;
-	else
-		return false;
+    if (m_min < capability.m_min)
+        return true;
+    else
+        return false;
 }
 
 bool QLCCapability::overlaps(const QLCCapability& cap)
 {
-	if (m_min >= cap.min() && m_min <= cap.max())
-		return true;
-	else if (m_max >= cap.min() && m_max <= cap.max())
-		return true;
-	else if (cap.min() >= m_min && cap.min() <= m_max)
-		return true;
-	else if (cap.max() >= m_min && cap.max() <= m_max)
-		return true;
-	else
-		return false;
+    if (m_min >= cap.min() && m_min <= cap.max())
+        return true;
+    else if (m_max >= cap.min() && m_max <= cap.max())
+        return true;
+    else if (cap.min() >= m_min && cap.min() <= m_max)
+        return true;
+    else if (cap.max() >= m_min && cap.max() <= m_max)
+        return true;
+    else
+        return false;
 }
 
 bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 {
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(root != NULL);
 
-	/* QLCCapability entry */
-	tag = doc->createElement(KXMLQLCCapability);
-	root->appendChild(tag);
+    /* QLCCapability entry */
+    tag = doc->createElement(KXMLQLCCapability);
+    root->appendChild(tag);
 
-	/* Min limit attribute */
-	str.setNum(m_min);
-	tag.setAttribute(KXMLQLCCapabilityMin, str);
+    /* Min limit attribute */
+    str.setNum(m_min);
+    tag.setAttribute(KXMLQLCCapabilityMin, str);
 
-	/* Max limit attribute */
-	str.setNum(m_max);
-	tag.setAttribute(KXMLQLCCapabilityMax, str);
+    /* Max limit attribute */
+    str.setNum(m_max);
+    tag.setAttribute(KXMLQLCCapabilityMax, str);
 
-	/* Name value */
-	text = doc->createTextNode(m_name);
-	tag.appendChild(text);
+    /* Name value */
+    text = doc->createTextNode(m_name);
+    tag.appendChild(text);
 
-	return true;
+    return true;
 }
 
 bool QLCCapability::loadXML(const QDomElement* root)
 {
-	uchar min;
-	uchar max;
-	QString str;
+    uchar min;
+    uchar max;
+    QString str;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCCapability)
-	{
-		qWarning() << "Capability node not found.";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCCapability)
+    {
+        qWarning() << "Capability node not found.";
+        return false;
+    }
 
-	/* Get low limit attribute (critical) */
-	str = root->attribute(KXMLQLCCapabilityMin);
-	if (str == QString::null)
-	{
-		qWarning() << "Capability has no minimum limit.";
-		return false;
-	}
-	else
-	{
-		min = CLAMP(str.toInt(), 0, UCHAR_MAX);
-	}
+    /* Get low limit attribute (critical) */
+    str = root->attribute(KXMLQLCCapabilityMin);
+    if (str == QString::null)
+    {
+        qWarning() << "Capability has no minimum limit.";
+        return false;
+    }
+    else
+    {
+        min = CLAMP(str.toInt(), 0, UCHAR_MAX);
+    }
 
-	/* Get high limit attribute (critical) */
-	str = root->attribute(KXMLQLCCapabilityMax);
-	if (str == QString::null)
-	{
-		qWarning() << "Capability has no maximum limit.";
-		return false;
-	}
-	else
-	{
-		max = CLAMP(str.toInt(), 0, UCHAR_MAX);
-	}
+    /* Get high limit attribute (critical) */
+    str = root->attribute(KXMLQLCCapabilityMax);
+    if (str == QString::null)
+    {
+        qWarning() << "Capability has no maximum limit.";
+        return false;
+    }
+    else
+    {
+        max = CLAMP(str.toInt(), 0, UCHAR_MAX);
+    }
 
-	if (min <= max)
-	{
-		setName(root->text());
-		setMin(min);
-		setMax(max);
-		return true;
-	}
-	else
-	{
-		qWarning() << "Capability min(" << min
-			   << ") is greater than max(" << max << ").";
-		return false;
-	}
+    if (min <= max)
+    {
+        setName(root->text());
+        setMin(min);
+        setMax(max);
+        return true;
+    }
+    else
+    {
+        qWarning() << "Capability min(" << min
+        << ") is greater than max(" << max << ").";
+        return false;
+    }
 }

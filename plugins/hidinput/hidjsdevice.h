@@ -42,65 +42,65 @@ class HIDInput;
 
 class HIDJsDevice : public HIDDevice
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	HIDJsDevice(HIDInput* parent, quint32 line, const QString& path);
-	virtual ~HIDJsDevice();
+    HIDJsDevice(HIDInput* parent, quint32 line, const QString& path);
+    virtual ~HIDJsDevice();
 
 protected:
-	/** Initialize the device, find out its capabilities etc. */
-	void init();
+    /** Initialize the device, find out its capabilities etc. */
+    void init();
 
 protected:
-	unsigned char m_axes;
-	unsigned char m_buttons;
+    unsigned char m_axes;
+    unsigned char m_buttons;
 
-	/*********************************************************************
-	 * File operations
-	 *********************************************************************/
+    /*********************************************************************
+     * File operations
+     *********************************************************************/
 public:
-	/**
-	 * Attempt to open the HID device in RW mode and fall back to RO
-	 * if that fails.
-	 *
-	 * @return true if the file was opened RW/RO
-	 */
-	bool open();
+    /**
+     * Attempt to open the HID device in RW mode and fall back to RO
+     * if that fails.
+     *
+     * @return true if the file was opened RW/RO
+     */
+    bool open();
 
-	/**
-	 * Close the HID device
-	 */
-	void close();
+    /**
+     * Close the HID device
+     */
+    void close();
 
-	/**
-	 * Get the full path of this HID device
-	 */
-	QString path() const;
+    /**
+     * Get the full path of this HID device
+     */
+    QString path() const;
 
-	/**
-	 * Read one event and emit it
-	 */
-	bool readEvent();
+    /**
+     * Read one event and emit it
+     */
+    bool readEvent();
 
-	/*********************************************************************
-	 * Device info
-	 *********************************************************************/
+    /*********************************************************************
+     * Device info
+     *********************************************************************/
 public:
-	/**
-	 * Get HID device information string to be used in plugin manager
-	 */
-	QString infoText();
+    /**
+     * Get HID device information string to be used in plugin manager
+     */
+    QString infoText();
 
-	/*********************************************************************
-	 * Input data
-	 *********************************************************************/
+    /*********************************************************************
+     * Input data
+     *********************************************************************/
 public:
-	/**
-	 * Send an input value back the HID device to move motorized sliders
-	 * and such.
-	 */
-	void feedBack(quint32 channel, uchar value);
+    /**
+     * Send an input value back the HID device to move motorized sliders
+     * and such.
+     */
+    void feedBack(quint32 channel, uchar value);
 };
 
 #endif

@@ -34,22 +34,22 @@
 
 class MasterTimerStub : public MasterTimer
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MasterTimerStub(QObject* parent, OutputMap* outputMap,
-			QByteArray& universes);
-	~MasterTimerStub();
+    MasterTimerStub(QObject* parent, OutputMap* outputMap,
+                    QByteArray& universes);
+    ~MasterTimerStub();
 
-	void startFunction(Function* function);
-	void stopFunction(Function* function);
-	QList <Function*> m_functionList;
+    void startFunction(Function* function);
+    void stopFunction(Function* function);
+    QList <Function*> m_functionList;
 
-	void registerDMXSource(DMXSource* source);
-	void unregisterDMXSource(DMXSource* source);
-	QList <DMXSource*> m_dmxSourceList;
+    void registerDMXSource(DMXSource* source);
+    void unregisterDMXSource(DMXSource* source);
+    QList <DMXSource*> m_dmxSourceList;
 
-	QByteArray& m_universes;
+    QByteArray& m_universes;
 };
 
 #endif

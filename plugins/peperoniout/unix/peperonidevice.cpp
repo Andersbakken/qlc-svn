@@ -60,21 +60,21 @@
  ****************************************************************************/
 
 PeperoniDevice::PeperoniDevice(QObject* parent, struct usb_device* device)
-	: QObject(parent)
+        : QObject(parent)
 {
-	Q_ASSERT(device != NULL);
+    Q_ASSERT(device != NULL);
 
-	m_device = device;
-	m_handle = NULL;
-	m_firmwareVersion = 0;
-	m_bulkBuffer = QByteArray(512 + PEPERONI_OLD_BULK_HEADER_SIZE, 0);
+    m_device = device;
+    m_handle = NULL;
+    m_firmwareVersion = 0;
+    m_bulkBuffer = QByteArray(512 + PEPERONI_OLD_BULK_HEADER_SIZE, 0);
 
-	extractName();
+    extractName();
 }
 
 PeperoniDevice::~PeperoniDevice()
 {
-	close();
+    close();
 }
 
 /****************************************************************************
@@ -83,93 +83,93 @@ PeperoniDevice::~PeperoniDevice()
 
 bool PeperoniDevice::isPeperoniDevice(const struct usb_device* device)
 {
-	/* If there's nothing to inspect, it can't be what we're looking for */
-	if (device == NULL)
-		return false;
+    /* If there's nothing to inspect, it can't be what we're looking for */
+    if (device == NULL)
+        return false;
 
-	/* If it's not manufactured by them, we're not interested in it */
-	if (device->descriptor.idVendor != PEPERONI_VID)
-		return false;
+    /* If it's not manufactured by them, we're not interested in it */
+    if (device->descriptor.idVendor != PEPERONI_VID)
+        return false;
 
-	if (device->descriptor.idProduct == PEPERONI_PID_RODIN1 ||
-	    device->descriptor.idProduct == PEPERONI_PID_RODIN2 ||
-	    device->descriptor.idProduct == PEPERONI_PID_RODINT ||
-	    device->descriptor.idProduct == PEPERONI_PID_XSWITCH ||
-	    device->descriptor.idProduct == PEPERONI_PID_USBDMX21)
-	{
-		/* We need one interface */
-		if (device->config->bNumInterfaces < 1)
-			return false;
+    if (device->descriptor.idProduct == PEPERONI_PID_RODIN1 ||
+            device->descriptor.idProduct == PEPERONI_PID_RODIN2 ||
+            device->descriptor.idProduct == PEPERONI_PID_RODINT ||
+            device->descriptor.idProduct == PEPERONI_PID_XSWITCH ||
+            device->descriptor.idProduct == PEPERONI_PID_USBDMX21)
+    {
+        /* We need one interface */
+        if (device->config->bNumInterfaces < 1)
+            return false;
 
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void PeperoniDevice::extractName()
 {
-	bool needToClose = false;
-	char name[256];
-	int len;
+    bool needToClose = false;
+    char name[256];
+    int len;
 
-	Q_ASSERT(m_device != NULL);
+    Q_ASSERT(m_device != NULL);
 
-	if (m_handle == NULL)
-	{
-		needToClose = true;
-		open();
-	}
+    if (m_handle == NULL)
+    {
+        needToClose = true;
+        open();
+    }
 
-	/* Check, whether open() was successful */
-	if (m_handle == NULL)
-		return;
+    /* Check, whether open() was successful */
+    if (m_handle == NULL)
+        return;
 
-	/* Extract the name */
-	len = usb_get_string_simple(m_handle, m_device->descriptor.iProduct,
-				    name, sizeof(name));
-	if (len > 0)
-		m_name = QString(name);
-	else
-		m_name = tr("Unknown");
+    /* Extract the name */
+    len = usb_get_string_simple(m_handle, m_device->descriptor.iProduct,
+                                name, sizeof(name));
+    if (len > 0)
+        m_name = QString(name);
+    else
+        m_name = tr("Unknown");
 
-	/* Store fw version so we don't need to rely on libusb's volatile data */
-	m_firmwareVersion = m_device->descriptor.bcdDevice;
+    /* Store fw version so we don't need to rely on libusb's volatile data */
+    m_firmwareVersion = m_device->descriptor.bcdDevice;
 
-	/* Close the device if it was opened for this function only. */
-	if (needToClose == true)
-		close();
+    /* Close the device if it was opened for this function only. */
+    if (needToClose == true)
+        close();
 }
 
 QString PeperoniDevice::name() const
 {
-	return m_name;
+    return m_name;
 }
 
 QString PeperoniDevice::infoText() const
 {
-        QString info;
+    QString info;
 
-	if (m_device != NULL)
-	{
-		info += QString("<B>%1</B>").arg(name());
-		info += QString("<P>");
-		info += QString("Device is working correctly.<BR>");
-		info += QString("<I>Firmware version: %1</I>")
-				.arg(m_firmwareVersion, 4, 16, QChar('0'));
-		info += QString("</P>");
-	}
-	else
-	{
-		info += QString("<B>Unknown device</B>");
-		info += QString("<P>");
-		info += QString("Cannot connect to USB device.");
-		info += QString("</P>");
-        }
+    if (m_device != NULL)
+    {
+        info += QString("<B>%1</B>").arg(name());
+        info += QString("<P>");
+        info += QString("Device is working correctly.<BR>");
+        info += QString("<I>Firmware version: %1</I>")
+                .arg(m_firmwareVersion, 4, 16, QChar('0'));
+        info += QString("</P>");
+    }
+    else
+    {
+        info += QString("<B>Unknown device</B>");
+        info += QString("<P>");
+        info += QString("Cannot connect to USB device.");
+        info += QString("</P>");
+    }
 
-        return info;
+    return info;
 }
 
 /****************************************************************************
@@ -178,57 +178,57 @@ QString PeperoniDevice::infoText() const
 
 void PeperoniDevice::open()
 {
-	if (m_device != NULL && m_handle == NULL)
-	{
-		m_handle = usb_open(m_device);
-		if (m_handle == NULL)
-		{
-			qWarning() << "Unable to open Peperoni device!";
-			return;
-		}
+    if (m_device != NULL && m_handle == NULL)
+    {
+        m_handle = usb_open(m_device);
+        if (m_handle == NULL)
+        {
+            qWarning() << "Unable to open Peperoni device!";
+            return;
+        }
 
-		/* We must claim the interface before doing anything */
-		int r = usb_claim_interface(m_handle, PEPERONI_IFACE_EP0);
-		if (r < 0)
-		{
-			qWarning() << "PeperoniDevice:"
-				   << "Unable to claim interface EP0!";
-		}
+        /* We must claim the interface before doing anything */
+        int r = usb_claim_interface(m_handle, PEPERONI_IFACE_EP0);
+        if (r < 0)
+        {
+            qWarning() << "PeperoniDevice:"
+            << "Unable to claim interface EP0!";
+        }
 
-		r = usb_clear_halt(m_handle, PEPERONI_BULK_OUT_ENDPOINT);
-		if (r < 0)
-		{
-			qWarning() << "PeperoniDevice:"
-				   << "Unable to reset endpoint";
-		}
-	}
+        r = usb_clear_halt(m_handle, PEPERONI_BULK_OUT_ENDPOINT);
+        if (r < 0)
+        {
+            qWarning() << "PeperoniDevice:"
+            << "Unable to reset endpoint";
+        }
+    }
 }
 
 void PeperoniDevice::close()
 {
-	if (m_device != NULL && m_handle != NULL)
-	{
-		/* Release the interface in case we claimed it */
-		int r = usb_release_interface(m_handle, PEPERONI_IFACE_EP0);
-		if (r < 0)
-		{
-			qWarning() << "PeperoniDevice:"
-				   << "Unable to release interface EP0!";
-		}
+    if (m_device != NULL && m_handle != NULL)
+    {
+        /* Release the interface in case we claimed it */
+        int r = usb_release_interface(m_handle, PEPERONI_IFACE_EP0);
+        if (r < 0)
+        {
+            qWarning() << "PeperoniDevice:"
+            << "Unable to release interface EP0!";
+        }
 
-		usb_close(m_handle);
-	}
-	m_handle = NULL;
+        usb_close(m_handle);
+    }
+    m_handle = NULL;
 }
 
 const struct usb_device* PeperoniDevice::device() const
 {
-	return m_device;
+    return m_device;
 }
 
 const usb_dev_handle* PeperoniDevice::handle() const
 {
-	return m_handle;
+    return m_handle;
 }
 
 /****************************************************************************
@@ -237,52 +237,52 @@ const usb_dev_handle* PeperoniDevice::handle() const
 
 void PeperoniDevice::outputDMX(const QByteArray& universe)
 {
-	int r = -1;
+    int r = -1;
 
-	if (m_handle == NULL)
-		return;
+    if (m_handle == NULL)
+        return;
 
-	/* Choose write method based on firmware version. One has to unplug
-	   and then re-plug the dongle in apple for bulk write to work,
-	   so disable it for apple, since control msg should work for all. */
+    /* Choose write method based on firmware version. One has to unplug
+       and then re-plug the dongle in apple for bulk write to work,
+       so disable it for apple, since control msg should work for all. */
 #ifndef __APPLE__
-	if (m_firmwareVersion < PEPERONI_FW_BULK_SUPPORT)
-	{
+    if (m_firmwareVersion < PEPERONI_FW_BULK_SUPPORT)
+    {
 #endif
-		r = usb_control_msg(m_handle, USB_TYPE_VENDOR | 
-			USB_RECIP_INTERFACE | USB_ENDPOINT_OUT,
-			PEPERONI_TX_MEM_REQUEST, // We are WRITING data
-			PEPERONI_TX_MEM_BLOCK,   // Block during frame send?
-			0,                       // Start at DMX address 0
-			(char*) universe.data(), // The DMX universe data
-			universe.size(),         // Size of DMX universe
-			50);                     // Timeout (ms)
+        r = usb_control_msg(m_handle, USB_TYPE_VENDOR |
+                            USB_RECIP_INTERFACE | USB_ENDPOINT_OUT,
+                            PEPERONI_TX_MEM_REQUEST, // We are WRITING data
+                            PEPERONI_TX_MEM_BLOCK,   // Block during frame send?
+                            0,                       // Start at DMX address 0
+                            (char*) universe.data(), // The DMX universe data
+                            universe.size(),         // Size of DMX universe
+                            50);                     // Timeout (ms)
 #ifndef __APPLE__
-	}
-	else
-	{
-		/* Construct a bulk header first */
-		m_bulkBuffer[0] = char(PEPERONI_OLD_BULK_HEADER_ID);
-		m_bulkBuffer[1] = char(PEPERONI_OLD_BULK_HEADER_REQUEST_TX);
-		m_bulkBuffer[2] = char(universe.size() & 0xFF);
-		m_bulkBuffer[3] = char((universe.size() >> 8) & 0xFF);
+    }
+    else
+    {
+        /* Construct a bulk header first */
+        m_bulkBuffer[0] = char(PEPERONI_OLD_BULK_HEADER_ID);
+        m_bulkBuffer[1] = char(PEPERONI_OLD_BULK_HEADER_REQUEST_TX);
+        m_bulkBuffer[2] = char(universe.size() & 0xFF);
+        m_bulkBuffer[3] = char((universe.size() >> 8) & 0xFF);
 
-		/* Append universe data to the buffer */
-		m_bulkBuffer.replace(PEPERONI_OLD_BULK_HEADER_SIZE,
-				     universe.size(), universe);
+        /* Append universe data to the buffer */
+        m_bulkBuffer.replace(PEPERONI_OLD_BULK_HEADER_SIZE,
+                             universe.size(), universe);
 
-		/* Perform a bulk write */
-		r = usb_bulk_write(m_handle,
-				   PEPERONI_BULK_OUT_ENDPOINT,
-				   m_bulkBuffer.data(),
-				   m_bulkBuffer.size(),
-				   50);
-	}
+        /* Perform a bulk write */
+        r = usb_bulk_write(m_handle,
+                           PEPERONI_BULK_OUT_ENDPOINT,
+                           m_bulkBuffer.data(),
+                           m_bulkBuffer.size(),
+                           50);
+    }
 #endif
 
-	if (r < 0)
-	{
-		qWarning() << name() << "is unable to write DMX universe:"
-			   << usb_strerror();
-	}
+    if (r < 0)
+    {
+        qWarning() << name() << "is unable to write DMX universe:"
+        << usb_strerror();
+    }
 }

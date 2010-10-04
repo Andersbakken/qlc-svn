@@ -35,16 +35,16 @@
    the global namespace. */
 namespace FXEDArgs
 {
-	/**
-	 * Specifies a fixture file name to load after all initialization
-	 * has been done
-	 */
-	QString fixture;
+/**
+ * Specifies a fixture file name to load after all initialization
+ * has been done
+ */
+QString fixture;
 
-	/**
-	 * Specifies a locale for forced translation
-	 */
-	QString locale;
+/**
+ * Specifies a locale for forced translation
+ */
+QString locale;
 }
 
 /**
@@ -52,14 +52,14 @@ namespace FXEDArgs
  */
 void printVersion()
 {
-	QTextStream cout(stdout, QIODevice::WriteOnly);
+    QTextStream cout(stdout, QIODevice::WriteOnly);
 
-	cout << endl;
-	cout << App::longName() << " " << App::version() << endl;
-	cout << "This program is licensed under the terms of the GNU ";
-	cout << "General Public License v2." << endl;
-	cout << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)." << endl;
-	cout << endl;
+    cout << endl;
+    cout << App::longName() << " " << App::version() << endl;
+    cout << "This program is licensed under the terms of the GNU ";
+    cout << "General Public License v2." << endl;
+    cout << "Copyright (c) Heikki Junnila (hjunnila@users.sf.net)." << endl;
+    cout << endl;
 }
 
 /**
@@ -67,16 +67,16 @@ void printVersion()
  */
 void printUsage()
 {
-	QTextStream cout(stdout, QIODevice::WriteOnly);
+    QTextStream cout(stdout, QIODevice::WriteOnly);
 
-	cout << "Usage:";
-	cout << "  qlc-fixtureeditor [options]" << endl;
-	cout << "Options:" << endl;
-	cout << "  -o or --open <file>\t\tOpen the specified fixture definition file" << endl;
-	cout << "  -l or --locale <locale>\tForce a locale for translation" << endl;
-	cout << "  -h or --help\t\t\tPrint this help" << endl;
-	cout << "  -v or --version\t\tPrint version information" << endl;
-	cout << endl;
+    cout << "Usage:";
+    cout << "  qlc-fixtureeditor [options]" << endl;
+    cout << "Options:" << endl;
+    cout << "  -o or --open <file>\t\tOpen the specified fixture definition file" << endl;
+    cout << "  -l or --locale <locale>\tForce a locale for translation" << endl;
+    cout << "  -h or --help\t\t\tPrint this help" << endl;
+    cout << "  -v or --version\t\tPrint version information" << endl;
+    cout << endl;
 }
 
 /**
@@ -89,62 +89,62 @@ void printUsage()
  */
 bool parseArgs(int argc, char **argv)
 {
-	for (int i = 1; i < argc; i++)
-	{
-		if (::strcmp(argv[i], "-v") == 0 ||
-		    ::strcmp(argv[i], "--version") == 0)
-		{
-			/* Don't print anything, since version is always
-			   printed before anything else. Just make the app
-			   exit by returning false. */
-			return false;
-		}
-		else if (::strcmp(argv[i], "-h") == 0 ||
-			 ::strcmp(argv[i], "--help") == 0)
-		{
-			printUsage();
-			return false;
-		}
-		else if (::strcmp(argv[i], "-o") == 0 ||
-			 ::strcmp(argv[i], "--open") == 0)
-		{
-			FXEDArgs::fixture = QString(argv[++i]);
-		}
-		else if (::strcmp(argv[i], "-l") == 0 ||
-			 ::strcmp(argv[i], "--locale") == 0)
-		{
-			FXEDArgs::locale = QString(argv[++i]);
-		}
-	}
+    for (int i = 1; i < argc; i++)
+    {
+        if (::strcmp(argv[i], "-v") == 0 ||
+                ::strcmp(argv[i], "--version") == 0)
+        {
+            /* Don't print anything, since version is always
+               printed before anything else. Just make the app
+               exit by returning false. */
+            return false;
+        }
+        else if (::strcmp(argv[i], "-h") == 0 ||
+                 ::strcmp(argv[i], "--help") == 0)
+        {
+            printUsage();
+            return false;
+        }
+        else if (::strcmp(argv[i], "-o") == 0 ||
+                 ::strcmp(argv[i], "--open") == 0)
+        {
+            FXEDArgs::fixture = QString(argv[++i]);
+        }
+        else if (::strcmp(argv[i], "-l") == 0 ||
+                 ::strcmp(argv[i], "--locale") == 0)
+        {
+            FXEDArgs::locale = QString(argv[++i]);
+        }
+    }
 
-	return true;
+    return true;
 }
 
 void loadTranslation(const QString& locale, QApplication& app)
 {
-	QString lc;
-	if (FXEDArgs::locale.isEmpty() == true)
-		lc = locale;
-	else
-		lc = FXEDArgs::locale;
-	QString file(QString("fixtureeditor_%1").arg(lc));
+    QString lc;
+    if (FXEDArgs::locale.isEmpty() == true)
+        lc = locale;
+    else
+        lc = FXEDArgs::locale;
+    QString file(QString("fixtureeditor_%1").arg(lc));
 
 #ifdef __APPLE__
-	QString path(QString("%1/../%2").arg(QApplication::applicationDirPath())
-					.arg(TRANSLATIONDIR));
+    QString path(QString("%1/../%2").arg(QApplication::applicationDirPath())
+                 .arg(TRANSLATIONDIR));
 #else
-	QString path(TRANSLATIONDIR);
+    QString path(TRANSLATIONDIR);
 #endif
-	QTranslator* translator = new QTranslator(&app);
-	if (translator->load(file, path) == true)
-	{
-		qDebug() << "Using translation for" << lc;
-		QCoreApplication::installTranslator(translator);
-	}
-	else
-	{
-		qDebug() << "Unable to find translation for" << lc;
-	}
+    QTranslator* translator = new QTranslator(&app);
+    if (translator->load(file, path) == true)
+    {
+        qDebug() << "Using translation for" << lc;
+        QCoreApplication::installTranslator(translator);
+    }
+    else
+    {
+        qDebug() << "Unable to find translation for" << lc;
+    }
 }
 
 /**
@@ -155,33 +155,33 @@ void loadTranslation(const QString& locale, QApplication& app)
  */
 int main(int argc, char** argv)
 {
-	/* Create the Qt core application object */
-	QApplication qapp(argc, argv);
+    /* Create the Qt core application object */
+    QApplication qapp(argc, argv);
 
 #ifdef __APPLE__
-	/* Load plugins from within the bundle ONLY */
-	QDir dir(QApplication::applicationDirPath());
-	dir.cdUp();
-	dir.cd("plugins");
-	QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    /* Load plugins from within the bundle ONLY */
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    dir.cd("plugins");
+    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 #endif
 
-	/* Let te world know... */
-	printVersion();
+    /* Let te world know... */
+    printVersion();
 
-	/* Parse command-line arguments */
-	if (parseArgs(argc, argv) == false)
-		return 0;
+    /* Parse command-line arguments */
+    if (parseArgs(argc, argv) == false)
+        return 0;
 
-	/* Load translation for current locale */
-	loadTranslation(QLocale::system().name(), qapp);
+    /* Load translation for current locale */
+    loadTranslation(QLocale::system().name(), qapp);
 
-	/* Create and initialize the Fixture Editor application object */
-	App app;
-	if (FXEDArgs::fixture.isEmpty() == false)
-		app.loadFixtureDefinition(FXEDArgs::fixture);
+    /* Create and initialize the Fixture Editor application object */
+    App app;
+    if (FXEDArgs::fixture.isEmpty() == false)
+        app.loadFixtureDefinition(FXEDArgs::fixture);
 
-	/* Show and execute the application */
-	app.show();
-	return qapp.exec();
+    /* Show and execute the application */
+    app.show();
+    return qapp.exec();
 }

@@ -37,17 +37,17 @@ extern App* _app;
 
 VCDockArea::VCDockArea(QWidget* parent) : QFrame(parent)
 {
-	/* Align widgets vertically in the area, no margins */
-	new QVBoxLayout(this);
-	layout()->setMargin(0);
+    /* Align widgets vertically in the area, no margins */
+    new QVBoxLayout(this);
+    layout()->setMargin(0);
 
-	/* Default fade time slider */
-	m_fade = new VCDockSlider(this, Bus::defaultFade());
-	layout()->addWidget(m_fade);
+    /* Default fade time slider */
+    m_fade = new VCDockSlider(this, Bus::defaultFade());
+    layout()->addWidget(m_fade);
 
-	/* Default hold time slider */
-	m_hold = new VCDockSlider(this, Bus::defaultHold());
-	layout()->addWidget(m_hold);
+    /* Default hold time slider */
+    m_hold = new VCDockSlider(this, Bus::defaultHold());
+    layout()->addWidget(m_hold);
 }
 
 VCDockArea::~VCDockArea()
@@ -60,16 +60,16 @@ VCDockArea::~VCDockArea()
 
 void VCDockArea::refreshProperties()
 {
-	Q_ASSERT(m_fade != NULL);
-	Q_ASSERT(m_hold != NULL);
+    Q_ASSERT(m_fade != NULL);
+    Q_ASSERT(m_hold != NULL);
 
-	m_fade->refreshProperties();
-	m_hold->refreshProperties();
+    m_fade->refreshProperties();
+    m_hold->refreshProperties();
 
-	if (VirtualConsole::properties().slidersVisible() == true)
-		show();
-	else
-		hide();
+    if (VirtualConsole::properties().slidersVisible() == true)
+        show();
+    else
+        hide();
 
 }
 
@@ -79,12 +79,12 @@ void VCDockArea::refreshProperties()
 
 void VCDockArea::showEvent(QShowEvent* event)
 {
-	Q_UNUSED(event);
-	emit visibilityChanged(true);
+    Q_UNUSED(event);
+    emit visibilityChanged(true);
 }
 
 void VCDockArea::hideEvent(QHideEvent* event)
 {
-	Q_UNUSED(event);
-	emit visibilityChanged(false);
+    Q_UNUSED(event);
+    emit visibilityChanged(false);
 }

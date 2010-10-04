@@ -29,38 +29,38 @@ class Doc;
 
 class Scene_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void init();
-	void cleanup();
+    void initTestCase();
+    void init();
+    void cleanup();
 
-	void initial();
-	void values();
-	void fixtureRemoval();
-	void loadSuccess();
-	void loadWrongType();
-	void loadWrongRoot();
-	void save();
-	void copyFrom();
-	void createCopy();
+    void initial();
+    void values();
+    void fixtureRemoval();
+    void loadSuccess();
+    void loadWrongType();
+    void loadWrongRoot();
+    void save();
+    void copyFrom();
+    void createCopy();
 
-	void arm();
-	void armMissingFixture();
-	void armTooManyChannels();
+    void arm();
+    void armMissingFixture();
+    void armTooManyChannels();
 
-	void flashUnflash();
+    void flashUnflash();
 
-	void writeBusZero();
-	void writeBusOne();
-	void writeBusTwo();
-	void writeBusFiveChangeToZeroInTheMiddle();
-	void writeNonZeroStartingValues();
+    void writeBusZero();
+    void writeBusOne();
+    void writeBusTwo();
+    void writeBusFiveChangeToZeroInTheMiddle();
+    void writeNonZeroStartingValues();
 
 private:
-	Doc* m_doc;
-	QLCFixtureDefCache m_cache;
+    Doc* m_doc;
+    QLCFixtureDefCache m_cache;
 };
 
 #endif

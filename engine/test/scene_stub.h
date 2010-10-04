@@ -36,17 +36,17 @@ class Doc;
 
 class SceneStub : public Scene
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	SceneStub(Doc* doc);
-	~SceneStub();
+    SceneStub(Doc* doc);
+    ~SceneStub();
 
-	void setValue(t_channel address, uchar value);
-	void writeValues(QByteArray* universes,
-			 t_fixture_id fxi_id = Fixture::invalidId());
+    void setValue(t_channel address, uchar value);
+    void writeValues(QByteArray* universes,
+                     t_fixture_id fxi_id = Fixture::invalidId());
 
-	QMap <t_channel,uchar> m_values;
+    QMap <t_channel,uchar> m_values;
 };
 
 #endif

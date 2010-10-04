@@ -38,57 +38,57 @@ class Doc;
 class PaletteGenerator
 {
 public:
-	/**
-	 * Create a new PaletteGenerator instance.
-	 *
-	 * @param doc The Doc object that takes all generated functions
-	 * @param fxiList List of fixtures to create functions for
-	 */
-	PaletteGenerator(Doc* doc, const QList <Fixture*>& fxiList);
+    /**
+     * Create a new PaletteGenerator instance.
+     *
+     * @param doc The Doc object that takes all generated functions
+     * @param fxiList List of fixtures to create functions for
+     */
+    PaletteGenerator(Doc* doc, const QList <Fixture*>& fxiList);
 
-	/** Destructor */
-	~PaletteGenerator();
+    /** Destructor */
+    ~PaletteGenerator();
 
-	/** Create colour macros for each fixture's colour capabilities */
-	void createColours();
+    /** Create colour macros for each fixture's colour capabilities */
+    void createColours();
 
-	/** Create gobo macros for each fixture's gobo capabilities */
-	void createGobos();
+    /** Create gobo macros for each fixture's gobo capabilities */
+    void createGobos();
 
-	/** Create shutter macros for each fixture's shutter capabilities */
-	void createShutters();
+    /** Create shutter macros for each fixture's shutter capabilities */
+    void createShutters();
 
 protected:
-	/**
-	 * Create scenes for each capability found from fixture's channels
-	 * that belong to the given channel group. For example, if $group
-	 * is "Colour" and $fxi has a colour wheel that has red, green, blue
-	 * and cyan colours, this generates 4 scenes; one for each colour.
-	 *
-	 * All fixtures that contain similar features end up eventually in the
-	 * same scene so that running a "Cyan" scene will set all fixtures'
-	 * colour channels to Cyan value.
-	 *
-	 * @param fxi The fixture instance to create functions for
-	 * @param group
-	 */
-	void createGroupScenes(const Fixture* fxi, const QString& group);
+    /**
+     * Create scenes for each capability found from fixture's channels
+     * that belong to the given channel group. For example, if $group
+     * is "Colour" and $fxi has a colour wheel that has red, green, blue
+     * and cyan colours, this generates 4 scenes; one for each colour.
+     *
+     * All fixtures that contain similar features end up eventually in the
+     * same scene so that running a "Cyan" scene will set all fixtures'
+     * colour channels to Cyan value.
+     *
+     * @param fxi The fixture instance to create functions for
+     * @param group
+     */
+    void createGroupScenes(const Fixture* fxi, const QString& group);
 
-	/** Find fixture channels that belong to a certain group and have more
-	    than one capability (i.e. there's something make a palette from) */
-	QList <t_channel> findChannels(const Fixture* fixture,
-				       const QString& group) const;
+    /** Find fixture channels that belong to a certain group and have more
+        than one capability (i.e. there's something make a palette from) */
+    QList <t_channel> findChannels(const Fixture* fixture,
+                                   const QString& group) const;
 
-	/** Add generated scenes to Doc */
-	void addScenesToDoc();
+    /** Add generated scenes to Doc */
+    void addScenesToDoc();
 
-	/** Delete all scenes that haven't been added to Doc */
-	void purgeScenes();
+    /** Delete all scenes that haven't been added to Doc */
+    void purgeScenes();
 
 private:
-	Doc* m_doc;
-	QList <Fixture*> m_fixtures;
-	QHash <QString,Scene*> m_scenes;
+    Doc* m_doc;
+    QList <Fixture*> m_fixtures;
+    QHash <QString,Scene*> m_scenes;
 };
 
 #endif

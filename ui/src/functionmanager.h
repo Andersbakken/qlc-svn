@@ -40,134 +40,136 @@ class QMenu;
 
 class FunctionManager : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Get the FunctionManager singleton instance. Can be NULL. */
-	static FunctionManager* instance() { return s_instance; }
+    /** Get the FunctionManager singleton instance. Can be NULL. */
+    static FunctionManager* instance() {
+        return s_instance;
+    }
 
-	/** Create an instance with parent. Fails if s_instance is not NULL. */
-	static void create(QWidget* parent);
+    /** Create an instance with parent. Fails if s_instance is not NULL. */
+    static void create(QWidget* parent);
 
-	/** Normal public destructor */
-	~FunctionManager();
+    /** Normal public destructor */
+    ~FunctionManager();
 
 private:
-	Q_DISABLE_COPY(FunctionManager)
+    Q_DISABLE_COPY(FunctionManager)
 
 protected:
-	/** Protected constructor to prevent multiple instances. */
-	FunctionManager(QWidget* parent, Qt::WindowFlags flags = 0);
+    /** Protected constructor to prevent multiple instances. */
+    FunctionManager(QWidget* parent, Qt::WindowFlags flags = 0);
 
 protected slots:
-	void slotModeChanged(Doc::Mode mode);
-	void slotDocumentChanged(Doc* doc);
+    void slotModeChanged(Doc::Mode mode);
+    void slotDocumentChanged(Doc* doc);
 
 protected:
-	static FunctionManager* s_instance;
+    static FunctionManager* s_instance;
 
-	/*********************************************************************
-	 * Function tree
-	 *********************************************************************/
+    /*********************************************************************
+     * Function tree
+     *********************************************************************/
 public:
-	/** Update all functions to function tree */
-	void updateTree();
+    /** Update all functions to function tree */
+    void updateTree();
 
 protected:
-	/** Init function tree view */
-	void initTree();
+    /** Init function tree view */
+    void initTree();
 
-	/** Update the item's contents from the given function */
-	void updateFunctionItem(QTreeWidgetItem* item, Function* function);
+    /** Update the item's contents from the given function */
+    void updateFunctionItem(QTreeWidgetItem* item, Function* function);
 
-	/** Get an icon that represents the given function's type */
-	QIcon functionIcon(const Function* function) const;
+    /** Get an icon that represents the given function's type */
+    QIcon functionIcon(const Function* function) const;
 
-	/** Delete all currently selected functions */
-	void deleteSelectedFunctions();
+    /** Delete all currently selected functions */
+    void deleteSelectedFunctions();
 
 protected slots:
-	/** Function selection was changed */
-	void slotTreeSelectionChanged();
+    /** Function selection was changed */
+    void slotTreeSelectionChanged();
 
-	/** Right mouse button was clicked on function tree */
-	void slotTreeContextMenuRequested(const QPoint& pos);
+    /** Right mouse button was clicked on function tree */
+    void slotTreeContextMenuRequested(const QPoint& pos);
 
 protected:
-	QTreeWidget* m_tree;
+    QTreeWidget* m_tree;
 
 protected slots:
-	/** Set the selected bus to all selected functions */
-	void slotBusTriggered(QAction* action);
+    /** Set the selected bus to all selected functions */
+    void slotBusTriggered(QAction* action);
 
-	/*********************************************************************
-	 * Menus, toolbar & actions
-	 *********************************************************************/
+    /*********************************************************************
+     * Menus, toolbar & actions
+     *********************************************************************/
 protected:
-	void initActions();
-	void initMenu();
-	void initToolbar();
+    void initActions();
+    void initMenu();
+    void initToolbar();
 
 protected slots:
-	/** When bus name changes, its action must also be updated */
-	void slotBusNameChanged(quint32 id, const QString& name);
+    /** When bus name changes, its action must also be updated */
+    void slotBusNameChanged(quint32 id, const QString& name);
 
-	void slotAddScene();
-	void slotAddChaser();
-	void slotAddCollection();
-	void slotAddEFX();
-	void slotWizard();
+    void slotAddScene();
+    void slotAddChaser();
+    void slotAddCollection();
+    void slotAddEFX();
+    void slotWizard();
 
-	int slotEdit();
-	void slotClone();
-	void slotDelete();
-	void slotSelectAll();
-
-protected:
-	void updateActionStatus();
+    int slotEdit();
+    void slotClone();
+    void slotDelete();
+    void slotSelectAll();
 
 protected:
-	QMenu* m_addMenu;
-	QMenu* m_editMenu;
-	QMenu* m_busMenu;
-
-	QToolBar* m_toolbar;
-
-	QAction* m_addSceneAction;
-	QAction* m_addChaserAction;
-	QAction* m_addCollectionAction;
-	QAction* m_addEFXAction;
-	QAction* m_wizardAction;
-
-	QAction* m_cloneAction;
-	QAction* m_editAction;
-	QAction* m_deleteAction;
-	QAction* m_selectAllAction;
-
-	QActionGroup* m_busGroup;
-
-	/*********************************************************************
-	 * Helpers
-	 *********************************************************************/
-protected:
-	/** Create a copy of the given function */
-	void copyFunction(t_function_id fid);
-
-	/** Add a new function */
-	void addFunction(Function* function);
-
-	/** Open an editor for the given function */
-	int editFunction(Function* function);
+    void updateActionStatus();
 
 protected:
-	/** Don't listen to Doc::functionAdded signal when this is true */
-	bool m_blockAddFunctionSignal;
+    QMenu* m_addMenu;
+    QMenu* m_editMenu;
+    QMenu* m_busMenu;
 
-	/** Don't listen to Doc::functionRemoved signal when this is true */
-	bool m_blockRemoveFunctionSignal;
+    QToolBar* m_toolbar;
+
+    QAction* m_addSceneAction;
+    QAction* m_addChaserAction;
+    QAction* m_addCollectionAction;
+    QAction* m_addEFXAction;
+    QAction* m_wizardAction;
+
+    QAction* m_cloneAction;
+    QAction* m_editAction;
+    QAction* m_deleteAction;
+    QAction* m_selectAllAction;
+
+    QActionGroup* m_busGroup;
+
+    /*********************************************************************
+     * Helpers
+     *********************************************************************/
+protected:
+    /** Create a copy of the given function */
+    void copyFunction(t_function_id fid);
+
+    /** Add a new function */
+    void addFunction(Function* function);
+
+    /** Open an editor for the given function */
+    int editFunction(Function* function);
+
+protected:
+    /** Don't listen to Doc::functionAdded signal when this is true */
+    bool m_blockAddFunctionSignal;
+
+    /** Don't listen to Doc::functionRemoved signal when this is true */
+    bool m_blockRemoveFunctionSignal;
 };
 
 #endif

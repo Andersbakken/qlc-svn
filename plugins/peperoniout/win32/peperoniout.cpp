@@ -35,77 +35,77 @@
 
 void PeperoniOut::init()
 {
-	/* Load usbdmx.dll */
-	m_usbdmx = usbdmx_init();
-	if (m_usbdmx == NULL)
-	{
-		qWarning() << "Loading USBDMX.DLL failed.";
-	}
-	else if (USBDMX_DLL_VERSION_CHECK(m_usbdmx) == FALSE)
-	{
-		/* verify USBDMX dll version */
-		qWarning() << "USBDMX.DLL version does not match. Abort.";
-		qWarning() << "Found" << m_usbdmx->version() << "but expected"
-			   << USBDMX_DLL_VERSION;
-	}
-	else
-	{
-		qDebug() << "Using USBDMX.DLL version" << m_usbdmx->version();
-		rescanDevices();
-	}
+    /* Load usbdmx.dll */
+    m_usbdmx = usbdmx_init();
+    if (m_usbdmx == NULL)
+    {
+        qWarning() << "Loading USBDMX.DLL failed.";
+    }
+    else if (USBDMX_DLL_VERSION_CHECK(m_usbdmx) == FALSE)
+    {
+        /* verify USBDMX dll version */
+        qWarning() << "USBDMX.DLL version does not match. Abort.";
+        qWarning() << "Found" << m_usbdmx->version() << "but expected"
+        << USBDMX_DLL_VERSION;
+    }
+    else
+    {
+        qDebug() << "Using USBDMX.DLL version" << m_usbdmx->version();
+        rescanDevices();
+    }
 }
 
 void PeperoniOut::rescanDevices()
 {
-	USHORT id = 0;
+    USHORT id = 0;
 
-	if (m_usbdmx == NULL)
-		return;
+    if (m_usbdmx == NULL)
+        return;
 
-	for (id = 0; id < 32; id++)
-	{
-		HANDLE handle = NULL;
-		if (m_usbdmx->open(id, &handle) == TRUE)
-		{
-			/* We don't need the handle now. */
-			m_usbdmx->close(handle);
+    for (id = 0; id < 32; id++)
+    {
+        HANDLE handle = NULL;
+        if (m_usbdmx->open(id, &handle) == TRUE)
+        {
+            /* We don't need the handle now. */
+            m_usbdmx->close(handle);
 
-			if (id >= m_devices.size())
-			{
-				PeperoniDevice* device;
+            if (id >= m_devices.size())
+            {
+                PeperoniDevice* device;
 
-				/* Device was opened successfully and it's
-				   a new device. Append it to our list. */
-				device = new PeperoniDevice(this, m_usbdmx, id);
-				m_devices.append(device);
-			}
-			else
-			{
-				/* We already have a device with this id. Try
-				   the next one. */
-			}
-		}
-		else
-		{
-			/* This device ID doesn't exist and neither does any
-			   consecutive id, so we can stop looking. */
-			break;
-		}
-	}
+                /* Device was opened successfully and it's
+                   a new device. Append it to our list. */
+                device = new PeperoniDevice(this, m_usbdmx, id);
+                m_devices.append(device);
+            }
+            else
+            {
+                /* We already have a device with this id. Try
+                   the next one. */
+            }
+        }
+        else
+        {
+            /* This device ID doesn't exist and neither does any
+               consecutive id, so we can stop looking. */
+            break;
+        }
+    }
 
-	/* Remove those devices that aren't present. I.e. if our search
-	   stopped into an ID that is equal to or less than the current number
-	   of devices, one or more devices are no longer present. */
-	while (id < m_devices.size())
-		delete m_devices.takeLast();
+    /* Remove those devices that aren't present. I.e. if our search
+       stopped into an ID that is equal to or less than the current number
+       of devices, one or more devices are no longer present. */
+    while (id < m_devices.size())
+        delete m_devices.takeLast();
 
-	/* Because all devices have just plain and dull IDs, we can't know,
-	   whether the user removed one XSwitch and plugged in a Rodin1,
-	   that ends up getting the same ID. Therefore, force all known devices
-	   to reload their info again. */
-	QListIterator <PeperoniDevice*> it(m_devices);
-	while (it.hasNext() == true)
-		it.next()->rehash();
+    /* Because all devices have just plain and dull IDs, we can't know,
+       whether the user removed one XSwitch and plugged in a Rodin1,
+       that ends up getting the same ID. Therefore, force all known devices
+       to reload their info again. */
+    QListIterator <PeperoniDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        it.next()->rehash();
 }
 
 /*****************************************************************************
@@ -114,32 +114,32 @@ void PeperoniOut::rescanDevices()
 
 void PeperoniOut::open(quint32 output)
 {
-	if (m_usbdmx == NULL)
-		return;
+    if (m_usbdmx == NULL)
+        return;
 
-	if (output < quint32(m_devices.size()))
-		m_devices.at(output)->open();
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->open();
 }
 
 void PeperoniOut::close(quint32 output)
 {
-	if (m_usbdmx == NULL)
-		return;
+    if (m_usbdmx == NULL)
+        return;
 
-	if (output < quint32(m_devices.size()))
-		m_devices.at(output)->close();
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->close();
 }
 
 QStringList PeperoniOut::outputs()
 {
-	QStringList list;
-	int i = 1;
+    QStringList list;
+    int i = 1;
 
-	QListIterator <PeperoniDevice*> it(m_devices);
-	while (it.hasNext() == true)
-		list << QString("%1: %2").arg(i++).arg(it.next()->name());
+    QListIterator <PeperoniDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << QString("%1: %2").arg(i++).arg(it.next()->name());
 
-	return list;
+    return list;
 }
 
 /*****************************************************************************
@@ -148,7 +148,7 @@ QStringList PeperoniOut::outputs()
 
 QString PeperoniOut::name()
 {
-	return QString("Peperoni Output");
+    return QString("Peperoni Output");
 }
 
 /*****************************************************************************
@@ -157,11 +157,11 @@ QString PeperoniOut::name()
 
 void PeperoniOut::configure()
 {
-	int r = QMessageBox::question(NULL, name(),
-				tr("Do you wish to re-scan your hardware?"),
-				QMessageBox::Yes, QMessageBox::No);
-	if (r == QMessageBox::Yes)
-		rescanDevices();
+    int r = QMessageBox::question(NULL, name(),
+                                  tr("Do you wish to re-scan your hardware?"),
+                                  QMessageBox::Yes, QMessageBox::No);
+    if (r == QMessageBox::Yes)
+        rescanDevices();
 }
 
 /*****************************************************************************
@@ -170,47 +170,47 @@ void PeperoniOut::configure()
 
 QString PeperoniOut::infoText(quint32 output)
 {
-	QString str;
+    QString str;
 
-	str += QString("<HTML>");
-	str += QString("<HEAD>");
-	str += QString("<TITLE>%1</TITLE>").arg(name());
-	str += QString("</HEAD>");
-	str += QString("<BODY>");
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
 
-	if (m_usbdmx == NULL)
-	{
-		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("The shared library usbdmx.dll could not be ");
-		str += QString("found or is too old to be used with QLC. ");
-		str += QString("You can request a driver package from ");
-		str += QString("<address>www.peperoni-light.de</address> ");
-		str += QString("for your Peperoni lighting products.");
-		str += QString("</P>");
-	}
-	else if (output == KOutputInvalid)
-	{
-		str += QString("<H3>%1</H3>").arg(name());
-		str += QString("<P>");
-		str += QString("This plugin provides DMX output support for ");
-		str += QString("devices manufactured by Peperoni Light: ");
-		str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
-		str += QString("USBDMX21. See ");
-		str += QString("<a href=\"http://www.peperoni-light.de\">");
-		str += QString("http://www.peperoni-light.de</a> for more ");
-		str += QString("information. ");
-		str += QString("</P>");
-	}
-	else if (output < quint32(m_devices.size()))
-	{
-		str += m_devices.at(output)->infoText();
-	}
+    if (m_usbdmx == NULL)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("The shared library usbdmx.dll could not be ");
+        str += QString("found or is too old to be used with QLC. ");
+        str += QString("You can request a driver package from ");
+        str += QString("<address>www.peperoni-light.de</address> ");
+        str += QString("for your Peperoni lighting products.");
+        str += QString("</P>");
+    }
+    else if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support for ");
+        str += QString("devices manufactured by Peperoni Light: ");
+        str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
+        str += QString("USBDMX21. See ");
+        str += QString("<a href=\"http://www.peperoni-light.de\">");
+        str += QString("http://www.peperoni-light.de</a> for more ");
+        str += QString("information. ");
+        str += QString("</P>");
+    }
+    else if (output < quint32(m_devices.size()))
+    {
+        str += m_devices.at(output)->infoText();
+    }
 
-	str += QString("</BODY>");
-	str += QString("</HTML>");
+    str += QString("</BODY>");
+    str += QString("</HTML>");
 
-	return str;
+    return str;
 }
 
 /*****************************************************************************
@@ -219,8 +219,8 @@ QString PeperoniOut::infoText(quint32 output)
 
 void PeperoniOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-	if (output < quint32(m_devices.size()))
-		m_devices.at(output)->outputDMX(universe);
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->outputDMX(universe);
 }
 
 /*****************************************************************************

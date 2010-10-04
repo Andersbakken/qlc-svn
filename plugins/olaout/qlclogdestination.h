@@ -32,9 +32,9 @@ namespace ola {
 class QLCLogDestination : public LogDestination
 {
 public:
-  void Write(log_level level, const string &log_line);
+    void Write(log_level level, const string &log_line);
 private:
-  static const string PREFIX;
+    static const string PREFIX;
 };
 
 } // ola

@@ -13,7 +13,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-        
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
@@ -26,22 +26,22 @@
 
 class QLCChannel_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void groupList();
-	void name();
-	void group();
-	void controlByte();
-	void searchCapabilityByValue();
-	void searchCapabilityByName();
-	void addCapability();
-	void removeCapability();
-	void sortCapabilities();
-	void copy();
-	void load();
-	void loadWrongRoot();
-	void save();
+    void groupList();
+    void name();
+    void group();
+    void controlByte();
+    void searchCapabilityByValue();
+    void searchCapabilityByName();
+    void addCapability();
+    void removeCapability();
+    void sortCapabilities();
+    void copy();
+    void load();
+    void loadWrongRoot();
+    void save();
 };
 
 #endif

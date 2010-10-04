@@ -29,23 +29,23 @@ class QPaintEvent;
 
 class GeneratorArea : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	GeneratorArea(QWidget* parent);
-	~GeneratorArea();
+    GeneratorArea(QWidget* parent);
+    ~GeneratorArea();
 
-	/** Set the points to draw */
-	void setPoints(const QPolygon& points);
+    /** Set the points to draw */
+    void setPoints(const QPolygon& points);
 
 private:
-	Q_DISABLE_COPY(GeneratorArea)
+    Q_DISABLE_COPY(GeneratorArea)
 
 protected:
-	void paintEvent(QPaintEvent* event);
+    void paintEvent(QPaintEvent* event);
 
-	/** The array of points to draw */
-	QPolygon m_points;
+    /** The array of points to draw */
+    QPolygon m_points;
 };
 
 #endif

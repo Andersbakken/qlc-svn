@@ -28,32 +28,32 @@
 
 void DummyOutPlugin_Test::dummyMethods()
 {
-	// Just a crash test for each useless function
-	DummyOutPlugin* plugin = new DummyOutPlugin();
-	plugin->open(12345);
-	plugin->close(54321);
-	plugin->configure();
-	plugin->outputDMX(0, QByteArray(512, UCHAR_MAX));
-	plugin->outputDMX(UINT_MAX, QByteArray(512, UCHAR_MAX));
-	delete plugin;
+    // Just a crash test for each useless function
+    DummyOutPlugin* plugin = new DummyOutPlugin();
+    plugin->open(12345);
+    plugin->close(54321);
+    plugin->configure();
+    plugin->outputDMX(0, QByteArray(512, UCHAR_MAX));
+    plugin->outputDMX(UINT_MAX, QByteArray(512, UCHAR_MAX));
+    delete plugin;
 }
 
 void DummyOutPlugin_Test::outputs()
 {
-	DummyOutPlugin* plugin = new DummyOutPlugin();
-	QStringList outputs(plugin->outputs());
-	QCOMPARE(outputs.size(), int(KUniverseCount));
-	for (int i = 0; i < outputs.size(); i++)
-		QCOMPARE(outputs[i], QString("%1: Dummy Out %1").arg(i + 1));
-	delete plugin;
+    DummyOutPlugin* plugin = new DummyOutPlugin();
+    QStringList outputs(plugin->outputs());
+    QCOMPARE(outputs.size(), int(KUniverseCount));
+    for (int i = 0; i < outputs.size(); i++)
+        QCOMPARE(outputs[i], QString("%1: Dummy Out %1").arg(i + 1));
+    delete plugin;
 }
 
 void DummyOutPlugin_Test::infoText()
 {
-	DummyOutPlugin* plugin = new DummyOutPlugin();
-	QString info(plugin->infoText(KInputInvalid));
-	QVERIFY(info.contains(QString("<H3>%1</H3>").arg(plugin->name())));
-	info = plugin->infoText(0);
-	QVERIFY(info.contains(QString("<H3>%1 1</H3>").arg(plugin->name())));
-	delete plugin;
+    DummyOutPlugin* plugin = new DummyOutPlugin();
+    QString info(plugin->infoText(KInputInvalid));
+    QVERIFY(info.contains(QString("<H3>%1</H3>").arg(plugin->name())));
+    info = plugin->infoText(0);
+    QVERIFY(info.contains(QString("<H3>%1 1</H3>").arg(plugin->name())));
+    delete plugin;
 }

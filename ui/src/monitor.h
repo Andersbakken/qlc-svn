@@ -41,108 +41,114 @@ class Doc;
 
 class Monitor : public QWidget
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(Monitor)
+    Q_OBJECT
+    Q_DISABLE_COPY(Monitor)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Get the monitor singleton instance. Can be NULL. */
-	static Monitor* instance() { return s_instance; }
+    /** Get the monitor singleton instance. Can be NULL. */
+    static Monitor* instance() {
+        return s_instance;
+    }
 
-	/** Create a Monitor with parent. Fails if s_instance is not NULL. */
-	static void create(QWidget* parent);
+    /** Create a Monitor with parent. Fails if s_instance is not NULL. */
+    static void create(QWidget* parent);
 
-	/** Normal public destructor */
-	~Monitor();
+    /** Normal public destructor */
+    ~Monitor();
 
 protected:
-	void loadSettings();
-	void saveSettings();
+    void loadSettings();
+    void saveSettings();
 
-	/** Protected constructor to prevent multiple instances. */
-	Monitor(QWidget* parent, Qt::WindowFlags f = 0);
+    /** Protected constructor to prevent multiple instances. */
+    Monitor(QWidget* parent, Qt::WindowFlags f = 0);
 
 protected:
-	/** The singleton Monitor instance */
-	static Monitor* s_instance;
+    /** The singleton Monitor instance */
+    static Monitor* s_instance;
 
-	/*********************************************************************
-	 * Channel & Value styles
-	 *********************************************************************/
+    /*********************************************************************
+     * Channel & Value styles
+     *********************************************************************/
 public:
-	enum ChannelStyle { DMXChannels, RelativeChannels };
-	enum ValueStyle { DMXValues, PercentageValues };
+    enum ChannelStyle { DMXChannels, RelativeChannels };
+    enum ValueStyle { DMXValues, PercentageValues };
 
-	/** Get the style used to draw DMX values in monitor fixtures */
-	ValueStyle valueStyle() const { return m_valueStyle; }
+    /** Get the style used to draw DMX values in monitor fixtures */
+    ValueStyle valueStyle() const {
+        return m_valueStyle;
+    }
 
-	/** Get the style used to draw channel numbers in monitor fixtures */
-	ChannelStyle channelStyle() const { return m_channelStyle; }
+    /** Get the style used to draw channel numbers in monitor fixtures */
+    ChannelStyle channelStyle() const {
+        return m_channelStyle;
+    }
 
 private:
-	ValueStyle m_valueStyle;
-	ChannelStyle m_channelStyle;
+    ValueStyle m_valueStyle;
+    ChannelStyle m_channelStyle;
 
-	/*********************************************************************
-	 * Menu
-	 *********************************************************************/
+    /*********************************************************************
+     * Menu
+     *********************************************************************/
 protected:
-	/** Create tool bar */
-	void initToolBar();
+    /** Create tool bar */
+    void initToolBar();
 
 protected slots:
-	/** Menu action slot for font selection */
-	void slotChooseFont();
+    /** Menu action slot for font selection */
+    void slotChooseFont();
 
-	/** Menu action slot for channel style selection */
-	void slotChannelStyleTriggered();
+    /** Menu action slot for channel style selection */
+    void slotChannelStyleTriggered();
 
-	/** Menu action slot for value style selection */
-	void slotValueStyleTriggered();
+    /** Menu action slot for value style selection */
+    void slotValueStyleTriggered();
 
-	/********************************************************************
-	 * Monitor Fixtures
-	 ********************************************************************/
+    /********************************************************************
+     * Monitor Fixtures
+     ********************************************************************/
 public:
-	/** Update monitor fixture labels */
-	void updateFixtureLabelStyles();
+    /** Update monitor fixture labels */
+    void updateFixtureLabelStyles();
 
 protected:
-	/** Create a new MonitorFixture* and append it to the layout */
-	void createMonitorFixture(Fixture* fxi);
+    /** Create a new MonitorFixture* and append it to the layout */
+    void createMonitorFixture(Fixture* fxi);
 
 protected slots:
-	/** Slot for toplevel document changes (to rehash contents) */
-	void slotDocumentChanged(Doc* doc);
+    /** Slot for toplevel document changes (to rehash contents) */
+    void slotDocumentChanged(Doc* doc);
 
-	/** Slot for fixture additions (to append the new fixture to layout) */
-	void slotFixtureAdded(t_fixture_id fxi_id);
+    /** Slot for fixture additions (to append the new fixture to layout) */
+    void slotFixtureAdded(t_fixture_id fxi_id);
 
-	/** Slot for fixture removals (to remove the fixture from layout) */
-	void slotFixtureChanged(t_fixture_id fxi_id);
+    /** Slot for fixture removals (to remove the fixture from layout) */
+    void slotFixtureChanged(t_fixture_id fxi_id);
 
 signals:
-	void channelStyleChanged(Monitor::ChannelStyle style);
-	void valueStyleChanged(Monitor::ValueStyle style);
+    void channelStyleChanged(Monitor::ChannelStyle style);
+    void valueStyleChanged(Monitor::ValueStyle style);
 
 protected:
-	QScrollArea* m_scrollArea;
-	QWidget* m_monitorWidget;
-	MonitorLayout* m_monitorLayout;
-	QList <MonitorFixture*> m_monitorFixtures;
+    QScrollArea* m_scrollArea;
+    QWidget* m_monitorWidget;
+    MonitorLayout* m_monitorLayout;
+    QList <MonitorFixture*> m_monitorFixtures;
 
-	/*********************************************************************
-	 * Timer
-	 *********************************************************************/
+    /*********************************************************************
+     * Timer
+     *********************************************************************/
 protected:
-	/** Timer that fires every 1/32th of a second and gets new values */
-	void timerEvent(QTimerEvent* e);
+    /** Timer that fires every 1/32th of a second and gets new values */
+    void timerEvent(QTimerEvent* e);
 
 protected:
-	/** Timer ID */
-	int m_timer;
+    /** Timer ID */
+    int m_timer;
 };
 
 #endif

@@ -68,22 +68,22 @@ class QByteArray;
 class SceneChannel
 {
 public:
-	SceneChannel();
-	SceneChannel(const SceneChannel& sch);
-	~SceneChannel();
+    SceneChannel();
+    SceneChannel(const SceneChannel& sch);
+    ~SceneChannel();
 
 public:
-	/** The universe and channel that this object refers to */
-	t_channel address;
+    /** The universe and channel that this object refers to */
+    t_channel address;
 
-	/** The value of the channel where a scene started fading from */
-	qint32 start;
+    /** The value of the channel where a scene started fading from */
+    qint32 start;
 
-	/** The current value set by a scene */
-	qint32 current;
+    /** The current value set by a scene */
+    qint32 current;
 
-	/** The target value to eventually fade to */
-	qint32 target;
+    /** The target value to eventually fade to */
+    qint32 target;
 };
 
 /*****************************************************************************
@@ -111,36 +111,36 @@ public:
 class SceneValue
 {
 public:
-	/** Normal constructor */
-	SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
-		   t_channel channel = KChannelInvalid,
-		   uchar value = 0);
+    /** Normal constructor */
+    SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
+               t_channel channel = KChannelInvalid,
+               uchar value = 0);
 
-	/** Copy constructor */
-	SceneValue(const SceneValue& scv);
+    /** Copy constructor */
+    SceneValue(const SceneValue& scv);
 
-	/** Destructor */
-	~SceneValue();
+    /** Destructor */
+    ~SceneValue();
 
-	/** A SceneValue is not valid if .fxi == Fixture::invalidId() */
-	bool isValid();
+    /** A SceneValue is not valid if .fxi == Fixture::invalidId() */
+    bool isValid();
 
-	/** Comparator function for qSort() */
-	bool operator< (const SceneValue& scv) const;
+    /** Comparator function for qSort() */
+    bool operator< (const SceneValue& scv) const;
 
-	/** Comparator function for matching SceneValues */
-	bool operator== (const SceneValue& scv) const;
+    /** Comparator function for matching SceneValues */
+    bool operator== (const SceneValue& scv) const;
 
-	/** Load this SceneValue's contents from an XML tag */
-	bool loadXML(const QDomElement* tag);
+    /** Load this SceneValue's contents from an XML tag */
+    bool loadXML(const QDomElement* tag);
 
-	/** Save this SceneValue to an XML document */
-	bool saveXML(QDomDocument* doc, QDomElement* scene_root) const;
+    /** Save this SceneValue to an XML document */
+    bool saveXML(QDomDocument* doc, QDomElement* scene_root) const;
 
 public:
-	t_fixture_id fxi;
-	t_channel channel;
-	uchar value;
+    t_fixture_id fxi;
+    t_channel channel;
+    uchar value;
 };
 
 /*****************************************************************************
@@ -159,146 +159,150 @@ public:
  */
 class Scene : public Function, public DMXSource
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(Scene)
+    Q_OBJECT
+    Q_DISABLE_COPY(Scene)
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/**
-	 * Construct a new scene function, with given parent object. If the
-	 * parent is not a Doc* object, the debug build asserts.
-	 *
-	 * @param doc The parent object who owns the scene
-	 */
-	Scene(Doc* doc);
+    /**
+     * Construct a new scene function, with given parent object. If the
+     * parent is not a Doc* object, the debug build asserts.
+     *
+     * @param doc The parent object who owns the scene
+     */
+    Scene(Doc* doc);
 
-	/**
-	 * Destroy the scene
-	 */
-	~Scene();
+    /**
+     * Destroy the scene
+     */
+    ~Scene();
 
-	/*********************************************************************
-	 * Function type
-	 *********************************************************************/
+    /*********************************************************************
+     * Function type
+     *********************************************************************/
 public:
-	/** @reimpl */
-	Function::Type type() const;
+    /** @reimpl */
+    Function::Type type() const;
 
-	/*********************************************************************
-	 * Copying
-	 *********************************************************************/
+    /*********************************************************************
+     * Copying
+     *********************************************************************/
 public:
-	/** @reimpl */
-	Function* createCopy(Doc* doc);
+    /** @reimpl */
+    Function* createCopy(Doc* doc);
 
-	/** @reimpl */
-	bool copyFrom(const Function* function);
+    /** @reimpl */
+    bool copyFrom(const Function* function);
 
-	/*********************************************************************
-	 * Values
-	 *********************************************************************/
+    /*********************************************************************
+     * Values
+     *********************************************************************/
 public:
-	/**
-	 * Set the value of one fixture channel, using a predefined SceneValue
-	 */
-	void setValue(const SceneValue& scv);
+    /**
+     * Set the value of one fixture channel, using a predefined SceneValue
+     */
+    void setValue(const SceneValue& scv);
 
-	/**
-	 * Set the value of one fixture channel, specify parameters separately
-	 */
-	void setValue(t_fixture_id fxi, t_channel ch, uchar value);
+    /**
+     * Set the value of one fixture channel, specify parameters separately
+     */
+    void setValue(t_fixture_id fxi, t_channel ch, uchar value);
 
-	/**
-	 * Clear the value of one fixture channel
-	 */
-	void unsetValue(t_fixture_id fxi, t_channel ch);
+    /**
+     * Clear the value of one fixture channel
+     */
+    void unsetValue(t_fixture_id fxi, t_channel ch);
 
-	/**
-	 * Get the value of one fixture channel
-	 */
-	uchar value(t_fixture_id fxi, t_channel ch);
+    /**
+     * Get the value of one fixture channel
+     */
+    uchar value(t_fixture_id fxi, t_channel ch);
 
-	/**
-	 * Get a list of values in this scene
-	 */
-	QList <SceneValue> values() const { return m_values; }
+    /**
+     * Get a list of values in this scene
+     */
+    QList <SceneValue> values() const {
+        return m_values;
+    }
 
 protected:
-	QList <SceneValue> m_values;
+    QList <SceneValue> m_values;
 
-	/*********************************************************************
-	 * Fixtures
-	 *********************************************************************/
+    /*********************************************************************
+     * Fixtures
+     *********************************************************************/
 public slots:
-	void slotFixtureRemoved(t_fixture_id fxi_id);
+    void slotFixtureRemoved(t_fixture_id fxi_id);
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
 public:
-	/** @reimpl */
-	bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
+    /** @reimpl */
+    bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
-	/** @reimpl */
-	bool loadXML(const QDomElement* root);
+    /** @reimpl */
+    bool loadXML(const QDomElement* root);
 
-	/*********************************************************************
-	 * Flash
-	 *********************************************************************/
+    /*********************************************************************
+     * Flash
+     *********************************************************************/
 public:
-	/** @reimpl */
-	void flash(MasterTimer* timer);
+    /** @reimpl */
+    void flash(MasterTimer* timer);
 
-	/** @reimpl */
-	void unFlash(MasterTimer* timer);
+    /** @reimpl */
+    void unFlash(MasterTimer* timer);
 
-	/** @reimpl from DMXSource */
-	void writeDMX(MasterTimer* timer, QByteArray* universes);
+    /** @reimpl from DMXSource */
+    void writeDMX(MasterTimer* timer, QByteArray* universes);
 
-	/*********************************************************************
-	 * Running
-	 *********************************************************************/
+    /*********************************************************************
+     * Running
+     *********************************************************************/
 public:
-	/** @reimpl */
-	void arm();
+    /** @reimpl */
+    void arm();
 
-	/** @reimpl */
-	void disarm();
+    /** @reimpl */
+    void disarm();
 
-	/** @reimpl */
-	void write(MasterTimer* timer, QByteArray* universes);
+    /** @reimpl */
+    void write(MasterTimer* timer, QByteArray* universes);
 
-	/**
-	 * Write the scene values to OutputMap. If fxi_id is given, writes
-	 * values only for the specified fixture.
-	 *
-	 * The scene must be armed with arm() before calling this function or
-	 * otherwise nothing will be written.
-	 */
-	virtual void writeValues(QByteArray* universes,
-				 t_fixture_id fxi_id = Fixture::invalidId());
+    /**
+     * Write the scene values to OutputMap. If fxi_id is given, writes
+     * values only for the specified fixture.
+     *
+     * The scene must be armed with arm() before calling this function or
+     * otherwise nothing will be written.
+     */
+    virtual void writeValues(QByteArray* universes,
+                             t_fixture_id fxi_id = Fixture::invalidId());
 
-	/**
-	 * Write zeros for all involved channels to OutputMap. If fxi_id is
-	 * given, writes zeros only for the specified fixture.
-	 *
-	 * The scene must be armed with arm() before calling this function or
-	 * otherwise nothing will be written.
-	 */
-	virtual void writeZeros(QByteArray* universes,
-				t_fixture_id fxi_id = Fixture::invalidId());
+    /**
+     * Write zeros for all involved channels to OutputMap. If fxi_id is
+     * given, writes zeros only for the specified fixture.
+     *
+     * The scene must be armed with arm() before calling this function or
+     * otherwise nothing will be written.
+     */
+    virtual void writeZeros(QByteArray* universes,
+                            t_fixture_id fxi_id = Fixture::invalidId());
 
-	/** Get a list of channels that have been armed for running */
-	QList <SceneChannel> armedChannels() const { return m_armedChannels; }
+    /** Get a list of channels that have been armed for running */
+    QList <SceneChannel> armedChannels() const {
+        return m_armedChannels;
+    }
 
 protected:
-	/** Calculate channel values for the next step. */
-	uchar nextValue(SceneChannel* sch);
+    /** Calculate channel values for the next step. */
+    uchar nextValue(SceneChannel* sch);
 
 protected:
-	QList <SceneChannel> m_armedChannels;
+    QList <SceneChannel> m_armedChannels;
 };
 
 #endif

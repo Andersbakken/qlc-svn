@@ -35,65 +35,67 @@ class QString;
 
 class VCFrame : public VCWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	VCFrame(QWidget* parent);
-	virtual ~VCFrame();
+    VCFrame(QWidget* parent);
+    virtual ~VCFrame();
 
-	void init(bool bottomFrame = false);
+    void init(bool bottomFrame = false);
 
-	/* Check if this is the virtual console's draw area */
-	bool isBottomFrame();
+    /* Check if this is the virtual console's draw area */
+    bool isBottomFrame();
 
 private:
-	/** Prevent copying thru operator= or copy constructor since QObject's
-	    parental properties get confused when copied. */
-	Q_DISABLE_COPY(VCFrame)
+    /** Prevent copying thru operator= or copy constructor since QObject's
+        parental properties get confused when copied. */
+    Q_DISABLE_COPY(VCFrame)
 
-	/*********************************************************************
-	 * Clipboard
-	 *********************************************************************/
+    /*********************************************************************
+     * Clipboard
+     *********************************************************************/
 public:
-	/** Create a copy of this widget into the given parent */
-	VCWidget* createCopy(VCWidget* parent);
+    /** Create a copy of this widget into the given parent */
+    VCWidget* createCopy(VCWidget* parent);
 
 protected:
-	/** Copy the contents for this widget from another widget */
-	bool copyFrom(VCWidget* widget);
+    /** Copy the contents for this widget from another widget */
+    bool copyFrom(VCWidget* widget);
 
-	/*********************************************************************
-	 * Capability to have children
-	 *********************************************************************/
+    /*********************************************************************
+     * Capability to have children
+     *********************************************************************/
 public:
-	/** VCFrame can hold children */
-	bool canHaveChildren() const { return true; }
+    /** VCFrame can hold children */
+    bool canHaveChildren() const {
+        return true;
+    }
 
-	/*********************************************************************
-	 * Load & Save
-	 *********************************************************************/
+    /*********************************************************************
+     * Load & Save
+     *********************************************************************/
 public:
-	static bool loader(const QDomElement* root, QWidget* parent);
-	bool loadXML(const QDomElement* vc_root);
-	bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+    static bool loader(const QDomElement* root, QWidget* parent);
+    bool loadXML(const QDomElement* vc_root);
+    bool saveXML(QDomDocument* doc, QDomElement* vc_root);
 
-	/*********************************************************************
-	 * Custom menu
-	 *********************************************************************/
+    /*********************************************************************
+     * Custom menu
+     *********************************************************************/
 public:
-	/** Get a custom menu specific to this widget. Ownership is transferred
-	    to the caller, which must delete the returned menu pointer. */
-	virtual QMenu* customMenu(QMenu* parentMenu);
+    /** Get a custom menu specific to this widget. Ownership is transferred
+        to the caller, which must delete the returned menu pointer. */
+    virtual QMenu* customMenu(QMenu* parentMenu);
 
-	/*********************************************************************
-	 * Event handlers
-	 *********************************************************************/
+    /*********************************************************************
+     * Event handlers
+     *********************************************************************/
 protected:
-	void handleWidgetSelection(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
+    void handleWidgetSelection(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
 };
 
 #endif

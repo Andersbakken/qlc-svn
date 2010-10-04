@@ -40,117 +40,123 @@ class QDomElement;
 
 class QLCInputProfile
 {
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/** Standard constructor */
-	QLCInputProfile();
+    /** Standard constructor */
+    QLCInputProfile();
 
-	/** Copy constructor */
-	QLCInputProfile(const QLCInputProfile& profile);
+    /** Copy constructor */
+    QLCInputProfile(const QLCInputProfile& profile);
 
-	/** Destructor */
-	virtual ~QLCInputProfile();
+    /** Destructor */
+    virtual ~QLCInputProfile();
 
-	/** Assignment operator */
-	QLCInputProfile& operator=(const QLCInputProfile& profile);
+    /** Assignment operator */
+    QLCInputProfile& operator=(const QLCInputProfile& profile);
 
-	/********************************************************************
-	 * Profile information
-	 ********************************************************************/
+    /********************************************************************
+     * Profile information
+     ********************************************************************/
 public:
-	void setManufacturer(const QString& manufacturer);
-	QString manufacturer() const { return m_manufacturer; }
+    void setManufacturer(const QString& manufacturer);
+    QString manufacturer() const {
+        return m_manufacturer;
+    }
 
-	void setModel(const QString& model);
-	QString model() const { return m_model; }
+    void setModel(const QString& model);
+    QString model() const {
+        return m_model;
+    }
 
-	/** Get the profile name (manufacturer - model) */
-	QString name() const;
+    /** Get the profile name (manufacturer - model) */
+    QString name() const;
 
-	/** Get the path where the profile is stored in. Don't use
-	    this as a unique ID since this varies between platforms. */
-	QString path() const;
+    /** Get the path where the profile is stored in. Don't use
+        this as a unique ID since this varies between platforms. */
+    QString path() const;
 
 protected:
-	QString m_manufacturer;
-	QString m_model;
-	QString m_path;
+    QString m_manufacturer;
+    QString m_model;
+    QString m_path;
 
-	/********************************************************************
-	 * Channels
-	 ********************************************************************/
+    /********************************************************************
+     * Channels
+     ********************************************************************/
 public:
-	/**
-	 * Insert a new channel to this profile to the given channel number
-	 * and claim ownership of the channel. If the profile already contains
-	 * the given channel, the call fails.
-	 *
-	 * @param channel The channel number to add to.
-	 * @param ich The input channel to add.
-	 * @return true if the channel was inserted, otherwise false.
-	 */
-	bool insertChannel(quint32 channel, QLCInputChannel* ich);
+    /**
+     * Insert a new channel to this profile to the given channel number
+     * and claim ownership of the channel. If the profile already contains
+     * the given channel, the call fails.
+     *
+     * @param channel The channel number to add to.
+     * @param ich The input channel to add.
+     * @return true if the channel was inserted, otherwise false.
+     */
+    bool insertChannel(quint32 channel, QLCInputChannel* ich);
 
-	/**
-	 * Remove the given channel mapping from this profile. Also deletes the
-	 * channel instance.
-	 *
-	 * @param channel The channel number to remove & delete.
-	 */
-	bool removeChannel(quint32 channel);
+    /**
+     * Remove the given channel mapping from this profile. Also deletes the
+     * channel instance.
+     *
+     * @param channel The channel number to remove & delete.
+     */
+    bool removeChannel(quint32 channel);
 
-	/**
-	 * Re-map the given channel to a different channel number. If another
-	 * channel is already at the new channel number or the given input
-	 * channel object is not a member of the profile, this method fails.
-	 *
-	 * @param ich The input channel to re-map.
-	 * @param number The new channel number to re-map to.
-	 * @return true if successful, otherwise false.
-	 */
-	bool remapChannel(QLCInputChannel* ich, quint32 number);
+    /**
+     * Re-map the given channel to a different channel number. If another
+     * channel is already at the new channel number or the given input
+     * channel object is not a member of the profile, this method fails.
+     *
+     * @param ich The input channel to re-map.
+     * @param number The new channel number to re-map to.
+     * @return true if successful, otherwise false.
+     */
+    bool remapChannel(QLCInputChannel* ich, quint32 number);
 
-	/**
-	 * Get a channel object by a channel number.
-	 *
-	 * @param channel The number of the channel to get.
-	 * @return A QLCInputChannel* or NULL if not found.
-	 */
-	QLCInputChannel* channel(quint32 channel) const;
+    /**
+     * Get a channel object by a channel number.
+     *
+     * @param channel The number of the channel to get.
+     * @return A QLCInputChannel* or NULL if not found.
+     */
+    QLCInputChannel* channel(quint32 channel) const;
 
-	/**
-	 * Get the channel number for the given input channel.
-	 *
-	 * @param channel The channel whose number to get
-	 * @return Channel number or KInputChannelInvalid if not found
-	 */
-	quint32 channelNumber(const QLCInputChannel* channel) const;
+    /**
+     * Get the channel number for the given input channel.
+     *
+     * @param channel The channel whose number to get
+     * @return Channel number or KInputChannelInvalid if not found
+     */
+    quint32 channelNumber(const QLCInputChannel* channel) const;
 
-	/**
-	 * Get available channels in a non-modifiable map
-	 */
-	const QMap <quint32, QLCInputChannel*> channels() const
-		{ return m_channels; }
+    /**
+     * Get available channels in a non-modifiable map
+     */
+    const QMap <quint32, QLCInputChannel*> channels() const
+    {
+        return m_channels;
+    }
 
 protected:
-	/** Channel objects present in this profile. This is a QMap and not a
-	    QList because not all channels might be present. */
-	QMap <quint32, QLCInputChannel*> m_channels;
+    /** Channel objects present in this profile. This is a QMap and not a
+        QList because not all channels might be present. */
+    QMap <quint32, QLCInputChannel*> m_channels;
 
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
+    /********************************************************************
+     * Load & Save
+     ********************************************************************/
 public:
-	/** Load an input profile from the given path */
-	static QLCInputProfile* loader(const QString& path);
+    /** Load an input profile from the given path */
+    static QLCInputProfile* loader(const QString& path);
 
-	/** Save an input profile into a given file name */
-	bool saveXML(const QString& fileName);
+    /** Save an input profile into a given file name */
+    bool saveXML(const QString& fileName);
 
-	/** Load an input profile from the given document */
-	bool loadXML(const QDomDocument* doc);
+    /** Load an input profile from the given document */
+    bool loadXML(const QDomDocument* doc);
 };
 
 #endif

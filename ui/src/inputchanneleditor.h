@@ -32,37 +32,43 @@ class QLCInputChannel;
 
 class InputChannelEditor : public QDialog, public Ui_InputChannelEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	InputChannelEditor(QWidget* parent,
-			   const QLCInputProfile* profile,
-			   const QLCInputChannel* channel);
-	virtual ~InputChannelEditor();
+    InputChannelEditor(QWidget* parent,
+                       const QLCInputProfile* profile,
+                       const QLCInputChannel* channel);
+    virtual ~InputChannelEditor();
 
 private:
-	Q_DISABLE_COPY(InputChannelEditor)
+    Q_DISABLE_COPY(InputChannelEditor)
 
-	/********************************************************************
-	 * Properties
-	 ********************************************************************/
+    /********************************************************************
+     * Properties
+     ********************************************************************/
 public:
-	quint32 channel() const { return m_channel; }
-	QString name() const { return m_name; }
-	QLCInputChannel::Type type() const { return m_type; }
+    quint32 channel() const {
+        return m_channel;
+    }
+    QString name() const {
+        return m_name;
+    }
+    QLCInputChannel::Type type() const {
+        return m_type;
+    }
 
 protected slots:
-	void slotNumberChanged(int number);
-	void slotNameEdited(const QString& text);
-	void slotTypeActivated(const QString& text);
+    void slotNumberChanged(int number);
+    void slotNameEdited(const QString& text);
+    void slotTypeActivated(const QString& text);
 
 protected:
-	quint32 m_channel;
-	QString m_name;
-	QLCInputChannel::Type m_type;
+    quint32 m_channel;
+    QString m_name;
+    QLCInputChannel::Type m_type;
 };
 
 #endif

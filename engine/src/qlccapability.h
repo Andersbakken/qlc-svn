@@ -46,58 +46,72 @@ class QLCCapability;
  */
 class QLCCapability
 {
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/** Default constructor */
-	QLCCapability(uchar min = 0, uchar max = UCHAR_MAX,
-		      const QString& name = QString());
+    /** Default constructor */
+    QLCCapability(uchar min = 0, uchar max = UCHAR_MAX,
+                  const QString& name = QString());
 
-	/** Copy constructor */
-	QLCCapability(const QLCCapability* cap);
+    /** Copy constructor */
+    QLCCapability(const QLCCapability* cap);
 
-	/** Destructor */
-	~QLCCapability();
+    /** Destructor */
+    ~QLCCapability();
 
-	/** Assignment operator */
-	QLCCapability& operator=(const QLCCapability& capability);
+    /** Assignment operator */
+    QLCCapability& operator=(const QLCCapability& capability);
 
-	/** Comparing operator for qSort */
-	bool operator<(const QLCCapability& capability) const;
+    /** Comparing operator for qSort */
+    bool operator<(const QLCCapability& capability) const;
 
-	/********************************************************************
-	 * Properties
-	 ********************************************************************/
+    /********************************************************************
+     * Properties
+     ********************************************************************/
 public:
-	uchar min() const { return m_min; }
-	void setMin(uchar value) { m_min = value; }
+    uchar min() const {
+        return m_min;
+    }
+    void setMin(uchar value) {
+        m_min = value;
+    }
 
-	uchar max() const { return m_max; }
-	void setMax(uchar value) { m_max = value; }
+    uchar max() const {
+        return m_max;
+    }
+    void setMax(uchar value) {
+        m_max = value;
+    }
 
-	uchar middle() const { return int((m_max + m_min) / 2); }
+    uchar middle() const {
+        return int((m_max + m_min) / 2);
+    }
 
-	QString name() const { return m_name; }
-	void setName(const QString& name) { m_name = name; }
+    QString name() const {
+        return m_name;
+    }
+    void setName(const QString& name) {
+        m_name = name;
+    }
 
-	/** Check, whether the given capability overlaps with this */
-	bool overlaps(const QLCCapability& cap);
+    /** Check, whether the given capability overlaps with this */
+    bool overlaps(const QLCCapability& cap);
 
 protected:
-	uchar m_min;
-	uchar m_max;
-	QString m_name;
+    uchar m_min;
+    uchar m_max;
+    QString m_name;
 
-	/********************************************************************
-	 * Load & Save
-	 ********************************************************************/
+    /********************************************************************
+     * Load & Save
+     ********************************************************************/
 public:
-	/** Save the capability to a QDomDocument, under the given element */
-	bool saveXML(QDomDocument* doc, QDomElement* root);
+    /** Save the capability to a QDomDocument, under the given element */
+    bool saveXML(QDomDocument* doc, QDomElement* root);
 
-	/** Load capability contents from an XML element */
-	bool loadXML(const QDomElement* root);
+    /** Load capability contents from an XML element */
+    bool loadXML(const QDomElement* root);
 };
 
 #endif

@@ -24,9 +24,9 @@
 
 Function_Stub::Function_Stub(Doc* doc) : Function(doc)
 {
-	m_writeCalls = 0;
-	m_preRunCalls = 0;
-	m_postRunCalls = 0;
+    m_writeCalls = 0;
+    m_preRunCalls = 0;
+    m_postRunCalls = 0;
 }
 
 Function_Stub::~Function_Stub()
@@ -35,27 +35,27 @@ Function_Stub::~Function_Stub()
 
 Function* Function_Stub::createCopy(Doc* parent)
 {
-	Q_UNUSED(parent);
-	return NULL;
+    Q_UNUSED(parent);
+    return NULL;
 }
 
 Function::Type Function_Stub::type() const
 {
-	return Function::Type(0xDEADBEEF);
+    return Function::Type(0xDEADBEEF);
 }
 
 bool Function_Stub::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
-	Q_UNUSED(doc);
-	Q_UNUSED(wksp_root);
+    Q_UNUSED(doc);
+    Q_UNUSED(wksp_root);
 
-	return false;
+    return false;
 }
 
 bool Function_Stub::loadXML(const QDomElement* root)
 {
-	Q_UNUSED(root);
-	return false;
+    Q_UNUSED(root);
+    return false;
 }
 
 void Function_Stub::arm()
@@ -68,24 +68,24 @@ void Function_Stub::disarm()
 
 void Function_Stub::preRun(MasterTimer* timer)
 {
-	Q_UNUSED(timer);
-	m_preRunCalls++;
-	Function::preRun(timer);
+    Q_UNUSED(timer);
+    m_preRunCalls++;
+    Function::preRun(timer);
 }
 
 void Function_Stub::write(MasterTimer* timer, QByteArray* universes)
 {
-	Q_UNUSED(timer);
-	Q_UNUSED(universes);
+    Q_UNUSED(timer);
+    Q_UNUSED(universes);
 
-	incrementElapsed();
-	m_writeCalls++;
+    incrementElapsed();
+    m_writeCalls++;
 }
 
 void Function_Stub::postRun(MasterTimer* timer, QByteArray* universes)
 {
-	Q_UNUSED(timer);
-	Q_UNUSED(universes);
-	m_postRunCalls++;
-	Function::postRun(timer, universes);
+    Q_UNUSED(timer);
+    Q_UNUSED(universes);
+    m_postRunCalls++;
+    Function::postRun(timer, universes);
 }

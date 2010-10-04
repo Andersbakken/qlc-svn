@@ -35,36 +35,36 @@ class KeyBind;
 
 class VCButtonProperties : public QDialog, public Ui_VCButtonProperties
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	VCButtonProperties(VCButton* button, QWidget* parent);
-	~VCButtonProperties();
+    VCButtonProperties(VCButton* button, QWidget* parent);
+    ~VCButtonProperties();
 
 private:
-	Q_DISABLE_COPY(VCButtonProperties)
+    Q_DISABLE_COPY(VCButtonProperties)
 
 protected slots:
-	void slotAttachFunction();
-	void slotSetFunction(t_function_id fid = Function::invalidId());
+    void slotAttachFunction();
+    void slotSetFunction(t_function_id fid = Function::invalidId());
 
-	void slotAttachKey();
-	void slotDetachKey();
+    void slotAttachKey();
+    void slotDetachKey();
 
-	void slotChooseInputClicked();
+    void slotChooseInputClicked();
 
-	void accept();
-
-protected:
-	void updateInputSource();
+    void accept();
 
 protected:
-	VCButton* m_button;
+    void updateInputSource();
 
-	QKeySequence m_keySequence;
-	t_function_id m_function;
-	quint32 m_inputUniverse;
-	quint32 m_inputChannel;
+protected:
+    VCButton* m_button;
+
+    QKeySequence m_keySequence;
+    t_function_id m_function;
+    quint32 m_inputUniverse;
+    quint32 m_inputChannel;
 };
 
 #endif

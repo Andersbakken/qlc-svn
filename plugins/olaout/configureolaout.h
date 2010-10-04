@@ -29,20 +29,20 @@ class OLAOut;
 
 class ConfigureOLAOut : public QDialog, public Ui_ConfigureOLAOut
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  /*********************************************************************
-   * Initialization
-   *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-  ConfigureOLAOut(QWidget* parent, OLAOut* plugin);
-  virtual ~ConfigureOLAOut();
+    ConfigureOLAOut(QWidget* parent, OLAOut* plugin);
+    virtual ~ConfigureOLAOut();
 
 protected:
-  OLAOut* m_plugin;
+    OLAOut* m_plugin;
 
 private:
-  void populateOutputList();
+    void populateOutputList();
 };
 
 #endif

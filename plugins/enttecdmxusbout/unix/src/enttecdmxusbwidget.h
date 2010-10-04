@@ -28,77 +28,77 @@
 class EnttecDMXUSBWidget
 {
 public:
-	static const int VID = 0x0403;
-	static const int PID = 0x6001;
+    static const int VID = 0x0403;
+    static const int PID = 0x6001;
 
-	/** Remove this and suffer the oh-so-lovely crashing consequences! */
-	virtual ~EnttecDMXUSBWidget() {}
+    /** Remove this and suffer the oh-so-lovely crashing consequences! */
+    virtual ~EnttecDMXUSBWidget() {}
 
-	/********************************************************************
-	 * Open & close
-	 ********************************************************************/
+    /********************************************************************
+     * Open & close
+     ********************************************************************/
 public:
-	/**
-	 * Open widget for further operations, such as serial() and sendDMX()
-	 *
-	 * @return true if widget was opened successfully (or was already open)
-	 */
-	virtual bool open() = 0;
+    /**
+     * Open widget for further operations, such as serial() and sendDMX()
+     *
+     * @return true if widget was opened successfully (or was already open)
+     */
+    virtual bool open() = 0;
 
-	/**
-	 * Close widget, preventing any further operations
-	 *
-	 * @param true if widget was closed successfully (or was already closed)
-	 */
-	virtual bool close() = 0;
+    /**
+     * Close widget, preventing any further operations
+     *
+     * @param true if widget was closed successfully (or was already closed)
+     */
+    virtual bool close() = 0;
 
-	/**
-	 * Check, whether widget has been opened
-	 *
-	 * @return true if widget is open, otherwise false
-	 */
-	virtual bool isOpen() = 0;
+    /**
+     * Check, whether widget has been opened
+     *
+     * @return true if widget is open, otherwise false
+     */
+    virtual bool isOpen() = 0;
 
-	/********************************************************************
-	 * Serial & name
-	 ********************************************************************/
+    /********************************************************************
+     * Serial & name
+     ********************************************************************/
 public:
-	/**
-	 * Get the widget serial number as a string. The same serial should be
-	 * printed on the actual physical device. Can be used to uniquely
-	 * identify widgets.
-	 *
-	 * @return widget's serial number in string form
-	 */
-	virtual QString serial() const = 0;
+    /**
+     * Get the widget serial number as a string. The same serial should be
+     * printed on the actual physical device. Can be used to uniquely
+     * identify widgets.
+     *
+     * @return widget's serial number in string form
+     */
+    virtual QString serial() const = 0;
 
-	/**
-	 * Get the device's friendly name, which is not unique, but only
-	 * tells the product name (e.g. "DMX USB PRO")
-	 *
-	 * @return widget's name
-	 */
-	virtual QString name() const = 0;
+    /**
+     * Get the device's friendly name, which is not unique, but only
+     * tells the product name (e.g. "DMX USB PRO")
+     *
+     * @return widget's name
+     */
+    virtual QString name() const = 0;
 
-	/**
-	 * Get the widget's unique name
-	 *
-	 * @return widget's unique name as: "<name> (S/N: <serial>)"
-	 */
-	virtual QString uniqueName() const = 0;
+    /**
+     * Get the widget's unique name
+     *
+     * @return widget's unique name as: "<name> (S/N: <serial>)"
+     */
+    virtual QString uniqueName() const = 0;
 
-	/********************************************************************
-	 * DMX operations
-	 ********************************************************************/
+    /********************************************************************
+     * DMX operations
+     ********************************************************************/
 public:
-	/**
-	 * Send the given universe-ful of DMX data to widget. The universe must
-	 * be at least 25 bytes but no more than 513 bytes long.
-	 *
-	 * @param universe The DMX universe to send
-	 * @return true if the values were sent successfully, otherwise false
-	 */
-	virtual bool sendDMX(const QByteArray& universe) = 0;
+    /**
+     * Send the given universe-ful of DMX data to widget. The universe must
+     * be at least 25 bytes but no more than 513 bytes long.
+     *
+     * @param universe The DMX universe to send
+     * @return true if the values were sent successfully, otherwise false
+     */
+    virtual bool sendDMX(const QByteArray& universe) = 0;
 };
 
 #endif

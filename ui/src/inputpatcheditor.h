@@ -36,68 +36,68 @@ class InputMap;
 
 class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	InputPatchEditor(QWidget* parent, quint32 universe,
-			 const InputPatch* patch);
-	~InputPatchEditor();
+    InputPatchEditor(QWidget* parent, quint32 universe,
+                     const InputPatch* patch);
+    ~InputPatchEditor();
 
 private:
-	Q_DISABLE_COPY(InputPatchEditor)
+    Q_DISABLE_COPY(InputPatchEditor)
 
 protected slots:
-	void reject();
-	void accept();
+    void reject();
+    void accept();
 
 protected:
-	/** The input universe that is being edited */
-	quint32 m_universe;
+    /** The input universe that is being edited */
+    quint32 m_universe;
 
-	QString m_originalPluginName;
-	QString m_currentPluginName;
+    QString m_originalPluginName;
+    QString m_currentPluginName;
 
-	quint32 m_originalInput;
-	quint32 m_currentInput;
+    quint32 m_originalInput;
+    quint32 m_currentInput;
 
-	QString m_originalProfileName;
-	QString m_currentProfileName;
+    QString m_originalProfileName;
+    QString m_currentProfileName;
 
-	bool m_originalFeedbackEnabled;
-	bool m_currentFeedbackEnabled;
+    bool m_originalFeedbackEnabled;
+    bool m_currentFeedbackEnabled;
 
-	/********************************************************************
-	 * Mapping page
-	 ********************************************************************/
+    /********************************************************************
+     * Mapping page
+     ********************************************************************/
 protected:
-	void setupMappingPage();
-	void fillMappingTree();
-	void fillPluginItem(const QString& pluginName, QTreeWidgetItem* item);
-	QTreeWidgetItem* pluginItem(const QString& pluginName);
+    void setupMappingPage();
+    void fillMappingTree();
+    void fillPluginItem(const QString& pluginName, QTreeWidgetItem* item);
+    QTreeWidgetItem* pluginItem(const QString& pluginName);
 
 protected slots:
-	void slotMapCurrentItemChanged(QTreeWidgetItem* item);
-	void slotMapItemChanged(QTreeWidgetItem* item);
-	void slotConfigureInputClicked();
-	void slotFeedbackToggled(bool enable);
-	void slotPluginConfigurationChanged(const QString& pluginName);
+    void slotMapCurrentItemChanged(QTreeWidgetItem* item);
+    void slotMapItemChanged(QTreeWidgetItem* item);
+    void slotConfigureInputClicked();
+    void slotFeedbackToggled(bool enable);
+    void slotPluginConfigurationChanged(const QString& pluginName);
 
-	/********************************************************************
-	 * Profile page
-	 ********************************************************************/
+    /********************************************************************
+     * Profile page
+     ********************************************************************/
 protected:
-	void setupProfilePage();
-	void fillProfileTree();
-	void updateProfileItem(const QString& name, QTreeWidgetItem* item);
+    void setupProfilePage();
+    void fillProfileTree();
+    void updateProfileItem(const QString& name, QTreeWidgetItem* item);
 
 protected slots:
-	void slotProfileItemChanged(QTreeWidgetItem* item);
-	void slotAddProfileClicked();
-	void slotRemoveProfileClicked();
-	void slotEditProfileClicked();
+    void slotProfileItemChanged(QTreeWidgetItem* item);
+    void slotAddProfileClicked();
+    void slotRemoveProfileClicked();
+    void slotEditProfileClicked();
 };
 
 #endif /* INPUTPATCHEDITOR_H */

@@ -31,63 +31,63 @@ class EnttecDMXUSBWidget;
 
 class EnttecDMXUSBOut : public QObject, public QLCOutPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCOutPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCOutPlugin)
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	void init();
-	void open(quint32 output);
-	void close(quint32 output);
+    void init();
+    void open(quint32 output);
+    void close(quint32 output);
 
 #ifdef DBUS_ENABLED
 protected slots:
-	void slotDeviceAdded(const QString& name);
-	void slotDeviceRemoved(const QString& name);
+    void slotDeviceAdded(const QString& name);
+    void slotDeviceRemoved(const QString& name);
 #endif
 
-	/********************************************************************
-	 * Devices (ENTTEC calls them "widgets" and so shall we)
-	 ********************************************************************/
+    /********************************************************************
+     * Devices (ENTTEC calls them "widgets" and so shall we)
+     ********************************************************************/
 public:
-	bool rescanWidgets();
-	EnttecDMXUSBWidget* widget(const QString& serial) const;
+    bool rescanWidgets();
+    EnttecDMXUSBWidget* widget(const QString& serial) const;
 
-	/** @reimp */
-	QStringList outputs();
+    /** @reimp */
+    QStringList outputs();
 
 protected:
-	QList <EnttecDMXUSBWidget*> m_widgets;
+    QList <EnttecDMXUSBWidget*> m_widgets;
 
-	/********************************************************************
-	 * Name
-	 ********************************************************************/
+    /********************************************************************
+     * Name
+     ********************************************************************/
 public:
-	/** @reimp */
-	QString name();
+    /** @reimp */
+    QString name();
 
-	/********************************************************************
-	 * Configuration
-	 ********************************************************************/
+    /********************************************************************
+     * Configuration
+     ********************************************************************/
 public:
-	/** @reimp */
-	void configure();
+    /** @reimp */
+    void configure();
 
-	/********************************************************************
-	 * Plugin status
-	 ********************************************************************/
+    /********************************************************************
+     * Plugin status
+     ********************************************************************/
 public:
-	/** @reimp */
-	QString infoText(quint32 output = KOutputInvalid);
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
 
-	/********************************************************************
-	 * Value read/write methods
-	 ********************************************************************/
+    /********************************************************************
+     * Value read/write methods
+     ********************************************************************/
 public:
-	/** @reimp */
-	void outputDMX(quint32 output, const QByteArray& universe);
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

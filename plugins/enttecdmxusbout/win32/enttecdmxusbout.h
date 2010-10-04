@@ -31,50 +31,50 @@ class EnttecDMXUSBWidget;
 
 class EnttecDMXUSBOut : public QObject, public QLCOutPlugin
 {
-	Q_OBJECT
-	Q_INTERFACES(QLCOutPlugin)
+    Q_OBJECT
+    Q_INTERFACES(QLCOutPlugin)
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	void init();
-	void open(quint32 output);
-	void close(quint32 output);
+    void init();
+    void open(quint32 output);
+    void close(quint32 output);
 
-	/********************************************************************
-	 * Devices (ENTTEC calls them "widgets" and so shall we)
-	 ********************************************************************/
+    /********************************************************************
+     * Devices (ENTTEC calls them "widgets" and so shall we)
+     ********************************************************************/
 public:
-	bool rescanWidgets();
-	QStringList outputs();
+    bool rescanWidgets();
+    QStringList outputs();
 
 protected:
-	QList <EnttecDMXUSBWidget*> m_widgets;
+    QList <EnttecDMXUSBWidget*> m_widgets;
 
-	/********************************************************************
-	 * Name
-	 ********************************************************************/
+    /********************************************************************
+     * Name
+     ********************************************************************/
 public:
-	QString name();
+    QString name();
 
-	/********************************************************************
-	 * Configuration
-	 ********************************************************************/
+    /********************************************************************
+     * Configuration
+     ********************************************************************/
 public:
-	void configure();
+    void configure();
 
-	/********************************************************************
-	 * Plugin status
-	 ********************************************************************/
+    /********************************************************************
+     * Plugin status
+     ********************************************************************/
 public:
-	QString infoText(quint32 output = KOutputInvalid);
+    QString infoText(quint32 output = KOutputInvalid);
 
-	/********************************************************************
-	 * Value read/write methods
-	 ********************************************************************/
+    /********************************************************************
+     * Value read/write methods
+     ********************************************************************/
 public:
-	void outputDMX(quint32 output, const QByteArray& universe);
+    void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

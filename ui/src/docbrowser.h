@@ -32,26 +32,26 @@ class QAction;
 
 class DocBrowser : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	DocBrowser(QWidget* parent, Qt::WindowFlags f = 0);
-	~DocBrowser();
+    DocBrowser(QWidget* parent, Qt::WindowFlags f = 0);
+    ~DocBrowser();
 
 private:
-	Q_DISABLE_COPY(DocBrowser)
+    Q_DISABLE_COPY(DocBrowser)
 
 protected slots:
-	void slotBackwardAvailable(bool);
-	void slotForwardAvailable(bool);
+    void slotBackwardAvailable(bool);
+    void slotForwardAvailable(bool);
 
 protected:
-	QTextBrowser* m_browser;
-	QToolBar* m_toolbar;
+    QTextBrowser* m_browser;
+    QToolBar* m_toolbar;
 
-	QAction* m_backwardAction;
-	QAction* m_forwardAction;
-	QAction* m_homeAction;
+    QAction* m_backwardAction;
+    QAction* m_forwardAction;
+    QAction* m_homeAction;
 };
 
 #endif

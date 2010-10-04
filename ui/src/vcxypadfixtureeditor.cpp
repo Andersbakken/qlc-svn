@@ -32,25 +32,25 @@
  *****************************************************************************/
 
 VCXYPadFixtureEditor::VCXYPadFixtureEditor(QWidget* parent,
-			   QList <VCXYPadFixture> fixtures) : QDialog(parent)
+        QList <VCXYPadFixture> fixtures) : QDialog(parent)
 {
-	setupUi(this);
+    setupUi(this);
 
-	m_fixtures = fixtures;
+    m_fixtures = fixtures;
 
-	/* Take initial values from the first fixture */
-	if (fixtures.count() > 0)
-	{
-		VCXYPadFixture fxi = fixtures.first();
+    /* Take initial values from the first fixture */
+    if (fixtures.count() > 0)
+    {
+        VCXYPadFixture fxi = fixtures.first();
 
-		m_xMin->setValue(int(fxi.xMin() * 100));
-		m_xMax->setValue(int(fxi.xMax() * 100));
-		m_xReverse->setChecked(fxi.xReverse());
+        m_xMin->setValue(int(fxi.xMin() * 100));
+        m_xMax->setValue(int(fxi.xMax() * 100));
+        m_xReverse->setChecked(fxi.xReverse());
 
-		m_yMin->setValue(int(fxi.yMin() * 100));
-		m_yMax->setValue(int(fxi.yMax() * 100));
-		m_yReverse->setChecked(fxi.yReverse());
-	}
+        m_yMin->setValue(int(fxi.yMin() * 100));
+        m_yMax->setValue(int(fxi.yMax() * 100));
+        m_yReverse->setChecked(fxi.yReverse());
+    }
 }
 
 VCXYPadFixtureEditor::~VCXYPadFixtureEditor()
@@ -59,43 +59,43 @@ VCXYPadFixtureEditor::~VCXYPadFixtureEditor()
 
 void VCXYPadFixtureEditor::slotXMinChanged(int value)
 {
-	if (value >= m_xMax->value())
-		m_xMax->setValue(value + 1);
+    if (value >= m_xMax->value())
+        m_xMax->setValue(value + 1);
 }
 
 void VCXYPadFixtureEditor::slotXMaxChanged(int value)
 {
-	if (value <= m_xMin->value())
-		m_xMin->setValue(value - 1);
+    if (value <= m_xMin->value())
+        m_xMin->setValue(value - 1);
 }
 
 void VCXYPadFixtureEditor::slotYMinChanged(int value)
 {
-	if (value >= m_yMax->value())
-		m_yMax->setValue(value + 1);
+    if (value >= m_yMax->value())
+        m_yMax->setValue(value + 1);
 }
 
 void VCXYPadFixtureEditor::slotYMaxChanged(int value)
 {
-	if (value <= m_yMin->value())
-		m_yMin->setValue(value - 1);
+    if (value <= m_yMin->value())
+        m_yMin->setValue(value - 1);
 }
 
 void VCXYPadFixtureEditor::accept()
 {
-	/* Put dialog values to all fixtures */
-	QMutableListIterator <VCXYPadFixture> it(m_fixtures);
-	while (it.hasNext() == true)
-	{
-		VCXYPadFixture fxi(it.next());
+    /* Put dialog values to all fixtures */
+    QMutableListIterator <VCXYPadFixture> it(m_fixtures);
+    while (it.hasNext() == true)
+    {
+        VCXYPadFixture fxi(it.next());
 
-		fxi.setX(m_xMin->value() / 100.0, m_xMax->value() / 100.0,
-			 m_xReverse->isChecked());
-		fxi.setY(m_yMin->value() / 100.0, m_yMax->value() / 100.0,
-			 m_yReverse->isChecked());
+        fxi.setX(m_xMin->value() / 100.0, m_xMax->value() / 100.0,
+                 m_xReverse->isChecked());
+        fxi.setY(m_yMin->value() / 100.0, m_yMax->value() / 100.0,
+                 m_yReverse->isChecked());
 
-		it.setValue(fxi);
-	}
+        it.setValue(fxi);
+    }
 
-	QDialog::accept();
+    QDialog::accept();
 }

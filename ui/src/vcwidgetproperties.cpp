@@ -26,22 +26,22 @@
 
 VCWidgetProperties::VCWidgetProperties()
 {
-	m_state = Qt::WindowNoState;
-	m_visible = false;
-	m_x = 100;
-	m_y = 100;
-	m_width = 0;
-	m_height = 0;
+    m_state = Qt::WindowNoState;
+    m_visible = false;
+    m_x = 100;
+    m_y = 100;
+    m_width = 0;
+    m_height = 0;
 }
 
 VCWidgetProperties::VCWidgetProperties(const VCWidgetProperties& properties)
 {
-	m_state = properties.m_state;
-	m_visible = properties.m_visible;
-	m_x = properties.m_x;
-	m_y = properties.m_y;
-	m_width = properties.m_width;
-	m_height = properties.m_height;
+    m_state = properties.m_state;
+    m_visible = properties.m_visible;
+    m_x = properties.m_x;
+    m_y = properties.m_y;
+    m_width = properties.m_width;
+    m_height = properties.m_height;
 }
 
 VCWidgetProperties::~VCWidgetProperties()
@@ -50,105 +50,105 @@ VCWidgetProperties::~VCWidgetProperties()
 
 void VCWidgetProperties::store(QWidget* widget)
 {
-	Q_ASSERT(widget != NULL);
-	m_state = widget->windowState();
-	m_visible = widget->isVisible();
-	m_x = widget->x();
-	m_y = widget->y();
-	m_width = widget->width();
-	m_height = widget->height();
+    Q_ASSERT(widget != NULL);
+    m_state = widget->windowState();
+    m_visible = widget->isVisible();
+    m_x = widget->x();
+    m_y = widget->y();
+    m_width = widget->width();
+    m_height = widget->height();
 }
 
 bool VCWidgetProperties::loadXML(const QDomElement* root)
 {
-	QDomElement tag;
-	QDomNode node;
+    QDomElement tag;
+    QDomNode node;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCWidgetProperties &&
-	    root->tagName() != QString("Properties")) /* Legacy */
-	{
-		qWarning("Widget Properties node not found!");
-		return false;
-	}
+    if (root->tagName() != KXMLQLCWidgetProperties &&
+            root->tagName() != QString("Properties")) /* Legacy */
+    {
+        qWarning("Widget Properties node not found!");
+        return false;
+    }
 
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
 
-		if (tag.tagName() == KXMLQLCWidgetX)
-			m_x = tag.text().toInt();
-		else if (tag.tagName() == KXMLQLCWidgetY)
-			m_y = tag.text().toInt();
-		else if (tag.tagName() == KXMLQLCWidgetWidth)
-			m_width = tag.text().toInt();
-		else if (tag.tagName() == KXMLQLCWidgetHeight)
-			m_height = tag.text().toInt();
-		else if (tag.tagName() == KXMLQLCWidgetState)
-			m_state = Qt::WindowState(tag.text().toInt());
-		else if (tag.tagName() == KXMLQLCWidgetVisible)
-			m_visible = bool(tag.text().toInt());
-		else
-			qDebug() << "Unknown widget tag:" << tag.tagName();
+        if (tag.tagName() == KXMLQLCWidgetX)
+            m_x = tag.text().toInt();
+        else if (tag.tagName() == KXMLQLCWidgetY)
+            m_y = tag.text().toInt();
+        else if (tag.tagName() == KXMLQLCWidgetWidth)
+            m_width = tag.text().toInt();
+        else if (tag.tagName() == KXMLQLCWidgetHeight)
+            m_height = tag.text().toInt();
+        else if (tag.tagName() == KXMLQLCWidgetState)
+            m_state = Qt::WindowState(tag.text().toInt());
+        else if (tag.tagName() == KXMLQLCWidgetVisible)
+            m_visible = bool(tag.text().toInt());
+        else
+            qDebug() << "Unknown widget tag:" << tag.tagName();
 
-		node = node.nextSibling();
-	}
+        node = node.nextSibling();
+    }
 
-	return true;
+    return true;
 }
 
 bool VCWidgetProperties::saveXML(QDomDocument* doc, QDomElement* root)
 {
-	QDomElement prop_root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement prop_root;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(root != NULL);
 
-	/* Widget Properties entry */
-	prop_root = doc->createElement(KXMLQLCWidgetProperties);
-	root->appendChild(prop_root);
+    /* Widget Properties entry */
+    prop_root = doc->createElement(KXMLQLCWidgetProperties);
+    root->appendChild(prop_root);
 
-	/* X */
-	tag = doc->createElement(KXMLQLCWidgetX);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(m_x));
-	tag.appendChild(text);
+    /* X */
+    tag = doc->createElement(KXMLQLCWidgetX);
+    prop_root.appendChild(tag);
+    text = doc->createTextNode(QString("%1").arg(m_x));
+    tag.appendChild(text);
 
-	/* Y */
-	tag = doc->createElement(KXMLQLCWidgetY);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(m_y));
-	tag.appendChild(text);
+    /* Y */
+    tag = doc->createElement(KXMLQLCWidgetY);
+    prop_root.appendChild(tag);
+    text = doc->createTextNode(QString("%1").arg(m_y));
+    tag.appendChild(text);
 
-	/* W */
-	tag = doc->createElement(KXMLQLCWidgetWidth);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(m_width));
-	tag.appendChild(text);
+    /* W */
+    tag = doc->createElement(KXMLQLCWidgetWidth);
+    prop_root.appendChild(tag);
+    text = doc->createTextNode(QString("%1").arg(m_width));
+    tag.appendChild(text);
 
-	/* H */
-	tag = doc->createElement(KXMLQLCWidgetHeight);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(m_height));
-	tag.appendChild(text);
+    /* H */
+    tag = doc->createElement(KXMLQLCWidgetHeight);
+    prop_root.appendChild(tag);
+    text = doc->createTextNode(QString("%1").arg(m_height));
+    tag.appendChild(text);
 
-	/* Window state */
-	tag = doc->createElement(KXMLQLCWidgetState);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(m_state));
-	tag.appendChild(text);
+    /* Window state */
+    tag = doc->createElement(KXMLQLCWidgetState);
+    prop_root.appendChild(tag);
+    text = doc->createTextNode(QString("%1").arg(m_state));
+    tag.appendChild(text);
 
-	/* Visible state */
-	tag = doc->createElement(KXMLQLCWidgetVisible);
-	prop_root.appendChild(tag);
-	text = doc->createTextNode(QString("%1").arg(m_visible));
-	tag.appendChild(text);
+    /* Visible state */
+    tag = doc->createElement(KXMLQLCWidgetVisible);
+    prop_root.appendChild(tag);
+    text = doc->createTextNode(QString("%1").arg(m_visible));
+    tag.appendChild(text);
 
-	return true;
+    return true;
 }
 

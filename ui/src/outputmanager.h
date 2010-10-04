@@ -34,57 +34,59 @@ class QToolBar;
 
 class OutputManager : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Get the OutputManager singleton instance. Can be NULL. */
-	static OutputManager* instance() { return s_instance; }
+    /** Get the OutputManager singleton instance. Can be NULL. */
+    static OutputManager* instance() {
+        return s_instance;
+    }
 
-	/** Create an instance with parent. Fails if s_instance is not NULL. */
-	static void create(QWidget* parent);
+    /** Create an instance with parent. Fails if s_instance is not NULL. */
+    static void create(QWidget* parent);
 
-	/** Normal public destructor */
-	virtual ~OutputManager();
+    /** Normal public destructor */
+    virtual ~OutputManager();
 
 private:
-	Q_DISABLE_COPY(OutputManager)
+    Q_DISABLE_COPY(OutputManager)
 
 protected:
-	/** Protected constructor to prevent multiple instances. */
-	OutputManager(QWidget* parent, Qt::WindowFlags flags = 0);
+    /** Protected constructor to prevent multiple instances. */
+    OutputManager(QWidget* parent, Qt::WindowFlags flags = 0);
 
 protected slots:
-	void slotModeChanged(Doc::Mode mode);
-	void slotDocumentChanged(Doc* doc);
+    void slotModeChanged(Doc::Mode mode);
+    void slotDocumentChanged(Doc* doc);
 
 protected:
-	static OutputManager* s_instance;
+    static OutputManager* s_instance;
 
-	/*********************************************************************
-	 * Tree widget
-	 *********************************************************************/
+    /*********************************************************************
+     * Tree widget
+     *********************************************************************/
 public:
-	/** Update the output mapping tree */
-	void updateTree();
+    /** Update the output mapping tree */
+    void updateTree();
 
 protected:
-	/** Update the contents of an OutputPatch to an item */
-	void updateItem(QTreeWidgetItem* item, OutputPatch* op, int universe);
+    /** Update the contents of an OutputPatch to an item */
+    void updateItem(QTreeWidgetItem* item, OutputPatch* op, int universe);
 
 protected:
-	QTreeWidget* m_tree;
+    QTreeWidget* m_tree;
 
-	/*********************************************************************
-	 * Toolbar
-	 *********************************************************************/
+    /*********************************************************************
+     * Toolbar
+     *********************************************************************/
 protected slots:
-	void slotEditClicked();
+    void slotEditClicked();
 
 protected:
-	QToolBar* m_toolbar;
+    QToolBar* m_toolbar;
 
 };
 

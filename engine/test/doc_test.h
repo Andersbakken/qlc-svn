@@ -29,36 +29,36 @@
 
 class Doc_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
+    void initTestCase();
 
-	void defaults();
+    void defaults();
 
-	void addFixture();
-	void deleteFixture();
-	void fixtureLimits();
-	void fixture();
-	void findAddress();
-	void totalPowerConsumption();
+    void addFixture();
+    void deleteFixture();
+    void fixtureLimits();
+    void fixture();
+    void findAddress();
+    void totalPowerConsumption();
 
-	void addFunction();
-	void deleteFunction();
-	void function();
-	void functionLimits();
+    void addFunction();
+    void deleteFunction();
+    void function();
+    void functionLimits();
 
-	void load();
-	void loadWrongRoot();
-	void save();
-
-private:
-	QDomElement createFixtureNode(QDomDocument& doc, t_fixture_id id);
-	QDomElement createCollectionNode(QDomDocument& doc, t_function_id id);
-	QDomElement createBusNode(QDomDocument& doc, quint32 id, quint32 value);
+    void load();
+    void loadWrongRoot();
+    void save();
 
 private:
-	QLCFixtureDefCache m_fixtureDefCache;
+    QDomElement createFixtureNode(QDomDocument& doc, t_fixture_id id);
+    QDomElement createCollectionNode(QDomDocument& doc, t_function_id id);
+    QDomElement createBusNode(QDomDocument& doc, quint32 id, quint32 value);
+
+private:
+    QLCFixtureDefCache m_fixtureDefCache;
 };
 
 #endif

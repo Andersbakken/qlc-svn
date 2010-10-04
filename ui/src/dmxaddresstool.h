@@ -29,32 +29,34 @@ class QString;
 
 class DMXAddressTool : public QDialog, public Ui_DMXAddressTool
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	DMXAddressTool(QWidget* parent);
-	~DMXAddressTool();
+    DMXAddressTool(QWidget* parent);
+    ~DMXAddressTool();
 
 private:
-	Q_DISABLE_COPY(DMXAddressTool)
+    Q_DISABLE_COPY(DMXAddressTool)
 
-	/********************************************************************
-	 * Selection
-	 ********************************************************************/
+    /********************************************************************
+     * Selection
+     ********************************************************************/
 public:
-	int address() { return m_address; }
-	void setAddress(int address);
+    int address() {
+        return m_address;
+    }
+    void setAddress(int address);
 
 protected slots:
-	void slotSliderValueChanged(int value);
-	void slotDecimalChanged(const QString &text);
+    void slotSliderValueChanged(int value);
+    void slotDecimalChanged(const QString &text);
 
 protected:
-	int m_address;
-	bool m_updateValue;
+    int m_address;
+    bool m_updateValue;
 };
 
 #endif

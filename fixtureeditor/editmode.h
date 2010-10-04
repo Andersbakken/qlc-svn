@@ -31,51 +31,53 @@ class QLCChannel;
 
 class EditMode : public QDialog, public Ui_EditMode
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	/** Use this constructor to edit an existing mode */
-	EditMode(QWidget* parent, QLCFixtureMode* mode);
+    /** Use this constructor to edit an existing mode */
+    EditMode(QWidget* parent, QLCFixtureMode* mode);
 
-	/** Use this constructor to create a new mode for the fixture */
-	EditMode(QWidget* parent, QLCFixtureDef* fixtureDef);
+    /** Use this constructor to create a new mode for the fixture */
+    EditMode(QWidget* parent, QLCFixtureDef* fixtureDef);
 
-	/** Destructor */
-	~EditMode();
+    /** Destructor */
+    ~EditMode();
 
 protected:
-	void loadDefaults();
-	void init();
+    void loadDefaults();
+    void init();
 
-	/*********************************************************************
-	 * Fixture Mode
-	 *********************************************************************/
+    /*********************************************************************
+     * Fixture Mode
+     *********************************************************************/
 public:
-	/** Get the mode that was being edited. Don't save the pointer! */
-	QLCFixtureMode* mode() { return m_mode; }
+    /** Get the mode that was being edited. Don't save the pointer! */
+    QLCFixtureMode* mode() {
+        return m_mode;
+    }
 
 private:
-	QLCFixtureMode* m_mode;
+    QLCFixtureMode* m_mode;
 
-	/*********************************************************************
-	 * Channels page
-	 *********************************************************************/
+    /*********************************************************************
+     * Channels page
+     *********************************************************************/
 protected slots:
-	void slotAddChannelClicked();
-	void slotRemoveChannelClicked();
-	void slotRaiseChannelClicked();
-	void slotLowerChannelClicked();
+    void slotAddChannelClicked();
+    void slotRemoveChannelClicked();
+    void slotRaiseChannelClicked();
+    void slotLowerChannelClicked();
 
 protected:
-	void refreshChannelList();
-	QLCChannel* currentChannel();
-	void selectChannel(const QString &name);
+    void refreshChannelList();
+    QLCChannel* currentChannel();
+    void selectChannel(const QString &name);
 
-	/*********************************************************************
-	 * Accept
-	 *********************************************************************/
+    /*********************************************************************
+     * Accept
+     *********************************************************************/
 protected slots:
-	void accept();
+    void accept();
 };
 
 #endif

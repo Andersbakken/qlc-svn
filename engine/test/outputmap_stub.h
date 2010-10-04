@@ -33,17 +33,17 @@
 
 class OutputMapStub : public OutputMap
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	OutputMapStub(QObject* parent);
-	~OutputMapStub();
+    OutputMapStub(QObject* parent);
+    ~OutputMapStub();
 
-	void setUniverses(QByteArray* unis);
-	QByteArray* claimUniverses();
-	void releaseUniverses();
+    void setUniverses(QByteArray* unis);
+    QByteArray* claimUniverses();
+    void releaseUniverses();
 
-	QByteArray* m_unis;
+    QByteArray* m_unis;
 };
 
 #endif

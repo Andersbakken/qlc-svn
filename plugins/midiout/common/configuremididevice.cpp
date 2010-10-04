@@ -27,19 +27,19 @@
 #include "mididevice.h"
 
 ConfigureMIDIDevice::ConfigureMIDIDevice(QWidget* parent, MIDIDevice* device)
-	: QDialog(parent)
+        : QDialog(parent)
 {
-	Q_ASSERT(parent != NULL);
-	Q_ASSERT(device != NULL);
-	m_device = device;
+    Q_ASSERT(parent != NULL);
+    Q_ASSERT(device != NULL);
+    m_device = device;
 
-	setupUi(this);
+    setupUi(this);
 
-	m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::ControlChange));
-	m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::Note));
+    m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::ControlChange));
+    m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::Note));
 
-	m_midiChannelSpin->setValue(device->midiChannel() + 1);
-	m_modeCombo->setCurrentIndex(device->mode());
+    m_midiChannelSpin->setValue(device->midiChannel() + 1);
+    m_modeCombo->setCurrentIndex(device->mode());
 }
 
 ConfigureMIDIDevice::~ConfigureMIDIDevice()
@@ -48,8 +48,8 @@ ConfigureMIDIDevice::~ConfigureMIDIDevice()
 
 void ConfigureMIDIDevice::accept()
 {
-	m_device->setMidiChannel(m_midiChannelSpin->value() - 1);
-	m_device->setMode(MIDIDevice::stringToMode(m_modeCombo->currentText()));
+    m_device->setMidiChannel(m_midiChannelSpin->value() - 1);
+    m_device->setMode(MIDIDevice::stringToMode(m_modeCombo->currentText()));
 
-	QDialog::accept();
+    QDialog::accept();
 }

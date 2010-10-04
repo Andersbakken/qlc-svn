@@ -36,17 +36,17 @@ SceneStub::~SceneStub()
 
 void SceneStub::setValue(t_channel address, uchar value)
 {
-	m_values[address] = value;
+    m_values[address] = value;
 }
 
 void SceneStub::writeValues(QByteArray* array, t_fixture_id fxi_id)
 {
-	Q_UNUSED(fxi_id);
+    Q_UNUSED(fxi_id);
 
-	QMapIterator <t_channel,uchar> it(m_values);
-	while (it.hasNext() == true)
-	{
-		it.next();
-		(*array)[it.key()] = it.value();
-	}
+    QMapIterator <t_channel,uchar> it(m_values);
+    while (it.hasNext() == true)
+    {
+        it.next();
+        (*array)[it.key()] = it.value();
+    }
 }

@@ -30,56 +30,56 @@ class FunctionSelection;
 
 class ChaserEditor : public QDialog, public Ui_ChaserEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	ChaserEditor(QWidget* parent, Chaser* chaser);
-	~ChaserEditor();
+    ChaserEditor(QWidget* parent, Chaser* chaser);
+    ~ChaserEditor();
 
 private:
-	Q_DISABLE_COPY(ChaserEditor)
+    Q_DISABLE_COPY(ChaserEditor)
 
 protected:
-	/** Fill known buses to the bus combo and select current */
-	void fillBusCombo();
+    /** Fill known buses to the bus combo and select current */
+    void fillBusCombo();
 
-	/**
-	 * Insert chaser steps into the editor's view and select an item
-	 * @param selectIndex The index to select
-	 */
-	void updateStepList(int selectIndex = 0);
+    /**
+     * Insert chaser steps into the editor's view and select an item
+     * @param selectIndex The index to select
+     */
+    void updateStepList(int selectIndex = 0);
 
-	/** Update correct order numbers to each step */
-	void updateOrderNumbers();
+    /** Update correct order numbers to each step */
+    void updateOrderNumbers();
 
 protected slots:
-	void accept();
+    void accept();
 
-	/** Name has been edited */
-	void slotNameEdited(const QString& text);
+    /** Name has been edited */
+    void slotNameEdited(const QString& text);
 
-	/** Bus has been activated */
-	void slotBusComboActivated(int index);
+    /** Bus has been activated */
+    void slotBusComboActivated(int index);
 
-	/** Add a step */
-	void slotAddClicked();
+    /** Add a step */
+    void slotAddClicked();
 
-	/** Remove the selected step */
-	void slotRemoveClicked();
+    /** Remove the selected step */
+    void slotRemoveClicked();
 
-	/** Raise the selected step */
-	void slotRaiseClicked();
+    /** Raise the selected step */
+    void slotRaiseClicked();
 
-	/** Lower the selected step */
-	void slotLowerClicked();
+    /** Lower the selected step */
+    void slotLowerClicked();
 
 protected:
-	/** The copied chaser that is being edited */
-	Chaser* m_chaser;
+    /** The copied chaser that is being edited */
+    Chaser* m_chaser;
 
-	/** The original chaser, whose contents will be replaced with the
-	    contents of m_chaser, only if OK is clicked. */
-	Chaser* m_original;
+    /** The original chaser, whose contents will be replaced with the
+        contents of m_chaser, only if OK is clicked. */
+    Chaser* m_original;
 };
 
 #endif

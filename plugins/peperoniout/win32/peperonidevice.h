@@ -32,58 +32,58 @@
 
 class PeperoniDevice : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	PeperoniDevice(QObject* parent, struct usbdmx_functions* usbdmx,
-			int output);
-	virtual ~PeperoniDevice();
+    PeperoniDevice(QObject* parent, struct usbdmx_functions* usbdmx,
+                   int output);
+    virtual ~PeperoniDevice();
 
 protected:
-	struct usbdmx_functions* m_usbdmx;
+    struct usbdmx_functions* m_usbdmx;
 
-	/********************************************************************
-	 * Properties
-	 ********************************************************************/
+    /********************************************************************
+     * Properties
+     ********************************************************************/
 public:
-	QString name() const;
-	int output() const;
-	QString infoText() const;
+    QString name() const;
+    int output() const;
+    QString infoText() const;
 
 protected:
-	void extractName();
+    void extractName();
 
 protected:
-	QString m_name;
-	int m_output;
-	bool m_deviceOK;
+    QString m_name;
+    int m_output;
+    bool m_deviceOK;
 
-	/********************************************************************
-	 * Open & close
-	 ********************************************************************/
+    /********************************************************************
+     * Open & close
+     ********************************************************************/
 public:
-	/** Open this device for DMX output */
-	void open();
+    /** Open this device for DMX output */
+    void open();
 
-	/** Close this device */
-	void close();
+    /** Close this device */
+    void close();
 
-	/** Re-extract the device's name and reopen it if necessary */
-	void rehash();
+    /** Re-extract the device's name and reopen it if necessary */
+    void rehash();
 
-	HANDLE handle() const;
+    HANDLE handle() const;
 
 protected:
-	HANDLE m_handle;
+    HANDLE m_handle;
 
-	/********************************************************************
-	 * Write
-	 ********************************************************************/
+    /********************************************************************
+     * Write
+     ********************************************************************/
 public:
-	void outputDMX(const QByteArray& universe);
+    void outputDMX(const QByteArray& universe);
 };
 
 #endif

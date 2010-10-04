@@ -30,7 +30,7 @@
 
 OutputPluginStub::OutputPluginStub() : QLCOutPlugin()
 {
-	m_array = QByteArray(int(KUniverseCount * 512), char(0));
+    m_array = QByteArray(int(KUniverseCount * 512), char(0));
 }
 
 OutputPluginStub::~OutputPluginStub()
@@ -47,7 +47,7 @@ void OutputPluginStub::init()
 
 QString OutputPluginStub::name()
 {
-	return QString("Output Plugin Stub");
+    return QString("Output Plugin Stub");
 }
 
 /*****************************************************************************
@@ -56,23 +56,23 @@ QString OutputPluginStub::name()
 
 void OutputPluginStub::open(quint32 output)
 {
-	if (m_openLines.contains(output) == false && output < KUniverseCount)
-		m_openLines.append(output);
+    if (m_openLines.contains(output) == false && output < KUniverseCount)
+        m_openLines.append(output);
 }
 
 void OutputPluginStub::close(quint32 output)
 {
-	m_openLines.removeAll(output);
+    m_openLines.removeAll(output);
 }
 
 QStringList OutputPluginStub::outputs()
 {
-	QStringList list;
+    QStringList list;
 
-	for (int i = 0; i < KUniverseCount; i++)
-		list << QString("%1: Stub %1").arg(i + 1);
+    for (int i = 0; i < KUniverseCount; i++)
+        list << QString("%1: Stub %1").arg(i + 1);
 
-	return list;
+    return list;
 }
 
 /*****************************************************************************
@@ -89,8 +89,8 @@ void OutputPluginStub::configure()
 
 QString OutputPluginStub::infoText(quint32 output)
 {
-	Q_UNUSED(output);
-	return QString("This is a plugin stub for testing.");
+    Q_UNUSED(output);
+    return QString("This is a plugin stub for testing.");
 }
 
 /*****************************************************************************
@@ -99,5 +99,5 @@ QString OutputPluginStub::infoText(quint32 output)
 
 void OutputPluginStub::outputDMX(quint32 output, const QByteArray& universe)
 {
-	m_array = m_array.replace(output * 512, universe.size(), universe);
+    m_array = m_array.replace(output * 512, universe.size(), universe);
 }

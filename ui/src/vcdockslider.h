@@ -30,59 +30,59 @@
 
 class VCDockSlider : public QFrame, public Ui_VCDockSlider
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	VCDockSlider(QWidget* parent, quint32 bus);
-	~VCDockSlider();
+    VCDockSlider(QWidget* parent, quint32 bus);
+    ~VCDockSlider();
 
 private:
-	Q_DISABLE_COPY(VCDockSlider)
+    Q_DISABLE_COPY(VCDockSlider)
 
-	/*********************************************************************
-	 * Properties
-	 *********************************************************************/
+    /*********************************************************************
+     * Properties
+     *********************************************************************/
 public:
-	/** Refresh properties from VCProperties */
-	void refreshProperties();
+    /** Refresh properties from VCProperties */
+    void refreshProperties();
 
-	/*********************************************************************
-	 * Bus
-	 *********************************************************************/
+    /*********************************************************************
+     * Bus
+     *********************************************************************/
 protected slots:
-	void slotBusNameChanged(quint32 bus, const QString& name);
-	void slotBusValueChanged(quint32 bus, quint32 value);
+    void slotBusNameChanged(quint32 bus, const QString& name);
+    void slotBusValueChanged(quint32 bus, quint32 value);
 
 protected:
-	quint32 m_bus;
+    quint32 m_bus;
 
-	/*********************************************************************
-	 * User input slots
-	 *********************************************************************/
+    /*********************************************************************
+     * User input slots
+     *********************************************************************/
 protected slots:
-	void slotSliderValueChanged(int value);
+    void slotSliderValueChanged(int value);
 
-	/*********************************************************************
-	 * Tap button
-	 *********************************************************************/
+    /*********************************************************************
+     * Tap button
+     *********************************************************************/
 protected slots:
-	void slotTapButtonClicked();
+    void slotTapButtonClicked();
 
 protected:
-	/** Time object to get the elapsed time between tap button clicks */
-	QTime m_time;
+    /** Time object to get the elapsed time between tap button clicks */
+    QTime m_time;
 
-	/*********************************************************************
-	 * External input
-	 *********************************************************************/
+    /*********************************************************************
+     * External input
+     *********************************************************************/
 protected slots:
-	/** Slot for external input value change signals */
-	void slotInputValueChanged(quint32 universe,
-				   quint32 channel,
-				   uchar value);
+    /** Slot for external input value change signals */
+    void slotInputValueChanged(quint32 universe,
+                               quint32 channel,
+                               uchar value);
 };
 
 #endif

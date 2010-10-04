@@ -36,82 +36,84 @@ class QDomElement;
 
 class FixtureConsole : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	FixtureConsole(QWidget* parent);
-	~FixtureConsole();
+    FixtureConsole(QWidget* parent);
+    ~FixtureConsole();
 
 private:
-	Q_DISABLE_COPY(FixtureConsole)
+    Q_DISABLE_COPY(FixtureConsole)
 
-	/*********************************************************************
-	 * Fixture
-	 *********************************************************************/
+    /*********************************************************************
+     * Fixture
+     *********************************************************************/
 public:
-	/** Set the fixture that this console is controlling */
-	void setFixture(t_fixture_id id);
+    /** Set the fixture that this console is controlling */
+    void setFixture(t_fixture_id id);
 
-	/** Get the fixture that this console is controlling */
-	t_fixture_id fixture() const { return m_fixture; }
+    /** Get the fixture that this console is controlling */
+    t_fixture_id fixture() const {
+        return m_fixture;
+    }
 
 protected:
-	t_fixture_id m_fixture;
+    t_fixture_id m_fixture;
 
-	/*********************************************************************
-	 * Channels
-	 *********************************************************************/
+    /*********************************************************************
+     * Channels
+     *********************************************************************/
 public:
-	/** Set channel group boxes to have/not have a checkbox */
-	void setChannelsCheckable(bool checkable);
+    /** Set channel group boxes to have/not have a checkbox */
+    void setChannelsCheckable(bool checkable);
 
-	/** Set all channels enabled/disabled */
-	void enableAllChannels(bool enable);
+    /** Set all channels enabled/disabled */
+    void enableAllChannels(bool enable);
 
-	/** Enable/disable DMX output when sliders are dragged */
-	void setOutputDMX(bool state);
+    /** Enable/disable DMX output when sliders are dragged */
+    void setOutputDMX(bool state);
 
-	/** Set the value of one scene channel */
-	void setSceneValue(const SceneValue& scv);
+    /** Set the value of one scene channel */
+    void setSceneValue(const SceneValue& scv);
 
-	/** Get all channel's values */
-	QList <SceneValue> values() const;
+    /** Get all channel's values */
+    QList <SceneValue> values() const;
 
-	/** Set all channel's values */
-	void setValues(const QList <SceneValue>& list);
+    /** Set all channel's values */
+    void setValues(const QList <SceneValue>& list);
 
-	/** Get a console channel instance for the given channel (first ch is
-	    always number zero, so these are not DMX channels) */
-	ConsoleChannel* channel(t_channel ch);
+    /** Get a console channel instance for the given channel (first ch is
+        always number zero, so these are not DMX channels) */
+    ConsoleChannel* channel(t_channel ch);
 
 protected slots:
-	/** Slot that captures individual channel value changes */
-	void slotValueChanged(t_channel channel, uchar value, bool enabled);
+    /** Slot that captures individual channel value changes */
+    void slotValueChanged(t_channel channel, uchar value, bool enabled);
 
 signals:
-	/** Signal telling one of this console's channels has changed value */
-	void valueChanged(t_fixture_id fxi, t_channel channel, uchar value,
-			  bool enabled);
+    /** Signal telling one of this console's channels has changed value */
+    void valueChanged(t_fixture_id fxi, t_channel channel, uchar value,
+                      bool enabled);
 
 protected:
-	bool m_channelsCheckable;
-	QList<ConsoleChannel*> m_channels;
+    bool m_channelsCheckable;
+    QList<ConsoleChannel*> m_channels;
 
-	/*********************************************************************
-	 * External input
-	 *********************************************************************/
+    /*********************************************************************
+     * External input
+     *********************************************************************/
 public:
-	void enableExternalInput(bool enable);
+    void enableExternalInput(bool enable);
 
 protected slots:
-	void slotInputValueChanged(quint32 uni, quint32 ch,
-				   uchar value);
+    void slotInputValueChanged(quint32 uni, quint32 ch,
+                               uchar value);
 
 protected:
-	bool m_externalInputEnabled;
+    bool m_externalInputEnabled;
 };
 
 #endif

@@ -31,63 +31,63 @@
 
 MIDIDevice::MIDIDevice(MIDIOut* parent, UINT id) : QObject(parent)
 {
-	m_id = id;
-	m_handle = NULL;
-	m_mode = ControlChange;
-	m_midiChannel = 0;
-	m_isOK = false;
+    m_id = id;
+    m_handle = NULL;
+    m_mode = ControlChange;
+    m_midiChannel = 0;
+    m_isOK = false;
 
-	/* Start with all values zeroed */
-	std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
+    /* Start with all values zeroed */
+    std::fill(m_values, m_values + MAX_MIDI_DMX_CHANNELS, 0);
 
-	/* Get a name for this device */
-	extractName();
+    /* Get a name for this device */
+    extractName();
 
-	/* Load global settings */
-	loadSettings();
+    /* Load global settings */
+    loadSettings();
 }
 
 MIDIDevice::~MIDIDevice()
 {
-	saveSettings();
-	close();
+    saveSettings();
+    close();
 }
 
 void MIDIDevice::loadSettings()
 {
-	QSettings settings;
-	QVariant value;
-	QString key;
+    QSettings settings;
+    QVariant value;
+    QString key;
 
-	/* Attempt to get a MIDI channel from settings */
-	key = QString("/midiout/%1/midichannel").arg(m_name);
-	value = settings.value(key);
-	if (value.isValid() == true)
-		setMidiChannel(value.toInt());
-	else
-		setMidiChannel(0);
+    /* Attempt to get a MIDI channel from settings */
+    key = QString("/midiout/%1/midichannel").arg(m_name);
+    value = settings.value(key);
+    if (value.isValid() == true)
+        setMidiChannel(value.toInt());
+    else
+        setMidiChannel(0);
 
-	/* Attempt to get the mode from settings */
-	key = QString("/midiout/%1/mode").arg(m_name);
-	value = settings.value(key);
-	if (value.isValid() == true)
-		setMode(stringToMode(value.toString()));
-	else
-		setMode(ControlChange);
+    /* Attempt to get the mode from settings */
+    key = QString("/midiout/%1/mode").arg(m_name);
+    value = settings.value(key);
+    if (value.isValid() == true)
+        setMode(stringToMode(value.toString()));
+    else
+        setMode(ControlChange);
 }
 
 void MIDIDevice::saveSettings()
 {
-	QSettings settings;
-	QString key;
+    QSettings settings;
+    QString key;
 
-	/* Store MIDI channel to settings */
-	key = QString("/midiout/%1/midichannel").arg(m_name);
-	settings.setValue(key, m_midiChannel);
+    /* Store MIDI channel to settings */
+    key = QString("/midiout/%1/midichannel").arg(m_name);
+    settings.setValue(key, m_midiChannel);
 
-	/* Store mode to settings */
-	key = QString("/midiout/%1/mode").arg(m_name);
-	settings.setValue(key, MIDIDevice::modeToString(m_mode));
+    /* Store mode to settings */
+    key = QString("/midiout/%1/mode").arg(m_name);
+    settings.setValue(key, MIDIDevice::modeToString(m_mode));
 }
 
 /****************************************************************************
@@ -96,82 +96,82 @@ void MIDIDevice::saveSettings()
 
 bool MIDIDevice::open()
 {
-	bool result = false;
-	MMRESULT res;
+    bool result = false;
+    MMRESULT res;
 
-	if (m_handle != NULL)
-		return true;
+    if (m_handle != NULL)
+        return true;
 
-	res = midiOutOpen(&m_handle, m_id, 0, 0, 0);
-	if (res == MMSYSERR_ALLOCATED)
-	{
-		qDebug() << QString("Unable to open %1:").arg(m_name)
-			 << QString("Resource is already allocated.");
-		m_handle = NULL;
-		result = false;
-	}
-	else if (res == MMSYSERR_BADDEVICEID)
-	{
-		qDebug() << QString("Unable to open %1:").arg(m_name)
-			 << QString("Bad device ID.");
-		m_handle = NULL;
-		result = false;
-	}
-	else if (res == MMSYSERR_INVALFLAG)
-	{
-		qDebug() << QString("Unable to open %1:").arg(m_name)
-			 << QString("Invalid flags.");
-		m_handle = NULL;
-		result = false;
-	}
-	else if (res == MMSYSERR_INVALPARAM)
-	{
-		qDebug() << QString("Unable to open %1:").arg(m_name)
-			 << QString("Invalid parameters.");
-		m_handle = NULL;
-		result = false;
-	}
-	else if (res == MMSYSERR_NOMEM)
-	{
-		qDebug() << QString("Unable to open %1:").arg(m_name)
-			 << QString("Out of memory.");
-		result = false;
-	}
-	else
-	{
-		result = true;
-	}
+    res = midiOutOpen(&m_handle, m_id, 0, 0, 0);
+    if (res == MMSYSERR_ALLOCATED)
+    {
+        qDebug() << QString("Unable to open %1:").arg(m_name)
+        << QString("Resource is already allocated.");
+        m_handle = NULL;
+        result = false;
+    }
+    else if (res == MMSYSERR_BADDEVICEID)
+    {
+        qDebug() << QString("Unable to open %1:").arg(m_name)
+        << QString("Bad device ID.");
+        m_handle = NULL;
+        result = false;
+    }
+    else if (res == MMSYSERR_INVALFLAG)
+    {
+        qDebug() << QString("Unable to open %1:").arg(m_name)
+        << QString("Invalid flags.");
+        m_handle = NULL;
+        result = false;
+    }
+    else if (res == MMSYSERR_INVALPARAM)
+    {
+        qDebug() << QString("Unable to open %1:").arg(m_name)
+        << QString("Invalid parameters.");
+        m_handle = NULL;
+        result = false;
+    }
+    else if (res == MMSYSERR_NOMEM)
+    {
+        qDebug() << QString("Unable to open %1:").arg(m_name)
+        << QString("Out of memory.");
+        result = false;
+    }
+    else
+    {
+        result = true;
+    }
 
-	return result;
+    return result;
 }
 
 void MIDIDevice::close()
 {
-	MMRESULT res;
+    MMRESULT res;
 
-	if (m_handle == NULL)
-		return;
+    if (m_handle == NULL)
+        return;
 
-	res = midiOutClose(m_handle);
-	if (res == MIDIERR_STILLPLAYING)
-	{
-		qDebug() << QString("Unable to close %1: Buffer not empty")
-				.arg(m_name);
-	}
-	else if (res == MMSYSERR_INVALHANDLE)
-	{
-		qDebug() << QString("Unable to close %1: Invalid handle")
-				.arg(m_name);
-	}
-	else if (res == MMSYSERR_NOMEM)
-	{
-		qDebug() << QString("Unable t close %1: Out of memory")
-				.arg(m_name);
-	}
-	else
-	{
-		m_handle = NULL;
-	}
+    res = midiOutClose(m_handle);
+    if (res == MIDIERR_STILLPLAYING)
+    {
+        qDebug() << QString("Unable to close %1: Buffer not empty")
+        .arg(m_name);
+    }
+    else if (res == MMSYSERR_INVALHANDLE)
+    {
+        qDebug() << QString("Unable to close %1: Invalid handle")
+        .arg(m_name);
+    }
+    else if (res == MMSYSERR_NOMEM)
+    {
+        qDebug() << QString("Unable t close %1: Out of memory")
+        .arg(m_name);
+    }
+    else
+    {
+        m_handle = NULL;
+    }
 }
 
 /*****************************************************************************
@@ -180,59 +180,59 @@ void MIDIDevice::close()
 
 QString MIDIDevice::infoText()
 {
-	QString info;
+    QString info;
 
-	info += QString("<B>%1</B>").arg(name());
-	info += QString("<P>");
-	if (m_isOK == true)
-		info += QString("Device is working correctly.");
-	else
-		info += QString("<B>MIDI Output not available.</B>");
-	info += QString("</P>");
-	info += QString("<P>");
-	info += QString("<B>MIDI Channel: </B>%1<BR>").arg(m_midiChannel + 1);
-	info += QString("<B>Mode: </B>%1").arg(modeToString(m_mode));
-	info += QString("</P>");
+    info += QString("<B>%1</B>").arg(name());
+    info += QString("<P>");
+    if (m_isOK == true)
+        info += QString("Device is working correctly.");
+    else
+        info += QString("<B>MIDI Output not available.</B>");
+    info += QString("</P>");
+    info += QString("<P>");
+    info += QString("<B>MIDI Channel: </B>%1<BR>").arg(m_midiChannel + 1);
+    info += QString("<B>Mode: </B>%1").arg(modeToString(m_mode));
+    info += QString("</P>");
 
-	return info;
+    return info;
 }
 
 QString MIDIDevice::name() const
 {
-	return m_name;
+    return m_name;
 }
 
 void MIDIDevice::extractName()
 {
-	MMRESULT res;
-	MIDIOUTCAPS caps;
+    MMRESULT res;
+    MIDIOUTCAPS caps;
 
-	res = midiOutGetDevCaps(m_id, &caps, sizeof(MIDIOUTCAPS));
-	if (res == MMSYSERR_BADDEVICEID)
-	{
-		m_name = QString("Bad device ID");
-		qDebug() << "MIDI OUT" << m_id + 1 << "has bad device ID";
-	}
-	else if (res == MMSYSERR_INVALPARAM)
-	{
-		m_name = QString("Invalid parameters");
-		qDebug() << "Invalid params for MIDI OUT device" << m_id + 1;
-	}
-	else if (res == MMSYSERR_NODRIVER)
-	{
-		m_name = QString("No driver installed");
-		qDebug() << "MIDI OUT device" << m_id + 1 << "has no driver";
-	}
-	else if (res == MMSYSERR_NOMEM)
-	{
-		m_name = QString("Out of memory");
-		qDebug() << "Out of memory while opening MIDI OUT" << m_id + 1;
-	}
-	else
-	{
-		m_name = QString::fromWCharArray(caps.szPname);
-		m_isOK = true;
-	}
+    res = midiOutGetDevCaps(m_id, &caps, sizeof(MIDIOUTCAPS));
+    if (res == MMSYSERR_BADDEVICEID)
+    {
+        m_name = QString("Bad device ID");
+        qDebug() << "MIDI OUT" << m_id + 1 << "has bad device ID";
+    }
+    else if (res == MMSYSERR_INVALPARAM)
+    {
+        m_name = QString("Invalid parameters");
+        qDebug() << "Invalid params for MIDI OUT device" << m_id + 1;
+    }
+    else if (res == MMSYSERR_NODRIVER)
+    {
+        m_name = QString("No driver installed");
+        qDebug() << "MIDI OUT device" << m_id + 1 << "has no driver";
+    }
+    else if (res == MMSYSERR_NOMEM)
+    {
+        m_name = QString("Out of memory");
+        qDebug() << "Out of memory while opening MIDI OUT" << m_id + 1;
+    }
+    else
+    {
+        m_name = QString::fromWCharArray(caps.szPname);
+        m_isOK = true;
+    }
 }
 
 /*****************************************************************************
@@ -241,24 +241,24 @@ void MIDIDevice::extractName()
 
 QString MIDIDevice::modeToString(Mode mode)
 {
-	switch (mode)
-	{
-	default:
-	case ControlChange:
-		return QString("Control Change");
-		break;
-	case Note:
-		return QString("Note Velocity");
-		break;
-	}
+    switch (mode)
+    {
+    default:
+    case ControlChange:
+        return QString("Control Change");
+        break;
+    case Note:
+        return QString("Note Velocity");
+        break;
+    }
 }
 
 MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
 {
-	if (mode == QString("Note Velocity"))
-		return Note;
-	else
-		return ControlChange;
+    if (mode == QString("Note Velocity"))
+        return Note;
+    else
+        return ControlChange;
 }
 
 /****************************************************************************
@@ -267,56 +267,56 @@ MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
 
 void MIDIDevice::outputDMX(const QByteArray& universe)
 {
-	for (BYTE channel = 0; channel < MAX_MIDI_DMX_CHANNELS; channel++)
-	{
-		/* Scale 0-255 to 0-127 */
-		BYTE scaled = DMX2MIDI(universe[channel]);
+    for (BYTE channel = 0; channel < MAX_MIDI_DMX_CHANNELS; channel++)
+    {
+        /* Scale 0-255 to 0-127 */
+        BYTE scaled = DMX2MIDI(universe[channel]);
 
-		/* Since MIDI is so slow, we only send values that are
-		   actually changed. */
-		if (m_values[channel] == scaled)
-			continue;
+        /* Since MIDI is so slow, we only send values that are
+           actually changed. */
+        if (m_values[channel] == scaled)
+            continue;
 
-		/* Store the changed MIDI value */
-		m_values[channel] = scaled;
+        /* Store the changed MIDI value */
+        m_values[channel] = scaled;
 
-		if (m_mode == Note)
-		{
-			if (scaled == 0)
-			{
-				/* Zero is sent as a note off command */
-				sendData(MIDI_NOTE_OFF | (BYTE) midiChannel(),
-					 channel, scaled);
-			}
-			else
-			{
-				/* 1-127 are sent as note on commands */
-				sendData(MIDI_NOTE_ON | (BYTE) midiChannel(),
-					 channel, scaled);
-			}
-		}
-		else
-		{
-			/* Control change */
-			sendData(MIDI_CONTROL_CHANGE | (BYTE) midiChannel(),
-				 channel, scaled);
-		}
-	}
+        if (m_mode == Note)
+        {
+            if (scaled == 0)
+            {
+                /* Zero is sent as a note off command */
+                sendData(MIDI_NOTE_OFF | (BYTE) midiChannel(),
+                         channel, scaled);
+            }
+            else
+            {
+                /* 1-127 are sent as note on commands */
+                sendData(MIDI_NOTE_ON | (BYTE) midiChannel(),
+                         channel, scaled);
+            }
+        }
+        else
+        {
+            /* Control change */
+            sendData(MIDI_CONTROL_CHANGE | (BYTE) midiChannel(),
+                     channel, scaled);
+        }
+    }
 }
 
 void MIDIDevice::sendData(BYTE command, BYTE channel, BYTE value)
 {
-	union
-	{
-		DWORD dwData;
-		BYTE bData[4];
-	} msg;
+    union
+    {
+        DWORD dwData;
+        BYTE bData[4];
+    } msg;
 
-	msg.bData[0] = command;
-	msg.bData[1] = channel;
-	msg.bData[2] = value;
-	msg.bData[3] = 0;
+    msg.bData[0] = command;
+    msg.bData[1] = channel;
+    msg.bData[2] = value;
+    msg.bData[3] = 0;
 
-	/* Push the message out */
-	midiOutShortMsg(m_handle, msg.dwData);
+    /* Push the message out */
+    midiOutShortMsg(m_handle, msg.dwData);
 }

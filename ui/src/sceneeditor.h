@@ -36,98 +36,98 @@ class QAction;
 
 class SceneEditor : public QDialog, public Ui_SceneEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	SceneEditor(QWidget* parent, Scene* scene);
-	~SceneEditor();
+    SceneEditor(QWidget* parent, Scene* scene);
+    ~SceneEditor();
 
 private:
-	Q_DISABLE_COPY(SceneEditor)
+    Q_DISABLE_COPY(SceneEditor)
 
 protected:
-	void init();
-	void fillBusCombo();
-	void setSceneValue(const SceneValue& scv);
+    void init();
+    void fillBusCombo();
+    void setSceneValue(const SceneValue& scv);
 
 protected:
-	bool m_initializing;
+    bool m_initializing;
 
-	/*********************************************************************
-	 * Common
-	 *********************************************************************/
+    /*********************************************************************
+     * Common
+     *********************************************************************/
 protected slots:
-	void slotNameEdited(const QString& name);
-	void slotBusComboActivated(int index);
-	
-	void accept();
-	void slotTabChanged(int tab);
+    void slotNameEdited(const QString& name);
+    void slotBusComboActivated(int index);
 
-	void slotEnableAll();
-	void slotDisableAll();
+    void accept();
+    void slotTabChanged(int tab);
 
-	void slotEnableCurrent();
-	void slotDisableCurrent();
+    void slotEnableAll();
+    void slotDisableAll();
 
-	void slotCopy();
-	void slotPaste();
-	void slotCopyToAll();
-	void slotColorTool();
+    void slotEnableCurrent();
+    void slotDisableCurrent();
 
-protected:
-	bool isColorToolAvailable();
+    void slotCopy();
+    void slotPaste();
+    void slotCopyToAll();
+    void slotColorTool();
 
 protected:
-	QAction* m_enableCurrentAction;
-	QAction* m_disableCurrentAction;
+    bool isColorToolAvailable();
 
-	QAction* m_copyAction;
-	QAction* m_pasteAction;
-	QAction* m_copyToAllAction;
-	QAction* m_colorToolAction;
-
-	/*********************************************************************
-	 * General tab
-	 *********************************************************************/
 protected:
-	QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id);
-	QList <Fixture*> selectedFixtures() const;
+    QAction* m_enableCurrentAction;
+    QAction* m_disableCurrentAction;
 
-	void addFixtureItem(Fixture* fixture);
-	void removeFixtureItem(Fixture* fixture);
+    QAction* m_copyAction;
+    QAction* m_pasteAction;
+    QAction* m_copyToAllAction;
+    QAction* m_colorToolAction;
 
-protected slots:
-	void slotAddFixtureClicked();
-	void slotRemoveFixtureClicked();
-
-	/*********************************************************************
-	 * Fixture tabs
-	 *********************************************************************/
+    /*********************************************************************
+     * General tab
+     *********************************************************************/
 protected:
-	FixtureConsole* fixtureConsole(Fixture* fixture);
+    QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id);
+    QList <Fixture*> selectedFixtures() const;
 
-	void addFixtureTab(Fixture* fixture);
-	void removeFixtureTab(Fixture* fixture);
+    void addFixtureItem(Fixture* fixture);
+    void removeFixtureItem(Fixture* fixture);
 
 protected slots:
-	void slotValueChanged(t_fixture_id fxi_id, t_channel channel,
-			      uchar value, bool enabled);
+    void slotAddFixtureClicked();
+    void slotRemoveFixtureClicked();
+
+    /*********************************************************************
+     * Fixture tabs
+     *********************************************************************/
+protected:
+    FixtureConsole* fixtureConsole(Fixture* fixture);
+
+    void addFixtureTab(Fixture* fixture);
+    void removeFixtureTab(Fixture* fixture);
+
+protected slots:
+    void slotValueChanged(t_fixture_id fxi_id, t_channel channel,
+                          uchar value, bool enabled);
 
 protected:
-	int m_currentTab;
+    int m_currentTab;
 
-	/*********************************************************************
-	 * Scene
-	 *********************************************************************/
+    /*********************************************************************
+     * Scene
+     *********************************************************************/
 protected:
-	Scene* m_scene;
-	Scene* m_original;
+    Scene* m_scene;
+    Scene* m_original;
 
-	/** Values from a copied console */
-	QList <SceneValue> m_copy;
+    /** Values from a copied console */
+    QList <SceneValue> m_copy;
 };
 
 #endif

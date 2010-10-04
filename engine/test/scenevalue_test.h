@@ -26,17 +26,17 @@
 
 class SceneValue_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initial();
-	void lessThan();
-	void loadSuccess();
-	void loadWrongRoot();
-	void loadWrongFixture();
-	void loadWrongChannel();
-	void loadWrongValue();
-	void save();
+    void initial();
+    void lessThan();
+    void loadSuccess();
+    void loadWrongRoot();
+    void loadWrongFixture();
+    void loadWrongChannel();
+    void loadWrongValue();
+    void save();
 };
 
 #endif

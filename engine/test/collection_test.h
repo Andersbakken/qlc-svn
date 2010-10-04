@@ -29,32 +29,32 @@ class Doc;
 
 class Collection_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void initTestCase();
-	void init();
-	void cleanup();
+    void initTestCase();
+    void init();
+    void cleanup();
 
-	void initial();
-	void functions();
-	void functionRemoval();
+    void initial();
+    void functions();
+    void functionRemoval();
 
-	void loadSuccess();
-	void loadWrongType();
-	void loadWrongRoot();
-	void loadWrongMemberTag();
-	void save();
-	void copyFrom();
-	void createCopy();
+    void loadSuccess();
+    void loadWrongType();
+    void loadWrongRoot();
+    void loadWrongMemberTag();
+    void save();
+    void copyFrom();
+    void createCopy();
 
-	void armSuccess();
-	void armMissingFunction();
-	void write();
+    void armSuccess();
+    void armMissingFunction();
+    void write();
 
 private:
-	Doc* m_doc;
-	QLCFixtureDefCache m_cache;
+    Doc* m_doc;
+    QLCFixtureDefCache m_cache;
 };
 
 #endif

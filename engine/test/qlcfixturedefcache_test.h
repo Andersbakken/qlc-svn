@@ -27,18 +27,18 @@
 
 class QLCFixtureDefCache_Test : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 private slots:
-	void init();
-	void cleanup();
+    void init();
+    void cleanup();
 
-	void add();
-	void fixtureDef();
-	void load();
+    void add();
+    void fixtureDef();
+    void load();
 
 private:
-	QLCFixtureDefCache cache;
+    QLCFixtureDefCache cache;
 };
 
 #endif

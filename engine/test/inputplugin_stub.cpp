@@ -24,7 +24,7 @@
 
 InputPluginStub::InputPluginStub()
 {
-	m_configureCalled = 0;
+    m_configureCalled = 0;
 }
 
 InputPluginStub::~InputPluginStub()
@@ -37,49 +37,49 @@ void InputPluginStub::init()
 
 void InputPluginStub::open(quint32 input)
 {
-	if (m_openLines.contains(input) == false && input < KInputUniverseCount)
-		m_openLines.append(input);
+    if (m_openLines.contains(input) == false && input < KInputUniverseCount)
+        m_openLines.append(input);
 }
 
 void InputPluginStub::close(quint32 input)
 {
-	m_openLines.removeAll(input);
+    m_openLines.removeAll(input);
 }
 
 QStringList InputPluginStub::inputs()
 {
-	QStringList list;
+    QStringList list;
 
-	for (quint32 i = 0; i < KInputUniverseCount; i++)
-		list << QString("%1: Stub %1").arg(i + 1);
+    for (quint32 i = 0; i < KInputUniverseCount; i++)
+        list << QString("%1: Stub %1").arg(i + 1);
 
-	return list;
+    return list;
 }
 
 void InputPluginStub::configure()
 {
-	m_configureCalled++;
+    m_configureCalled++;
 }
 
 QString InputPluginStub::infoText(quint32 input)
 {
-	return QString("%1: This is a plugin stub for testing.").arg(input);
+    return QString("%1: This is a plugin stub for testing.").arg(input);
 }
 
 QString InputPluginStub::name()
 {
-	return QString("Input Plugin Stub");
+    return QString("Input Plugin Stub");
 }
 
 void InputPluginStub::connectInputData(QObject* listener)
 {
-	Q_UNUSED(listener);
+    Q_UNUSED(listener);
 }
 
 void InputPluginStub::feedBack(quint32 input, quint32 channel,
-			uchar value)
+                               uchar value)
 {
-	m_feedBackInput = input;
-	m_feedBackChannel = channel;
-	m_feedBackValue = value;
+    m_feedBackInput = input;
+    m_feedBackChannel = channel;
+    m_feedBackValue = value;
 }

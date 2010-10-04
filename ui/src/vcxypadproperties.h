@@ -32,40 +32,40 @@ class VCXYPad;
 
 class VCXYPadProperties : public QDialog, public Ui_VCXYPadProperties
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	VCXYPadProperties(QWidget* parent, VCXYPad* xypad);
-	~VCXYPadProperties();
+    VCXYPadProperties(QWidget* parent, VCXYPad* xypad);
+    ~VCXYPadProperties();
 
 private:
-	Q_DISABLE_COPY(VCXYPadProperties)
+    Q_DISABLE_COPY(VCXYPadProperties)
 
-	/********************************************************************
-	 * Tree
-	 ********************************************************************/
+    /********************************************************************
+     * Tree
+     ********************************************************************/
 protected:
-	void fillTree();
-	QList <t_fixture_id> selectedFixtureIDs() const;
-	QList <VCXYPadFixture> selectedFixtures() const;
-	QTreeWidgetItem* fixtureItem(const VCXYPadFixture& fxi);
+    void fillTree();
+    QList <t_fixture_id> selectedFixtureIDs() const;
+    QList <VCXYPadFixture> selectedFixtures() const;
+    QTreeWidgetItem* fixtureItem(const VCXYPadFixture& fxi);
 
-	void updateFixtureItem(QTreeWidgetItem* item,
-			       const VCXYPadFixture& fxi);
-	void removeFixtureItem(t_fixture_id fxi_id);
+    void updateFixtureItem(QTreeWidgetItem* item,
+                           const VCXYPadFixture& fxi);
+    void removeFixtureItem(t_fixture_id fxi_id);
 
 protected slots:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotEditClicked();
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void slotEditClicked();
 
-	void accept();
+    void accept();
 
 protected:
-	VCXYPad* m_xypad;
+    VCXYPad* m_xypad;
 };
 
 #endif

@@ -29,36 +29,44 @@
 
 class AddVCButtonMatrix : public QDialog, public Ui_AddVCButtonMatrix
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	AddVCButtonMatrix(QWidget* parent);
-	~AddVCButtonMatrix();
+    AddVCButtonMatrix(QWidget* parent);
+    ~AddVCButtonMatrix();
 
 public:
-	QList <t_function_id> functions() const { return m_functions; }
+    QList <t_function_id> functions() const {
+        return m_functions;
+    }
 
-	quint32 horizontalCount() const { return m_horizontalCount; }
-	quint32 verticalCount() const { return m_verticalCount; }
-	quint32 buttonSize() const { return m_buttonSize; }
+    quint32 horizontalCount() const {
+        return m_horizontalCount;
+    }
+    quint32 verticalCount() const {
+        return m_verticalCount;
+    }
+    quint32 buttonSize() const {
+        return m_buttonSize;
+    }
 
 protected slots:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotHorizontalChanged();
-	void slotVerticalChanged();
-	void slotButtonSizeChanged();
-	void accept();
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void slotHorizontalChanged();
+    void slotVerticalChanged();
+    void slotButtonSizeChanged();
+    void accept();
 
 private:
-	void addFunction(t_function_id fid);
-	void setAllocationText();
+    void addFunction(t_function_id fid);
+    void setAllocationText();
 
 private:
-	QList <t_function_id> m_functions;
-	quint32 m_horizontalCount;
-	quint32 m_verticalCount;
-	quint32 m_buttonSize;
+    QList <t_function_id> m_functions;
+    quint32 m_horizontalCount;
+    quint32 m_verticalCount;
+    quint32 m_buttonSize;
 };
 
 #endif

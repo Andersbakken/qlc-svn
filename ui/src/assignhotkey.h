@@ -31,30 +31,32 @@ class QKeyEvent;
 
 class AssignHotKey : public QDialog, public Ui_AssignHotKey
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	AssignHotKey(QWidget* parent, const QKeySequence& keySequence);
-	~AssignHotKey();
+    AssignHotKey(QWidget* parent, const QKeySequence& keySequence);
+    ~AssignHotKey();
 
 private:
-	Q_DISABLE_COPY(AssignHotKey)
+    Q_DISABLE_COPY(AssignHotKey)
 
 protected:
-	void keyPressEvent(QKeyEvent* event);
+    void keyPressEvent(QKeyEvent* event);
 
-	/*********************************************************************
-	 * Key sequence
-	 *********************************************************************/
+    /*********************************************************************
+     * Key sequence
+     *********************************************************************/
 public:
-	/** Get the key sequence */
-	QKeySequence keySequence() const { return m_keySequence; }
+    /** Get the key sequence */
+    QKeySequence keySequence() const {
+        return m_keySequence;
+    }
 
 protected:
-	QKeySequence m_keySequence;
+    QKeySequence m_keySequence;
 };
 
 #endif

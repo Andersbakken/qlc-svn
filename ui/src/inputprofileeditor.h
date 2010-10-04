@@ -32,50 +32,50 @@ class QLCInputProfile;
 
 class InputProfileEditor : public QDialog, public Ui_InputProfileEditor
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	InputProfileEditor(QWidget* parent, QLCInputProfile* profile);
-	virtual ~InputProfileEditor();
+    InputProfileEditor(QWidget* parent, QLCInputProfile* profile);
+    virtual ~InputProfileEditor();
 
 private:
-	Q_DISABLE_COPY(InputProfileEditor)
+    Q_DISABLE_COPY(InputProfileEditor)
 
 protected:
-	void fillTree();
-	void updateChannelItem(QTreeWidgetItem* item, QLCInputChannel* ch);
+    void fillTree();
+    void updateChannelItem(QTreeWidgetItem* item, QLCInputChannel* ch);
 
-	/********************************************************************
-	 * OK & Cancel
-	 ********************************************************************/
+    /********************************************************************
+     * OK & Cancel
+     ********************************************************************/
 public slots:
-	void reject();
-	void accept();
+    void reject();
+    void accept();
 
-	/********************************************************************
-	 * Editing
-	 ********************************************************************/
+    /********************************************************************
+     * Editing
+     ********************************************************************/
 protected slots:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotEditClicked();
-	void slotWizardClicked(bool checked);
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void slotEditClicked();
+    void slotWizardClicked(bool checked);
 
-	void slotInputValueChanged(quint32 universe,
-				   quint32 channel,
-				   uchar value);
+    void slotInputValueChanged(quint32 universe,
+                               quint32 channel,
+                               uchar value);
 
-	/********************************************************************
-	 * Profile
-	 ********************************************************************/
+    /********************************************************************
+     * Profile
+     ********************************************************************/
 public:
-	const QLCInputProfile* profile() const;
+    const QLCInputProfile* profile() const;
 
 protected:
-	QLCInputProfile* m_profile;
+    QLCInputProfile* m_profile;
 };
 
 #endif

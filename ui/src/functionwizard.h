@@ -34,29 +34,29 @@ class Scene;
 
 class FunctionWizard : public QDialog, public Ui_FunctionWizard
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	FunctionWizard(QWidget* parent = 0);
-	~FunctionWizard();
+    FunctionWizard(QWidget* parent = 0);
+    ~FunctionWizard();
 
 protected slots:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void accept();
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void accept();
 
-	/********************************************************************
-	 * Fixtures
-	 ********************************************************************/
+    /********************************************************************
+     * Fixtures
+     ********************************************************************/
 protected:
-	/** Add a fixture to the tree widget */
-	void addFixture(t_fixture_id fxi_id);
+    /** Add a fixture to the tree widget */
+    void addFixture(t_fixture_id fxi_id);
 
-	/** Get a list of currently selected fixtures */
-	QList <Fixture*> fixtures() const;
+    /** Get a list of currently selected fixtures */
+    QList <Fixture*> fixtures() const;
 
-	/** Get a list of currently selected fixture ids */
-	QList <t_fixture_id> fixtureIds() const;
+    /** Get a list of currently selected fixture ids */
+    QList <t_fixture_id> fixtureIds() const;
 };
 
 #endif

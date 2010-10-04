@@ -31,51 +31,53 @@ class QToolBar;
 
 class BusManager : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/*********************************************************************
-	 * Initialization
-	 *********************************************************************/
+    /*********************************************************************
+     * Initialization
+     *********************************************************************/
 public:
-	/** Get the BusManager singleton instance. Can be NULL. */
-	static BusManager* instance() { return s_instance; }
+    /** Get the BusManager singleton instance. Can be NULL. */
+    static BusManager* instance() {
+        return s_instance;
+    }
 
-	/** Create a BusManager with parent. Fails if s_instance is not NULL. */
-	static void create(QWidget* parent);
+    /** Create a BusManager with parent. Fails if s_instance is not NULL. */
+    static void create(QWidget* parent);
 
-	/** Normal public destructor */
-	~BusManager();
+    /** Normal public destructor */
+    ~BusManager();
 
 private:
-	Q_DISABLE_COPY(BusManager)
+    Q_DISABLE_COPY(BusManager)
 
 protected:
-	/** Protected constructor to prevent multiple instances. */
-	BusManager(QWidget* parent, Qt::WindowFlags f = 0);
+    /** Protected constructor to prevent multiple instances. */
+    BusManager(QWidget* parent, Qt::WindowFlags f = 0);
 
 protected:
-	static BusManager* s_instance;
+    static BusManager* s_instance;
 
-	/*********************************************************************
-	 * Toolbar
-	 *********************************************************************/
+    /*********************************************************************
+     * Toolbar
+     *********************************************************************/
 protected slots:
-	void slotEditClicked();
+    void slotEditClicked();
 
 protected:
-	QToolBar* m_toolbar;
+    QToolBar* m_toolbar;
 
-	/*********************************************************************
-	 * Tree widget
-	 *********************************************************************/
+    /*********************************************************************
+     * Tree widget
+     *********************************************************************/
 protected:
-	void fillTree();
+    void fillTree();
 
 protected slots:
-	void slotItemChanged(QTreeWidgetItem* item, int column);
+    void slotItemChanged(QTreeWidgetItem* item, int column);
 
 protected:
-	QTreeWidget* m_tree;
+    QTreeWidget* m_tree;
 };
 
 #endif

@@ -39,20 +39,20 @@ static const unsigned int KColumnOutput = 1;
  *****************************************************************************/
 
 ConfigureOLAOut::ConfigureOLAOut(QWidget* parent, OLAOut* plugin)
-    : QDialog(parent)
+        : QDialog(parent)
 {
-  Q_ASSERT(plugin != NULL);
-  m_plugin = plugin;
+    Q_ASSERT(plugin != NULL);
+    m_plugin = plugin;
 
-  setupUi(this);
-  populateOutputList();
-	
-  m_standaloneCheck->setChecked(m_plugin->isServerEmbedded());
+    setupUi(this);
+    populateOutputList();
+
+    m_standaloneCheck->setChecked(m_plugin->isServerEmbedded());
 }
 
 ConfigureOLAOut::~ConfigureOLAOut()
 {
-  m_plugin->setServerEmbedded(m_standaloneCheck->isChecked());
+    m_plugin->setServerEmbedded(m_standaloneCheck->isChecked());
 }
 
 /*****************************************************************************
@@ -61,13 +61,13 @@ ConfigureOLAOut::~ConfigureOLAOut()
 
 void ConfigureOLAOut::populateOutputList()
 {
-  m_listView->clear();
-  OutputList outputs = m_plugin->outputMapping();
+    m_listView->clear();
+    OutputList outputs = m_plugin->outputMapping();
 
-  for (int i = 0; i != outputs.size(); ++i)
-  {
-    QTreeWidgetItem* item = new QTreeWidgetItem(m_listView);
-    item->setText(KColumnName, QString("OLA Output %1").arg(i + 1));
-    item->setText(KColumnOutput, QString("%1").arg(outputs[i]));
-  }
+    for (int i = 0; i != outputs.size(); ++i)
+    {
+        QTreeWidgetItem* item = new QTreeWidgetItem(m_listView);
+        item->setText(KColumnName, QString("OLA Output %1").arg(i + 1));
+        item->setText(KColumnOutput, QString("%1").arg(outputs[i]));
+    }
 }

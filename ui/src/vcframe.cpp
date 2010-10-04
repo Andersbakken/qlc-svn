@@ -48,10 +48,10 @@ extern App* _app;
 
 VCFrame::VCFrame(QWidget* parent) : VCWidget(parent)
 {
-	/* Set the class name "VCFrame" as the object name as well */
-	setObjectName(VCFrame::staticMetaObject.className());
+    /* Set the class name "VCFrame" as the object name as well */
+    setObjectName(VCFrame::staticMetaObject.className());
 
-	m_frameStyle = KVCFrameStyleSunken;
+    m_frameStyle = KVCFrameStyleSunken;
 }
 
 VCFrame::~VCFrame()
@@ -60,18 +60,18 @@ VCFrame::~VCFrame()
 
 bool VCFrame::isBottomFrame()
 {
-	/* If this widget has a parent that is NOT a VCFrame, this widget
-	   is the bottom frame. */
-	if (parentWidget() != NULL &&
-	    QString(parentWidget()->metaObject()->className()) !=
-	    QString(VCFrame::staticMetaObject.className()))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    /* If this widget has a parent that is NOT a VCFrame, this widget
+       is the bottom frame. */
+    if (parentWidget() != NULL &&
+            QString(parentWidget()->metaObject()->className()) !=
+            QString(VCFrame::staticMetaObject.className()))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /*****************************************************************************
@@ -80,28 +80,28 @@ bool VCFrame::isBottomFrame()
 
 VCWidget* VCFrame::createCopy(VCWidget* parent)
 {
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(parent != NULL);
 
-	VCFrame* frame = new VCFrame(parent);
-	if (frame->copyFrom(this) == false)
-	{
-		delete frame;
-		frame = NULL;
-	}
+    VCFrame* frame = new VCFrame(parent);
+    if (frame->copyFrom(this) == false)
+    {
+        delete frame;
+        frame = NULL;
+    }
 
-	return frame;
+    return frame;
 }
 
 bool VCFrame::copyFrom(VCWidget* widget)
 {
-	VCFrame* frame = qobject_cast<VCFrame*> (widget);
-	if (frame == NULL)
-		return false;
+    VCFrame* frame = qobject_cast<VCFrame*> (widget);
+    if (frame == NULL)
+        return false;
 
-	/* TODO: Copy children? */
+    /* TODO: Copy children? */
 
-	/* Copy common stuff */
-	return VCWidget::copyFrom(widget);
+    /* Copy common stuff */
+    return VCWidget::copyFrom(widget);
 }
 
 /*****************************************************************************
@@ -110,137 +110,137 @@ bool VCFrame::copyFrom(VCWidget* widget)
 
 bool VCFrame::loader(const QDomElement* root, QWidget* parent)
 {
-	VCFrame* frame = NULL;
+    VCFrame* frame = NULL;
 
-	Q_ASSERT(root != NULL);
-	Q_ASSERT(parent != NULL);
+    Q_ASSERT(root != NULL);
+    Q_ASSERT(parent != NULL);
 
-	if (root->tagName() != KXMLQLCVCFrame)
-	{
-		qDebug() << "Frame node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCFrame)
+    {
+        qDebug() << "Frame node not found!";
+        return false;
+    }
 
-	/* Create a new frame into its parent */
-	frame = new VCFrame(parent);
-	frame->show();
+    /* Create a new frame into its parent */
+    frame = new VCFrame(parent);
+    frame->show();
 
-	/* Continue loading */
-	return frame->loadXML(root);
+    /* Continue loading */
+    return frame->loadXML(root);
 }
 
 bool VCFrame::loadXML(const QDomElement* root)
 {
-	bool visible = false;
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
+    bool visible = false;
+    int x = 0;
+    int y = 0;
+    int w = 0;
+    int h = 0;
 
-	QDomNode node;
-	QDomElement tag;
-	QString str;
+    QDomNode node;
+    QDomElement tag;
+    QString str;
 
-	Q_ASSERT(root != NULL);
+    Q_ASSERT(root != NULL);
 
-	if (root->tagName() != KXMLQLCVCFrame)
-	{
-		qDebug() << "Frame node not found!";
-		return false;
-	}
+    if (root->tagName() != KXMLQLCVCFrame)
+    {
+        qDebug() << "Frame node not found!";
+        return false;
+    }
 
-	/* Caption */
-	setCaption(root->attribute(KXMLQLCVCCaption));
+    /* Caption */
+    setCaption(root->attribute(KXMLQLCVCCaption));
 
-	/* Children */
-	node = root->firstChild();
-	while (node.isNull() == false)
-	{
-		tag = node.toElement();
-		if (tag.tagName() == KXMLQLCWindowState)
-		{
-			loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
-			setGeometry(x, y, w, h);
-		}
-		else if (tag.tagName() == KXMLQLCVCAppearance)
-		{
-			loadXMLAppearance(&tag);
-		}
-		else if (tag.tagName() == KXMLQLCVCFrame)
-		{
-			VCFrame::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCVCLabel)
-		{
-			VCLabel::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCVCButton)
-		{
-			VCButton::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCVCXYPad)
-		{
-			VCXYPad::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCVCSlider)
-		{
-			VCSlider::loader(&tag, this);
-		}
-		else if (tag.tagName() == KXMLQLCVCCueList)
-		{
-			VCCueList::loader(&tag, this);
-		}
-		else
-		{
-			qDebug() << "Unknown frame tag:" << tag.tagName();
-		}
-		
-		node = node.nextSibling();
-	}
+    /* Children */
+    node = root->firstChild();
+    while (node.isNull() == false)
+    {
+        tag = node.toElement();
+        if (tag.tagName() == KXMLQLCWindowState)
+        {
+            loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
+            setGeometry(x, y, w, h);
+        }
+        else if (tag.tagName() == KXMLQLCVCAppearance)
+        {
+            loadXMLAppearance(&tag);
+        }
+        else if (tag.tagName() == KXMLQLCVCFrame)
+        {
+            VCFrame::loader(&tag, this);
+        }
+        else if (tag.tagName() == KXMLQLCVCLabel)
+        {
+            VCLabel::loader(&tag, this);
+        }
+        else if (tag.tagName() == KXMLQLCVCButton)
+        {
+            VCButton::loader(&tag, this);
+        }
+        else if (tag.tagName() == KXMLQLCVCXYPad)
+        {
+            VCXYPad::loader(&tag, this);
+        }
+        else if (tag.tagName() == KXMLQLCVCSlider)
+        {
+            VCSlider::loader(&tag, this);
+        }
+        else if (tag.tagName() == KXMLQLCVCCueList)
+        {
+            VCCueList::loader(&tag, this);
+        }
+        else
+        {
+            qDebug() << "Unknown frame tag:" << tag.tagName();
+        }
 
-	return true;
+        node = node.nextSibling();
+    }
+
+    return true;
 }
 
 bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
-	QDomElement root;
-	QDomElement tag;
-	QDomText text;
-	QString str;
+    QDomElement root;
+    QDomElement tag;
+    QDomText text;
+    QString str;
 
-	Q_ASSERT(doc != NULL);
-	Q_ASSERT(vc_root != NULL);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(vc_root != NULL);
 
-	/* VC Frame entry */
-	root = doc->createElement(KXMLQLCVCFrame);
-	vc_root->appendChild(root);
+    /* VC Frame entry */
+    root = doc->createElement(KXMLQLCVCFrame);
+    vc_root->appendChild(root);
 
-	/* Caption */
-	root.setAttribute(KXMLQLCVCCaption, caption());
+    /* Caption */
+    root.setAttribute(KXMLQLCVCCaption, caption());
 
-	/* Save appearance */
-	saveXMLAppearance(doc, &root);
+    /* Save appearance */
+    saveXMLAppearance(doc, &root);
 
-	/* Save widget proportions only for child frames */
-	if (isBottomFrame() == false)
-		saveXMLWindowState(doc, &root);
+    /* Save widget proportions only for child frames */
+    if (isBottomFrame() == false)
+        saveXMLWindowState(doc, &root);
 
-	/* Save children */
-	QListIterator <VCWidget*> it(findChildren<VCWidget*>());
-	while (it.hasNext() == true)
-	{
-		VCWidget* widget = it.next();
+    /* Save children */
+    QListIterator <VCWidget*> it(findChildren<VCWidget*>());
+    while (it.hasNext() == true)
+    {
+        VCWidget* widget = it.next();
 
-		/* findChildren() is recursive, so the list contains all
-		   possible child widgets below this frame. Each frame must
-		   save only its direct children to preserve hierarchy, so
-		   save only such widgets that have this widget as their
-		   direct parent. */
-		if (widget->parentWidget() == this)
-			widget->saveXML(doc, &root);
-	}
+        /* findChildren() is recursive, so the list contains all
+           possible child widgets below this frame. Each frame must
+           save only its direct children to preserve hierarchy, so
+           save only such widgets that have this widget as their
+           direct parent. */
+        if (widget->parentWidget() == this)
+            widget->saveXML(doc, &root);
+    }
 
-	return true;
+    return true;
 }
 
 /*****************************************************************************
@@ -249,20 +249,20 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
 
 QMenu* VCFrame::customMenu(QMenu* parentMenu)
 {
-	/* No point coming here if there is no VC */
-	VirtualConsole* vc = VirtualConsole::instance();
-	if (vc == NULL)
-		return NULL;
+    /* No point coming here if there is no VC */
+    VirtualConsole* vc = VirtualConsole::instance();
+    if (vc == NULL)
+        return NULL;
 
-	/* Basically, just returning VC::addMenu() would suffice here, but
-	   since the returned menu will be deleted when the current widget
-	   changes, we have to copy the menu's contents into a new menu. */
-	QMenu* menu = new QMenu(parentMenu);
-	menu->setTitle(tr("Add"));
-	QListIterator <QAction*> it(vc->addMenu()->actions());
-	while (it.hasNext() == true)
-		menu->addAction(it.next());
-	return menu;
+    /* Basically, just returning VC::addMenu() would suffice here, but
+       since the returned menu will be deleted when the current widget
+       changes, we have to copy the menu's contents into a new menu. */
+    QMenu* menu = new QMenu(parentMenu);
+    menu->setTitle(tr("Add"));
+    QListIterator <QAction*> it(vc->addMenu()->actions());
+    while (it.hasNext() == true)
+        menu->addAction(it.next());
+    return menu;
 }
 
 /*****************************************************************************
@@ -271,23 +271,23 @@ QMenu* VCFrame::customMenu(QMenu* parentMenu)
 
 void VCFrame::handleWidgetSelection(QMouseEvent* e)
 {
-	/* No point coming here if there is no VC */
-	VirtualConsole* vc = VirtualConsole::instance();
-	if (vc == NULL)
-		return;
+    /* No point coming here if there is no VC */
+    VirtualConsole* vc = VirtualConsole::instance();
+    if (vc == NULL)
+        return;
 
-	/* Don't allow selection of the bottom frame. Selecting it will always
-	   actually clear the current selection. */
-	if (isBottomFrame() == false)
-		VCWidget::handleWidgetSelection(e);
-	else
-		vc->clearWidgetSelection(); 
+    /* Don't allow selection of the bottom frame. Selecting it will always
+       actually clear the current selection. */
+    if (isBottomFrame() == false)
+        VCWidget::handleWidgetSelection(e);
+    else
+        vc->clearWidgetSelection();
 }
 
 void VCFrame::mouseMoveEvent(QMouseEvent* e)
 {
-	if (isBottomFrame() == false)
-		VCWidget::mouseMoveEvent(e);
-	else
-		QWidget::mouseMoveEvent(e);
+    if (isBottomFrame() == false)
+        VCWidget::mouseMoveEvent(e);
+    else
+        QWidget::mouseMoveEvent(e);
 }

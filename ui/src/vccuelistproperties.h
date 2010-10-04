@@ -31,27 +31,27 @@ class VCCueList;
 
 class VCCueListProperties : public QDialog, public Ui_VCCueListProperties
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	VCCueListProperties(QWidget* parent, VCCueList* cueList);
-	~VCCueListProperties();
+    VCCueListProperties(QWidget* parent, VCCueList* cueList);
+    ~VCCueListProperties();
 
 private:
-	Q_DISABLE_COPY(VCCueListProperties)
+    Q_DISABLE_COPY(VCCueListProperties)
 
 protected slots:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotRaiseClicked();
-	void slotLowerClicked();
-	void slotAttachClicked();
-	void slotDetachClicked();
-	void accept();
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void slotRaiseClicked();
+    void slotLowerClicked();
+    void slotAttachClicked();
+    void slotDetachClicked();
+    void accept();
 
 protected:
-	VCCueList* m_cueList;
-	QKeySequence m_keySequence;
+    VCCueList* m_cueList;
+    QKeySequence m_keySequence;
 };
 
 #endif

@@ -34,56 +34,56 @@
 
 class QLC_DECLSPEC EShortcutWing : public EWing
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	/********************************************************************
-	 * Initialization
-	 ********************************************************************/
+    /********************************************************************
+     * Initialization
+     ********************************************************************/
 public:
-	/**
-	 * Construct a new EShortcutWing object. This object represents an
-	 * ENTTEC Shortcut Wing at the given IP address.
-	 *
-	 * @param parent The parent object that owns the new wing object.
-	 * @param address The address of the physical wing board.
-	 * @param data A UDP datagram packet originating from a wing.
-	 */
-	EShortcutWing(QObject* parent, const QHostAddress& address,
-		      const QByteArray& data);
+    /**
+     * Construct a new EShortcutWing object. This object represents an
+     * ENTTEC Shortcut Wing at the given IP address.
+     *
+     * @param parent The parent object that owns the new wing object.
+     * @param address The address of the physical wing board.
+     * @param data A UDP datagram packet originating from a wing.
+     */
+    EShortcutWing(QObject* parent, const QHostAddress& address,
+                  const QByteArray& data);
 
-	/**
-	 * Destructor.
-	 */
-	~EShortcutWing();
+    /**
+     * Destructor.
+     */
+    ~EShortcutWing();
 
-	/********************************************************************
-	 * Data
-	 ********************************************************************/
+    /********************************************************************
+     * Data
+     ********************************************************************/
 public:
-	/**
-	 * Return the name of the wing.
-	 *
-	 * @return The name of the device in the form "Shortcut at <address>"
-	 */
-	QString name() const;
+    /**
+     * Return the name of the wing.
+     *
+     * @return The name of the device in the form "Shortcut at <address>"
+     */
+    QString name() const;
 
-	/**
-	 * Return an info string describing the device's state.
-	 *
-	 * @return Information string.
-	 */
-	QString infoText() const;
+    /**
+     * Return an info string describing the device's state.
+     *
+     * @return Information string.
+     */
+    QString infoText() const;
 
-	/********************************************************************
-	 * Input data
-	 ********************************************************************/
+    /********************************************************************
+     * Input data
+     ********************************************************************/
 public:
-	/**
-	 * Parse input data and generate signals for each changed value.
-	 *
-	 * @param data The data packet to parse
-	 */
-	void parseData(const QByteArray& data);
+    /**
+     * Parse input data and generate signals for each changed value.
+     *
+     * @param data The data packet to parse
+     */
+    void parseData(const QByteArray& data);
 };
 
 #endif

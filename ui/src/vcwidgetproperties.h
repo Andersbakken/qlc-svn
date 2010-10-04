@@ -40,28 +40,40 @@ class QWidget;
 class VCWidgetProperties
 {
 public:
-	VCWidgetProperties();
-	VCWidgetProperties(const VCWidgetProperties& properties);
-	virtual ~VCWidgetProperties();
+    VCWidgetProperties();
+    VCWidgetProperties(const VCWidgetProperties& properties);
+    virtual ~VCWidgetProperties();
 
-	QFlags <Qt::WindowState> state() const { return m_state; }
-	bool visible() const { return m_visible; }
-	int x() const { return m_x; }
-	int y() const { return m_y; }
-	int width() const { return m_width; }
-	int height() const { return m_height; }
+    QFlags <Qt::WindowState> state() const {
+        return m_state;
+    }
+    bool visible() const {
+        return m_visible;
+    }
+    int x() const {
+        return m_x;
+    }
+    int y() const {
+        return m_y;
+    }
+    int width() const {
+        return m_width;
+    }
+    int height() const {
+        return m_height;
+    }
 
-	virtual void store(QWidget* widget);
-	virtual bool loadXML(const QDomElement* root);
-	virtual bool saveXML(QDomDocument* doc, QDomElement* root);
+    virtual void store(QWidget* widget);
+    virtual bool loadXML(const QDomElement* root);
+    virtual bool saveXML(QDomDocument* doc, QDomElement* root);
 
 protected:
-	QFlags <Qt::WindowState> m_state;
-	bool m_visible;
-	int m_x;
-	int m_y;
-	int m_width;
-	int m_height;
+    QFlags <Qt::WindowState> m_state;
+    bool m_visible;
+    int m_x;
+    int m_y;
+    int m_width;
+    int m_height;
 };
 
 #endif

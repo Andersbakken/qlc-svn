@@ -37,110 +37,110 @@ extern App* _app;
 
 AddVCButtonMatrix::AddVCButtonMatrix(QWidget* parent) : QDialog(parent)
 {
-	QSettings settings;
-	QVariant var;
+    QSettings settings;
+    QVariant var;
 
-	setupUi(this);
+    setupUi(this);
 
-	var = settings.value(HORIZONTAL_COUNT);
-	if (var.isValid() == true)
-		m_horizontalSpin->setValue(var.toInt());
-	else
-		m_horizontalSpin->setValue(5);
-	m_horizontalCount = m_horizontalSpin->value();
+    var = settings.value(HORIZONTAL_COUNT);
+    if (var.isValid() == true)
+        m_horizontalSpin->setValue(var.toInt());
+    else
+        m_horizontalSpin->setValue(5);
+    m_horizontalCount = m_horizontalSpin->value();
 
-	var = settings.value(VERTICAL_COUNT);
-	if (var.isValid() == true)
-		m_verticalSpin->setValue(var.toInt());
-	else
-		m_verticalSpin->setValue(5);
-	m_verticalCount = m_verticalSpin->value();
+    var = settings.value(VERTICAL_COUNT);
+    if (var.isValid() == true)
+        m_verticalSpin->setValue(var.toInt());
+    else
+        m_verticalSpin->setValue(5);
+    m_verticalCount = m_verticalSpin->value();
 
-	var = settings.value(BUTTON_SIZE);
-	if (var.isValid() == true)
-		m_sizeSpin->setValue(var.toInt());
-	else
-		m_sizeSpin->setValue(VCButton::defaultSize.width());
-	m_buttonSize = m_sizeSpin->value();
+    var = settings.value(BUTTON_SIZE);
+    if (var.isValid() == true)
+        m_sizeSpin->setValue(var.toInt());
+    else
+        m_sizeSpin->setValue(VCButton::defaultSize.width());
+    m_buttonSize = m_sizeSpin->value();
 
-	setAllocationText();
+    setAllocationText();
 }
 
 AddVCButtonMatrix::~AddVCButtonMatrix()
 {
-	QSettings settings;
-	settings.setValue(HORIZONTAL_COUNT, horizontalCount());
-	settings.setValue(VERTICAL_COUNT, verticalCount());
-	settings.setValue(BUTTON_SIZE, buttonSize());
+    QSettings settings;
+    settings.setValue(HORIZONTAL_COUNT, horizontalCount());
+    settings.setValue(VERTICAL_COUNT, verticalCount());
+    settings.setValue(BUTTON_SIZE, buttonSize());
 }
 
 void AddVCButtonMatrix::slotAddClicked()
 {
-	FunctionSelection fs(this, true);
-	fs.setDisabledFunctions(functions());
-	if (fs.exec() == true)
-	{
-		QListIterator <t_function_id> it(fs.selection());
-		while (it.hasNext() == true)
-			addFunction(it.next());
-	}
+    FunctionSelection fs(this, true);
+    fs.setDisabledFunctions(functions());
+    if (fs.exec() == true)
+    {
+        QListIterator <t_function_id> it(fs.selection());
+        while (it.hasNext() == true)
+            addFunction(it.next());
+    }
 
-	setAllocationText();
+    setAllocationText();
 }
 
 void AddVCButtonMatrix::slotRemoveClicked()
 {
-	QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-	while (it.hasNext() == true)
-	{
-		QTreeWidgetItem* item(it.next());
-		m_functions.removeAll(
-			item->data(KColumnFunction, Qt::UserRole).toInt());
-		delete item;
-	}
+    QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
+    while (it.hasNext() == true)
+    {
+        QTreeWidgetItem* item(it.next());
+        m_functions.removeAll(
+            item->data(KColumnFunction, Qt::UserRole).toInt());
+        delete item;
+    }
 
-	setAllocationText();
+    setAllocationText();
 }
 
 void AddVCButtonMatrix::slotHorizontalChanged()
 {
-	m_horizontalCount = m_horizontalSpin->value();
-	setAllocationText();
+    m_horizontalCount = m_horizontalSpin->value();
+    setAllocationText();
 }
 
 void AddVCButtonMatrix::slotVerticalChanged()
 {
-	m_verticalCount = m_verticalSpin->value();
-	setAllocationText();
+    m_verticalCount = m_verticalSpin->value();
+    setAllocationText();
 }
 
 void AddVCButtonMatrix::slotButtonSizeChanged()
 {
-	m_buttonSize = m_sizeSpin->value();
+    m_buttonSize = m_sizeSpin->value();
 }
 
 void AddVCButtonMatrix::accept()
 {
-	QDialog::accept();
+    QDialog::accept();
 }
 
 void AddVCButtonMatrix::addFunction(t_function_id fid)
 {
-	Function* function = _app->doc()->function(fid);
-	if (function == NULL)
-		return;
+    Function* function = _app->doc()->function(fid);
+    if (function == NULL)
+        return;
 
-	QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
-	item->setText(KColumnFunction, function->name());
-	item->setText(KColumnType, function->typeString());
-	item->setData(KColumnFunction, Qt::UserRole, fid);
+    QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
+    item->setText(KColumnFunction, function->name());
+    item->setText(KColumnType, function->typeString());
+    item->setData(KColumnFunction, Qt::UserRole, fid);
 
-	m_functions << fid;
+    m_functions << fid;
 }
 
 void AddVCButtonMatrix::setAllocationText()
 {
-	QString text("%1 / %2");
-	m_allocationEdit->setText(text.arg(m_tree->topLevelItemCount())
-				      .arg(horizontalCount() * verticalCount()));
+    QString text("%1 / %2");
+    m_allocationEdit->setText(text.arg(m_tree->topLevelItemCount())
+                              .arg(horizontalCount() * verticalCount()));
 }

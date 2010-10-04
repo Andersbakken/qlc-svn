@@ -27,9 +27,9 @@
  ****************************************************************************/
 
 MasterTimerStub::MasterTimerStub(QObject* parent, OutputMap* outputMap,
-				 QByteArray& universes)
-	: MasterTimer(parent, outputMap),
-	m_universes(universes)
+                                 QByteArray& universes)
+        : MasterTimer(parent, outputMap),
+        m_universes(universes)
 {
 }
 
@@ -39,23 +39,23 @@ MasterTimerStub::~MasterTimerStub()
 
 void MasterTimerStub::startFunction(Function* function)
 {
-	m_functionList.append(function);
-	function->preRun(this);
+    m_functionList.append(function);
+    function->preRun(this);
 }
 
 void MasterTimerStub::stopFunction(Function* function)
 {
-	m_functionList.removeAll(function);
-	function->postRun(this, &m_universes);
+    m_functionList.removeAll(function);
+    function->postRun(this, &m_universes);
 }
 
 void MasterTimerStub::registerDMXSource(DMXSource* source)
 {
-	m_dmxSourceList.append(source);
+    m_dmxSourceList.append(source);
 }
 
 void MasterTimerStub::unregisterDMXSource(DMXSource* source)
 {
-	m_dmxSourceList.removeAll(source);
+    m_dmxSourceList.removeAll(source);
 }
 

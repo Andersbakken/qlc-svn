@@ -34,74 +34,74 @@ const QString KFixtureFilter ("Fixtures (*.qxf)");
 
 class App : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	App(QWidget* parent = 0);
-	~App();
+    App(QWidget* parent = 0);
+    ~App();
 
-	static QString longName();
-	static QString version();
+    static QString longName();
+    static QString version();
 
-	/**
-	 * Load a fixture definition from the given path and open it in
-	 * a new editor window.
-	 *
-	 * @param path The file path to open
-	 */
-	void loadFixtureDefinition(const QString& path);
+    /**
+     * Load a fixture definition from the given path and open it in
+     * a new editor window.
+     *
+     * @param path The file path to open
+     */
+    void loadFixtureDefinition(const QString& path);
 
 protected:
-	void closeEvent(QCloseEvent*);
+    void closeEvent(QCloseEvent*);
 
-	/*********************************************************************
-	 * Copy channel
-	 *********************************************************************/
+    /*********************************************************************
+     * Copy channel
+     *********************************************************************/
 public:
-	void setCopyChannel(QLCChannel* ch);
-	QLCChannel* copyChannel() const;
+    void setCopyChannel(QLCChannel* ch);
+    QLCChannel* copyChannel() const;
 
 signals:
-	/** Signal telling that the contents of the clipboard have changed */
-	void clipboardChanged();
+    /** Signal telling that the contents of the clipboard have changed */
+    void clipboardChanged();
 
 protected:
-	QLCChannel* m_copyChannel;
+    QLCChannel* m_copyChannel;
 
-	/*********************************************************************
-	 * Actions, toolbar & menubar
-	 *********************************************************************/
+    /*********************************************************************
+     * Actions, toolbar & menubar
+     *********************************************************************/
 protected:
-	void initActions();
-	void initMenuBar();
-	void initToolBar();
-
-protected:
-	QAction* m_fileNewAction;
-	QAction* m_fileOpenAction;
-	QAction* m_fileSaveAction;
-	QAction* m_fileSaveAsAction;
-	QAction* m_fileQuitAction;
-
-	QAction* m_helpIndexAction;
-	QAction* m_helpAboutAction;
-	QAction* m_helpAboutQtAction;
+    void initActions();
+    void initMenuBar();
+    void initToolBar();
 
 protected:
-	QMenu* m_fileMenu;
-	QMenu* m_helpMenu;
-	QToolBar* m_toolBar;
+    QAction* m_fileNewAction;
+    QAction* m_fileOpenAction;
+    QAction* m_fileSaveAction;
+    QAction* m_fileSaveAsAction;
+    QAction* m_fileQuitAction;
+
+    QAction* m_helpIndexAction;
+    QAction* m_helpAboutAction;
+    QAction* m_helpAboutQtAction;
+
+protected:
+    QMenu* m_fileMenu;
+    QMenu* m_helpMenu;
+    QToolBar* m_toolBar;
 
 protected slots:
-	void slotFileNew();
-	void slotFileOpen();
-	void slotFileSave();
-	void slotFileSaveAs();
-	void slotFileQuit();
+    void slotFileNew();
+    void slotFileOpen();
+    void slotFileSave();
+    void slotFileSaveAs();
+    void slotFileQuit();
 
-	void slotHelpIndex();
-	void slotHelpAbout();
-	void slotHelpAboutQt();
+    void slotHelpIndex();
+    void slotHelpAbout();
+    void slotHelpAboutQt();
 };
 
 #endif

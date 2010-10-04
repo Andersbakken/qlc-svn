@@ -31,13 +31,13 @@ class QByteArray;
 class DMXSource_Stub : public DMXSource
 {
 public:
-	DMXSource_Stub();
-	~DMXSource_Stub();
+    DMXSource_Stub();
+    ~DMXSource_Stub();
 
-	void writeDMX(MasterTimer* timer, QByteArray* universes);
+    void writeDMX(MasterTimer* timer, QByteArray* universes);
 
-	/** Number of calls to writeDMX() */
-	int m_writeCalls;
+    /** Number of calls to writeDMX() */
+    int m_writeCalls;
 };
 
 #endif
