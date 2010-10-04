@@ -4,18 +4,17 @@ TEMPLATE = app
 LANGUAGE = C++
 TARGET   = test_ui
 
-QMAKE_CXXFLAGS	-= -Werror
-CONFIG		+= qtestlib
-QT 		+= xml
-QT		+= gui
-QTPLUGIN	 =
+CONFIG  += qtestlib
+QT      += xml
+QT      += gui
+QTPLUGIN =
 
 INCLUDEPATH += ../../plugins/interfaces
 INCLUDEPATH += ../src
 DEPENDPATH  += ../src
 
 HEADERS = vcwidgetproperties_test.h \
-	  ../src/vcwidgetproperties.h
+          ../src/vcwidgetproperties.h
 SOURCES = vcwidgetproperties_test.cpp \
-	  ../src/vcwidgetproperties.cpp \
-	  main.cpp
+          ../src/vcwidgetproperties.cpp \
+          main.cpp

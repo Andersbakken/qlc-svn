@@ -1,54 +1,54 @@
 include(../../variables.pri)
 
-TEMPLATE 	= app
-LANGUAGE 	= C++
-TARGET 		= qlc
+TEMPLATE = app
+LANGUAGE = C++
+TARGET   = qlc
 
-CONFIG          += qt
-QT 		+= core xml gui
+CONFIG += qt
+QT     += core xml gui
 
 # Engine
-INCLUDEPATH	+= ../../engine/src
-DEPENDPATH	+= ../../engine/src
-unix:LIBS	+= -L../../engine/src -lqlcengine
+INCLUDEPATH += ../../engine/src
+DEPENDPATH  += ../../engine/src
+unix:LIBS   += -L../../engine/src -lqlcengine
 win32:{
-	CONFIG(release, debug|release) LIBS += -L../../engine/src/release -lqlcengine
-	CONFIG(debug, debug|release) LIBS += -L../../engine/src/debug -lqlcengine
+    CONFIG(release, debug|release) LIBS += -L../../engine/src/release -lqlcengine
+    CONFIG(debug, debug|release) LIBS += -L../../engine/src/debug -lqlcengine
 }
 
 # Types
-INCLUDEPATH	+= ../../plugins/interfaces
+INCLUDEPATH += ../../plugins/interfaces
 
 # Resources
-RESOURCES 	+= main.qrc
-win32:RC_FILE	= main.rc
+RESOURCES    += main.qrc
+win32:RC_FILE = main.rc
 
 # Sources
 HEADERS += aboutbox.h \
            addfixture.h \
-	   addvcbuttonmatrix.h \
+           addvcbuttonmatrix.h \
            app.h \
            assignhotkey.h \
            busmanager.h \
            chasereditor.h \
            collectioneditor.h \
            consolechannel.h \
-	   docbrowser.h \
+           docbrowser.h \
            efxeditor.h \
            fixtureconsole.h \
            fixturemanager.h \
            fixtureselection.h \
            functionmanager.h \
            functionselection.h \
-	   functionwizard.h \
+           functionwizard.h \
            generatorarea.h \
-	   inputchanneleditor.h \
-	   inputprofileeditor.h \
+           inputchanneleditor.h \
+           inputprofileeditor.h \
            inputmanager.h \
            inputpatcheditor.h \
            monitor.h \
            monitorfixture.h \
-	   monitorlayout.h \
+           monitorlayout.h \
            outputmanager.h \
            outputpatcheditor.h \
            sceneeditor.h \
@@ -65,25 +65,25 @@ HEADERS += aboutbox.h \
            vcslider.h \
            vcsliderproperties.h \
            vcwidget.h \
-	   vcwidgetproperties.h \
+           vcwidgetproperties.h \
            vcxypad.h \
- 	   vcxypadfixture.h \
- 	   vcxypadfixtureeditor.h \
+           vcxypadfixture.h \
+           vcxypadfixtureeditor.h \
            vcxypadproperties.h \
            virtualconsole.h
 
 FORMS += aboutbox.ui \
-	 addfixture.ui \
-	 addvcbuttonmatrix.ui \
+         addfixture.ui \
+         addvcbuttonmatrix.ui \
          assignhotkey.ui \
          chasereditor.ui \
          collectioneditor.ui \
          efxeditor.ui \
          fixtureselection.ui \
          functionselection.ui \
-	 functionwizard.ui \
-	 inputchanneleditor.ui \
-	 inputprofileeditor.ui \
+         functionwizard.ui \
+         inputchanneleditor.ui \
+         inputprofileeditor.ui \
          inputpatcheditor.ui \
          outputpatcheditor.ui \
          sceneeditor.ui \
@@ -98,30 +98,30 @@ FORMS += aboutbox.ui \
 
 SOURCES += aboutbox.cpp \
            addfixture.cpp \
-	   addvcbuttonmatrix.cpp \
+           addvcbuttonmatrix.cpp \
            app.cpp \
            assignhotkey.cpp \
            busmanager.cpp \
            chasereditor.cpp \
            collectioneditor.cpp \
            consolechannel.cpp \
-	   docbrowser.cpp \
+           docbrowser.cpp \
            efxeditor.cpp \
            fixtureconsole.cpp \
            fixturemanager.cpp \
            fixtureselection.cpp \
            functionmanager.cpp \
            functionselection.cpp \
-	   functionwizard.cpp \
+           functionwizard.cpp \
            generatorarea.cpp \
-	   inputchanneleditor.cpp \
-	   inputprofileeditor.cpp \
+           inputchanneleditor.cpp \
+           inputprofileeditor.cpp \
            inputmanager.cpp \
            inputpatcheditor.cpp \
            main.cpp \
            monitor.cpp \
            monitorfixture.cpp \
-	   monitorlayout.cpp \
+           monitorlayout.cpp \
            outputmanager.cpp \
            outputpatcheditor.cpp \
            sceneeditor.cpp \
@@ -138,7 +138,7 @@ SOURCES += aboutbox.cpp \
            vcslider.cpp \
            vcsliderproperties.cpp \
            vcwidget.cpp \
-	   vcwidgetproperties.cpp \
+           vcwidgetproperties.cpp \
            vcxypad.cpp \
            vcxypadfixture.cpp \
            vcxypadfixtureeditor.cpp \
@@ -152,11 +152,11 @@ TRANSLATIONS += qlc_fr_FR.ts
 include(../../i18n.pri)
 
 macx {
-	# This must be after "TARGET = " and before target installation so that
-	# install_name_tool can be run before target installation
-	include(../../macx/nametool.pri)
+    # This must be after "TARGET = " and before target installation so that
+    # install_name_tool can be run before target installation
+    include(../../macx/nametool.pri)
 }
 
 # Installation
-target.path	= $$INSTALLROOT/$$BINDIR
-INSTALLS	+= target
+target.path = $$INSTALLROOT/$$BINDIR
+INSTALLS   += target

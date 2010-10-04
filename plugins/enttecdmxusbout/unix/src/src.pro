@@ -1,38 +1,38 @@
 include (../../../../variables.pri)
 include (../../../../coverage.pri)
 
-TEMPLATE	= lib
-LANGUAGE	= C++
-TARGET		= enttecdmxusbout
+TEMPLATE = lib
+LANGUAGE = C++
+TARGET   = enttecdmxusbout
 
-INCLUDEPATH	+= ../../../interfaces
+INCLUDEPATH += ../../../interfaces
 
-CONFIG		+= plugin
+CONFIG += plugin
 CONFIG(coverage) {
-	SOURCES += ../test/ftdimock/ftdimock.cpp
-	QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi)	
+    SOURCES += ../test/ftdimock/ftdimock.cpp
+    QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi)    
 } else {
-	CONFIG		+= link_pkgconfig
-	PKGCONFIG	+= libftdi
+    CONFIG    += link_pkgconfig
+    PKGCONFIG += libftdi
 }
 
 HEADERS += enttecdmxusbwidget.h \
-	   enttecdmxusbout.h \
-	   enttecdmxusbpro.h \
-	   enttecdmxusbopen.h
+           enttecdmxusbout.h \
+           enttecdmxusbpro.h \
+           enttecdmxusbopen.h
 
 SOURCES += enttecdmxusbout.cpp \
-	   enttecdmxusbopen.cpp \
-	   enttecdmxusbpro.cpp
+           enttecdmxusbopen.cpp \
+           enttecdmxusbpro.cpp
 
 unix:!macx {
-	QT	+= dbus
-	DEFINES += DBUS_ENABLED
+    QT      += dbus
+    DEFINES += DBUS_ENABLED
 
-	# Rules to make ENTTEC devices readable & writable by normal users
-	udev.path	= /etc/udev/rules.d
-	udev.files	= z65-enttec-dmxusb.rules
-	INSTALLS	+= udev
+    # Rules to make ENTTEC devices readable & writable by normal users
+    udev.path  = /etc/udev/rules.d
+    udev.files = z65-enttec-dmxusb.rules
+    INSTALLS  += udev
 }
 
 PRO_FILE = src.pro
@@ -44,5 +44,5 @@ include(../../../../i18n.pri)
 # install_name_tool can be run before target installation
 macx:include(../../../../macx/nametool.pri)
 
-target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS	+= target
+target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS   += target

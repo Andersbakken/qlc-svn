@@ -1,16 +1,24 @@
 include (../../../variables.pri)
 
-TEMPLATE	= lib
-LANGUAGE	= C++
-TARGET		= peperoniout
+TEMPLATE = lib
+LANGUAGE = C++
+TARGET   = peperoniout
 
-INCLUDEPATH	+= peperoni
-INCLUDEPATH	+= ../../interfaces
-DEPENDPATH	+= peperoni
-CONFIG          += plugin
+INCLUDEPATH += peperoni
+INCLUDEPATH += ../../interfaces
+DEPENDPATH  += peperoni
+CONFIG      += plugin
 
-target.path	= $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS	+= target
+# Headers
+HEADERS += peperoni/usbdmx-dynamic.h \
+           peperoniout.h \
+           peperonidevice.h
 
-HEADERS += peperoni/usbdmx-dynamic.h peperoniout.h peperonidevice.h
-SOURCES += peperoni/usbdmx-dynamic.cpp peperoniout.cpp peperonidevice.cpp
+# Sources
+SOURCES += peperoni/usbdmx-dynamic.cpp \
+           peperoniout.cpp \
+           peperonidevice.cpp
+
+# Installation
+target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS   += target

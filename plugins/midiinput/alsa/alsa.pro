@@ -1,39 +1,39 @@
 include(../../../variables.pri)
 
-TEMPLATE 	= lib
-LANGUAGE 	= C++
-TARGET 		= midiinput
+TEMPLATE = lib
+LANGUAGE = C++
+TARGET   = midiinput
 
-INCLUDEPATH	+= ../common
-INCLUDEPATH	+= ../../interfaces
-DEPENDPATH	+= ../common
-CONFIG          += plugin link_pkgconfig
-PKGCONFIG	+= alsa
+INCLUDEPATH += ../common
+INCLUDEPATH += ../../interfaces
+DEPENDPATH  += ../common
+CONFIG      += plugin link_pkgconfig
+PKGCONFIG   += alsa
 
 ###############################################################################
 # Installation
 ###############################################################################
 
-target.path	= $$INSTALLROOT/$$INPUTPLUGINDIR
-INSTALLS	+= target
+target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
+INSTALLS   += target
 
 ###############################################################################
 # Sources
 ###############################################################################
 
-FORMS		+= ../common/configuremidiinput.ui \
-		   ../common/configuremidiline.ui
+FORMS += ../common/configuremidiinput.ui \
+         ../common/configuremidiline.ui
 
-HEADERS		+= ../common/configuremidiinput.h \
-		   ../common/configuremidiline.h \
-		   ../common/midiinputevent.h \
-		   mididevice.h \
-		   midiinput.h \
-		   midipoller.h
+HEADERS += ../common/configuremidiinput.h \
+           ../common/configuremidiline.h \
+           ../common/midiinputevent.h \
+           mididevice.h \
+           midiinput.h \
+           midipoller.h
 
-SOURCES 	+= ../common/configuremidiinput.cpp \
-		   ../common/configuremidiline.cpp \
-		   ../common/midiinputevent.cpp \
-		   mididevice.cpp \
-		   midiinput.cpp \
-		   midipoller.cpp
+SOURCES += ../common/configuremidiinput.cpp \
+           ../common/configuremidiline.cpp \
+           ../common/midiinputevent.cpp \
+           mididevice.cpp \
+           midiinput.cpp \
+           midipoller.cpp

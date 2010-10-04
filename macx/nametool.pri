@@ -6,13 +6,13 @@
 
 # Libraries
 contains(TEMPLATE, lib) {
-	OUTFILE = libTARGET.dylib
-	OUTFILE = $$replace(OUTFILE, TARGET, $$TARGET)
+    OUTFILE = libTARGET.dylib
+    OUTFILE = $$replace(OUTFILE, TARGET, $$TARGET)
 }
 
 # Executables
 contains(TEMPLATE, app) {
-	OUTFILE = $$TARGET
+    OUTFILE = $$TARGET
 }
 
 include(libusb-nametool.pri)
@@ -25,5 +25,5 @@ include(imageformats-nametool.pri)
 include(libqlcengine-nametool.pri)
 
 # The contents of nametool.path don't matter; it only needs to be non-empty
-nametool.path     = $$INSTALLROOT
-INSTALLS         += nametool
+nametool.path = $$INSTALLROOT
+INSTALLS     += nametool
