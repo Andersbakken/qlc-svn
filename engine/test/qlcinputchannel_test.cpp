@@ -25,6 +25,15 @@
 #include "qlcinputchannel_test.h"
 #include "qlcinputchannel.h"
 
+void QLCInputChannel_Test::types()
+{
+    QStringList list(QLCInputChannel::types());
+    QVERIFY(list.size() == 3);
+    QVERIFY(list.contains(KXMLQLCInputChannelButton));
+    QVERIFY(list.contains(KXMLQLCInputChannelSlider));
+    QVERIFY(list.contains(KXMLQLCInputChannelKnob));
+}
+
 void QLCInputChannel_Test::type()
 {
     QLCInputChannel ch;
@@ -38,6 +47,30 @@ void QLCInputChannel_Test::type()
 
     ch.setType(QLCInputChannel::Knob);
     QVERIFY(ch.type() == QLCInputChannel::Knob);
+}
+
+void QLCInputChannel_Test::typeToString()
+{
+    QCOMPARE(QLCInputChannel::typeToString(QLCInputChannel::Button),
+             QString(KXMLQLCInputChannelButton));
+    QCOMPARE(QLCInputChannel::typeToString(QLCInputChannel::Knob),
+             QString(KXMLQLCInputChannelKnob));
+    QCOMPARE(QLCInputChannel::typeToString(QLCInputChannel::Slider),
+             QString(KXMLQLCInputChannelSlider));
+    QCOMPARE(QLCInputChannel::typeToString(QLCInputChannel::Type(42)),
+             QString(KXMLQLCInputChannelNone));
+}
+
+void QLCInputChannel_Test::stringToType()
+{
+    QCOMPARE(QLCInputChannel::stringToType(QString(KXMLQLCInputChannelButton)),
+             QLCInputChannel::Button);
+    QCOMPARE(QLCInputChannel::stringToType(QString(KXMLQLCInputChannelSlider)),
+             QLCInputChannel::Slider);
+    QCOMPARE(QLCInputChannel::stringToType(QString(KXMLQLCInputChannelKnob)),
+             QLCInputChannel::Knob);
+    QCOMPARE(QLCInputChannel::stringToType(QString("foobar")),
+             QLCInputChannel::NoType);
 }
 
 void QLCInputChannel_Test::name()
@@ -79,6 +112,11 @@ void QLCInputChannel_Test::load()
     QDomText typeText = doc.createTextNode("Slider");
     type.appendChild(typeText);
     root.appendChild(type);
+
+    QDomElement foo = doc.createElement("Foobar");
+    QDomText fooText = doc.createTextNode("Xyzzy");
+    foo.appendChild(fooText);
+    root.appendChild(foo);
 
     QLCInputChannel ch;
     ch.loadXML(&root);

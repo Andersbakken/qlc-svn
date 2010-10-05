@@ -29,7 +29,10 @@ class QLCInputChannel_Test : public QObject
     Q_OBJECT
 
 private slots:
+    void types();
     void type();
+    void typeToString();
+    void stringToType();
     void name();
     void copy();
     void load();
