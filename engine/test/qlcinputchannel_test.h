@@ -37,6 +37,7 @@ private slots:
     void copy();
     void load();
     void loadWrongType();
+    void save();
 };
 
 #endif

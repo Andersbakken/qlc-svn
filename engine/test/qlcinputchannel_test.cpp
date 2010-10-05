@@ -146,3 +146,30 @@ void QLCInputChannel_Test::loadWrongType()
     QVERIFY(ch.name() == "Foobar");
     QVERIFY(ch.type() == QLCInputChannel::NoType);
 }
+
+void QLCInputChannel_Test::save()
+{
+    QLCInputChannel ch;
+    ch.setName("Foobar Name");
+    ch.setType(QLCInputChannel::Knob);
+
+    QDomDocument doc;
+    QDomElement root = doc.createElement("fakerootnode");
+
+    QVERIFY(ch.saveXML(&doc, &root, 12) == true);
+
+    QDomNode node = root.firstChild();
+    QCOMPARE(node.toElement().tagName(), QString(KXMLQLCInputChannel));
+    node = node.firstChild();
+    while (node.isNull() == false)
+    {
+        QDomElement tag = node.toElement();
+        if (tag.tagName() == KXMLQLCInputChannelName)
+            QCOMPARE(tag.text(), QString("Foobar Name"));
+        else if (tag.tagName() == KXMLQLCInputChannelType)
+            QCOMPARE(tag.text(), QString(KXMLQLCInputChannelKnob));
+        else
+            QFAIL("Unexpected crap in the XML!");
+        node = node.nextSibling();
+    }
+}
