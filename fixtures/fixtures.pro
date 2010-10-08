@@ -126,6 +126,8 @@ fixtures.files += SGM-Victory-II-Pro150.qxf
 fixtures.files += Showtec-MiniMax-250.qxf
 fixtures.files += Stairville-LED-PAR56.qxf
 fixtures.files += Stairville-ZF-1500.qxf
+fixtures.files += Varytec-Easy-Move-LED-XS-Spot.qxf
+fixtures.files += Varytec-Easy-Move-LED-XS-Wash.qxf
 
 fixtures.path = $$INSTALLROOT/$$FIXTUREDIR
 INSTALLS += fixtures
