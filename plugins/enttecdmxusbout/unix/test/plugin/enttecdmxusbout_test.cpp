@@ -27,10 +27,66 @@
 #include "enttecdmxusbout.h"
 #undef protected
 #include "ftdimock.h"
+#include "mockutil.h"
 #include "enttecdmxusbopen.h"
 #include "enttecdmxusbpro.h"
 
-const char proSerialOK[9] = { 0x7e, 0x0a, 0x04, 0x00, 0x11, 0x22, 0x33, 0x44, 0xe7 };
+/****************************************************************************
+ * EnttecOpenMock
+ ****************************************************************************/
+
+QByteArray _open_send_dmx_expected_data;
+int _open1_send_dmx_called = 0;
+int _open2_send_dmx_called = 0;
+
+int _open1_called = 0;
+int _open2_called = 0;
+
+int _close1_called = 0;
+int _close2_called = 0;
+
+EnttecOpenMock::EnttecOpenMock(QObject* parent, const QString& name, const QString& serial)
+    : EnttecDMXUSBOpen(parent, name, serial)
+{
+}
+
+EnttecOpenMock::~EnttecOpenMock()
+{
+}
+
+bool EnttecOpenMock::open()
+{
+    if (serial() == "1")
+        _open1_called++;
+    else
+        _open2_called++;
+    return true;
+}
+
+bool EnttecOpenMock::close()
+{
+    if (serial() == "1")
+        _close1_called++;
+    else
+        _close2_called++;
+    return true;
+}
+
+bool EnttecOpenMock::sendDMX(const QByteArray& data)
+{
+    UT_ASSERT(data == _open_send_dmx_expected_data);
+
+    if (serial() == "1")
+        _open1_send_dmx_called++;
+    else
+        _open2_send_dmx_called++;
+
+    return true;
+}
+
+/****************************************************************************
+ * EnttecDMXUSBOut_Test
+ ****************************************************************************/
 
 void EnttecDMXUSBOut_Test::name()
 {
@@ -57,6 +113,7 @@ void EnttecDMXUSBOut_Test::rescanEnttecPro()
     _ftdi_usb_open_desc_expected_description = _ftdi_usb_get_strings_expected_description;
     _ftdi_usb_open_desc_expected_serial = _ftdi_usb_get_strings_expected_serial;
     _ftdi_write_data_expected_size = 5;
+    const char proSerialOK[9] = { 0x7e, 0x0a, 0x04, 0x00, 0x11, 0x22, 0x33, 0x44, 0xe7 };
     _ftdi_read_data_expected_reply = proSerialOK;
     _ftdi_read_data_expected_size = sizeof(proSerialOK);
 
@@ -120,29 +177,105 @@ void EnttecDMXUSBOut_Test::outputs()
 {
     ftdimock_reset_variables();
 
-    // Construct a list with 1 mock device
-    struct ftdi_device_list list;
-    list.dev = (struct usb_device*) 0xDEADBEEF;
-    list.next = NULL;
-    _ftdi_usb_find_all_expected_devlist = &list;
-    _ftdi_usb_get_strings_expected_device = (struct usb_device*) 0xDEADBEEF;
+    EnttecDMXUSBOut plugin;
 
-    _ftdi_usb_get_strings_expected_manufacturer = "foobar";
-    _ftdi_usb_get_strings_expected_description = "Enttec DMX USB Open";
-    _ftdi_usb_get_strings_expected_serial = "0987654321";
+    EnttecOpenMock open(&plugin, "Enttec DMX USB Open", "1234567890");
+    plugin.m_widgets.append(&open);
 
-    EnttecDMXUSBOut* plugin = new EnttecDMXUSBOut;
-    plugin->init();
+    EnttecOpenMock open2(&plugin, "Enttec DMX USB Open", "0987654321");
+    plugin.m_widgets.append(&open2);
 
-    QStringList outputs(plugin->outputs());
-    QCOMPARE(outputs.size(), 1);
-    QCOMPARE(outputs.at(0), QString("1: Enttec DMX USB Open (S/N: 0987654321)"));
+    QStringList outputs(plugin.outputs());
+    QCOMPARE(outputs.size(), 2);
+    QCOMPARE(outputs.at(0), QString("1: Enttec DMX USB Open (S/N: 1234567890)"));
+    QCOMPARE(outputs.at(1), QString("2: Enttec DMX USB Open (S/N: 0987654321)"));
+}
 
-    plugin->init();
-    outputs = plugin->outputs();
-    QCOMPARE(outputs.size(), 1);
+void EnttecDMXUSBOut_Test::outputDMX()
+{
+    EnttecDMXUSBOut plugin;
 
-    delete plugin;
+    EnttecOpenMock open(&plugin, "Enttec DMX USB Open", "1");
+    plugin.m_widgets.append(&open);
+
+    EnttecOpenMock open2(&plugin, "Enttec DMX USB Open", "2");
+    plugin.m_widgets.append(&open2);
+
+    plugin.outputDMX(0, QByteArray());
+    QCOMPARE(_open1_send_dmx_called, 1);
+    QCOMPARE(_open2_send_dmx_called, 0);
+
+    _open1_send_dmx_called = 0;
+    _open2_send_dmx_called = 0;
+
+    plugin.outputDMX(1, QByteArray());
+    QCOMPARE(_open1_send_dmx_called, 0);
+    QCOMPARE(_open2_send_dmx_called, 1);
+
+    _open1_send_dmx_called = 0;
+    _open2_send_dmx_called = 0;
+
+    plugin.outputDMX(2, QByteArray());
+    QCOMPARE(_open1_send_dmx_called, 0);
+    QCOMPARE(_open2_send_dmx_called, 0);
+}
+
+void EnttecDMXUSBOut_Test::open()
+{
+    EnttecDMXUSBOut plugin;
+
+    EnttecOpenMock open(&plugin, "Enttec DMX USB Open", "1");
+    plugin.m_widgets.append(&open);
+
+    EnttecOpenMock open2(&plugin, "Enttec DMX USB Open", "2");
+    plugin.m_widgets.append(&open2);
+
+    plugin.open(0);
+    QCOMPARE(_open1_called, 1);
+    QCOMPARE(_open2_called, 0);
+
+    _open1_called = 0;
+    _open2_called = 0;
+
+    plugin.open(1);
+    QCOMPARE(_open1_called, 0);
+    QCOMPARE(_open2_called, 1);
+
+    _open1_called = 0;
+    _open2_called = 0;
+
+    plugin.open(2);
+    QCOMPARE(_open1_called, 0);
+    QCOMPARE(_open2_called, 0);
+}
+
+void EnttecDMXUSBOut_Test::close()
+{
+    EnttecDMXUSBOut plugin;
+
+    EnttecOpenMock open(&plugin, "Enttec DMX USB Open", "1");
+    plugin.m_widgets.append(&open);
+
+    EnttecOpenMock open2(&plugin, "Enttec DMX USB Open", "2");
+    plugin.m_widgets.append(&open2);
+
+    plugin.close(0);
+    QCOMPARE(_close1_called, 1);
+    QCOMPARE(_close2_called, 0);
+
+    _close1_called = 0;
+    _close2_called = 0;
+
+    plugin.close(1);
+    QCOMPARE(_close1_called, 0);
+    QCOMPARE(_close2_called, 1);
+
+    _close1_called = 0;
+    _close2_called = 0;
+
+    plugin.close(2);
+    QCOMPARE(_close1_called, 0);
+    QCOMPARE(_close2_called, 0);
 }
 
 QTEST_MAIN(EnttecDMXUSBOut_Test)

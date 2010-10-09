@@ -23,6 +23,26 @@
 #define ENTTECDMXUSBOUT_TEST_H
 
 #include <QObject>
+#include "enttecdmxusbopen.h"
+
+/****************************************************************************
+ * EnttecOpenMock
+ ****************************************************************************/
+
+class EnttecOpenMock : public EnttecDMXUSBOpen
+{
+public:
+    EnttecOpenMock(QObject* parent, const QString& name, const QString& serial);
+    ~EnttecOpenMock();
+
+    bool open();
+    bool close();
+    bool sendDMX(const QByteArray& data);
+};
+
+/****************************************************************************
+ * EnttecDMXUSBOut_Test
+ ****************************************************************************/
 
 class EnttecDMXUSBOut_Test : public QObject
 {
@@ -33,6 +53,9 @@ private slots:
     void outputs();
     void rescanEnttecPro();
     void rescanEnttecOpen();
+    void outputDMX();
+    void open();
+    void close();
 };
 
 #endif

@@ -126,7 +126,7 @@ public:
      * @param universe The DMX universe to send
      * @return true if the values were sent successfully, otherwise false
      */
-    bool sendDMX(const QByteArray& universe);
+    virtual bool sendDMX(const QByteArray& universe);
 
     /********************************************************************
      * Thread
