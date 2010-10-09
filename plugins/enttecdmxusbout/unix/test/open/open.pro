@@ -6,6 +6,7 @@ TARGET   = test_dmxusbopen
 
 QT             += core xml gui testlib
 INCLUDEPATH    += ../../src
+INCLUDEPATH    += ../ftdimock
 QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi)
 
 !CONFIG(coverage) {

@@ -27,49 +27,11 @@
 #include "enttecdmxusbopen.h"
 #undef protected
 
-// Redefined Q_ASSERT because it is not present in release builds
-#define UT_ASSERT(cond) ((!(cond)) ? qt_assert(#cond,__FILE__,__LINE__) : qt_noop())
+#include "ftdimock.h"
+#include "mockutil.h"
 
 #define TEST_NAME "Foobar"
 #define TEST_SRNO "1234567890"
-
-extern int _ftdi_init_called;
-extern int _ftdi_deinit_called;
-extern struct usb_dev_handle* _ftdi_usb_dev_expected_value;
-
-extern int _ftdi_usb_open_desc_called;
-extern int _ftdi_usb_open_desc_expected_return_value;
-
-extern int _ftdi_usb_close_called;
-extern int _ftdi_usb_close_expected_return_value;
-
-extern int _ftdi_usb_reset_called;
-extern int _ftdi_usb_reset_expected_return_value;
-
-extern int _ftdi_set_line_property_called;
-extern int _ftdi_set_line_property_expected_return_value;
-
-extern int _ftdi_set_baudrate_called;
-extern int _ftdi_set_baudrate_expected_return_value;
-
-extern int _ftdi_setrts_called;
-extern int _ftdi_setrts_expected_return_value;
-
-extern int _ftdi_usb_purge_buffers_called;
-extern int _ftdi_usb_purge_buffers_expected_return_value;
-
-extern int _ftdi_write_data_called;
-extern int _ftdi_write_data_expected_size;
-extern int _ftdi_write_data_expected_return_value;
-
-extern int _ftdi_usb_purge_buffers_called;
-extern int _ftdi_usb_purge_buffers_expected_return_value;
-
-extern int _ftdi_set_line_property2_called;
-extern int _ftdi_set_line_property2_expected_return_value;
-
-extern QString _ftdi_usb_open_desc_expected_description;
-extern QString _ftdi_usb_open_desc_expected_serial;
 
 /****************************************************************************
  * Unit test code
@@ -77,39 +39,11 @@ extern QString _ftdi_usb_open_desc_expected_serial;
 
 void EnttecDMXUSBOpen_Test::resetCounters()
 {
+    ftdimock_reset_variables();
+
     _ftdi_usb_dev_expected_value = (struct usb_dev_handle*) 0xDEADBEEF;
 
-    _ftdi_init_called = 0;
-    _ftdi_deinit_called = 0;
-
-    _ftdi_usb_open_desc_called = 0;
-    _ftdi_usb_open_desc_expected_return_value = 0;
-
-    _ftdi_usb_close_called = 0;
-    _ftdi_usb_close_expected_return_value = 0;
-
-    _ftdi_usb_reset_called = 0;
-    _ftdi_usb_reset_expected_return_value = 0;
-
-    _ftdi_set_line_property_called = 0;
-    _ftdi_set_line_property_expected_return_value = 0;
-
-    _ftdi_set_baudrate_called = 0;
-    _ftdi_set_baudrate_expected_return_value = 0;
-
-    _ftdi_setrts_called = 0;
-    _ftdi_setrts_expected_return_value = 0;
-
-    _ftdi_write_data_called = 0;
     _ftdi_write_data_expected_size = 513;
-    _ftdi_write_data_expected_return_value = 0;
-
-    _ftdi_usb_purge_buffers_called = 0;
-    _ftdi_usb_purge_buffers_expected_return_value = 0;
-
-    _ftdi_set_line_property2_called = 0;
-    _ftdi_set_line_property2_expected_return_value = 0;
-
     _ftdi_usb_open_desc_expected_description = TEST_NAME;
     _ftdi_usb_open_desc_expected_serial = TEST_SRNO;
 }

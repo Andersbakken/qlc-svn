@@ -64,6 +64,8 @@ extern int _ftdi_write_data_called;
 extern int _ftdi_write_data_expected_size;
 extern int _ftdi_write_data_expected_return_value;
 
+extern int _ftdi_read_data_called;
+extern int _ftdi_read_data_expected_return_value;
 extern const char* _ftdi_read_data_expected_reply;
 extern int _ftdi_read_data_expected_size;
 

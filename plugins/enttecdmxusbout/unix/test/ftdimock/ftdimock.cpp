@@ -139,8 +139,6 @@ void ftdimock_reset_variables()
 
 int ftdi_init(struct ftdi_context* ctx)
 {
-    qDebug() << Q_FUNC_INFO;
-
     UT_ASSERT(ctx != NULL);
     _ftdi_init_called++;
     ctx->error_str = (char*) malloc(sizeof(char) * 15);
@@ -150,8 +148,6 @@ int ftdi_init(struct ftdi_context* ctx)
 
 void ftdi_deinit(struct ftdi_context* ctx)
 {
-    qDebug() << Q_FUNC_INFO;
-
     UT_ASSERT(ctx != NULL);
     free(ctx->error_str);
     ctx->error_str = NULL;
@@ -162,8 +158,6 @@ int ftdi_usb_find_all(struct ftdi_context* ctx,
                       struct ftdi_device_list** devlist,
                       int vendor, int product)
 {
-    qDebug() << Q_FUNC_INFO;
-
     UT_ASSERT(ctx != NULL);
     UT_ASSERT(devlist != NULL);
     UT_ASSERT(vendor == 0x0403);
@@ -181,8 +175,6 @@ int ftdi_usb_get_strings(struct ftdi_context* ctx, struct usb_device* dev,
                          char* description, int desc_len,
                          char* serial, int serial_len)
 {
-    qDebug() << Q_FUNC_INFO;
-
     UT_ASSERT(ctx != NULL);
     UT_ASSERT(dev == _ftdi_usb_get_strings_expected_device);
     UT_ASSERT(manufacturer != NULL);

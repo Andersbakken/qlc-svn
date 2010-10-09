@@ -26,7 +26,7 @@
 #define protected public
 #include "enttecdmxusbout.h"
 #undef protected
-#include "../ftdimock/ftdimock.h"
+#include "ftdimock.h"
 #include "enttecdmxusbopen.h"
 #include "enttecdmxusbpro.h"
 
@@ -64,6 +64,18 @@ void EnttecDMXUSBOut_Test::enttecPro()
     QVERIFY(plugin->m_widgets.size() == 1);
     QVERIFY(plugin->m_widgets.at(0)->type() == EnttecDMXUSBWidget::Pro);
 
+    QVERIFY(plugin->widget("1234567890") == plugin->m_widgets.at(0));
+
+    // Do a rescan and make sure the device is still there
+    plugin->rescanWidgets();
+    QCOMPARE(_ftdi_init_called, 4); // Another time with the mock dongle
+    QCOMPARE(_ftdi_usb_find_all_called, 2);
+    QCOMPARE(_ftdi_usb_get_strings_called, 2);
+    QCOMPARE(_ftdi_deinit_called, 3);
+    QVERIFY(plugin->m_widgets.size() == 1);
+    QVERIFY(plugin->m_widgets.at(0)->type() == EnttecDMXUSBWidget::Pro);
+    QVERIFY(plugin->widget("1234567890") == plugin->m_widgets.at(0));
+
     delete plugin;
 }
 
@@ -85,10 +97,15 @@ void EnttecDMXUSBOut_Test::enttecOpen()
     EnttecDMXUSBOut* plugin = new EnttecDMXUSBOut;
     plugin->init();
 
+    // Do a rescan and make sure the device is still there
     QCOMPARE(_ftdi_init_called, 2); // Another time with the mock dongle
     QCOMPARE(_ftdi_usb_find_all_called, 1);
     QCOMPARE(_ftdi_usb_get_strings_called, 1);
     QCOMPARE(_ftdi_deinit_called, 1);
+    QVERIFY(plugin->m_widgets.size() == 1);
+    QVERIFY(plugin->m_widgets.at(0)->type() == EnttecDMXUSBWidget::Open);
+
+    QVERIFY(plugin->widget("0987654321") == plugin->m_widgets.at(0));
 
     delete plugin;
 }
