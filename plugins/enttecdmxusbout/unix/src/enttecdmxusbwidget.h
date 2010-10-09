@@ -23,7 +23,7 @@
 #define ENTTECDMXUSBWIDGET_H
 
 /**
- * This is the base interface class for ENTTEC USB DMX [Pro|Open] widgets.
+ * This is the base interface class for ENTTEC USB DMX (Pro|Open) widgets.
  */
 class EnttecDMXUSBWidget
 {
@@ -31,8 +31,17 @@ public:
     static const int VID = 0x0403;
     static const int PID = 0x6001;
 
+    enum Type {
+        Pro = 0,
+        Open = 1,
+        Other = 2
+    };
+
     /** Remove this and suffer the oh-so-lovely crashing consequences! */
     virtual ~EnttecDMXUSBWidget() {}
+
+    /** Get the type of the widget */
+    virtual Type type() const = 0;
 
     /********************************************************************
      * Open & close

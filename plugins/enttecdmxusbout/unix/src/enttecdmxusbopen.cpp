@@ -51,6 +51,11 @@ EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
     ftdi_deinit(&m_context);
 }
 
+EnttecDMXUSBWidget::Type EnttecDMXUSBOpen::type() const
+{
+    return EnttecDMXUSBWidget::Open;
+}
+
 /****************************************************************************
  * Open & Close
  ****************************************************************************/

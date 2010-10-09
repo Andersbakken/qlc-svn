@@ -52,6 +52,9 @@ public:
      */
     virtual ~EnttecDMXUSBPro();
 
+    /** @reimp */
+    Type type() const;
+
 protected:
     struct ftdi_context m_context;
 

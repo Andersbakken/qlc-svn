@@ -22,12 +22,22 @@
 #include <QtCore>
 #include <ftdi.h>
 
-// Redefined Q_ASSERT because it is not present in release builds
-#define UT_ASSERT(cond) ((!(cond)) ? qt_assert(#cond,__FILE__,__LINE__) : qt_noop())
+#include "mockutil.h"
 
 int _ftdi_init_called = 0;
 int _ftdi_deinit_called = 0;
 struct usb_dev_handle* _ftdi_usb_dev_expected_value = (struct usb_dev_handle*) 0xDEADBEEF;
+
+int _ftdi_usb_find_all_called = 0;
+struct ftdi_device_list* _ftdi_usb_find_all_expected_devlist = NULL;
+int _ftdi_usb_find_all_expected_return_value = 0;
+
+int _ftdi_usb_get_strings_called = 0;
+struct usb_device* _ftdi_usb_get_strings_expected_device = NULL;
+int _ftdi_usb_get_strings_expected_return_value = 0;
+const char* _ftdi_usb_get_strings_expected_manufacturer = NULL;
+const char* _ftdi_usb_get_strings_expected_description = NULL;
+const char* _ftdi_usb_get_strings_expected_serial = NULL;
 
 int _ftdi_usb_open_desc_called = 0;
 int _ftdi_usb_open_desc_expected_return_value = 0;
@@ -64,10 +74,64 @@ int _ftdi_read_data_expected_size = 0;
 int _ftdi_read_data_expected_return_value = 0;
 const char* _ftdi_read_data_expected_reply = NULL;
 
-int _ftdi_usb_get_strings_called = 0;
-
 QString _ftdi_usb_open_desc_expected_description;
 QString _ftdi_usb_open_desc_expected_serial;
+
+void ftdimock_reset_variables()
+{
+    _ftdi_init_called = 0;
+    _ftdi_deinit_called = 0;
+    _ftdi_usb_dev_expected_value = (struct usb_dev_handle*) 0xDEADBEEF;
+
+    _ftdi_usb_find_all_called = 0;
+    _ftdi_usb_find_all_expected_devlist = NULL;
+    _ftdi_usb_find_all_expected_return_value = 0;
+
+    _ftdi_usb_get_strings_called = 0;
+    _ftdi_usb_get_strings_expected_device = NULL;
+    _ftdi_usb_get_strings_expected_return_value = 0;
+    _ftdi_usb_get_strings_expected_manufacturer = NULL;
+    _ftdi_usb_get_strings_expected_description = NULL;
+    _ftdi_usb_get_strings_expected_serial = NULL;
+
+    _ftdi_usb_open_desc_called = 0;
+    _ftdi_usb_open_desc_expected_return_value = 0;
+
+    _ftdi_usb_reset_called = 0;
+    _ftdi_usb_reset_expected_return_value = 0;
+
+    _ftdi_set_line_property_called = 0;
+    _ftdi_set_line_property_expected_return_value = 0;
+
+    _ftdi_set_baudrate_called = 0;
+    _ftdi_set_baudrate_expected_return_value = 0;
+
+    _ftdi_setrts_called = 0;
+    _ftdi_setrts_expected_return_value = 0;
+
+    _ftdi_set_line_property2_called = 0;
+    _ftdi_set_line_property2_expected_return_value = 0;
+
+    _ftdi_get_error_string_called = 0;
+
+    _ftdi_usb_purge_buffers_called = 0;
+    _ftdi_usb_purge_buffers_expected_return_value = 0;
+
+    _ftdi_usb_close_called = 0;
+    _ftdi_usb_close_expected_return_value = 0;
+
+    _ftdi_write_data_called = 0;
+    _ftdi_write_data_expected_size = 0;
+    _ftdi_write_data_expected_return_value = 0;
+
+    _ftdi_read_data_called = 0;
+    _ftdi_read_data_expected_size = 0;
+    _ftdi_read_data_expected_return_value = 0;
+    _ftdi_read_data_expected_reply = NULL;
+
+    _ftdi_usb_open_desc_expected_description = QString();
+    _ftdi_usb_open_desc_expected_serial = QString();
+}
 
 /****************************************************************************
  * FTDI mock functions
@@ -75,6 +139,8 @@ QString _ftdi_usb_open_desc_expected_serial;
 
 int ftdi_init(struct ftdi_context* ctx)
 {
+    qDebug() << Q_FUNC_INFO;
+
     UT_ASSERT(ctx != NULL);
     _ftdi_init_called++;
     ctx->error_str = (char*) malloc(sizeof(char) * 15);
@@ -84,20 +150,55 @@ int ftdi_init(struct ftdi_context* ctx)
 
 void ftdi_deinit(struct ftdi_context* ctx)
 {
+    qDebug() << Q_FUNC_INFO;
+
     UT_ASSERT(ctx != NULL);
     free(ctx->error_str);
     ctx->error_str = NULL;
     _ftdi_deinit_called++;
 }
 
-int ftdi_usb_find_all(struct ftdi_context* ctx, struct ftdi_device_list **devlist,
+int ftdi_usb_find_all(struct ftdi_context* ctx,
+                      struct ftdi_device_list** devlist,
                       int vendor, int product)
 {
+    qDebug() << Q_FUNC_INFO;
+
     UT_ASSERT(ctx != NULL);
     UT_ASSERT(devlist != NULL);
     UT_ASSERT(vendor == 0x0403);
     UT_ASSERT(product == 0x6001);
-    return 1;
+
+    _ftdi_usb_find_all_called++;
+
+    *devlist = _ftdi_usb_find_all_expected_devlist;
+
+    return _ftdi_usb_find_all_expected_return_value;
+}
+
+int ftdi_usb_get_strings(struct ftdi_context* ctx, struct usb_device* dev,
+                         char* manufacturer, int mnf_len,
+                         char* description, int desc_len,
+                         char* serial, int serial_len)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    UT_ASSERT(ctx != NULL);
+    UT_ASSERT(dev == _ftdi_usb_get_strings_expected_device);
+    UT_ASSERT(manufacturer != NULL);
+    UT_ASSERT(mnf_len > 0);
+    UT_ASSERT(description != NULL);
+    UT_ASSERT(desc_len > 0);
+    UT_ASSERT(serial != NULL);
+    UT_ASSERT(serial_len > 0);
+
+    _ftdi_usb_get_strings_called++;
+
+    strncpy(manufacturer, _ftdi_usb_get_strings_expected_manufacturer, mnf_len);
+    strncpy(description, _ftdi_usb_get_strings_expected_description, desc_len);
+    strncpy(serial, _ftdi_usb_get_strings_expected_serial, serial_len);
+
+    return _ftdi_usb_get_strings_expected_return_value;
 }
 
 int ftdi_usb_open_desc(struct ftdi_context* ctx, int vendor, int product,
@@ -150,24 +251,6 @@ char* ftdi_get_error_string(struct ftdi_context* ctx)
     _ftdi_get_error_string_called++;
     return ctx->error_str;
 }
-
-int ftdi_usb_get_strings(struct ftdi_context* ctx, struct usb_device* dev,
-                         char* manufacturer, int mnf_len,
-                         char* description, int desc_len,
-                         char* serial, int serial_len)
-{
-    UT_ASSERT(ctx != NULL);
-    Q_UNUSED(dev);
-    Q_UNUSED(manufacturer);
-    Q_UNUSED(mnf_len);
-    Q_UNUSED(description);
-    Q_UNUSED(desc_len);
-    Q_UNUSED(serial);
-    Q_UNUSED(serial_len);
-    _ftdi_usb_get_strings_called++;
-    return 0;
-}
-
 
 int ftdi_set_line_property(struct ftdi_context* ctx,
                            enum ftdi_bits_type bits,

@@ -46,6 +46,25 @@ lcov	-a coverage/enginebase.info -a coverage/enginetest.info \
 # Enttec DMXUSB
 #############################################################################
 
+##############
+# The plugin #
+##############
+
+# Prepare for measurement
+lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusboutbase.info
+
+# Run the unit test
+pushd .
+cd plugins/enttecdmxusbout/unix/test/plugin
+DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbout
+popd
+
+# Measure coverage and combine results from before and after the unit test
+lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbouttest.info
+lcov -a coverage/dmxusboutbase.info -a coverage/dmxusbouttest.info \
+	 -o coverage/dmxusboutmerge.info
+
 ###############
 # DMXUSB Open #
 ###############
