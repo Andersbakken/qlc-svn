@@ -32,7 +32,13 @@
 
 const char proSerialOK[9] = { 0x7e, 0x0a, 0x04, 0x00, 0x11, 0x22, 0x33, 0x44, 0xe7 };
 
-void EnttecDMXUSBOut_Test::enttecPro()
+void EnttecDMXUSBOut_Test::name()
+{
+    EnttecDMXUSBOut plugin;
+    QCOMPARE(plugin.name(), QString("Enttec DMX USB Output"));
+}
+
+void EnttecDMXUSBOut_Test::rescanEnttecPro()
 {
     ftdimock_reset_variables();
 
@@ -79,7 +85,7 @@ void EnttecDMXUSBOut_Test::enttecPro()
     delete plugin;
 }
 
-void EnttecDMXUSBOut_Test::enttecOpen()
+void EnttecDMXUSBOut_Test::rescanEnttecOpen()
 {
     ftdimock_reset_variables();
 
@@ -106,6 +112,35 @@ void EnttecDMXUSBOut_Test::enttecOpen()
     QVERIFY(plugin->m_widgets.at(0)->type() == EnttecDMXUSBWidget::Open);
 
     QVERIFY(plugin->widget("0987654321") == plugin->m_widgets.at(0));
+
+    delete plugin;
+}
+
+void EnttecDMXUSBOut_Test::outputs()
+{
+    ftdimock_reset_variables();
+
+    // Construct a list with 1 mock device
+    struct ftdi_device_list list;
+    list.dev = (struct usb_device*) 0xDEADBEEF;
+    list.next = NULL;
+    _ftdi_usb_find_all_expected_devlist = &list;
+    _ftdi_usb_get_strings_expected_device = (struct usb_device*) 0xDEADBEEF;
+
+    _ftdi_usb_get_strings_expected_manufacturer = "foobar";
+    _ftdi_usb_get_strings_expected_description = "Enttec DMX USB Open";
+    _ftdi_usb_get_strings_expected_serial = "0987654321";
+
+    EnttecDMXUSBOut* plugin = new EnttecDMXUSBOut;
+    plugin->init();
+
+    QStringList outputs(plugin->outputs());
+    QCOMPARE(outputs.size(), 1);
+    QCOMPARE(outputs.at(0), QString("1: Enttec DMX USB Open (S/N: 0987654321)"));
+
+    plugin->init();
+    outputs = plugin->outputs();
+    QCOMPARE(outputs.size(), 1);
 
     delete plugin;
 }

@@ -29,8 +29,10 @@ class EnttecDMXUSBOut_Test : public QObject
     Q_OBJECT
 
 private slots:
-    void enttecPro();
-    void enttecOpen();
+    void name();
+    void outputs();
+    void rescanEnttecPro();
+    void rescanEnttecOpen();
 };
 
 #endif
