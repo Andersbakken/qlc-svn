@@ -36,6 +36,9 @@ void QLCFile_Test::readXML()
 {
     QDomDocument doc;
 
+    doc = QLCFile::readXML(QString());
+    QVERIFY(doc.isNull() == true);
+
     doc = QLCFile::readXML("foobar");
     QVERIFY(doc.isNull() == true);
 
