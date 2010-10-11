@@ -57,6 +57,11 @@ private slots:
     void open();
     void close();
     void infoText();
+
+#ifdef DBUS_ENABLED
+    void slotDeviceAdded();
+    void slotDeviceRemoved();
+#endif
 };
 
 #endif

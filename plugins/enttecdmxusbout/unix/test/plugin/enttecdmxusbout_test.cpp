@@ -283,6 +283,9 @@ void EnttecDMXUSBOut_Test::infoText()
 {
     EnttecDMXUSBOut plugin;
 
+    QVERIFY(plugin.infoText(KOutputInvalid).contains("No devices available."));
+    QVERIFY(!plugin.infoText(0).contains("No devices available."));
+
     EnttecOpenMock open(&plugin, "Enttec DMX USB Open", "1");
     plugin.m_widgets.append(&open);
 
@@ -297,5 +300,56 @@ void EnttecDMXUSBOut_Test::infoText()
     QVERIFY(!plugin.infoText(1).contains("This plugin provides"));
     QVERIFY(!plugin.infoText(2).contains("This plugin provides"));
 }
+
+#ifdef DBUS_ENABLED
+void EnttecDMXUSBOut_Test::slotDeviceAdded()
+{
+    ftdimock_reset_variables();
+
+    EnttecDMXUSBOut plugin;
+
+    plugin.slotDeviceAdded("foobar");
+    QCOMPARE(_ftdi_usb_find_all_called, 0);
+
+    // @todo Change to a real string!
+    plugin.slotDeviceAdded("/org/freedesktop/Hal/devices/usb_device_403_x_y_if0_serial_usb_z");
+    QCOMPARE(_ftdi_usb_find_all_called, 1);
+
+    plugin.slotDeviceAdded("foobar");
+    QCOMPARE(_ftdi_usb_find_all_called, 1);
+
+    plugin.slotDeviceAdded("/org/freedesktop/Hal/devices/usb_device_413_x_y_if0_serial_usb_z");
+    QCOMPARE(_ftdi_usb_find_all_called, 1);
+
+    // @todo Change to a real string!
+    plugin.slotDeviceAdded("/org/freedesktop/Hal/devices/usb_device_403_x_y_if0_serial_usb_z");
+    QCOMPARE(_ftdi_usb_find_all_called, 2);
+}
+
+void EnttecDMXUSBOut_Test::slotDeviceRemoved()
+{
+    ftdimock_reset_variables();
+
+    EnttecDMXUSBOut plugin;
+
+    plugin.slotDeviceRemoved("foobar");
+    QCOMPARE(_ftdi_usb_find_all_called, 0);
+
+    // @todo Change to a real string!
+    plugin.slotDeviceRemoved("/org/freedesktop/Hal/devices/usb_device_403_x_y_if0_serial_usb_z");
+    QCOMPARE(_ftdi_usb_find_all_called, 1);
+
+    plugin.slotDeviceRemoved("foobar");
+    QCOMPARE(_ftdi_usb_find_all_called, 1);
+
+    plugin.slotDeviceRemoved("/org/freedesktop/Hal/devices/usb_device_413_x_y_if0_serial_usb_z");
+    QCOMPARE(_ftdi_usb_find_all_called, 1);
+
+    // @todo Change to a real string!
+    plugin.slotDeviceRemoved("/org/freedesktop/Hal/devices/usb_device_403_x_y_if0_serial_usb_z");
+    QCOMPARE(_ftdi_usb_find_all_called, 2);
+}
+
+#endif
 
 QTEST_MAIN(EnttecDMXUSBOut_Test)
