@@ -1333,7 +1333,7 @@ QString App::fileName() const
 
 QFile::FileError App::loadXML(const QString& fileName)
 {
-    QFile::FileError retval;
+    QFile::FileError retval = QFile::NoError;
 
     QDomDocument doc(QLCFile::readXML(fileName));
     if (doc.isNull() == false)
