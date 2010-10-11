@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
+#include <QMessageBox>
 #include <QtTest>
 #include <ftdi.h>
 
@@ -276,6 +277,25 @@ void EnttecDMXUSBOut_Test::close()
     plugin.close(2);
     QCOMPARE(_close1_called, 0);
     QCOMPARE(_close2_called, 0);
+}
+
+void EnttecDMXUSBOut_Test::infoText()
+{
+    EnttecDMXUSBOut plugin;
+
+    EnttecOpenMock open(&plugin, "Enttec DMX USB Open", "1");
+    plugin.m_widgets.append(&open);
+
+    EnttecOpenMock open2(&plugin, "Enttec DMX USB Open", "2");
+    plugin.m_widgets.append(&open2);
+
+    QVERIFY(plugin.infoText(0).contains("Device is operating correctly."));
+    QVERIFY(plugin.infoText(1).contains("Device is operating correctly."));
+    QVERIFY(!plugin.infoText(2).contains("Device is operating correctly."));
+    QVERIFY(plugin.infoText(KOutputInvalid).contains("This plugin provides"));
+    QVERIFY(!plugin.infoText(0).contains("This plugin provides"));
+    QVERIFY(!plugin.infoText(1).contains("This plugin provides"));
+    QVERIFY(!plugin.infoText(2).contains("This plugin provides"));
 }
 
 QTEST_MAIN(EnttecDMXUSBOut_Test)

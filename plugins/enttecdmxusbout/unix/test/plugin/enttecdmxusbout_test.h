@@ -56,6 +56,7 @@ private slots:
     void outputDMX();
     void open();
     void close();
+    void infoText();
 };
 
 #endif
