@@ -38,6 +38,12 @@ public:
     bool open();
     bool close();
     bool sendDMX(const QByteArray& data);
+
+public:
+    int m_open_called;
+    int m_close_called;
+    int m_send_dmx_called;
+    QByteArray m_send_dmx_expected_data;
 };
 
 /****************************************************************************

@@ -36,19 +36,13 @@
  * EnttecOpenMock
  ****************************************************************************/
 
-QByteArray _open_send_dmx_expected_data;
-int _open1_send_dmx_called = 0;
-int _open2_send_dmx_called = 0;
-
-int _open1_called = 0;
-int _open2_called = 0;
-
-int _close1_called = 0;
-int _close2_called = 0;
-
-EnttecOpenMock::EnttecOpenMock(QObject* parent, const QString& name, const QString& serial)
+EnttecOpenMock::EnttecOpenMock(QObject* parent, const QString& name,
+                               const QString& serial)
     : EnttecDMXUSBOpen(parent, name, serial)
 {
+    m_open_called = 0;
+    m_close_called = 0;
+    m_send_dmx_called = 0;
 }
 
 EnttecOpenMock::~EnttecOpenMock()
@@ -57,31 +51,20 @@ EnttecOpenMock::~EnttecOpenMock()
 
 bool EnttecOpenMock::open()
 {
-    if (serial() == "1")
-        _open1_called++;
-    else
-        _open2_called++;
+    m_open_called++;
     return true;
 }
 
 bool EnttecOpenMock::close()
 {
-    if (serial() == "1")
-        _close1_called++;
-    else
-        _close2_called++;
+    m_close_called++;
     return true;
 }
 
 bool EnttecOpenMock::sendDMX(const QByteArray& data)
 {
-    UT_ASSERT(data == _open_send_dmx_expected_data);
-
-    if (serial() == "1")
-        _open1_send_dmx_called++;
-    else
-        _open2_send_dmx_called++;
-
+    UT_ASSERT(data == m_send_dmx_expected_data);
+    m_send_dmx_called++;
     return true;
 }
 
@@ -203,22 +186,22 @@ void EnttecDMXUSBOut_Test::outputDMX()
     plugin.m_widgets.append(&open2);
 
     plugin.outputDMX(0, QByteArray());
-    QCOMPARE(_open1_send_dmx_called, 1);
-    QCOMPARE(_open2_send_dmx_called, 0);
+    QCOMPARE(open.m_send_dmx_called, 1);
+    QCOMPARE(open2.m_send_dmx_called, 0);
 
-    _open1_send_dmx_called = 0;
-    _open2_send_dmx_called = 0;
+    open.m_send_dmx_called = 0;
+    open2.m_send_dmx_called = 0;
 
     plugin.outputDMX(1, QByteArray());
-    QCOMPARE(_open1_send_dmx_called, 0);
-    QCOMPARE(_open2_send_dmx_called, 1);
+    QCOMPARE(open.m_send_dmx_called, 0);
+    QCOMPARE(open2.m_send_dmx_called, 1);
 
-    _open1_send_dmx_called = 0;
-    _open2_send_dmx_called = 0;
+    open.m_send_dmx_called = 0;
+    open2.m_send_dmx_called = 0;
 
     plugin.outputDMX(2, QByteArray());
-    QCOMPARE(_open1_send_dmx_called, 0);
-    QCOMPARE(_open2_send_dmx_called, 0);
+    QCOMPARE(open.m_send_dmx_called, 0);
+    QCOMPARE(open2.m_send_dmx_called, 0);
 }
 
 void EnttecDMXUSBOut_Test::open()
@@ -232,22 +215,22 @@ void EnttecDMXUSBOut_Test::open()
     plugin.m_widgets.append(&open2);
 
     plugin.open(0);
-    QCOMPARE(_open1_called, 1);
-    QCOMPARE(_open2_called, 0);
+    QCOMPARE(open.m_open_called, 1);
+    QCOMPARE(open2.m_open_called, 0);
 
-    _open1_called = 0;
-    _open2_called = 0;
+    open.m_open_called = 0;
+    open2.m_open_called = 0;
 
     plugin.open(1);
-    QCOMPARE(_open1_called, 0);
-    QCOMPARE(_open2_called, 1);
+    QCOMPARE(open.m_open_called, 0);
+    QCOMPARE(open2.m_open_called, 1);
 
-    _open1_called = 0;
-    _open2_called = 0;
+    open.m_open_called = 0;
+    open2.m_open_called = 0;
 
     plugin.open(2);
-    QCOMPARE(_open1_called, 0);
-    QCOMPARE(_open2_called, 0);
+    QCOMPARE(open.m_open_called, 0);
+    QCOMPARE(open2.m_open_called, 0);
 }
 
 void EnttecDMXUSBOut_Test::close()
@@ -261,22 +244,22 @@ void EnttecDMXUSBOut_Test::close()
     plugin.m_widgets.append(&open2);
 
     plugin.close(0);
-    QCOMPARE(_close1_called, 1);
-    QCOMPARE(_close2_called, 0);
+    QCOMPARE(open.m_close_called, 1);
+    QCOMPARE(open2.m_close_called, 0);
 
-    _close1_called = 0;
-    _close2_called = 0;
+    open.m_close_called = 0;
+    open2.m_close_called = 0;
 
     plugin.close(1);
-    QCOMPARE(_close1_called, 0);
-    QCOMPARE(_close2_called, 1);
+    QCOMPARE(open.m_close_called, 0);
+    QCOMPARE(open2.m_close_called, 1);
 
-    _close1_called = 0;
-    _close2_called = 0;
+    open.m_close_called = 0;
+    open2.m_close_called = 0;
 
     plugin.close(2);
-    QCOMPARE(_close1_called, 0);
-    QCOMPARE(_close2_called, 0);
+    QCOMPARE(open.m_close_called, 0);
+    QCOMPARE(open2.m_close_called, 0);
 }
 
 void EnttecDMXUSBOut_Test::infoText()
