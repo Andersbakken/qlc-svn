@@ -135,6 +135,15 @@ void Doc::setMode(Doc::Mode mode)
     emit modeChanged(m_mode);
 }
 
+/*************************************************************************
+ * Fixture definition cache
+ *************************************************************************/
+
+const QLCFixtureDefCache& Doc::fixtureDefCache() const
+{
+    return m_fixtureDefCache;
+}
+
 /*****************************************************************************
  * Fixtures
  *****************************************************************************/
@@ -370,6 +379,16 @@ bool Doc::addFunction(Function* function, t_function_id id)
     }
 
     return ok;
+}
+
+int Doc::functions() const
+{
+    return m_functionAllocation;
+}
+
+quint32 Doc::functionsFree() const
+{
+    return KFunctionArraySize - functions();
 }
 
 bool Doc::deleteFunction(t_function_id id)

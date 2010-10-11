@@ -84,10 +84,7 @@ protected:
      *********************************************************************/
 public:
     /** Get the fixture definition cache */
-    const QLCFixtureDefCache& fixtureDefCache() const
-    {
-        return m_fixtureDefCache;
-    }
+    const QLCFixtureDefCache& fixtureDefCache() const;
 
 protected:
     const QLCFixtureDefCache& m_fixtureDefCache;
@@ -244,18 +241,14 @@ public:
      *
      * @return Number of functions
      */
-    int functions() const {
-        return m_functionAllocation;
-    }
+    int functions() const;
 
     /**
      * Get the number of available function slots.
      *
      * @return Number of functions that sill fit to Doc
      */
-    quint32 functionsFree() const {
-        return KFunctionArraySize - functions();
-    }
+    quint32 functionsFree() const;
 
     /**
      * Delete the given function
