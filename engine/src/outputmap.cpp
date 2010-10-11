@@ -241,6 +241,11 @@ void OutputMap::initPatch()
     }
 }
 
+int OutputMap::universes() const
+{
+    return m_universes;
+}
+
 bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
                          unsigned int output)
 {

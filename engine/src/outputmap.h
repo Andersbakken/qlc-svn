@@ -175,9 +175,7 @@ public:
      *
      * @return Universe count supported by QLC
      */
-    int universes() const {
-        return m_universes;
-    }
+    int universes() const;
 
     /**
      * Patch the given universe to go thru the given plugin
