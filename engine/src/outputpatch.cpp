@@ -70,6 +70,11 @@ QString OutputPatch::pluginName() const
         return KOutputNone;
 }
 
+QLCOutPlugin* OutputPatch::plugin() const
+{
+    return m_plugin;
+}
+
 QString OutputPatch::outputName() const
 {
     if (m_plugin != NULL && m_output != KOutputInvalid &&
@@ -77,6 +82,11 @@ QString OutputPatch::outputName() const
         return m_plugin->outputs()[m_output];
     else
         return KOutputNone;
+}
+
+quint32 OutputPatch::output() const
+{
+    return m_output;
 }
 
 /*****************************************************************************

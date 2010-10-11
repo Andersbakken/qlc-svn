@@ -55,14 +55,10 @@ public:
 public:
     void set(QLCOutPlugin* plugin, quint32 output);
 
-    QLCOutPlugin* plugin() const {
-        return m_plugin;
-    }
+    QLCOutPlugin* plugin() const;
     QString pluginName() const;
 
-    quint32 output() const {
-        return m_output;
-    }
+    quint32 output() const;
     QString outputName() const;
 
 protected:
