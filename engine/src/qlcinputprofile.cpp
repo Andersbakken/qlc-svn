@@ -192,14 +192,15 @@ quint32 QLCInputProfile::channelNumber(
 
 QLCInputProfile* QLCInputProfile::loader(const QString& path)
 {
-    QLCInputProfile* profile = NULL;
-    QDomDocument* doc = NULL;
-
-    if (QLCFile::readXML(path, &doc) != QFile::NoError)
+    QDomDocument doc(QLCFile::readXML(path));
+    if (doc.isNull() == true)
+    {
+        qWarning() << "Unable to load input profile from" << path;
         return false;
+    }
 
-    profile = new QLCInputProfile();
-    if (profile->loadXML(doc) == false)
+    QLCInputProfile* profile = new QLCInputProfile();
+    if (profile->loadXML(&doc) == false)
     {
         delete profile;
         profile = NULL;
@@ -209,7 +210,6 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
         profile->m_path = path;
     }
 
-    delete doc;
     return profile;
 }
 

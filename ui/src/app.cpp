@@ -1333,17 +1333,14 @@ QString App::fileName() const
 
 QFile::FileError App::loadXML(const QString& fileName)
 {
-    QDomDocument* doc = NULL;
-    QDomDocumentType doctype;
-    QString errorString;
     QFile::FileError retval;
 
-    retval = QLCFile::readXML(fileName, &doc);
-    if (retval == QFile::NoError)
+    QDomDocument doc(QLCFile::readXML(fileName));
+    if (doc.isNull() == false)
     {
-        if (doc->doctype().name() == KXMLQLCWorkspace)
+        if (doc.doctype().name() == KXMLQLCWorkspace)
         {
-            if (loadXML(doc) == false)
+            if (loadXML(&doc) == false)
             {
                 retval = QFile::ReadError;
             }

@@ -22,17 +22,52 @@
 #include <QtTest>
 #include <QtXml>
 
+#ifdef WIN32
+#else
+#   include <sys/types.h>
+#   include <sys/stat.h>
+#endif
+
 #include "qlcfile_test.h"
 #include "qlcfile.h"
 #include "qlcconfig.h"
 
+void QLCFile_Test::readXML()
+{
+    QDomDocument doc;
+
+    doc = QLCFile::readXML("foobar");
+    QVERIFY(doc.isNull() == true);
+
+    doc = QLCFile::readXML("broken.xml");
+    QVERIFY(doc.isNull() == false);
+    QCOMPARE(doc.firstChild().toElement().tagName(), QString("Workspace"));
+    QCOMPARE(doc.firstChild().firstChild().toElement().tagName(), QString("Creator"));
+
+#ifdef WIN32
+#else
+    chmod("readonly.xml", 0);
+    doc = QLCFile::readXML("readonly.xml");
+    QVERIFY(doc.isNull() == true);
+    chmod("readonly.xml", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+#endif
+
+    doc = QLCFile::readXML("readonly.xml");
+    QVERIFY(doc.isNull() == false);
+    QCOMPARE(doc.firstChild().toElement().tagName(), QString("Workspace"));
+    QCOMPARE(doc.firstChild().firstChild().toElement().tagName(), QString("Creator"));
+}
+
 void QLCFile_Test::getXMLHeader()
 {
     bool insideCreatorTag = false;
-
     QDomDocument doc;
-    doc = QLCFile::getXMLHeader("Settings");
 
+    doc = QLCFile::getXMLHeader(QString());
+    QVERIFY(doc.isNull() == true);
+
+    doc = QLCFile::getXMLHeader("Settings");
+    QVERIFY(doc.isNull() == false);
     QCOMPARE(doc.doctype().name(), QString("Settings"));
 
     QDomNode node(doc.firstChild());

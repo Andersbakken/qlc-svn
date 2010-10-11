@@ -26,51 +26,49 @@
 #include "qlctypes.h"
 #include "qlcfile.h"
 
-QFile::FileError QLCFile::readXML(const QString path, QDomDocument** doc)
+QDomDocument QLCFile::readXML(const QString& path)
 {
-    QFile::FileError error;
-    QString msg;
-    int line;
-    int col;
+    if (path.isEmpty() == true)
+    {
+        qWarning() << "Empty path given. Not attempting to load file.";
+        return QDomDocument();
+    }
 
-    Q_ASSERT(doc != NULL);
-    Q_ASSERT(path != QString::null);
-
+    QDomDocument doc;
     QFile file(path);
     if (file.open(QIODevice::ReadOnly) == true)
     {
-        *doc = new QDomDocument();
-        if ((*doc)->setContent(&file, false, &msg, &line, &col) == true)
+        QString msg;
+        int line = 0;
+        int col = 0;
+        if (doc.setContent(&file, false, &msg, &line, &col) == false)
         {
-            error = QFile::NoError;
-        }
-        else
-        {
-            qDebug() << path << ":" << msg << ", line:" << line
-            << ", col:" << col;
-            error = QFile::ReadError;
+            qWarning() << "Error loading file" << path << ":" << msg
+                       << ", line:" << line << ", col:" << col;
         }
     }
     else
     {
-        qDebug() << "Unable to open file:" << path;
-        error = file.error();
+        qWarning() << "Unable to open file:" << path;
     }
 
     file.close();
 
-    return error;
+    return doc;
 }
 
 QDomDocument QLCFile::getXMLHeader(const QString& content)
 {
+    if (content.isEmpty() == true)
+        return QDomDocument();
+
+    QDomImplementation dom;
+    QDomDocument doc(dom.createDocumentType(content, QString(), QString()));
+
     QDomElement root;
     QDomElement tag;
     QDomElement subtag;
     QDomText text;
-
-    QDomImplementation dom;
-    QDomDocument doc(dom.createDocumentType(content, QString(), QString()));
 
     root = doc.createElement(content);
     doc.appendChild(root);

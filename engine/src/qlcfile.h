@@ -59,11 +59,11 @@ public:
      * Read an XML file to a QDomDocument structure
      *
      * @param path Path to the file to read
-     * @param document QDomDocument* or NULL if an error has occurred
+     * @return QDomDocument (null doc if not successful)
      *
      * @return An error code (QFile::NoError if successful)
      */
-    static QFile::FileError readXML(QString path, QDomDocument** document);
+    static QDomDocument readXML(const QString& path);
 
     /**
      * Get a common XML file header as a QDomDocument

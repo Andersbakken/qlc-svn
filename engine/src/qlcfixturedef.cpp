@@ -281,24 +281,22 @@ QFile::FileError QLCFixtureDef::saveXML(const QString& fileName)
 
 QFile::FileError QLCFixtureDef::loadXML(const QString& fileName)
 {
-    QDomDocument* doc = NULL;
-    QDomDocumentType doctype;
-    QFile::FileError error;
-    QString errorString;
+    QFile::FileError error = QFile::NoError;
 
     if (fileName.isEmpty() == true)
         return QFile::OpenError;
 
-    error = QLCFile::readXML(fileName, &doc);
-    if (error != QFile::NoError)
+    QDomDocument doc;
+    doc = QLCFile::readXML(fileName);
+    if (doc.isNull() == true)
     {
         qDebug() << "Unable to read from" << fileName;
-        return error;
+        return QFile::ReadError;
     }
 
-    if (doc->doctype().name() == KXMLQLCFixtureDefDocument)
+    if (doc.doctype().name() == KXMLQLCFixtureDefDocument)
     {
-        if (loadXML(doc) == true)
+        if (loadXML(&doc) == true)
             error = QFile::NoError;
         else
             error = QFile::ReadError;
@@ -308,10 +306,6 @@ QFile::FileError QLCFixtureDef::loadXML(const QString& fileName)
         error = QFile::ReadError;
         qWarning() << fileName << "is not a fixture definition file";
     }
-
-    /* Get rid of doc */
-    if (doc != NULL)
-        delete doc;
 
     return error;
 }
