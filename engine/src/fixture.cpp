@@ -305,6 +305,16 @@ void Fixture::setFixtureDefinition(const QLCFixtureDef* fixtureDef,
     emit changed(m_id);
 }
 
+const QLCFixtureDef* Fixture::fixtureDef() const
+{
+    return m_fixtureDef;
+}
+
+const QLCFixtureMode* Fixture::fixtureMode() const
+{
+    return m_fixtureMode;
+}
+
 /*****************************************************************************
  * Load & Save
  *****************************************************************************/

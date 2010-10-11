@@ -287,18 +287,14 @@ public:
      *
      * @return A QLCFixture definition
      */
-    const QLCFixtureDef* fixtureDef() const {
-        return m_fixtureDef;
-    }
+    const QLCFixtureDef* fixtureDef() const;
 
     /**
      * Get the fixture mode that this fixture instance is based on.
      *
      * @return A QLCFixtureMode definition
      */
-    const QLCFixtureMode* fixtureMode() const {
-        return m_fixtureMode;
-    }
+    const QLCFixtureMode* fixtureMode() const;
 
 protected:
     /** The fixture definition that this instance is based on */
