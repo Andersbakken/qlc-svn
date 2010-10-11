@@ -26,7 +26,8 @@ HEADERS += qlcphysical_test.h \
            qlcfixturedefcache_test.h \
            qlcinputchannel_test.h \
            qlcinputprofile_test.h \
-           qlcmacros_test.h
+           qlcmacros_test.h \
+           qlcfile_test.h
 
 # Engine
 HEADERS += bus_test.h \
@@ -66,7 +67,8 @@ SOURCES += qlcphysical_test.cpp \
            qlcfixturedefcache_test.cpp \
            qlcinputchannel_test.cpp \
            qlcinputprofile_test.cpp \
-           qlcmacros_test.cpp
+           qlcmacros_test.cpp \
+           qlcfile_test.cpp
 
 # Engine
 SOURCES += bus_test.cpp \

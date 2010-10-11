@@ -32,6 +32,7 @@
 #include "qlcphysical_test.h"
 #include "qlcchannel_test.h"
 #include "qlcmacros_test.h"
+#include "qlcfile_test.h"
 
 // Engine
 #include "dummyoutplugin_test.h"
@@ -105,6 +106,11 @@ int main(int argc, char** argv)
 
     QLCInputProfile_Test inputProfile;
     r = QTest::qExec(&inputProfile, argc, argv);
+    if (r != 0)
+        return r;
+
+    QLCFile_Test file;
+    r = QTest::qExec(&file, argc, argv);
     if (r != 0)
         return r;
 
