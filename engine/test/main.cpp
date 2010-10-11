@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  test_engine.cpp
+  main.cpp
 
   Copyright (c) Heikki Junnila
 

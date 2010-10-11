@@ -87,8 +87,7 @@ SOURCES += bus_test.cpp \
       inputmap_test.cpp \
       mastertimer_test.cpp \
       doc_test.cpp \
-      dummyoutplugin_test.cpp \
-      test_engine.cpp
+      dummyoutplugin_test.cpp
 
 # Stubs
 SOURCES += mastertimer_stub.cpp \
@@ -99,3 +98,5 @@ SOURCES += mastertimer_stub.cpp \
        outputmap_stub.cpp \
        function_stub.cpp
 
+# Test main
+SOURCES += main.cpp
