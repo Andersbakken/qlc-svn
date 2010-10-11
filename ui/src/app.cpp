@@ -1424,40 +1424,38 @@ bool App::loadXML(const QDomDocument* doc)
 
 QFile::FileError App::saveXML(const QString& fileName)
 {
-    QDomDocument* doc = NULL;
     QFile::FileError retval;
-    QDomElement root;
-    QDomElement tag;
-    QDomText text;
 
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly) == false)
         return file.error();
 
-    if (QLCFile::getXMLHeader(KXMLQLCWorkspace, &doc) == true)
+    QDomDocument doc(QLCFile::getXMLHeader(KXMLQLCWorkspace));
+    if (doc.isNull() == false)
     {
+        QDomElement root;
+        QDomElement tag;
+        QDomText text;
+
         /* Create a text stream for the file */
         QTextStream stream(&file);
 
         /* THE MASTER XML ROOT NODE */
-        root = doc->documentElement();
+        root = doc.documentElement();
 
         /* Write engine components to the XML document */
-        m_doc->saveXML(doc, &root);
+        m_doc->saveXML(&doc, &root);
 
         /* Write virtual console to the XML document */
-        VirtualConsole::saveXML(doc, &root);
+        VirtualConsole::saveXML(&doc, &root);
 
         /* Write the XML document to the stream (=file) */
-        stream << doc->toString() << "\n";
+        stream << doc.toString() << "\n";
 
         /* Set the file name for the current Doc instance and
            set it also in an unmodified state. */
         setFileName(fileName);
         m_doc->resetModified();
-
-        /* Delete the XML document */
-        delete doc;
 
         retval = QFile::NoError;
     }

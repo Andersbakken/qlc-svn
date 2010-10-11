@@ -24,6 +24,41 @@
 
 #include "qlcfile_test.h"
 #include "qlcfile.h"
+#include "qlcconfig.h"
+
+void QLCFile_Test::getXMLHeader()
+{
+    bool insideCreatorTag = false;
+
+    QDomDocument doc;
+    doc = QLCFile::getXMLHeader("Settings");
+
+    QCOMPARE(doc.doctype().name(), QString("Settings"));
+
+    QDomNode node(doc.firstChild());
+    QCOMPARE(node.toElement().tagName(), QString("Settings"));
+    node = node.firstChild();
+    QCOMPARE(node.toElement().tagName(), QString("Creator"));
+    node = node.firstChild();
+    while (node.isNull() == false)
+    {
+        // Verify that program enters this while loop
+        insideCreatorTag = true;
+
+        QDomElement tag(node.toElement());
+        if (tag.tagName() == KXMLQLCCreatorAuthor)
+            QCOMPARE(tag.text(), QString(getenv("USER")));
+        else if (tag.tagName() == KXMLQLCCreatorName)
+            QCOMPARE(tag.text(), QString(APPNAME));
+        else if (tag.tagName() == KXMLQLCCreatorVersion)
+            QCOMPARE(tag.text(), QString(APPVERSION));
+        else
+            QFAIL("Extra crap in XML header detected!");
+        node = node.nextSibling();
+    }
+
+    QCOMPARE(insideCreatorTag, true);
+}
 
 void QLCFile_Test::errorString()
 {

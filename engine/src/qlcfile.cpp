@@ -62,47 +62,42 @@ QFile::FileError QLCFile::readXML(const QString path, QDomDocument** doc)
     return error;
 }
 
-bool QLCFile::getXMLHeader(QString content, QDomDocument** doc)
+QDomDocument QLCFile::getXMLHeader(const QString& content)
 {
-    QDomImplementation dom;
-    QDomDocumentType doctype;
     QDomElement root;
     QDomElement tag;
     QDomElement subtag;
     QDomText text;
 
-    if (doc == NULL || content == NULL)
-        return false;
+    QDomImplementation dom;
+    QDomDocument doc(dom.createDocumentType(content, QString(), QString()));
 
-    doctype = dom.createDocumentType(content, QString::null, QString::null);
-    *doc = new QDomDocument(doctype);
-
-    root = (*doc)->createElement(content);
-    (*doc)->appendChild(root);
+    root = doc.createElement(content);
+    doc.appendChild(root);
 
     /* Creator tag */
-    tag = (*doc)->createElement(KXMLQLCCreator);
+    tag = doc.createElement(KXMLQLCCreator);
     root.appendChild(tag);
 
     /* Creator name */
-    subtag = (*doc)->createElement(KXMLQLCCreatorName);
+    subtag = doc.createElement(KXMLQLCCreatorName);
     tag.appendChild(subtag);
-    text = (*doc)->createTextNode(APPNAME);
+    text = doc.createTextNode(APPNAME);
     subtag.appendChild(text);
 
     /* Creator version */
-    subtag = (*doc)->createElement(KXMLQLCCreatorVersion);
+    subtag = doc.createElement(KXMLQLCCreatorVersion);
     tag.appendChild(subtag);
-    text = (*doc)->createTextNode(QString(APPVERSION));
+    text = doc.createTextNode(QString(APPVERSION));
     subtag.appendChild(text);
 
     /* Author */
-    subtag = (*doc)->createElement(KXMLQLCCreatorAuthor);
+    subtag = doc.createElement(KXMLQLCCreatorAuthor);
     tag.appendChild(subtag);
-    text = (*doc)->createTextNode(QString(getenv("USER")));
+    text = doc.createTextNode(QString(getenv("USER")));
     subtag.appendChild(text);
 
-    return true;
+    return doc;
 }
 
 QString QLCFile::errorString(QFile::FileError error)

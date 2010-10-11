@@ -69,11 +69,9 @@ public:
      * Get a common XML file header as a QDomDocument
      *
      * @param content The content type (Settings, Workspace)
-     * @param doc A newly-created QDomDocument containing the header
-     *
-     * @return true if succesful, otherwise false
+     * @return A new QDomDocument containing the header
      */
-    static bool getXMLHeader(QString content, QDomDocument** doc);
+    static QDomDocument getXMLHeader(const QString& content);
 
     /**
      * Get a string that gives a textual description for the given file

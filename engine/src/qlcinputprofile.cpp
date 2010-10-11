@@ -270,34 +270,35 @@ bool QLCInputProfile::loadXML(const QDomDocument* doc)
 
 bool QLCInputProfile::saveXML(const QString& fileName)
 {
-    QDomDocument* doc = NULL;
-    QDomElement root;
-    QDomElement tag;
-    QDomText text;
     bool retval = false;
 
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly) == false)
         return false;
 
-    if (QLCFile::getXMLHeader(KXMLQLCInputProfile, &doc) == true)
+    QDomDocument doc(QLCFile::getXMLHeader(KXMLQLCInputProfile));
+    if (doc.isNull() == false)
     {
+        QDomElement root;
+        QDomElement tag;
+        QDomText text;
+
         /* Create a text stream for the file */
         QTextStream stream(&file);
 
         /* THE MASTER XML ROOT NODE */
-        root = doc->documentElement();
+        root = doc.documentElement();
 
         /* Manufacturer */
-        tag = doc->createElement(KXMLQLCInputProfileManufacturer);
+        tag = doc.createElement(KXMLQLCInputProfileManufacturer);
         root.appendChild(tag);
-        text = doc->createTextNode(m_manufacturer);
+        text = doc.createTextNode(m_manufacturer);
         tag.appendChild(text);
 
         /* Model */
-        tag = doc->createElement(KXMLQLCInputProfileModel);
+        tag = doc.createElement(KXMLQLCInputProfileModel);
         root.appendChild(tag);
-        text = doc->createTextNode(m_model);
+        text = doc.createTextNode(m_model);
         tag.appendChild(text);
 
         /* Write channels to the document */
@@ -305,15 +306,12 @@ bool QLCInputProfile::saveXML(const QString& fileName)
         while (it.hasNext() == true)
         {
             it.next();
-            it.value()->saveXML(doc, &root, it.key());
+            it.value()->saveXML(&doc, &root, it.key());
         }
 
         /* Write the document into the stream */
         m_path = fileName;
-        stream << doc->toString() << "\n";
-
-        /* Delete the XML document */
-        delete doc;
+        stream << doc.toString() << "\n";
 
         retval = true;
     }

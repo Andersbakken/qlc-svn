@@ -214,12 +214,7 @@ const QLCFixtureMode* QLCFixtureDef::mode(const QString& name) const
 
 QFile::FileError QLCFixtureDef::saveXML(const QString& fileName)
 {
-    QDomDocument* doc = NULL;
     QFile::FileError error;
-    QDomElement root;
-    QDomElement tag;
-    QDomText text;
-    QString str;
 
     if (fileName.isEmpty() == true)
         return QFile::OpenError;
@@ -228,46 +223,49 @@ QFile::FileError QLCFixtureDef::saveXML(const QString& fileName)
     if (file.open(QIODevice::WriteOnly) == false)
         return file.error();
 
-    if (QLCFile::getXMLHeader(KXMLQLCFixtureDefDocument, &doc) == true)
+    QDomDocument doc(QLCFile::getXMLHeader(KXMLQLCFixtureDefDocument));
+    if (doc.isNull() == false)
     {
+        QDomElement root;
+        QDomElement tag;
+        QDomText text;
+
         /* Create a text stream for the file */
         QTextStream stream(&file);
 
         /* Fixture tag */
-        root = doc->documentElement();
+        root = doc.documentElement();
 
         /* Manufacturer */
-        tag = doc->createElement(KXMLQLCFixtureDefManufacturer);
+        tag = doc.createElement(KXMLQLCFixtureDefManufacturer);
         root.appendChild(tag);
-        text = doc->createTextNode(m_manufacturer);
+        text = doc.createTextNode(m_manufacturer);
         tag.appendChild(text);
 
         /* Model */
-        tag = doc->createElement(KXMLQLCFixtureDefModel);
+        tag = doc.createElement(KXMLQLCFixtureDefModel);
         root.appendChild(tag);
-        text = doc->createTextNode(m_model);
+        text = doc.createTextNode(m_model);
         tag.appendChild(text);
 
         /* Type */
-        tag = doc->createElement(KXMLQLCFixtureDefType);
+        tag = doc.createElement(KXMLQLCFixtureDefType);
         root.appendChild(tag);
-        text = doc->createTextNode(m_type);
+        text = doc.createTextNode(m_type);
         tag.appendChild(text);
 
         /* Channels */
         QListIterator <QLCChannel*> chit(m_channels);
         while (chit.hasNext() == true)
-            chit.next()->saveXML(doc, &root);
+            chit.next()->saveXML(&doc, &root);
 
         /* Modes */
         QListIterator <QLCFixtureMode*> modeit(m_modes);
         while (modeit.hasNext() == true)
-            modeit.next()->saveXML(doc, &root);
+            modeit.next()->saveXML(&doc, &root);
 
         /* Write the document into the stream */
-        stream << doc->toString() << "\n";
-
-        delete doc;
+        stream << doc.toString() << "\n";
 
         error = QFile::NoError;
     }

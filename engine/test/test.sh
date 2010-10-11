@@ -1,2 +1,4 @@
 #!/bin/bash
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src ./test_engine
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../src
+export DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../src
+./test_engine

@@ -29,6 +29,7 @@ class QLCFile_Test : public QObject
     Q_OBJECT
 
 private slots:
+    void getXMLHeader();
     void errorString();
 };
 
