@@ -223,9 +223,7 @@ public:
     /**
      * Get a list of values in this scene
      */
-    QList <SceneValue> values() const {
-        return m_values;
-    }
+    QList <SceneValue> values() const;
 
 protected:
     QList <SceneValue> m_values;

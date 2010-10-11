@@ -262,6 +262,11 @@ uchar Scene::value(t_fixture_id fxi, t_channel ch)
         return m_values.at(index).value;
 }
 
+QList <SceneValue> Scene::values() const
+{
+    return m_values;
+}
+
 /*****************************************************************************
  * Fixtures
  *****************************************************************************/
