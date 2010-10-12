@@ -99,6 +99,8 @@ void TestEProgramWing::tooShortData()
 {
     // Just a stability check; nothing should happen if data is too short
     QByteArray foo;
+
+    // Buttons
     foo.append(char(123));
     foo.append(char(45));
     foo.append(char(67));
@@ -113,6 +115,22 @@ void TestEProgramWing::tooShortData()
     foo.append(char(89));
     foo.append(char(123));
     foo.append(char(45));
+    m_ewing->parseData(foo);
+
+    // Encoders
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
     m_ewing->parseData(foo);
 }
 
