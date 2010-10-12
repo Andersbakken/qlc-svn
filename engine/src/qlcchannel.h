@@ -101,43 +101,29 @@ public:
      *********************************************************************/
 public:
     /** Get the channel's name */
-    QString name() const {
-        return m_name;
-    }
+    QString name() const;
 
     /** Set the channel's name */
-    void setName(const QString &name) {
-        m_name = name;
-    }
+    void setName(const QString &name);
 
     /** Get the channel's group */
-    QString group() const {
-        return m_group;
-    }
+    QString group() const;
 
     /** Set the channel's group */
-    void setGroup(const QString& group) {
-        m_group = group;
-    }
+    void setGroup(const QString& group);
 
     /** Set the channel's control byte */
-    void setControlByte(t_controlbyte byte) {
-        m_controlByte = byte;
-    }
+    void setControlByte(t_controlbyte byte);
 
     /** Get the channel's control byte */
-    t_controlbyte controlByte() const {
-        return m_controlByte;
-    }
+    t_controlbyte controlByte() const;
 
     /*********************************************************************
      * Capabilities
      *********************************************************************/
 public:
     /** Get a list of channel's capabilities */
-    const QList <QLCCapability*> capabilities() const {
-        return m_capabilities;
-    }
+    const QList <QLCCapability*> capabilities() const;
 
     /** Search for a particular capability by its channel value */
     QLCCapability* searchCapability(uchar value) const;

@@ -158,9 +158,48 @@ QString QLCChannel::indexToGroup(int index)
     }
 }
 
+/*************************************************************************
+ * Properties
+ *************************************************************************/
+
+QString QLCChannel::name() const
+{
+    return m_name;
+}
+
+void QLCChannel::setName(const QString &name)
+{
+    m_name = name;
+}
+
+QString QLCChannel::group() const
+{
+    return m_group;
+}
+
+void QLCChannel::setGroup(const QString& group)
+{
+    m_group = group;
+}
+
+void QLCChannel::setControlByte(t_controlbyte byte)
+{
+    m_controlByte = byte;
+}
+
+t_controlbyte QLCChannel::controlByte() const
+{
+    return m_controlByte;
+}
+
 /*****************************************************************************
  * Capabilities
  *****************************************************************************/
+
+const QList <QLCCapability*> QLCChannel::capabilities() const
+{
+    return m_capabilities;
+}
 
 QLCCapability* QLCChannel::searchCapability(uchar value) const
 {
