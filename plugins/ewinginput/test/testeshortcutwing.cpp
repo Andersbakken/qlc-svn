@@ -97,6 +97,26 @@ void TestEShortcutWing::infoText()
     QCOMPARE(m_ewing->infoText(), str);
 }
 
+void TestEShortcutWing::tooShortData()
+{
+    // Just a stability check; nothing should happen if data is too short
+    QByteArray foo;
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    m_ewing->parseData(foo);
+}
+
 void TestEShortcutWing::buttons_data()
 {
     QByteArray ba(data());

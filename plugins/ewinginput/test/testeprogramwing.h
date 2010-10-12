@@ -21,6 +21,7 @@ private slots:
     void isOutputData();
     void name();
     void infoText();
+    void tooShortData();
 
     void buttons_data();
     void buttons();

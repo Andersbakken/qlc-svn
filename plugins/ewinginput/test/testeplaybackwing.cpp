@@ -98,6 +98,24 @@ void TestEPlaybackWing::infoText()
     QCOMPARE(m_ewing->infoText(), str);
 }
 
+void TestEPlaybackWing::tooShortData()
+{
+    // Just a stability check; nothing should happen if data is too short
+    QByteArray foo;
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    foo.append(char(89));
+    foo.append(char(123));
+    foo.append(char(45));
+    foo.append(char(67));
+    m_ewing->parseData(foo);
+}
+
 void TestEPlaybackWing::buttons_data()
 {
     QByteArray ba(data());
