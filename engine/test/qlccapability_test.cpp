@@ -71,6 +71,16 @@ void QLCCapability_Test::max()
     QCOMPARE(cap.max(), value);
 }
 
+void QLCCapability_Test::middle()
+{
+    QLCCapability cap;
+    QVERIFY(cap.max() == UCHAR_MAX);
+    QCOMPARE(cap.middle(), uchar(127));
+    cap.setMin(100);
+    cap.setMax(200);
+    QCOMPARE(cap.middle(), uchar(150));
+}
+
 void QLCCapability_Test::name()
 {
     QLCCapability cap;
@@ -99,8 +109,20 @@ void QLCCapability_Test::overlaps()
     QVERIFY(cap1.overlaps(cap2) == true);
     QVERIFY(cap2.overlaps(cap1) == true);
 
+    /* cap2's max overlaps cap1 */
+    cap2.setMin(0);
+    cap2.setMax(15);
+    QVERIFY(cap1.overlaps(cap2) == true);
+    QVERIFY(cap2.overlaps(cap1) == true);
+
     /* cap2's min overlaps cap1 */
     cap2.setMin(245);
+    cap2.setMax(UCHAR_MAX);
+    QVERIFY(cap1.overlaps(cap2) == true);
+    QVERIFY(cap2.overlaps(cap1) == true);
+
+    /* cap2's min overlaps cap1 */
+    cap2.setMin(240);
     cap2.setMax(UCHAR_MAX);
     QVERIFY(cap1.overlaps(cap2) == true);
     QVERIFY(cap2.overlaps(cap1) == true);

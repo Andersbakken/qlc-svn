@@ -70,30 +70,16 @@ public:
      * Properties
      ********************************************************************/
 public:
-    uchar min() const {
-        return m_min;
-    }
-    void setMin(uchar value) {
-        m_min = value;
-    }
+    uchar min() const;
+    void setMin(uchar value);
 
-    uchar max() const {
-        return m_max;
-    }
-    void setMax(uchar value) {
-        m_max = value;
-    }
+    uchar max() const;
+    void setMax(uchar value);
 
-    uchar middle() const {
-        return int((m_max + m_min) / 2);
-    }
+    uchar middle() const;
 
-    QString name() const {
-        return m_name;
-    }
-    void setName(const QString& name) {
-        m_name = name;
-    }
+    QString name() const;
+    void setName(const QString& name);
 
     /** Check, whether the given capability overlaps with this */
     bool overlaps(const QLCCapability& cap);

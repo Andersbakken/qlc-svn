@@ -38,6 +38,7 @@ private slots:
     void max_data();
     void max();
 
+    void middle();
     void name();
     void overlaps();
     void copy();

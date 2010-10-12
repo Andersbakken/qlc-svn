@@ -27,6 +27,10 @@
 #include "qlccapability.h"
 #include "qlctypes.h"
 
+/************************************************************************
+ * Initialization
+ ************************************************************************/
+
 QLCCapability::QLCCapability(uchar min, uchar max, const QString& name)
 {
     m_min = min;
@@ -68,19 +72,60 @@ bool QLCCapability::operator<(const QLCCapability& capability) const
         return false;
 }
 
+/************************************************************************
+ * Properties
+ ************************************************************************/
+
+uchar QLCCapability::min() const
+{
+    return m_min;
+}
+
+void QLCCapability::setMin(uchar value)
+{
+    m_min = value;
+}
+
+uchar QLCCapability::max() const
+{
+    return m_max;
+}
+
+void QLCCapability::setMax(uchar value)
+{
+    m_max = value;
+}
+
+uchar QLCCapability::middle() const
+{
+    return int((m_max + m_min) / 2);
+}
+
+QString QLCCapability::name() const
+{
+    return m_name;
+}
+
+void QLCCapability::setName(const QString& name)
+{
+    m_name = name;
+}
+
 bool QLCCapability::overlaps(const QLCCapability& cap)
 {
     if (m_min >= cap.min() && m_min <= cap.max())
         return true;
     else if (m_max >= cap.min() && m_max <= cap.max())
         return true;
-    else if (cap.min() >= m_min && cap.min() <= m_max)
-        return true;
-    else if (cap.max() >= m_min && cap.max() <= m_max)
+    else if (m_min <= cap.min() && m_max >= cap.min())
         return true;
     else
         return false;
 }
+
+/************************************************************************
+ * Save & Load
+ ************************************************************************/
 
 bool QLCCapability::saveXML(QDomDocument* doc, QDomElement* root)
 {
