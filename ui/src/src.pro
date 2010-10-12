@@ -149,6 +149,7 @@ SOURCES += aboutbox.cpp \
 PRO_FILE      = src.pro
 TRANSLATIONS += qlc_fi_FI.ts
 TRANSLATIONS += qlc_fr_FR.ts
+TRANSLATIONS += qlc_es_ES.ts
 include(../../i18n.pri)
 
 macx {
