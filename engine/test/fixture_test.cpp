@@ -746,20 +746,38 @@ void Fixture_Test::save()
     QVERIFY(channels == true);
 }
 
+void Fixture_Test::status()
+{
+    // This test is mostly just a stability check since checking lots of
+    // detailed HTML formatting is not that useful.
+    QString info;
 
+    Fixture fxi(this);
+    info = fxi.status();
 
+    fxi.setID(1337);
+    info = fxi.status();
 
+    fxi.setName("Test Fixture");
+    info = fxi.status();
 
+    fxi.setUniverse(2);
+    info = fxi.status();
 
+    fxi.setAddress(438);
+    info = fxi.status();
 
+    fxi.setChannels(12);
+    info = fxi.status();
 
+    const QLCFixtureDef* fixtureDef;
+    fixtureDef = m_fixtureDefCache.fixtureDef("Martin", "MAC250+");
+    Q_ASSERT(fixtureDef != NULL);
 
+    const QLCFixtureMode* fixtureMode;
+    fixtureMode = fixtureDef->modes().at(0);
+    Q_ASSERT(fixtureMode != NULL);
 
-
-
-
-
-
-
-
-
+    fxi.setFixtureDefinition(fixtureDef, fixtureMode);
+    info = fxi.status();
+}

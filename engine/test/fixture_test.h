@@ -47,6 +47,7 @@ private slots:
     void loadWrongID();
     void loader();
     void save();
+    void status();
 
 private:
     QLCFixtureDefCache m_fixtureDefCache;
