@@ -106,9 +106,7 @@ public:
     /**
      * Get this function's unique ID
      */
-    t_function_id id() const {
-        return m_id;
-    }
+    t_function_id id() const;
 
     /**
      * Get the value for an invalid function ID (for comparison etc.)
@@ -136,9 +134,7 @@ public:
     /**
      * Return the name of this function
      */
-    virtual QString name() const {
-        return m_name;
-    }
+    virtual QString name() const;
 
 protected:
     QString m_name;
@@ -198,9 +194,7 @@ public:
     /**
      * Get this function's running order
      */
-    virtual Function::RunOrder runOrder() const {
-        return m_runOrder;
-    }
+    virtual Function::RunOrder runOrder() const;
 
     /**
      * Convert a RunOrder to string
@@ -236,9 +230,7 @@ public:
     /**
      * Get this function's direction
      */
-    virtual Function::Direction direction() const {
-        return m_direction;
-    }
+    virtual Function::Direction direction() const;
 
     /**
      * Convert a Direction to a string
@@ -271,9 +263,7 @@ public:
     /**
      * Get the bus used for setting the speed of this function
      */
-    quint32 busID() const {
-        return m_busID;
-    }
+    quint32 busID() const;
 
 protected:
     quint32 m_busID;
@@ -327,9 +317,7 @@ public:
     virtual void unFlash(MasterTimer* timer);
 
     /** Check, whether the function is flashing */
-    virtual bool flashing() const {
-        return m_flashing;
-    }
+    virtual bool flashing() const;
 
 signals:
     /**
@@ -424,20 +412,14 @@ public:
      *
      * @return Number of elapsed timer ticks since the function was started
      */
-    quint32 elapsed() const {
-        return m_elapsed;
-    }
+    quint32 elapsed() const;
 
 protected:
     /** Reset elapsed timer ticks to zero */
-    void resetElapsed() {
-        m_elapsed = 0;
-    }
+    void resetElapsed();
 
     /** Increment the elapsed timer ticks by one */
-    void incrementElapsed() {
-        m_elapsed++;
-    }
+    void incrementElapsed();
 
 private:
     quint32 m_elapsed;
@@ -452,18 +434,14 @@ public:
      * There is no way to cancel it, but the function can be started again
      * normally.
      */
-    virtual void stop() {
-        m_stop = true;
-    }
+    virtual void stop();
 
     /**
      * Check, whether the function should be stopped ASAP.
      *
      * @return true if the function should be stopped, otherwise false.
      */
-    virtual bool stopped() const {
-        return m_stop;
-    }
+    virtual bool stopped() const;
 
 private:
     /** Stop flag, private to keep functions from modifying it. */

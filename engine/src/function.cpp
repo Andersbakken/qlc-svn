@@ -101,6 +101,11 @@ void Function::setID(t_function_id id)
     m_id = id;
 }
 
+t_function_id Function::id() const
+{
+    return m_id;
+}
+
 t_function_id Function::invalidId()
 {
     return KInvalidFunctionID;
@@ -113,6 +118,11 @@ t_function_id Function::invalidId()
 void Function::setName(const QString& name)
 {
     m_name = QString(name);
+}
+
+QString Function::name() const
+{
+    return m_name;
 }
 
 /*****************************************************************************
@@ -168,6 +178,11 @@ void Function::setRunOrder(const Function::RunOrder& order)
         m_runOrder = Loop;
 }
 
+Function::RunOrder Function::runOrder() const
+{
+    return m_runOrder;
+}
+
 QString Function::runOrderToString(const RunOrder& order)
 {
     switch (order)
@@ -209,6 +224,11 @@ void Function::setDirection(const Function::Direction& dir)
         m_direction = Forward;
 }
 
+Function::Direction Function::direction() const
+{
+    return m_direction;
+}
+
 QString Function::directionToString(const Direction& dir)
 {
     switch (dir)
@@ -240,6 +260,11 @@ void Function::setBus(quint32 id)
 {
     if (id < Bus::count() && type() != Collection)
         m_busID = id;
+}
+
+quint32 Function::busID() const
+{
+    return m_busID;
 }
 
 /*****************************************************************************
@@ -335,6 +360,11 @@ void Function::unFlash(MasterTimer* timer)
     m_flashing = false;
 }
 
+bool Function::flashing() const
+{
+    return m_flashing;
+}
+
 /*****************************************************************************
  * Running
  *****************************************************************************/
@@ -356,3 +386,37 @@ void Function::postRun(MasterTimer* timer, QByteArray* universes)
     m_stop = true;
     emit stopped(m_id);
 }
+
+/*****************************************************************************
+ * Elapsed ticks while running
+ *****************************************************************************/
+
+quint32 Function::elapsed() const
+{
+    return m_elapsed;
+}
+
+void Function::resetElapsed()
+{
+    m_elapsed = 0;
+}
+
+void Function::incrementElapsed()
+{
+    m_elapsed++;
+}
+
+/*************************************************************************
+ * Stopping
+ *************************************************************************/
+
+void Function::stop()
+{
+    m_stop = true;
+}
+
+bool Function::stopped() const
+{
+    return m_stop;
+}
+
