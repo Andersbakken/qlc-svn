@@ -79,6 +79,9 @@ void QLCFixtureMode_Test::insertChannel()
     QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
     mode->setName("Test");
 
+    QVERIFY(mode->insertChannel(NULL, 0) == false);
+    QVERIFY(mode->channels().size() == 0);
+
     /* Channel that doesn't belong to mode->fixtureDef() */
     QLCChannel* ch = new QLCChannel();
     ch->setName("Rogue");
@@ -339,6 +342,10 @@ void QLCFixtureMode_Test::load()
     bulb.setAttribute("ColourTemperature", 6500);
     phys.appendChild(bulb);
 
+    /* Unrecognized tag on top level */
+    QDomElement foo = doc.createElement("Foo");
+    root.appendChild(foo);
+
     QLCFixtureMode mode(m_fixtureDef);
     QVERIFY(mode.physical().bulbType() != "LED");
     QVERIFY(mode.physical().bulbLumens() != 18000);
@@ -352,6 +359,15 @@ void QLCFixtureMode_Test::load()
     QVERIFY(mode.channels().size() == 2);
     QVERIFY(mode.channels()[0] == m_ch1);
     QVERIFY(mode.channels()[1] == m_ch3);
+
+    QLCFixtureMode mode2(m_fixtureDef, &root);
+    QVERIFY(mode2.physical().bulbType() == "LED");
+    QVERIFY(mode2.physical().bulbLumens() == 18000);
+    QVERIFY(mode2.physical().bulbColourTemperature() == 6500);
+
+    QVERIFY(mode2.channels().size() == 2);
+    QVERIFY(mode2.channels()[0] == m_ch1);
+    QVERIFY(mode2.channels()[1] == m_ch3);
 }
 
 void QLCFixtureMode_Test::loadWrongRoot()
