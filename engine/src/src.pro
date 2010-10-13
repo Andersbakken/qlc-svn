@@ -91,6 +91,9 @@ SOURCES += bus.cpp \
            palettegenerator.cpp \
            scene.cpp
 
+# Interfaces
+HEADERS += ../../plugins/interfaces/qlcinplugin.h
+
 #############################################################################
 # qlcconfig.h generation
 #############################################################################

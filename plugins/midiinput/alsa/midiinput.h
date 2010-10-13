@@ -42,7 +42,7 @@ class MIDIInput;
  * MIDIInput
  *****************************************************************************/
 
-class MIDIInput : public QObject, public QLCInPlugin
+class MIDIInput : public QLCInPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCInPlugin)
@@ -54,15 +54,50 @@ class MIDIInput : public QObject, public QLCInPlugin
      * Initialization
      *********************************************************************/
 public:
-    ~MIDIInput();
-
+    /** @reimp */
     void init();
 
-    /** Open the given input for input data */
+    /** @reimp */
+    virtual ~MIDIInput();
+
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Input
+     *********************************************************************/
+public:
+    /** @reimp */
     void open(quint32 input = 0);
 
-    /** Close the given input */
+    /** @reimp */
     void close(quint32 input = 0);
+
+    /** @reimp */
+    QStringList inputs();
+
+    /** @reimp */
+    QString infoText(quint32 input = KInputInvalid);
+
+protected:
+    void customEvent(QEvent* event);
+
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
+public:
+    /** @reimp */
+    void configure();
+
+    /** @reimp */
+    bool canConfigure();
+
+    /*********************************************************************
+     * Feedback
+     *********************************************************************/
+public:
+    /** @reimp */
+    void feedBack(quint32 input, quint32 channel, uchar value);
 
     /*********************************************************************
      * ALSA
@@ -108,35 +143,10 @@ public:
 signals:
     void deviceAdded(MIDIDevice* device);
     void deviceRemoved(MIDIDevice* device);
-    void configurationChanged();
 
 protected:
     /** The list of available MIDI devices */
     QList <MIDIDevice*> m_devices;
-
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
-
-    /*********************************************************************
-     * Inputs
-     *********************************************************************/
-public:
-    QStringList inputs();
-
-    /*********************************************************************
-     * Configuration
-     *********************************************************************/
-public:
-    void configure();
-
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 input = KInputInvalid);
 
     /*********************************************************************
      * Device poller
@@ -147,21 +157,6 @@ public:
 
 protected:
     MIDIPoller* m_poller;
-
-    /*********************************************************************
-     * Input data
-     *********************************************************************/
-protected:
-    void customEvent(QEvent* event);
-
-signals:
-    void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
-                      uchar value);
-
-public:
-    void connectInputData(QObject* listener);
-
-    void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

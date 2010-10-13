@@ -27,7 +27,6 @@
 #include <QList>
 
 #include "qlcinplugin.h"
-#include "qlctypes.h"
 #include "ewing.h"
 
 class QUdpSocket;
@@ -36,7 +35,7 @@ class QUdpSocket;
  * EWingInput
  *****************************************************************************/
 
-class QLC_DECLSPEC EWingInput : public QObject, public QLCInPlugin
+class QLC_DECLSPEC EWingInput : public QLCInPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCInPlugin)
@@ -45,15 +44,38 @@ class QLC_DECLSPEC EWingInput : public QObject, public QLCInPlugin
      * Initialization
      *********************************************************************/
 public:
+    /** @reimp */
     void init();
-    ~EWingInput();
 
+    /** @reimp */
+    virtual ~EWingInput();
+
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
+public:
+    /** @reimp */
     void open(quint32 input = 0);
+
+    /** @reimp */
     void close(quint32 input = 0);
 
-protected slots:
-    void slotReadSocket();
+    /** @reimp */
+    QStringList inputs();
 
+    /** @reimp */
+    QString infoText(quint32 input = KInputInvalid);
+
+signals:
+    /** @reimp */
+    void valueChanged(quint32 line, quint32 channel, uchar value);
+
+    /*********************************************************************
+     * Devices
+     *********************************************************************/
 protected:
     /**
      * Create a new wing object from the given datagram packet. Looks up
@@ -69,59 +91,45 @@ protected:
     static EWing* createWing(QObject* parent, const QHostAddress& address,
                              const QByteArray& data);
 
-    /*********************************************************************
-     * Devices
-     *********************************************************************/
-protected:
+    /** Find a specific device by its host address and type */
     EWing* device(const QHostAddress& address, EWing::Type type);
+
+    /** Find a device by its index (input line) */
     EWing* device(quint32 index);
 
+    /** Add a newly-created device to the plugin's list of devices */
     void addDevice(EWing* device);
+
+    /** Remove a specific device from the plugin */
     void removeDevice(EWing* device);
+
+protected slots:
+    void slotReadSocket();
+    void slotValueChanged(quint32 channel, uchar value);
 
 protected:
     QList <EWing*> m_devices;
     QUdpSocket* m_socket;
 
     /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
-
-    /*********************************************************************
-     * Inputs
-     *********************************************************************/
-public:
-    QStringList inputs();
-
-    /*********************************************************************
      * Configuration
      *********************************************************************/
 public:
+    /** @reimp */
     void configure();
 
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 input = KInputInvalid);
-
-    /*********************************************************************
-     * Input data
-     *********************************************************************/
-protected slots:
-    void slotValueChanged(quint32 channel, uchar value);
+    /** @reimp */
+    bool canConfigure();
 
 signals:
-    void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
-                      uchar value);
-
+    /** @reimp */
     void configurationChanged();
 
+    /*********************************************************************
+     * Feedback
+     *********************************************************************/
 public:
-    void connectInputData(QObject* listener);
-
+    /** @reimp */
     void feedBack(quint32 input, quint32 channel, uchar value);
 };
 

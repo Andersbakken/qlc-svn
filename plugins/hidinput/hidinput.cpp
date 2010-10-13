@@ -71,6 +71,26 @@ HIDInput::~HIDInput()
     delete m_poller;
 }
 
+QString HIDInput::name()
+{
+    return QString("HID Input");
+}
+
+QStringList HIDInput::inputs()
+{
+    QStringList list;
+
+    QListIterator <HIDDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << it.next()->name();
+
+    return list;
+}
+
+/*****************************************************************************
+ * Inputs
+ *****************************************************************************/
+
 void HIDInput::open(quint32 input)
 {
     HIDDevice* dev = device(input);
@@ -87,6 +107,84 @@ void HIDInput::close(quint32 input)
         removePollDevice(dev);
     else
         qDebug() << name() << "has no input number:" << input;
+}
+
+void HIDInput::customEvent(QEvent* event)
+{
+    if (event->type() == _HIDInputEventType)
+    {
+        HIDInputEvent* e = static_cast<HIDInputEvent*> (event);
+        if (e != NULL && e->m_alive == true)
+            emit valueChanged(e->m_input, e->m_channel, e->m_value);
+        else
+            removeDevice(e->m_device);
+
+        event->accept();
+    }
+}
+
+QString HIDInput::infoText(quint32 input)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    str += QString("<H3>%1</H3>").arg(name());
+
+    if (input == KInputInvalid)
+    {
+        /* Plugin or just an invalid input selected. Display generic
+           information. */
+        str += QString("<P>This plugin provides input support for ");
+        str += QString("various Human Interface Devices like ");
+        str += QString("joysticks, mice and keyboards.</P>");
+    }
+    else
+    {
+        /* A specific input line selected. Display its information if
+           available. */
+        HIDDevice* dev = device(input);
+
+        if (dev != NULL)
+            str += dev->infoText();
+        else
+            str += tr("<P>%1: Device not found.</P>").arg(input+1);
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void HIDInput::configure()
+{
+    ConfigureHIDInput conf(NULL, this);
+    conf.exec();
+}
+
+bool HIDInput::canConfigure()
+{
+    return true;
+}
+
+/*****************************************************************************
+ * Feedback
+ *****************************************************************************/
+
+void HIDInput::feedBack(quint32 input, quint32 channel, uchar value)
+{
+    Q_UNUSED(input);
+    Q_UNUSED(channel);
+    Q_UNUSED(value);
 }
 
 /*****************************************************************************
@@ -188,82 +286,6 @@ void HIDInput::removeDevice(HIDDevice* device)
 }
 
 /*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString HIDInput::name()
-{
-    return QString("HID Input");
-}
-
-/*****************************************************************************
- * Inputs
- *****************************************************************************/
-
-QStringList HIDInput::inputs()
-{
-    QStringList list;
-
-    QListIterator <HIDDevice*> it(m_devices);
-    while (it.hasNext() == true)
-        list << it.next()->name();
-
-    return list;
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void HIDInput::configure()
-{
-    ConfigureHIDInput conf(NULL, this);
-    conf.exec();
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
-
-QString HIDInput::infoText(quint32 input)
-{
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    str += QString("<H3>%1</H3>").arg(name());
-
-    if (input == KInputInvalid)
-    {
-        /* Plugin or just an invalid input selected. Display generic
-           information. */
-        str += QString("<P>This plugin provides input support for ");
-        str += QString("various Human Interface Devices like ");
-        str += QString("joysticks, mice and keyboards.</P>");
-    }
-    else
-    {
-        /* A specific input line selected. Display its information if
-           available. */
-        HIDDevice* dev = device(input);
-
-        if (dev != NULL)
-            str += dev->infoText();
-        else
-            str += tr("<P>%1: Device not found.</P>").arg(input+1);
-    }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
-}
-
-/*****************************************************************************
  * Device poller
  *****************************************************************************/
 
@@ -277,52 +299,6 @@ void HIDInput::removePollDevice(HIDDevice* device)
 {
     Q_ASSERT(device != NULL);
     m_poller->removeDevice(device);
-}
-
-/*****************************************************************************
- * Input data
- *****************************************************************************/
-
-void HIDInput::customEvent(QEvent* event)
-{
-    if (event->type() == _HIDInputEventType)
-    {
-        HIDInputEvent* e = static_cast<HIDInputEvent*> (event);
-
-        if (e->m_alive == true)
-        {
-            emit valueChanged(this, e->m_input, e->m_channel,
-                              e->m_value);
-        }
-        else
-        {
-            removeDevice(e->m_device);
-        }
-
-        event->accept();
-    }
-}
-
-void HIDInput::connectInputData(QObject* listener)
-{
-    Q_ASSERT(listener != NULL);
-
-    connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,
-                                      uchar)),
-            listener,
-            SLOT(slotValueChanged(QLCInPlugin*,quint32,quint32,
-                                  uchar)));
-
-    connect(this, SIGNAL(configurationChanged()),
-            listener, SLOT(slotConfigurationChanged()));
-}
-
-void HIDInput::feedBack(quint32 input, quint32 channel,
-                        uchar value)
-{
-    Q_UNUSED(input);
-    Q_UNUSED(channel);
-    Q_UNUSED(value);
 }
 
 /*****************************************************************************

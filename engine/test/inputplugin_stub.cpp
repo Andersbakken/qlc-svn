@@ -56,9 +56,19 @@ QStringList InputPluginStub::inputs()
     return list;
 }
 
+void InputPluginStub::emitValueChanged(quint32 input, quint32 channel, uchar value)
+{
+    emit valueChanged(input, channel, value);
+}
+
 void InputPluginStub::configure()
 {
     m_configureCalled++;
+}
+
+bool InputPluginStub::canConfigure()
+{
+    return true;
 }
 
 QString InputPluginStub::infoText(quint32 input)
@@ -71,13 +81,7 @@ QString InputPluginStub::name()
     return QString("Input Plugin Stub");
 }
 
-void InputPluginStub::connectInputData(QObject* listener)
-{
-    Q_UNUSED(listener);
-}
-
-void InputPluginStub::feedBack(quint32 input, quint32 channel,
-                               uchar value)
+void InputPluginStub::feedBack(quint32 input, quint32 channel, uchar value)
 {
     m_feedBackInput = input;
     m_feedBackChannel = channel;

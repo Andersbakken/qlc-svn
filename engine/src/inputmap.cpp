@@ -103,9 +103,12 @@ void InputMap::setEditorUniverse(quint32 uni)
  * Input data
  *****************************************************************************/
 
-void InputMap::slotValueChanged(QLCInPlugin* plugin, quint32 input,
-                                quint32 channel, uchar value)
+void InputMap::slotValueChanged(quint32 input, quint32 channel, uchar value)
 {
+    QLCInPlugin* plugin = qobject_cast<QLCInPlugin*> (QObject::sender());
+    if (plugin == NULL)
+        return;
+
     for (quint32 i = 0; i < m_universes; i++)
     {
         if (m_patch[i]->plugin() == plugin &&
@@ -139,8 +142,8 @@ bool InputMap::feedBack(quint32 universe, quint32 channel,
 void InputMap::slotConfigurationChanged()
 {
     QLCInPlugin* plugin = qobject_cast<QLCInPlugin*> (QObject::sender());
-    Q_ASSERT(plugin != NULL);
-    emit pluginConfigurationChanged(plugin->name());
+    if (plugin != NULL)
+        emit pluginConfigurationChanged(plugin->name());
 }
 
 /*****************************************************************************
@@ -237,21 +240,18 @@ void InputMap::loadPlugins()
                 /* New plugin. Append and init. */
                 p->init();
                 appendPlugin(p);
-                p->connectInputData(this);
             }
             else
             {
                 /* Duplicate plugin. Unload it. */
-                qWarning() << "Discarded duplicate plugin"
-                << path;
+                qWarning() << "Discarded duplicate plugin" << path;
                 loader.unload();
             }
         }
         else
         {
             qWarning() << "Unable to load an input plugin from"
-            << path << "because:"
-            << loader.errorString();
+                       << path << "because:" << loader.errorString();
         }
     }
 }
@@ -317,12 +317,16 @@ bool InputMap::appendPlugin(QLCInPlugin* inputPlugin)
     {
         qDebug() << "Found an input plugin:" << inputPlugin->name();
         m_plugins.append(inputPlugin);
+        connect(inputPlugin, SIGNAL(configurationChanged()),
+                this, SLOT(slotConfigurationChanged()));
+        connect(inputPlugin, SIGNAL(valueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotValueChanged(quint32,quint32,uchar)));
         return true;
     }
     else
     {
         qWarning() << "Input plugin" << inputPlugin->name()
-        << "is already loaded. Skipping.";
+                   << "is already loaded. Skipping.";
         return false;
     }
 }

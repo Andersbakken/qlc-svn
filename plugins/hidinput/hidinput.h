@@ -26,7 +26,6 @@
 #include <QList>
 
 #include "qlcinplugin.h"
-#include "qlctypes.h"
 
 #include "hiddevice.h"
 #include "hidpoller.h"
@@ -53,7 +52,7 @@ public:
  * HIDInput
  *****************************************************************************/
 
-class HIDInput : public QObject, public QLCInPlugin
+class HIDInput : public QLCInPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCInPlugin)
@@ -65,11 +64,58 @@ class HIDInput : public QObject, public QLCInPlugin
      * Initialization
      *********************************************************************/
 public:
+    /** @reimp */
     void init();
-    ~HIDInput();
 
+    /** @reimp */
+    virtual ~HIDInput();
+
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
+public:
+    /** @reimp */
     void open(quint32 input = 0);
+
+    /** @reimp */
     void close(quint32 input = 0);
+
+    /** @reimp */
+    QStringList inputs();
+
+    /** @reimp */
+    QString infoText(quint32 input = KInputInvalid);
+
+signals:
+    /** @reimp */
+    void valueChanged(quint32 line, quint32 channel, uchar value);
+
+protected:
+    void customEvent(QEvent* event);
+
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
+public:
+    /** @reimp */
+    void configure();
+
+    /** @reimp */
+    bool canConfigure();
+
+signals:
+    /** @reimp */
+    void configurationChanged();
+
+    /*********************************************************************
+     * Feedback
+     *********************************************************************/
+public:
+    /** @reimp */
+    void feedBack(quint32 input, quint32 channel, uchar value);
 
     /*********************************************************************
      * Devices
@@ -87,34 +133,9 @@ protected:
 signals:
     void deviceAdded(HIDDevice* device);
     void deviceRemoved(HIDDevice* device);
-    void configurationChanged();
 
 protected:
     QList <HIDDevice*> m_devices;
-
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
-
-    /*********************************************************************
-     * Inputs
-     *********************************************************************/
-public:
-    QStringList inputs();
-
-    /*********************************************************************
-     * Configuration
-     *********************************************************************/
-public:
-    void configure();
-
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 input = KInputInvalid);
 
     /*********************************************************************
      * Device poller
@@ -125,22 +146,6 @@ public:
 
 protected:
     HIDPoller* m_poller;
-
-    /*********************************************************************
-     * Input data
-     *********************************************************************/
-protected:
-    void customEvent(QEvent* event);
-
-signals:
-    void valueChanged(QLCInPlugin* plugin, quint32 line,
-                      quint32 channel, uchar value);
-
-public:
-    void connectInputData(QObject* listener);
-
-    void feedBack(quint32 input, quint32 channel,
-                  uchar value);
 };
 
 #endif

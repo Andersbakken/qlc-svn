@@ -38,7 +38,7 @@ class MIDIInput;
  * MIDIInput
  *****************************************************************************/
 
-class MIDIInput : public QObject, public QLCInPlugin
+class MIDIInput : public QLCInPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCInPlugin)
@@ -47,24 +47,54 @@ class MIDIInput : public QObject, public QLCInPlugin
      * Initialization
      *********************************************************************/
 public:
-    /** \reimp */
+    /** @reimp */
     void init();
 
-    /** \reimp */
+    /** @reimp */
     virtual ~MIDIInput();
 
-    /** \reimp */
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Inputs
+     *********************************************************************/
+public:
+    /** @reimp */
     void open(quint32 input = 0);
 
-    /** \reimp */
+    /** @reimp */
     void close(quint32 input = 0);
 
-    const MIDIClientRef client() const {
-        return m_client;
-    }
+    /** @reimp */
+    QStringList inputs();
+
+    /** @reimp */
+    QString infoText(quint32 input = KInputInvalid);
+
+    /** Get the OSX MIDI client */
+    const MIDIClientRef client() const;
 
 protected:
+    /** The OSX MIDI client */
     MIDIClientRef m_client;
+
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
+public:
+    /** @reimp */
+    void configure();
+
+    /** @reimp */
+    bool canConfigure();
+
+    /*********************************************************************
+     * Feedback
+     *********************************************************************/
+public:
+    /** @reimp */
+    void feedBack(quint32 input, quint32 channel, uchar value);
 
     /*********************************************************************
      * Devices
@@ -78,64 +108,18 @@ public:
     void addDevice(MIDIDevice* device);
     void removeDevice(MIDIDevice* device);
 
-    const QList <MIDIDevice*>& devices() const {
-        return m_devices;
-    }
+    QList <MIDIDevice*> devices() const;
 
 signals:
     void deviceAdded(MIDIDevice* device);
     void deviceRemoved(MIDIDevice* device);
-    void configurationChanged();
+
+protected slots:
+    /** Receives MIDI input data from MIDIDevice instances */
+    void slotDeviceValueChanged(quint32 channel, uchar value);
 
 protected:
     QList <MIDIDevice*> m_devices;
-
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    /** \reimp */
-    QString name();
-
-    /*********************************************************************
-     * Inputs
-     *********************************************************************/
-public:
-    /** \reimp */
-    QStringList inputs();
-
-    /*********************************************************************
-     * Configuration
-     *********************************************************************/
-public:
-    /** \reimp */
-    void configure();
-
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    /** \reimp */
-    QString infoText(quint32 input = KInputInvalid);
-
-    /*********************************************************************
-     * Input data
-     *********************************************************************/
-protected slots:
-    /** Receives MIDI input data from MIDIDevices */
-    void slotDeviceValueChanged(MIDIDevice* device, quint32 channel, uchar value);
-
-signals:
-    /** \reimp */
-    void valueChanged(QLCInPlugin* plugin, quint32 line, quint32 channel,
-                      uchar value);
-
-public:
-    /** \reimp */
-    void connectInputData(QObject* listener);
-
-    /** \reimp */
-    void feedBack(quint32 input, quint32 channel, uchar value);
 };
 
 #endif

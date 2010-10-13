@@ -66,6 +66,15 @@ void MIDIInput::init()
     rescanDevices();
 }
 
+QString MIDIInput::name()
+{
+    return QString("MIDI Input");
+}
+
+/*****************************************************************************
+ * Inputs
+ *****************************************************************************/
+
 void MIDIInput::open(quint32 input)
 {
     MIDIDevice* dev = device(input);
@@ -82,6 +91,84 @@ void MIDIInput::close(quint32 input)
         m_poller->removeDevice(dev);
     else
         qDebug() << name() << "has no input number:" << input;
+}
+
+QStringList MIDIInput::inputs()
+{
+    QStringList list;
+
+    QListIterator <MIDIDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << it.next()->name();
+
+    return list;
+}
+
+QString MIDIInput::infoText(quint32 input)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    if (input == KInputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides input support for ");
+        str += QString("various MIDI devices.");
+        str += QString("</P>");
+    }
+    else
+    {
+        MIDIDevice* dev = device(input);
+        if (dev != NULL)
+        {
+            str += device(input)->infoText();
+        }
+        else
+        {
+            str += QString("<P><I>");
+            str += QString("Unable to find device. Please go to ");
+            str += QString("the configuration dialog and click ");
+            str += QString("the refresh button.");
+            str += QString("</I></P>");
+        }
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void MIDIInput::configure()
+{
+    ConfigureMIDIInput cmi(NULL, this);
+    cmi.exec();
+}
+
+bool MIDIInput::canConfigure()
+{
+    return true;
+}
+
+/*****************************************************************************
+ * Feedback
+ *****************************************************************************/
+
+void MIDIInput::feedBack(quint32 input, quint32 channel, uchar value)
+{
+    MIDIDevice* dev = device(input);
+    if (dev != NULL)
+        dev->feedBack(channel, value);
 }
 
 /*****************************************************************************
@@ -248,83 +335,21 @@ void MIDIInput::removeDevice(MIDIDevice* device)
     emit configurationChanged();
 }
 
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString MIDIInput::name()
+void MIDIInput::customEvent(QEvent* event)
 {
-    return QString("MIDI Input");
-}
-
-/*****************************************************************************
- * Inputs
- *****************************************************************************/
-
-QStringList MIDIInput::inputs()
-{
-    QStringList list;
-
-    QListIterator <MIDIDevice*> it(m_devices);
-    while (it.hasNext() == true)
-        list << it.next()->name();
-
-    return list;
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void MIDIInput::configure()
-{
-    ConfigureMIDIInput cmi(NULL, this);
-    cmi.exec();
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
-
-QString MIDIInput::infoText(quint32 input)
-{
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    if (input == KInputInvalid)
+    if (event->type() == MIDIInputEvent::eventType)
     {
-        str += QString("<H3>%1</H3>").arg(name());
-        str += QString("<P>");
-        str += QString("This plugin provides input support for ");
-        str += QString("various MIDI devices.");
-        str += QString("</P>");
-    }
-    else
-    {
-        MIDIDevice* dev = device(input);
-        if (dev != NULL)
+        MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
+        if (e == NULL)
+            return;
+
+        int index = m_devices.indexOf(e->m_device);
+        if (index != -1)
         {
-            str += device(input)->infoText();
-        }
-        else
-        {
-            str += QString("<P><I>");
-            str += QString("Unable to find device. Please go to ");
-            str += QString("the configuration dialog and click ");
-            str += QString("the refresh button.");
-            str += QString("</I></P>");
+            emit valueChanged(quint32(index), e->m_channel, e->m_value);
+            event->accept();
         }
     }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
 }
 
 /*****************************************************************************
@@ -341,48 +366,6 @@ void MIDIInput::removePollDevice(MIDIDevice* device)
 {
     Q_ASSERT(device != NULL);
     m_poller->removeDevice(device);
-}
-
-/*****************************************************************************
- * Input data
- *****************************************************************************/
-
-void MIDIInput::customEvent(QEvent* event)
-{
-    if (event->type() == MIDIInputEvent::eventType)
-    {
-        MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
-
-        Q_ASSERT(event != NULL);
-        int index = m_devices.indexOf(e->m_device);
-        if (index != -1)
-        {
-            emit valueChanged(this, quint32(index), e->m_channel,
-                              e->m_value);
-            event->accept();
-        }
-    }
-}
-
-void MIDIInput::connectInputData(QObject* listener)
-{
-    Q_ASSERT(listener != NULL);
-
-    connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,uchar)),
-            listener,
-            SLOT(slotValueChanged(QLCInPlugin*,quint32,quint32,uchar)));
-
-    connect(this, SIGNAL(configurationChanged()),
-            listener, SLOT(slotConfigurationChanged()));
-}
-
-void MIDIInput::feedBack(quint32 input, quint32 channel, uchar value)
-{
-    MIDIDevice* dev = device(input);
-    if (dev == NULL)
-        return;
-    else
-        dev->feedBack(channel, value);
 }
 
 /*****************************************************************************

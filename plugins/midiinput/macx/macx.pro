@@ -25,6 +25,8 @@ SOURCES += ../common/midiinputevent.cpp \
            mididevice.cpp \
            midiinput.cpp
 
+HEADERS += ../../interfaces/qlcinplugin.h
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 include(../../../macx/nametool.pri)

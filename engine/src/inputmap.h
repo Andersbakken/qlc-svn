@@ -71,8 +71,7 @@ public:
      *********************************************************************/
 public slots:
     /** Slot that catches input plugins' value changes */
-    void slotValueChanged(QLCInPlugin* plugin, quint32 input,
-                          quint32 channel, uchar value);
+    void slotValueChanged(quint32 input, quint32 channel, uchar value);
 
     /** Slot that catches plugin configuration change notifications */
     void slotConfigurationChanged();

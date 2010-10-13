@@ -25,29 +25,27 @@
 #include <QStringList>
 #include <QtPlugin>
 #include <QString>
-#include <QObject>
 
 #include "qlcinplugin.h"
-#include "qlctypes.h"
 
 /*****************************************************************************
  * InputPlugin
  *****************************************************************************/
 
-class InputPluginStub : public QObject, public QLCInPlugin
+class InputPluginStub : public QLCInPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCInPlugin)
-    Q_DISABLE_COPY(InputPluginStub)
 
     /*********************************************************************
      * Initialization
      *********************************************************************/
 public:
     InputPluginStub();
-    ~InputPluginStub();
+    virtual ~InputPluginStub();
 
     void init();
+    QString name();
 
     /*********************************************************************
      * Inputs
@@ -56,14 +54,11 @@ public:
     void open(quint32 input = 0);
     void close(quint32 input = 0);
     QStringList inputs();
+    QString infoText(quint32 input = KInputInvalid);
 
     QList <quint32> m_openLines;
 
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
+    void emitValueChanged(quint32 input, quint32 channel, uchar value);
 
     /*********************************************************************
      * Configuration
@@ -71,27 +66,16 @@ public:
 public:
     void configure();
 
+    bool canConfigure();
+
     /** Number of times configure() has been called */
     int m_configureCalled;
-
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 input = KInputInvalid);
-
-    /*********************************************************************
-     * Input data listener
-     *********************************************************************/
-public:
-    void connectInputData(QObject* listener);
 
     /*********************************************************************
      * Feedback
      *********************************************************************/
 public:
-    void feedBack(quint32 input, quint32 channel,
-                  uchar value);
+    void feedBack(quint32 input, quint32 channel, uchar value);
 
     quint32 m_feedBackInput;
     quint32 m_feedBackChannel;

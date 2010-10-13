@@ -50,6 +50,15 @@ EWingInput::~EWingInput()
         delete m_devices.takeFirst();
 }
 
+QString EWingInput::name()
+{
+    return QString("ENTTEC Wing Input");
+}
+
+/*****************************************************************************
+ * Inputs
+ *****************************************************************************/
+
 void EWingInput::open(quint32 input)
 {
     EWing* dev = device(input);
@@ -64,32 +73,67 @@ void EWingInput::close(quint32 input)
         qDebug() << name() << "has no input number:" << input;
 }
 
-void EWingInput::slotReadSocket()
+QStringList EWingInput::inputs()
 {
-    while (m_socket->hasPendingDatagrams() == true)
-    {
-        QHostAddress sender;
-        QByteArray data;
-        EWing* wing;
+    QStringList list;
 
-        /* Read data from socket */
-        data.resize(m_socket->pendingDatagramSize());
-        m_socket->readDatagram(data.data(), data.size(), &sender);
+    QListIterator <EWing*> it(m_devices);
+    while (it.hasNext() == true)
+        list << it.next()->name();
 
-        /* Check, whether we already have a device from this address */
-        wing = device(sender, EWing::resolveType(data));
-        if (wing == NULL)
-        {
-            /* New address. Create a new device. */
-            wing = createWing(this, sender, data);
-            if (wing != NULL)
-                addDevice(wing);
-        }
-
-        if (wing != NULL)
-            wing->parseData(data);
-    }
+    return list;
 }
+
+QString EWingInput::infoText(quint32 input)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    str += QString("<H3>%1</H3>").arg(name());
+
+    if (input == KInputInvalid)
+    {
+        /* Plugin or just an invalid input selected. Display generic
+           information. */
+        str += QString("<P>This plugin provides input support for ");
+        str += QString("ENTTEC Playback and Shortcut Wings.</P>");
+
+        if (m_socket->state() != QAbstractSocket::BoundState)
+        {
+            str += QString("<P>Unable to bind to UDP port %1</P>")
+                   .arg(EWing::UDPPort);
+        }
+        else
+        {
+            str += QString("<P>Listening to UDP port %1</P>")
+                   .arg(EWing::UDPPort);
+        }
+    }
+    else
+    {
+        /* A specific input line selected. Display its information if
+           available. */
+        EWing* dev = device(input);
+        if (dev != NULL)
+            str += dev->infoText();
+        else
+            str += tr("<P>%1: Device not found.</P>").arg(input+1);
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
+}
+
+/*****************************************************************************
+ * Devices
+ *****************************************************************************/
 
 EWing* EWingInput::createWing(QObject* parent, const QHostAddress& address,
                               const QByteArray& data)
@@ -121,10 +165,6 @@ EWing* EWingInput::createWing(QObject* parent, const QHostAddress& address,
 
     return ewing;
 }
-
-/*****************************************************************************
- * Devices
- *****************************************************************************/
 
 EWing* EWingInput::device(const QHostAddress& address, EWing::Type type)
 {
@@ -180,28 +220,37 @@ void EWingInput::removeDevice(EWing* device)
     emit configurationChanged();
 }
 
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString EWingInput::name()
+void EWingInput::slotReadSocket()
 {
-    return QString("ENTTEC Wing Input");
+    while (m_socket->hasPendingDatagrams() == true)
+    {
+        QHostAddress sender;
+        QByteArray data;
+        EWing* wing;
+
+        /* Read data from socket */
+        data.resize(m_socket->pendingDatagramSize());
+        m_socket->readDatagram(data.data(), data.size(), &sender);
+
+        /* Check, whether we already have a device from this address */
+        wing = device(sender, EWing::resolveType(data));
+        if (wing == NULL)
+        {
+            /* New address. Create a new device. */
+            wing = createWing(this, sender, data);
+            if (wing != NULL)
+                addDevice(wing);
+        }
+
+        if (wing != NULL)
+            wing->parseData(data);
+    }
 }
 
-/*****************************************************************************
- * Inputs
- *****************************************************************************/
-
-QStringList EWingInput::inputs()
+void EWingInput::slotValueChanged(quint32 channel, uchar value)
 {
-    QStringList list;
-
-    QListIterator <EWing*> it(m_devices);
-    while (it.hasNext() == true)
-        list << it.next()->name();
-
-    return list;
+    EWing* wing = qobject_cast<EWing*> (QObject::sender());
+    emit valueChanged(m_devices.indexOf(wing), channel, value);
 }
 
 /*****************************************************************************
@@ -219,78 +268,14 @@ void EWingInput::configure()
         emit configurationChanged();
 }
 
-/*****************************************************************************
- * Status
- *****************************************************************************/
-
-QString EWingInput::infoText(quint32 input)
+bool EWingInput::canConfigure()
 {
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    str += QString("<H3>%1</H3>").arg(name());
-
-    if (input == KInputInvalid)
-    {
-        /* Plugin or just an invalid input selected. Display generic
-           information. */
-        str += QString("<P>This plugin provides input support for ");
-        str += QString("ENTTEC Playback and Shortcut Wings.</P>");
-
-        if (m_socket->state() != QAbstractSocket::BoundState)
-        {
-            str += QString("<P>Unable to bind to UDP port %1</P>")
-                   .arg(EWing::UDPPort);
-        }
-        else
-        {
-            str += QString("<P>Listening to UDP port %1</P>")
-                   .arg(EWing::UDPPort);
-        }
-    }
-    else
-    {
-        /* A specific input line selected. Display its information if
-           available. */
-        EWing* dev = device(input);
-        if (dev != NULL)
-            str += dev->infoText();
-        else
-            str += tr("<P>%1: Device not found.</P>").arg(input+1);
-    }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
+    return true;
 }
 
 /*****************************************************************************
- * Input data
+ * Feedback
  *****************************************************************************/
-
-void EWingInput::slotValueChanged(quint32 channel, uchar value)
-{
-    EWing* wing = qobject_cast<EWing*> (QObject::sender());
-    emit valueChanged(this, m_devices.indexOf(wing), channel, value);
-}
-
-void EWingInput::connectInputData(QObject* listener)
-{
-    Q_ASSERT(listener != NULL);
-
-    connect(this, SIGNAL(valueChanged(QLCInPlugin*,quint32,quint32,
-                                      uchar)),
-            listener, SLOT(slotValueChanged(QLCInPlugin*,quint32,
-                                            quint32, uchar)));
-    connect(this, SIGNAL(configurationChanged()),
-            listener, SLOT(slotConfigurationChanged()));
-}
 
 void EWingInput::feedBack(quint32 input, quint32 channel, uchar value)
 {

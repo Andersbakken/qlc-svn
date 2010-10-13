@@ -144,8 +144,7 @@ protected:
 
 signals:
     /** Signal that is emitted when an input channel's value is changed */
-    void valueChanged(MIDIDevice* device, quint32 channel,
-                      uchar value);
+    void valueChanged(quint32 channel, uchar value);
 
     /*********************************************************************
      * Feedback

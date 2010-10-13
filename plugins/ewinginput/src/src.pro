@@ -32,6 +32,8 @@ SOURCES += ewinginput.cpp \
            eprogramwing.cpp \
            ewing.cpp
 
+HEADERS += ../../interfaces/qlcinplugin.h
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 macx {

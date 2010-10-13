@@ -301,27 +301,27 @@ void InputMap_Test::slotValueChanged()
     QVERIFY(im.patch(0)->input() == 0);
 
     QSignalSpy spy(&im, SIGNAL(inputValueChanged(quint32, quint32, uchar)));
-    im.slotValueChanged(stub, 0, 15, UCHAR_MAX);
+    stub->emitValueChanged(0, 15, UCHAR_MAX);
     QVERIFY(spy.size() == 1);
     QVERIFY(spy.at(0).at(0) == 0);
     QVERIFY(spy.at(0).at(1) == 15);
     QVERIFY(spy.at(0).at(2) == UCHAR_MAX);
 
     /* Invalid mapping for this plugin -> no signal */
-    im.slotValueChanged(stub, 3, 15, UCHAR_MAX);
+    stub->emitValueChanged(3, 15, UCHAR_MAX);
     QVERIFY(spy.size() == 1);
     QVERIFY(spy.at(0).at(0) == 0);
     QVERIFY(spy.at(0).at(1) == 15);
     QVERIFY(spy.at(0).at(2) == UCHAR_MAX);
 
     /* Invalid mapping for this plugin -> no signal */
-    im.slotValueChanged(stub, 1, 15, UCHAR_MAX);
+    stub->emitValueChanged(1, 15, UCHAR_MAX);
     QVERIFY(spy.size() == 1);
     QVERIFY(spy.at(0).at(0) == 0);
     QVERIFY(spy.at(0).at(1) == 15);
     QVERIFY(spy.at(0).at(2) == UCHAR_MAX);
 
-    im.slotValueChanged(stub, 0, 5, 127);
+    stub->emitValueChanged(0, 5, 127);
     QVERIFY(spy.size() == 2);
     QVERIFY(spy.at(0).at(0) == 0);
     QVERIFY(spy.at(0).at(1) == 15);

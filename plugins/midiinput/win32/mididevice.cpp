@@ -349,7 +349,7 @@ void MIDIDevice::customEvent(QEvent* event)
     if (event->type() == MIDIInputEvent::eventType)
     {
         MIDIInputEvent* e = static_cast<MIDIInputEvent*> (event);
-        emit valueChanged(this, e->m_channel, e->m_value);
+        emit valueChanged(e->m_channel, e->m_value);
         event->accept();
     }
 }
