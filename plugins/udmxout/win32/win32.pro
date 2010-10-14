@@ -6,6 +6,7 @@ TARGET   = udmxout
 
 CONFIG      += plugin
 INCLUDEPATH += ../../interfaces
+INCLUDEPATH += . # For libusb_dyn.*
 DEPENDPATH  += ../unix
 
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
