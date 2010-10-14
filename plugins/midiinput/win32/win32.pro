@@ -36,3 +36,4 @@ SOURCES += ../common/configuremidiinput.cpp \
            mididevice.cpp \
            midiinput.cpp
 
+HEADERS += ../../interfaces/qlcinplugin.h
