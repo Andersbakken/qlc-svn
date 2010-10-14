@@ -158,7 +158,7 @@ bool MIDIOut::canConfigure()
  * Devices
  *****************************************************************************/
 
-const MIDIClientRef MIDIOUT::client() const
+const MIDIClientRef MIDIOut::client() const
 {
     return m_client;
 }
