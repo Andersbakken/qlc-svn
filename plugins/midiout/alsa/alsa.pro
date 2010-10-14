@@ -25,3 +25,5 @@ SOURCES += ../common/configuremididevice.cpp \
            ../common/configuremidiout.cpp \
            mididevice.cpp \
            midiout.cpp
+
+HEADERS += ../../interfaces/qlcoutplugin.h

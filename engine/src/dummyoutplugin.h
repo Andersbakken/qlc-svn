@@ -22,57 +22,56 @@
 #ifndef DUMMYOUTPLUGIN_H
 #define DUMMYOUTPLUGIN_H
 
-#include <QObject>
-
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
-class DummyOutPlugin : public QObject, public QLCOutPlugin
+class DummyOutPlugin : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
-    Q_DISABLE_COPY(DummyOutPlugin)
 
     /*********************************************************************
      * Initialization
      *********************************************************************/
 public:
     DummyOutPlugin();
+
+    /** @reimp */
     virtual ~DummyOutPlugin();
 
+    /** @reimp */
     void init();
+
+    /** @reimp */
+    QString name();
 
     /*********************************************************************
      * Open/close
      *********************************************************************/
 public:
+    /** @reimp */
     void open(quint32 output = 0);
+
+    /** @reimp */
     void close(quint32 output = 0);
+
+    /** @reimp */
     QStringList outputs();
 
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
+
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
 
     /*********************************************************************
      * Configuration
      *********************************************************************/
 public:
+    /** @reimp */
     void configure();
 
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 output = KOutputInvalid);
-
-    /*********************************************************************
-     * Write
-     *********************************************************************/
-public:
-    void outputDMX(quint32 output, const QByteArray& universe);
+    /** @reimp */
+    bool canConfigure();
 };
 
 #endif

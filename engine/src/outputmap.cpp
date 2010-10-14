@@ -125,16 +125,14 @@ void OutputMap::loadPlugins()
             else
             {
                 /* Duplicate plugin. Unload it. */
-                qWarning() << "Discarded duplicate plugin"
-                << path;
+                qWarning() << "Discarded duplicate plugin" << path;
                 loader.unload();
             }
         }
         else
         {
             qWarning() << "Unable to load an output plugin from"
-            << path << "because:"
-            << loader.errorString();
+                       << path << "because:" << loader.errorString();
         }
     }
 }
@@ -388,6 +386,8 @@ bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
     {
         qDebug() << "Found an output plugin:" << outputPlugin->name();
         m_plugins.append(outputPlugin);
+        connect(outputPlugin, SIGNAL(configurationChanged()),
+                this, SLOT(slotConfigurationChanged()));
         return true;
     }
     else

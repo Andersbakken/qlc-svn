@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
 #include <QMessageBox>
 #include <QStringList>
 #include <QDebug>
@@ -59,6 +58,15 @@ void MIDIOut::init()
     rescanDevices();
 }
 
+QString MIDIOut::name()
+{
+    return QString("MIDI Output");
+}
+
+/*****************************************************************************
+ * Outputs
+ *****************************************************************************/
+
 void MIDIOut::open(quint32 output)
 {
     MIDIDevice* dev = device(output);
@@ -75,6 +83,66 @@ void MIDIOut::close(quint32 output)
         unsubscribeDevice(dev);
     else
         qDebug() << name() << "has no output number:" << output;
+}
+
+void MIDIOut::outputDMX(quint32 output, const QByteArray& universe)
+{
+    MIDIDevice* dev = device(output);
+    if (dev != NULL)
+        dev->outputDMX(universe);
+}
+
+QStringList MIDIOut::outputs()
+{
+    QStringList list;
+    int i = 1;
+
+    QListIterator <MIDIDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << QString("%1: %2").arg(i++).arg(it.next()->name());
+
+    return list;
+}
+
+QString MIDIOut::infoText(quint32 output)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support ");
+        str += QString("through various MIDI devices.");
+        str += QString("</P>");
+    }
+    else
+    {
+        MIDIDevice* dev = device(output);
+        if (dev != NULL)
+        {
+            str += device(output)->infoText();
+        }
+        else
+        {
+            str += QString("<P><I>");
+            str += QString("Unable to find device. Please go to ");
+            str += QString("the configuration dialog and click ");
+            str += QString("the refresh button.");
+            str += QString("</I></P>");
+        }
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
 }
 
 void MIDIOut::subscribeDevice(MIDIDevice* device)
@@ -102,6 +170,23 @@ void MIDIOut::unsubscribeDevice(MIDIDevice* device)
     snd_seq_port_subscribe_set_dest(sub, device->address());
     snd_seq_unsubscribe_port(m_alsa, sub);
 }
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void MIDIOut::configure()
+{
+    ConfigureMIDIOut cmo(NULL, this);
+    if (cmo.exec() == true)
+        emit configurationChanged();
+}
+
+bool MIDIOut::canConfigure()
+{
+    return true;
+}
+
 /*****************************************************************************
  * ALSA
  *****************************************************************************/
@@ -258,97 +343,6 @@ void MIDIOut::removeDevice(MIDIDevice* device)
     m_devices.removeAll(device);
     emit deviceRemoved(device);
     delete device;
-}
-
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString MIDIOut::name()
-{
-    return QString("MIDI Output");
-}
-
-/*****************************************************************************
- * Outputs
- *****************************************************************************/
-
-QStringList MIDIOut::outputs()
-{
-    QStringList list;
-    int i = 1;
-
-    QListIterator <MIDIDevice*> it(m_devices);
-    while (it.hasNext() == true)
-        list << QString("%1: %2").arg(i++).arg(it.next()->name());
-
-    return list;
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void MIDIOut::configure()
-{
-    ConfigureMIDIOut cmo(NULL, this);
-    cmo.exec();
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
-
-QString MIDIOut::infoText(quint32 output)
-{
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    if (output == KOutputInvalid)
-    {
-        str += QString("<H3>%1</H3>").arg(name());
-        str += QString("<P>");
-        str += QString("This plugin provides DMX output support ");
-        str += QString("through various MIDI devices.");
-        str += QString("</P>");
-    }
-    else
-    {
-        MIDIDevice* dev = device(output);
-        if (dev != NULL)
-        {
-            str += device(output)->infoText();
-        }
-        else
-        {
-            str += QString("<P><I>");
-            str += QString("Unable to find device. Please go to ");
-            str += QString("the configuration dialog and click ");
-            str += QString("the refresh button.");
-            str += QString("</I></P>");
-        }
-    }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
-}
-
-/*****************************************************************************
- * Write
- *****************************************************************************/
-
-void MIDIOut::outputDMX(quint32 output, const QByteArray& universe)
-{
-    MIDIDevice* dev = device(output);
-    if (dev != NULL)
-        dev->outputDMX(universe);
 }
 
 /*****************************************************************************

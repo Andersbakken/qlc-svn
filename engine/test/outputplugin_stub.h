@@ -22,13 +22,10 @@
 #ifndef OUTPUTPLUGIN_STUB_H
 #define OUTPUTPLUGIN_STUB_H
 
-#include <QObject>
 #include <QList>
-
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
-class OutputPluginStub : public QObject, public QLCOutPlugin
+class OutputPluginStub : public QLCOutPlugin
 {
     Q_OBJECT
     Q_DISABLE_COPY(OutputPluginStub)
@@ -37,45 +34,50 @@ class OutputPluginStub : public QObject, public QLCOutPlugin
      * Initialization
      *********************************************************************/
 public:
+    /** @reimp */
     OutputPluginStub();
+
+    /** @reimp */
     virtual ~OutputPluginStub();
 
+    /** @reimp */
     void init();
 
+    /** @reimp */
+    QString name();
+
     /*********************************************************************
-     * Open/close
+     * Outputs
      *********************************************************************/
 public:
+    /** @reimp */
     void open(quint32 output = 0);
+
+    /** @reimp */
     void close(quint32 output = 0);
+
+    /** @reimp */
     QStringList outputs();
 
-    QList <quint32> m_openLines;
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
 
-    /*********************************************************************
-     * Name
-     *********************************************************************/
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
+
 public:
-    QString name();
+    QList <quint32> m_openLines;
+    QByteArray m_array;
 
     /*********************************************************************
      * Configuration
      *********************************************************************/
 public:
+    /** @reimp */
     void configure();
 
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 output = KOutputInvalid);
-
-    /*********************************************************************
-     * Value Read/Write
-     *********************************************************************/
-public:
-    void outputDMX(quint32 output, const QByteArray& universe);
-    QByteArray m_array;
+    /** @reimp */
+    bool canConfigure();
 };
 
 #endif

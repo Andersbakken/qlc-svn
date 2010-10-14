@@ -29,7 +29,6 @@
 #include <alsa/asoundlib.h>
 
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
 class ConfigureMIDIOut;
 class MIDIDevice;
@@ -39,7 +38,7 @@ class QString;
  * MIDIOut
  *****************************************************************************/
 
-class MIDIOut : public QObject, public QLCOutPlugin
+class MIDIOut : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
@@ -50,21 +49,47 @@ class MIDIOut : public QObject, public QLCOutPlugin
      * Initialization
      *********************************************************************/
 public:
-    /** Destructor */
-    ~MIDIOut();
+    /** @reimp */
+    virtual ~MIDIOut();
 
-    /** Second-stage constructor */
+    /** @reimp */
     void init();
 
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Outputs
+     *********************************************************************/
+public:
     /** Open the given output */
     void open(quint32 output = 0);
 
     /** Close the given output */
     void close(quint32 output = 0);
 
+    /** @reimp */
+    QStringList outputs();
+
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
+
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
+
 protected:
     void subscribeDevice(MIDIDevice* device);
     void unsubscribeDevice(MIDIDevice* device);
+
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
+public:
+    /** @reimp */
+    void configure();
+
+    /** @reimp */
+    bool canConfigure();
 
     /*********************************************************************
      * ALSA
@@ -121,41 +146,6 @@ signals:
 protected:
     /** A map of available MIDI devices */
     QList <MIDIDevice*> m_devices;
-
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    /** Get the name of this plugin */
-    QString name();
-
-    /*********************************************************************
-     * Oututs
-     *********************************************************************/
-public:
-    /** Get the number of outputs provided by this plugin */
-    QStringList outputs();
-
-    /*********************************************************************
-     * Configuration
-     *********************************************************************/
-public:
-    /** Configure this plugin */
-    void configure();
-
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    /** Get a short information snippet on the given output's state */
-    QString infoText(quint32 output = KOutputInvalid);
-
-    /*********************************************************************
-     * Write
-     *********************************************************************/
-public:
-    /** \reimp */
-    void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

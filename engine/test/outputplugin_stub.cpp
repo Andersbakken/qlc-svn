@@ -41,17 +41,13 @@ void OutputPluginStub::init()
 {
 }
 
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
 QString OutputPluginStub::name()
 {
     return QString("Output Plugin Stub");
 }
 
 /*****************************************************************************
- * Open/close
+ * Outputs
  *****************************************************************************/
 
 void OutputPluginStub::open(quint32 output)
@@ -75,6 +71,17 @@ QStringList OutputPluginStub::outputs()
     return list;
 }
 
+QString OutputPluginStub::infoText(quint32 output)
+{
+    Q_UNUSED(output);
+    return QString("This is a plugin stub for testing.");
+}
+
+void OutputPluginStub::outputDMX(quint32 output, const QByteArray& universe)
+{
+    m_array = m_array.replace(output * 512, universe.size(), universe);
+}
+
 /*****************************************************************************
  * Configuration
  *****************************************************************************/
@@ -83,21 +90,7 @@ void OutputPluginStub::configure()
 {
 }
 
-/*****************************************************************************
- * Status
- *****************************************************************************/
-
-QString OutputPluginStub::infoText(quint32 output)
+bool OutputPluginStub::canConfigure()
 {
-    Q_UNUSED(output);
-    return QString("This is a plugin stub for testing.");
-}
-
-/*****************************************************************************
- * Value read/write
- *****************************************************************************/
-
-void OutputPluginStub::outputDMX(quint32 output, const QByteArray& universe)
-{
-    m_array = m_array.replace(output * 512, universe.size(), universe);
+    return false;
 }

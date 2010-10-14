@@ -21,6 +21,8 @@ HEADERS += udmxdevice.h \
 SOURCES += udmxdevice.cpp \
            udmxout.cpp
 
+HEADERS += ../../interfaces/qlcoutplugin.h
+
 # Installation
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target

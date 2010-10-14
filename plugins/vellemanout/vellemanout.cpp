@@ -19,11 +19,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QMessageBox>
+#include <QStringList>
 #include <QString>
 #include <QDebug>
-#include <QMutex>
 #include <QFile>
 #include <stdint.h>
 
@@ -34,13 +32,22 @@
  * Initialization
  *****************************************************************************/
 
+VellemanOut::~VellemanOut()
+{
+}
+
 void VellemanOut::init()
 {
     m_currentlyOpen = false;
 }
 
+QString VellemanOut::name()
+{
+    return QString("Velleman Output");
+}
+
 /*****************************************************************************
- * Open/close
+ * Outputs
  *****************************************************************************/
 
 void VellemanOut::open(quint32 output)
@@ -55,9 +62,7 @@ void VellemanOut::close(quint32 output)
         return;
 
     m_currentlyOpen = false;
-    qDebug("About to StopDevice");
     StopDevice();
-    qDebug("Finished StopDevice");
 }
 
 QStringList VellemanOut::outputs()
@@ -66,28 +71,6 @@ QStringList VellemanOut::outputs()
     list << QString("1: Velleman Device");
     return list;
 }
-
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString VellemanOut::name()
-{
-    return QString("Velleman Output");
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void VellemanOut::configure()
-{
-    //Do Nothing.
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
 
 QString VellemanOut::infoText(quint32 output)
 {
@@ -120,16 +103,12 @@ QString VellemanOut::infoText(quint32 output)
     return str;
 }
 
-/*****************************************************************************
- * Value read/write
- *****************************************************************************/
-
 void VellemanOut::outputDMX(quint32 output, const QByteArray& universe)
 {
     if (output != 0)
         return;
 
-    if (!m_currentlyOpen)
+    if (m_currentlyOpen == false)
     {
         StartDevice();
         m_currentlyOpen = true;
@@ -144,7 +123,21 @@ void VellemanOut::outputDMX(quint32 output, const QByteArray& universe)
         //Write the value to our temporary array.
         values[channelLoop] = (quint32) universe[channelLoop];
     }
+
     SetAllData(values);
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void VellemanOut::configure()
+{
+}
+
+bool VellemanOut::canConfigure()
+{
+    return false;
 }
 
 /*****************************************************************************

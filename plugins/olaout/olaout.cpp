@@ -25,22 +25,12 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "qlcfile.h"
-
 #include "configureolaout.h"
 #include "olaout.h"
 #include "qlclogdestination.h"
 
-
-OLAOut::OLAOut()
+OLAOut::~OLAOut()
 {
-    m_embedServer = false;
-    m_thread = NULL;
-    m_log_destination = new ola::QLCLogDestination();
-    ola::InitLogging(ola::OLA_LOG_WARN, m_log_destination);
-}
-
-OLAOut::~OLAOut() {
     if (m_thread != NULL)
     {
         m_thread->stop();
@@ -59,6 +49,11 @@ OLAOut::~OLAOut() {
  */
 void OLAOut::init()
 {
+    m_embedServer = false;
+    m_thread = NULL;
+    m_log_destination = new ola::QLCLogDestination();
+    ola::InitLogging(ola::OLA_LOG_WARN, m_log_destination);
+
     // TODO: load this from a savefile at some point
     for (unsigned int i = 1; i <= K_UNIVERSE_COUNT; ++i)
         m_output_list.append(i);
@@ -174,9 +169,14 @@ QString OLAOut::name()
 void OLAOut::configure()
 {
     ConfigureOLAOut conf(NULL, this);
-    conf.exec();
+    if (conf.exec() == QDialog::Accepted)
+        emit configurationChanged();
 }
 
+bool OLAOut::canConfigure()
+{
+    return true;
+}
 
 /*
  * The plugin description.

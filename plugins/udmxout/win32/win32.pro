@@ -6,7 +6,6 @@ TARGET   = udmxout
 
 CONFIG      += plugin
 INCLUDEPATH += ../../interfaces
-INCLUDEPATH += .
 DEPENDPATH  += ../unix
 
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
@@ -21,3 +20,6 @@ HEADERS += ../unix/udmxdevice.h \
 SOURCES += ../unix/udmxdevice.cpp \
            ../unix/udmxout.cpp \
            libusb_dyn.c
+
+# Interfaces
+HEADERS += ../../interfaces/qlcoutplugin.h

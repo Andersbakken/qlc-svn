@@ -19,8 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QMessageBox>
 #include <QStringList>
 #include <QDebug>
 #include <QDir>
@@ -53,6 +51,15 @@ MIDIOut::~MIDIOut()
         delete m_devices.takeFirst();
 }
 
+QString MIDIOut::name()
+{
+    return QString("MIDI Output");
+}
+
+/*****************************************************************************
+ * Outputs
+ *****************************************************************************/
+
 void MIDIOut::open(quint32 output)
 {
     MIDIDevice* dev = device(output);
@@ -71,9 +78,90 @@ void MIDIOut::close(quint32 output)
         qWarning() << name() << "has no output number:" << output;
 }
 
+QStringList MIDIOut::outputs()
+{
+    QStringList list;
+    int i = 1;
+
+    QListIterator <MIDIDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << QString("%1: %2").arg(i++).arg(it.next()->name());
+
+    return list;
+}
+
+QString MIDIOut::infoText(quint32 output)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support thru ");
+        str += QString("various MIDI devices.");
+        str += QString("</P>");
+    }
+    else
+    {
+        MIDIDevice* dev = device(output);
+        if (dev != NULL)
+        {
+            str += dev->infoText();
+        }
+        else
+        {
+            str += QString("<P><I>");
+            str += QString("Unable to find device. Please go to ");
+            str += QString("the configuration dialog and click ");
+            str += QString("the refresh button.");
+            str += QString("</I></P>");
+        }
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
+}
+
+void MIDIOut::outputDMX(quint32 output, const QByteArray& universe)
+{
+    MIDIDevice* dev = device(output);
+    if (dev != NULL)
+        dev->outputDMX(universe);
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void MIDIOut::configure()
+{
+    ConfigureMIDIOut cmo(NULL, this);
+    if (cmo.exec() == QDialog::Accepted)
+        emit configurationChanged();
+}
+
+bool MIDIOut::canConfigure()
+{
+    return true;
+}
+
 /*****************************************************************************
  * Devices
  *****************************************************************************/
+
+const MIDIClientRef MIDIOUT::client() const
+{
+    return m_client;
+}
 
 void MIDIOut::rescanDevices()
 {
@@ -95,9 +183,7 @@ void MIDIOut::rescanDevices()
                 continue;
 
             /* Extract UID from the entity */
-            s = MIDIObjectGetIntegerProperty(entity,
-                                             kMIDIPropertyUniqueID,
-                                             &uid);
+            s = MIDIObjectGetIntegerProperty(entity, kMIDIPropertyUniqueID, &uid);
             if (s != 0)
             {
                 qWarning() << "Unable to get entity UID";
@@ -171,97 +257,6 @@ void MIDIOut::removeDevice(MIDIDevice* device)
     m_devices.removeAll(device);
     emit deviceRemoved(device);
     delete device;
-}
-
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString MIDIOut::name()
-{
-    return QString("MIDI Output");
-}
-
-/*****************************************************************************
- * Outputs
- *****************************************************************************/
-
-QStringList MIDIOut::outputs()
-{
-    QStringList list;
-    int i = 1;
-
-    QListIterator <MIDIDevice*> it(m_devices);
-    while (it.hasNext() == true)
-        list << QString("%1: %2").arg(i++).arg(it.next()->name());
-
-    return list;
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void MIDIOut::configure()
-{
-    ConfigureMIDIOut cmo(NULL, this);
-    cmo.exec();
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
-
-QString MIDIOut::infoText(quint32 output)
-{
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    if (output == KOutputInvalid)
-    {
-        str += QString("<H3>%1</H3>").arg(name());
-        str += QString("<P>");
-        str += QString("This plugin provides DMX output support thru ");
-        str += QString("various MIDI devices.");
-        str += QString("</P>");
-    }
-    else
-    {
-        MIDIDevice* dev = device(output);
-        if (dev != NULL)
-        {
-            str += dev->infoText();
-        }
-        else
-        {
-            str += QString("<P><I>");
-            str += QString("Unable to find device. Please go to ");
-            str += QString("the configuration dialog and click ");
-            str += QString("the refresh button.");
-            str += QString("</I></P>");
-        }
-    }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
-}
-
-/*****************************************************************************
- * Value read/write methods
- *****************************************************************************/
-
-void MIDIOut::outputDMX(quint32 output, const QByteArray& universe)
-{
-    MIDIDevice* dev = device(output);
-    if (dev != NULL)
-        dev->outputDMX(universe);
 }
 
 /*****************************************************************************

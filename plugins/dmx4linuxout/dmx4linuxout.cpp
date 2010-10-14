@@ -19,11 +19,9 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QApplication>
-#include <QMessageBox>
+#include <QStringList>
 #include <QString>
 #include <QDebug>
-#include <QMutex>
 #include <QFile>
 
 #include "dmx4linuxout.h"
@@ -32,9 +30,20 @@
  * Initialization
  *****************************************************************************/
 
+DMX4LinuxOut::~DMX4LinuxOut()
+{
+    if (m_file.isOpen() == true)
+        m_file.close();
+}
+
 void DMX4LinuxOut::init()
 {
     m_file.setFileName("/dev/dmx");
+}
+
+QString DMX4LinuxOut::name()
+{
+    return QString("DMX4Linux Output");
 }
 
 /*****************************************************************************
@@ -50,7 +59,7 @@ void DMX4LinuxOut::open(quint32 output)
     if (m_file.open(QIODevice::WriteOnly | QIODevice::Unbuffered) == false)
     {
         qWarning() << "DMX4Linux output is not available:"
-        << m_file.errorString();
+                   << m_file.errorString();
     }
 }
 
@@ -70,32 +79,6 @@ QStringList DMX4LinuxOut::outputs()
         list << QString("1: DMX4Linux");
     return list;
 }
-
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString DMX4LinuxOut::name()
-{
-    return QString("DMX4Linux Output");
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void DMX4LinuxOut::configure()
-{
-    int r = QMessageBox::question(NULL, name(),
-                                  tr("Do you wish to re-scan your hardware?"),
-                                  QMessageBox::Yes, QMessageBox::No);
-    if (r == QMessageBox::Yes)
-        init();
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
 
 QString DMX4LinuxOut::infoText(quint32 output)
 {
@@ -128,10 +111,6 @@ QString DMX4LinuxOut::infoText(quint32 output)
     return str;
 }
 
-/*****************************************************************************
- * Value read/write
- *****************************************************************************/
-
 void DMX4LinuxOut::outputDMX(quint32 output, const QByteArray& universe)
 {
     if (output != 0 || m_file.isOpen() == false)
@@ -139,10 +118,21 @@ void DMX4LinuxOut::outputDMX(quint32 output, const QByteArray& universe)
 
     m_file.seek(0);
     if (m_file.write(universe) == -1)
-    {
-        qWarning() << "DMX4Linux: Unable to write:"
-        << m_file.errorString();
-    }
+        qWarning() << "DMX4Linux: Unable to write:" << m_file.errorString();
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void DMX4LinuxOut::configure()
+{
+    /* NOP */
+}
+
+bool DMX4LinuxOut::canConfigure()
+{
+    return false;
 }
 
 /*****************************************************************************

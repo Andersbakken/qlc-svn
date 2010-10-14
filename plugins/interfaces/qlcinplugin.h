@@ -165,8 +165,6 @@ signals:
      * Tells that the value of a channel in an input line has changed and needs
      * to be reacted to (if applicable). This is practically THE WAY for
      * input plugins to provide input data to QLC.
-     * 
-     * This signal must be declared also in the plugin class declaration.
      *
      * @param input The input line whose channel has changed value
      * @param channel The channel that has changed its value
@@ -201,10 +199,8 @@ public:
 signals:
     /**
      * Tells that the plugin's configuration has changed. Usually this means
-     * means that an input line has dis/appeared. Used by the InputManager to
+     * that an input line has dis/appeared. Used by the InputManager to
      * re-read the plugin's current configuration.
-     *
-     * This signal must be declared also in the plugin class declaration.
      */
     void configurationChanged();
 

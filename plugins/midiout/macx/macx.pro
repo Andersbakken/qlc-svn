@@ -23,6 +23,8 @@ SOURCES += ../common/configuremididevice.cpp \
            mididevice.cpp \
            midiout.cpp
 
+HEADERS += ../../interfaces/qlcoutplugin.h
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 include(../../../macx/nametool.pri)

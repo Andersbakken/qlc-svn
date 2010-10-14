@@ -38,6 +38,8 @@ SOURCES += configureolaout.cpp \
            olaoutthread.cpp \
            qlclogdestination.cpp
 
+HEADERS += ../interfaces/qlcoutplugin.h
+
 # Installation
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target

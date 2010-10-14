@@ -26,9 +26,8 @@
 #include <QFile>
 
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
-class DMX4LinuxOut : public QObject, public QLCOutPlugin
+class DMX4LinuxOut : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
@@ -37,43 +36,47 @@ class DMX4LinuxOut : public QObject, public QLCOutPlugin
      * Initialization
      *********************************************************************/
 public:
+    /** @reimp */
+    virtual ~DMX4LinuxOut();
+
+    /** @reimp */
     void init();
 
+    /** @reimp */
+    QString name();
+
     /*********************************************************************
-     * Open/close
+     * Outputs
      *********************************************************************/
 public:
+    /** @reimp */
     void open(quint32 output = 0);
+
+    /** @reimp */
     void close(quint32 output = 0);
+
+    /** @reimp */
     QStringList outputs();
+
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
+
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
 
 protected:
     /** File handle for /dev/dmx */
     QFile m_file;
 
     /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
-
-    /*********************************************************************
      * Configuration
      *********************************************************************/
 public:
+    /** @reimp */
     void configure();
 
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    QString infoText(quint32 output = KOutputInvalid);
-
-    /*********************************************************************
-     * Write
-     *********************************************************************/
-public:
-    void outputDMX(quint32 output, const QByteArray& universe);
+    /** @reimp */
+    bool canConfigure();
 };
 
 #endif

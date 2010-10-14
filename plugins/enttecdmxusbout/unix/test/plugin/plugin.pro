@@ -32,6 +32,8 @@ unix:!macx {
     HEADERS += ../../src/enttecdmxusbout.h \
                ../../src/enttecdmxusbopen.h \
                ../../src/enttecdmxusbpro.h
+
+    HEADERS += ../../../../interfaces/qlcoutplugin.h
 } else {
     # While measuring coverage, ftdimock is linked to the plugin directly so
     # we can just link this test with the plugin.

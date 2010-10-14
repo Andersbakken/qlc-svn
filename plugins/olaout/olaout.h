@@ -39,14 +39,13 @@ enum { K_UNIVERSE_COUNT = 4 };
 typedef QList<unsigned int> OutputList;
 
 // The OLA Output plugin
-class OLAOut : public QObject, public QLCOutPlugin
+class OLAOut : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
     friend class ConfigureOlaOut;
 
 public:
-    OLAOut();
     ~OLAOut();
     void init();
     void open(quint32 output=0);
@@ -54,6 +53,7 @@ public:
     QStringList outputs();
     QString name();
     void configure();
+    bool canConfigure();
     QString infoText(quint32 output = KOutputInvalid);
 
     void outputDMX(quint32 output, const QByteArray& universe);

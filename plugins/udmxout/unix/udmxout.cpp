@@ -49,6 +49,15 @@ void UDMXOut::init()
     rescanDevices();
 }
 
+QString UDMXOut::name()
+{
+    return QString("uDMX Output");
+}
+
+/*****************************************************************************
+ * Outputs
+ *****************************************************************************/
+
 void UDMXOut::open(quint32 output)
 {
     if (output < quint32(m_devices.size()))
@@ -61,9 +70,53 @@ void UDMXOut::close(quint32 output)
         m_devices.at(output)->close();
 }
 
-/*****************************************************************************
- * Devices
- *****************************************************************************/
+QStringList UDMXOut::outputs()
+{
+    QStringList list;
+    int i = 1;
+
+    QListIterator <UDMXDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << QString("%1: %2").arg(i++).arg(it.next()->name());
+    return list;
+}
+
+QString UDMXOut::infoText(quint32 output)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support for ");
+        str += QString("uDMX devices. See ");
+        str += QString("<a href=\"http://www.anyma.ch/research/udmx\">");
+        str += QString("http://www.anyma.ch</a> for more information.");
+        str += QString("</P>");
+    }
+    else if (output < quint32(m_devices.size()))
+    {
+        str += m_devices.at(output)->infoText();
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
+}
+
+void UDMXOut::outputDMX(quint32 output, const QByteArray& universe)
+{
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->outputDMX(universe);
+}
 
 void UDMXOut::rescanDevices()
 {
@@ -126,30 +179,6 @@ UDMXDevice* UDMXOut::device(struct usb_device* usbdev)
 }
 
 /*****************************************************************************
- * Outputs
- *****************************************************************************/
-
-QStringList UDMXOut::outputs()
-{
-    QStringList list;
-    int i = 1;
-
-    QListIterator <UDMXDevice*> it(m_devices);
-    while (it.hasNext() == true)
-        list << QString("%1: %2").arg(i++).arg(it.next()->name());
-    return list;
-}
-
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString UDMXOut::name()
-{
-    return QString("uDMX Output");
-}
-
-/*****************************************************************************
  * Configuration
  *****************************************************************************/
 
@@ -162,49 +191,9 @@ void UDMXOut::configure()
         rescanDevices();
 }
 
-/*****************************************************************************
- * Plugin status
- *****************************************************************************/
-
-QString UDMXOut::infoText(quint32 output)
+bool UDMXOut::canConfigure()
 {
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    if (output == KOutputInvalid)
-    {
-        str += QString("<H3>%1</H3>").arg(name());
-        str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("uDMX devices. See ");
-        str += QString("<a href=\"http://www.anyma.ch/research/udmx\">");
-        str += QString("http://www.anyma.ch</a> for more information.");
-        str += QString("</P>");
-    }
-    else if (output < quint32(m_devices.size()))
-    {
-        str += m_devices.at(output)->infoText();
-    }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
-}
-
-/*****************************************************************************
- * Write
- *****************************************************************************/
-
-void UDMXOut::outputDMX(quint32 output, const QByteArray& universe)
-{
-    if (output < quint32(m_devices.size()))
-        m_devices.at(output)->outputDMX(universe);
+    return true;
 }
 
 /*****************************************************************************

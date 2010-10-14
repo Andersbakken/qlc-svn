@@ -173,6 +173,8 @@ void EnttecDMXUSBOut_Test::outputs()
     QCOMPARE(outputs.size(), 2);
     QCOMPARE(outputs.at(0), QString("1: Enttec DMX USB Open (S/N: 1234567890)"));
     QCOMPARE(outputs.at(1), QString("2: Enttec DMX USB Open (S/N: 0987654321)"));
+
+    plugin.m_widgets.clear();
 }
 
 void EnttecDMXUSBOut_Test::outputDMX()
@@ -202,6 +204,8 @@ void EnttecDMXUSBOut_Test::outputDMX()
     plugin.outputDMX(2, QByteArray());
     QCOMPARE(open.m_send_dmx_called, 0);
     QCOMPARE(open2.m_send_dmx_called, 0);
+
+    plugin.m_widgets.clear();
 }
 
 void EnttecDMXUSBOut_Test::open()
@@ -231,6 +235,8 @@ void EnttecDMXUSBOut_Test::open()
     plugin.open(2);
     QCOMPARE(open.m_open_called, 0);
     QCOMPARE(open2.m_open_called, 0);
+
+    plugin.m_widgets.clear();
 }
 
 void EnttecDMXUSBOut_Test::close()
@@ -260,6 +266,8 @@ void EnttecDMXUSBOut_Test::close()
     plugin.close(2);
     QCOMPARE(open.m_close_called, 0);
     QCOMPARE(open2.m_close_called, 0);
+
+    plugin.m_widgets.clear();
 }
 
 void EnttecDMXUSBOut_Test::infoText()
@@ -282,6 +290,8 @@ void EnttecDMXUSBOut_Test::infoText()
     QVERIFY(!plugin.infoText(0).contains("This plugin provides"));
     QVERIFY(!plugin.infoText(1).contains("This plugin provides"));
     QVERIFY(!plugin.infoText(2).contains("This plugin provides"));
+
+    plugin.m_widgets.clear();
 }
 
 #ifdef DBUS_ENABLED

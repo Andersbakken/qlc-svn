@@ -41,6 +41,15 @@ void PeperoniOut::init()
     rescanDevices();
 }
 
+QString PeperoniOut::name()
+{
+    return QString("Peperoni Output");
+}
+
+/*****************************************************************************
+ * Outputs
+ *****************************************************************************/
+
 void PeperoniOut::open(quint32 output)
 {
     if (output < quint32(m_devices.size()))
@@ -51,6 +60,73 @@ void PeperoniOut::close(quint32 output)
 {
     if (output < quint32(m_devices.size()))
         m_devices.at(output)->close();
+}
+
+QStringList PeperoniOut::outputs()
+{
+    QStringList list;
+    int i = 1;
+
+    QListIterator <PeperoniDevice*> it(m_devices);
+    while (it.hasNext() == true)
+        list << QString("%1: %2").arg(i++).arg(it.next()->name());
+    return list;
+}
+
+QString PeperoniOut::infoText(quint32 output)
+{
+    QString str;
+
+    str += QString("<HTML>");
+    str += QString("<HEAD>");
+    str += QString("<TITLE>%1</TITLE>").arg(name());
+    str += QString("</HEAD>");
+    str += QString("<BODY>");
+
+    if (output == KOutputInvalid)
+    {
+        str += QString("<H3>%1</H3>").arg(name());
+        str += QString("<P>");
+        str += QString("This plugin provides DMX output support for ");
+        str += QString("Peperoni DMX devices. See ");
+        str += QString("<a href=\"http://www.peperoni-light.de\">");
+        str += QString("http://www.peperoni-light.de</a> for more ");
+        str += QString("information.");
+        str += QString("</P>");
+    }
+    else if (output < quint32(m_devices.size()))
+    {
+        str += m_devices.at(output)->infoText();
+    }
+
+    str += QString("</BODY>");
+    str += QString("</HTML>");
+
+    return str;
+}
+
+void PeperoniOut::outputDMX(quint32 output, const QByteArray& universe)
+{
+    if (output < quint32(m_devices.size()))
+        m_devices.at(output)->outputDMX(universe);
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void PeperoniOut::configure()
+{
+    int r = QMessageBox::question(NULL, name(),
+                                  tr("Do you wish to re-scan your hardware?"),
+                                  QMessageBox::Yes, QMessageBox::No);
+    if (r == QMessageBox::Yes)
+        rescanDevices();
+}
+
+bool PeperoniOut::canConfigure()
+{
+    return true;
 }
 
 /*****************************************************************************
@@ -113,89 +189,6 @@ PeperoniDevice* PeperoniOut::device(struct usb_device* usbdev)
     }
 
     return NULL;
-}
-
-/*****************************************************************************
- * Outputs
- *****************************************************************************/
-
-QStringList PeperoniOut::outputs()
-{
-    QStringList list;
-    int i = 1;
-
-    QListIterator <PeperoniDevice*> it(m_devices);
-    while (it.hasNext() == true)
-        list << QString("%1: %2").arg(i++).arg(it.next()->name());
-    return list;
-}
-
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
-QString PeperoniOut::name()
-{
-    return QString("Peperoni Output");
-}
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void PeperoniOut::configure()
-{
-    int r = QMessageBox::question(NULL, name(),
-                                  tr("Do you wish to re-scan your hardware?"),
-                                  QMessageBox::Yes, QMessageBox::No);
-    if (r == QMessageBox::Yes)
-        rescanDevices();
-}
-
-/*****************************************************************************
- * Plugin status
- *****************************************************************************/
-
-QString PeperoniOut::infoText(quint32 output)
-{
-    QString str;
-
-    str += QString("<HTML>");
-    str += QString("<HEAD>");
-    str += QString("<TITLE>%1</TITLE>").arg(name());
-    str += QString("</HEAD>");
-    str += QString("<BODY>");
-
-    if (output == KOutputInvalid)
-    {
-        str += QString("<H3>%1</H3>").arg(name());
-        str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("Peperoni DMX devices. See ");
-        str += QString("<a href=\"http://www.peperoni-light.de\">");
-        str += QString("http://www.peperoni-light.de</a> for more ");
-        str += QString("information.");
-        str += QString("</P>");
-    }
-    else if (output < quint32(m_devices.size()))
-    {
-        str += m_devices.at(output)->infoText();
-    }
-
-    str += QString("</BODY>");
-    str += QString("</HTML>");
-
-    return str;
-}
-
-/*****************************************************************************
- * Value Read/Write
- *****************************************************************************/
-
-void PeperoniOut::outputDMX(quint32 output, const QByteArray& universe)
-{
-    if (output < quint32(m_devices.size()))
-        m_devices.at(output)->outputDMX(universe);
 }
 
 /*****************************************************************************

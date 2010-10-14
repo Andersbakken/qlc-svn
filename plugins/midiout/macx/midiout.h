@@ -25,11 +25,9 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreMIDI/CoreMIDI.h>
 #include <QStringList>
-#include <QtPlugin>
 #include <QList>
 
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
 class ConfigureMIDIOut;
 class MIDIDevice;
@@ -39,7 +37,7 @@ class QString;
  * MIDIOut
  *****************************************************************************/
 
-class MIDIOut : public QObject, public QLCOutPlugin
+class MIDIOut : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
@@ -50,29 +48,51 @@ class MIDIOut : public QObject, public QLCOutPlugin
      * Initialization
      *********************************************************************/
 public:
-    /** \reimp */
+    /** @reimp */
     void init();
 
-    /** \reimp */
-    ~MIDIOut();
+    /** @reimp */
+    virtual ~MIDIOut();
 
-    /** \reimp */
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Outputs
+     *********************************************************************/
+public:
+    /** @reimp */
     void open(quint32 output = 0);
 
-    /** \reimp */
+    /** @reimp */
     void close(quint32 output = 0);
 
-    const MIDIClientRef client() const {
-        return m_client;
-    }
+    /** @reimp */
+    QStringList outputs();
 
-protected:
-    MIDIClientRef m_client;
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
+
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
+
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
+public:
+    /** @reimp */
+    void configure();
+
+    /** @reimp */
+    bool canConfigure();
 
     /*********************************************************************
      * Devices
      *********************************************************************/
 public:
+    /** Get the OSX MIDI client */
+    const MIDIClientRef client() const;
+
     /** Find out what kinds of MIDI devices there are available */
     void rescanDevices();
 
@@ -100,40 +120,8 @@ protected:
     /** A map of available MIDI devices */
     QList <MIDIDevice*> m_devices;
 
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    /** \reimp */
-    QString name();
-
-    /*********************************************************************
-     * Outputs
-     *********************************************************************/
-public:
-    /** \reimp */
-    QStringList outputs();
-
-    /*********************************************************************
-     * Configuration
-     *********************************************************************/
-public:
-    /** \reimp */
-    void configure();
-
-    /*********************************************************************
-     * Status
-     *********************************************************************/
-public:
-    /** \reimp */
-    QString infoText(quint32 output = KOutputInvalid);
-
-    /*********************************************************************
-     * Write
-     *********************************************************************/
-public:
-    /** \reimp */
-    void outputDMX(quint32 output, const QByteArray& universe);
+    /** The OSX MIDI client */
+    MIDIClientRef m_client;
 };
 
 #endif

@@ -27,7 +27,6 @@
 #include <QList>
 
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
 class PeperoniDevice;
 class QString;
@@ -36,7 +35,7 @@ class QString;
  * USBDMXOut
  *****************************************************************************/
 
-class PeperoniOut : public QObject, public QLCOutPlugin
+class PeperoniOut : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
@@ -45,11 +44,43 @@ class PeperoniOut : public QObject, public QLCOutPlugin
      * Initialization
      *********************************************************************/
 public:
+    /** @reimp */
     virtual ~PeperoniOut();
 
+    /** @reimp */
     void init();
+
+    /** @reimp */
+    QString name();
+
+    /*********************************************************************
+     * Outputs
+     *********************************************************************/
+public:
+    /** @reimp */
     void open(quint32 output);
+
+    /** @reimp */
     void close(quint32 output);
+
+    /** @reimp */
+    QStringList outputs();
+
+    /** @reimp */
+    QString infoText(quint32 output = KOutputInvalid);
+
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
+
+    /*********************************************************************
+     * Configuration
+     *********************************************************************/
+public:
+    /** @reimp */
+    void configure();
+
+    /** @reimp */
+    bool canConfigure();
 
     /*********************************************************************
      * Devices
@@ -64,38 +95,6 @@ protected:
 protected:
     /** List of available devices */
     QList <PeperoniDevice*> m_devices;
-
-    /*********************************************************************
-     * Outputs
-     *********************************************************************/
-public:
-    /** Get the names of outputs provided by this plugin */
-    QStringList outputs();
-
-    /*********************************************************************
-     * Name
-     *********************************************************************/
-public:
-    QString name();
-
-    /*********************************************************************
-     * Configuration
-     *********************************************************************/
-public:
-    void configure();
-
-    /*********************************************************************
-     * Plugin status
-     *********************************************************************/
-public:
-    QString infoText(quint32 output = KOutputInvalid);
-
-    /*********************************************************************
-     * Value read/write methods
-     *********************************************************************/
-public:
-    /** \reimp */
-    void outputDMX(quint32 output, const QByteArray& universe);
 };
 
 #endif

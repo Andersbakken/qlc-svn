@@ -92,7 +92,8 @@ SOURCES += bus.cpp \
            scene.cpp
 
 # Interfaces
-HEADERS += ../../plugins/interfaces/qlcinplugin.h
+HEADERS += ../../plugins/interfaces/qlcinplugin.h \
+           ../../plugins/interfaces/qlcoutplugin.h
 
 #############################################################################
 # qlcconfig.h generation

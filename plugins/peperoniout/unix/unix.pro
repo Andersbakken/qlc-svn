@@ -21,3 +21,5 @@ HEADERS += peperonidevice.h \
 
 SOURCES += peperonidevice.cpp \
            peperoniout.cpp
+
+HEADERS += ../../interfaces/qlcoutplugin.h

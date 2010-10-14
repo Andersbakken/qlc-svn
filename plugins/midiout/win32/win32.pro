@@ -26,3 +26,5 @@ HEADERS += ../common/configuremididevice.h \
            ../common/midiprotocol.h \
            mididevice.h \
            midiout.h
+
+HEADERS += ../../interfaces/qlcoutplugin.h

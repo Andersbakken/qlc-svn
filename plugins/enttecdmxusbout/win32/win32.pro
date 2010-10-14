@@ -27,3 +27,5 @@ HEADERS += enttecdmxusbout.h \
 SOURCES += enttecdmxusbout.cpp \
            enttecdmxusbpro.cpp \
            enttecdmxusbopen.cpp
+
+HEADERS += ../../interfaces/qlcoutplugin.h

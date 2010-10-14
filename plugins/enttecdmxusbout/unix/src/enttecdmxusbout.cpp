@@ -23,8 +23,8 @@
 #include <QDBusConnection>
 #endif
 
-#include <QStringList>
 #include <QMessageBox>
+#include <QStringList>
 #include <QDebug>
 
 #include "enttecdmxusbwidget.h"
@@ -36,6 +36,12 @@
 /****************************************************************************
  * Initialization
  ****************************************************************************/
+
+EnttecDMXUSBOut::~EnttecDMXUSBOut()
+{
+    while (m_widgets.isEmpty() == false)
+        delete m_widgets.takeFirst();
+}
 
 void EnttecDMXUSBOut::init()
 {
@@ -56,6 +62,15 @@ void EnttecDMXUSBOut::init()
     rescanWidgets();
 }
 
+QString EnttecDMXUSBOut::name()
+{
+    return QString("Enttec DMX USB Output");
+}
+
+/****************************************************************************
+ * Outputs
+ ****************************************************************************/
+
 void EnttecDMXUSBOut::open(quint32 output)
 {
     if (output < quint32(m_widgets.size()))
@@ -66,100 +81,6 @@ void EnttecDMXUSBOut::close(quint32 output)
 {
     if (output < quint32(m_widgets.size()))
         m_widgets.at(output)->close();
-}
-
-#ifdef DBUS_ENABLED
-void EnttecDMXUSBOut::slotDeviceAdded(const QString& name)
-{
-    QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
-    re.setPatternSyntax(QRegExp::Wildcard);
-    if (name.contains(re) == true)
-        rescanWidgets();
-}
-
-void EnttecDMXUSBOut::slotDeviceRemoved(const QString& name)
-{
-    QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
-    re.setPatternSyntax(QRegExp::Wildcard);
-    if (name.contains(re) == true)
-        rescanWidgets();
-}
-#endif
-
-/****************************************************************************
- * Devices (ENTTEC calls them "widgets" and so shall we)
- ****************************************************************************/
-
-bool EnttecDMXUSBOut::rescanWidgets()
-{
-    QStringList openList;
-
-    // Construct a list of lines that were open before rescan so that
-    // they can be re-opened again after the scan.
-    while (m_widgets.isEmpty() == false)
-    {
-        EnttecDMXUSBWidget* w = m_widgets.takeFirst();
-        Q_ASSERT(w != NULL);
-        if (w->isOpen() == true)
-            openList << w->serial();
-        delete w;
-    }
-
-    struct ftdi_device_list* list = 0;
-    struct ftdi_context ftdi;
-    ftdi_init(&ftdi);
-    ftdi_usb_find_all(&ftdi, &list, EnttecDMXUSBWidget::VID,
-                      EnttecDMXUSBWidget::PID);
-    while (list != NULL)
-    {
-        struct usb_device* dev = list->dev;
-        Q_ASSERT(dev != NULL);
-
-        char serial[256];
-        char name[256];
-        char vendor[256];
-
-        ftdi_usb_get_strings(&ftdi, dev,
-                             vendor, sizeof(vendor),
-                             name, sizeof(name),
-                             serial, sizeof(serial));
-
-        if (QString(vendor).toUpper() == QString("ENTTEC"))
-        {
-            m_widgets.append(new EnttecDMXUSBPro(this,
-                                                 QString(name), QString(serial)));
-        }
-        else
-        {
-            m_widgets.append(new EnttecDMXUSBOpen(this,
-                                                  QString(name), QString(serial)));
-        }
-
-        list = list->next;
-    }
-
-    ftdi_deinit(&ftdi);
-
-    // Re-open lines that were open before rescan
-    while (openList.isEmpty() == false)
-    {
-        EnttecDMXUSBWidget* w = widget(openList.takeFirst());
-        if (w != NULL)
-            w->open();
-    }
-
-    return true;
-}
-
-EnttecDMXUSBWidget* EnttecDMXUSBOut::widget(const QString& serial) const
-{
-    foreach (EnttecDMXUSBWidget* w, m_widgets)
-    {
-        if (w->serial() == serial)
-            return w;
-    }
-
-    return NULL;
 }
 
 QStringList EnttecDMXUSBOut::outputs()
@@ -174,32 +95,6 @@ QStringList EnttecDMXUSBOut::outputs()
     }
     return list;
 }
-
-/****************************************************************************
- * Name
- ****************************************************************************/
-
-QString EnttecDMXUSBOut::name()
-{
-    return QString("Enttec DMX USB Output");
-}
-
-/****************************************************************************
- * Configuration
- ****************************************************************************/
-
-void EnttecDMXUSBOut::configure()
-{
-    int r = QMessageBox::question(NULL, name(),
-                                  tr("Do you wish to re-scan your hardware?"),
-                                  QMessageBox::Yes, QMessageBox::No);
-    if (r == QMessageBox::Yes)
-        rescanWidgets();
-}
-
-/****************************************************************************
- * Plugin status
- ****************************************************************************/
 
 QString EnttecDMXUSBOut::infoText(quint32 output)
 {
@@ -243,14 +138,125 @@ QString EnttecDMXUSBOut::infoText(quint32 output)
     return str;
 }
 
-/*****************************************************************************
- * Value Read/Write
- *****************************************************************************/
-
 void EnttecDMXUSBOut::outputDMX(quint32 output, const QByteArray& universe)
 {
     if (output < quint32(m_widgets.size()))
         m_widgets.at(output)->sendDMX(universe);
+}
+
+#ifdef DBUS_ENABLED
+void EnttecDMXUSBOut::slotDeviceAdded(const QString& name)
+{
+    QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
+    re.setPatternSyntax(QRegExp::Wildcard);
+    if (name.contains(re) == true)
+        rescanWidgets();
+}
+
+void EnttecDMXUSBOut::slotDeviceRemoved(const QString& name)
+{
+    QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
+    re.setPatternSyntax(QRegExp::Wildcard);
+    if (name.contains(re) == true)
+        rescanWidgets();
+}
+#endif
+
+/****************************************************************************
+ * Configuration
+ ****************************************************************************/
+
+void EnttecDMXUSBOut::configure()
+{
+    int r = QMessageBox::question(NULL, name(),
+                                  tr("Do you wish to re-scan your hardware?"),
+                                  QMessageBox::Yes, QMessageBox::No);
+    if (r == QMessageBox::Yes)
+    {
+        rescanWidgets();
+        emit configurationChanged();
+    }
+}
+
+bool EnttecDMXUSBOut::canConfigure()
+{
+    return true;
+}
+
+/****************************************************************************
+ * Devices (ENTTEC calls them "widgets" and so shall we)
+ ****************************************************************************/
+
+bool EnttecDMXUSBOut::rescanWidgets()
+{
+    QStringList openList;
+
+    // Construct a list of lines that were open before rescan so that
+    // they can be re-opened again after the scan.
+    while (m_widgets.isEmpty() == false)
+    {
+        EnttecDMXUSBWidget* w = m_widgets.takeFirst();
+        Q_ASSERT(w != NULL);
+        if (w->isOpen() == true)
+            openList << w->serial();
+        delete w;
+    }
+
+    struct ftdi_device_list* list = 0;
+    struct ftdi_context ftdi;
+    ftdi_init(&ftdi);
+    ftdi_usb_find_all(&ftdi, &list, EnttecDMXUSBWidget::VID,
+                      EnttecDMXUSBWidget::PID);
+    while (list != NULL)
+    {
+        struct usb_device* dev = list->dev;
+        Q_ASSERT(dev != NULL);
+
+        char serial[256];
+        char name[256];
+        char vendor[256];
+
+        ftdi_usb_get_strings(&ftdi, dev,
+                             vendor, sizeof(vendor),
+                             name, sizeof(name),
+                             serial, sizeof(serial));
+
+        if (QString(vendor).toUpper() == QString("ENTTEC"))
+        {
+            m_widgets.append(new EnttecDMXUSBPro(this, QString(name),
+                                                 QString(serial)));
+        }
+        else
+        {
+            m_widgets.append(new EnttecDMXUSBOpen(this, QString(name),
+                                                  QString(serial)));
+        }
+
+        list = list->next;
+    }
+
+    ftdi_deinit(&ftdi);
+
+    // Re-open lines that were open before rescan
+    while (openList.isEmpty() == false)
+    {
+        EnttecDMXUSBWidget* w = widget(openList.takeFirst());
+        if (w != NULL)
+            w->open();
+    }
+
+    return true;
+}
+
+EnttecDMXUSBWidget* EnttecDMXUSBOut::widget(const QString& serial) const
+{
+    foreach (EnttecDMXUSBWidget* w, m_widgets)
+    {
+        if (w->serial() == serial)
+            return w;
+    }
+
+    return NULL;
 }
 
 /****************************************************************************
@@ -258,4 +264,3 @@ void EnttecDMXUSBOut::outputDMX(quint32 output, const QByteArray& universe)
  ****************************************************************************/
 
 Q_EXPORT_PLUGIN2(enttecdmxusbout, EnttecDMXUSBOut)
-

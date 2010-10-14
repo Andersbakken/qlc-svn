@@ -25,6 +25,8 @@ SOURCES += enttecdmxusbout.cpp \
            enttecdmxusbopen.cpp \
            enttecdmxusbpro.cpp
 
+HEADERS += ../../../interfaces/qlcoutplugin.h
+
 unix:!macx {
     QT      += dbus
     DEFINES += DBUS_ENABLED

@@ -22,72 +22,79 @@
 #ifndef ENTTECDMXUSBOUT_H
 #define ENTTECDMXUSBOUT_H
 
-#include <QObject>
-
 #include "qlcoutplugin.h"
-#include "qlctypes.h"
 
 class EnttecDMXUSBWidget;
 
-class EnttecDMXUSBOut : public QObject, public QLCOutPlugin
+class EnttecDMXUSBOut : public QLCOutPlugin
 {
     Q_OBJECT
     Q_INTERFACES(QLCOutPlugin)
 
-    /********************************************************************
+    /************************************************************************
      * Initialization
-     ********************************************************************/
+     ************************************************************************/
 public:
+    /** @reimp */
+    virtual ~EnttecDMXUSBOut();
+
+    /** @reimp */
     void init();
-    void open(quint32 output);
-    void close(quint32 output);
 
-#ifdef DBUS_ENABLED
-protected slots:
-    void slotDeviceAdded(const QString& name);
-    void slotDeviceRemoved(const QString& name);
-#endif
+    /** @reimp */
+    QString name();
 
-    /********************************************************************
-     * Devices (ENTTEC calls them "widgets" and so shall we)
-     ********************************************************************/
+    /************************************************************************
+     * Outputs
+     ************************************************************************/
 public:
-    bool rescanWidgets();
-    EnttecDMXUSBWidget* widget(const QString& serial) const;
+    /** @reimp */
+    void open(quint32 output);
+
+    /** @reimp */
+    void close(quint32 output);
 
     /** @reimp */
     QStringList outputs();
 
-protected:
-    QList <EnttecDMXUSBWidget*> m_widgets;
-
-    /********************************************************************
-     * Name
-     ********************************************************************/
-public:
     /** @reimp */
-    QString name();
+    QString infoText(quint32 output = KOutputInvalid);
 
-    /********************************************************************
+    /** @reimp */
+    void outputDMX(quint32 output, const QByteArray& universe);
+
+#ifdef DBUS_ENABLED
+protected slots:
+    /** Called when a USB device has been plugged in */
+    void slotDeviceAdded(const QString& name);
+
+    /** Called when a USB device has been plugged out */
+    void slotDeviceRemoved(const QString& name);
+#endif
+
+    /************************************************************************
      * Configuration
-     ********************************************************************/
+     ************************************************************************/
 public:
     /** @reimp */
     void configure();
 
-    /********************************************************************
-     * Plugin status
-     ********************************************************************/
-public:
     /** @reimp */
-    QString infoText(quint32 output = KOutputInvalid);
+    bool canConfigure();
 
-    /********************************************************************
-     * Value read/write methods
-     ********************************************************************/
+    /************************************************************************
+     * Devices (ENTTEC calls them "widgets" and so shall we)
+     ************************************************************************/
 public:
-    /** @reimp */
-    void outputDMX(quint32 output, const QByteArray& universe);
+    /** Attempt to find all connected devices */
+    bool rescanWidgets();
+
+    /** Get a specific device by its serial */
+    EnttecDMXUSBWidget* widget(const QString& serial) const;
+
+protected:
+    /** Currently available devices */
+    QList <EnttecDMXUSBWidget*> m_widgets;
 };
 
 #endif

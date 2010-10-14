@@ -41,17 +41,13 @@ void DummyOutPlugin::init()
 {
 }
 
-/*****************************************************************************
- * Name
- *****************************************************************************/
-
 QString DummyOutPlugin::name()
 {
     return QString("Dummy Output");
 }
 
 /*****************************************************************************
- * Open/close
+ * Outputs
  *****************************************************************************/
 
 void DummyOutPlugin::open(quint32 output)
@@ -73,18 +69,6 @@ QStringList DummyOutPlugin::outputs()
 
     return list;
 }
-
-/*****************************************************************************
- * Configuration
- *****************************************************************************/
-
-void DummyOutPlugin::configure()
-{
-}
-
-/*****************************************************************************
- * Status
- *****************************************************************************/
 
 QString DummyOutPlugin::infoText(quint32 output)
 {
@@ -117,12 +101,21 @@ QString DummyOutPlugin::infoText(quint32 output)
     return str;
 }
 
-/*****************************************************************************
- * Write
- *****************************************************************************/
-
 void DummyOutPlugin::outputDMX(quint32 output, const QByteArray& universe)
 {
     Q_UNUSED(output);
     Q_UNUSED(universe);
+}
+
+/*****************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+void DummyOutPlugin::configure()
+{
+}
+
+bool DummyOutPlugin::canConfigure()
+{
+    return false;
 }

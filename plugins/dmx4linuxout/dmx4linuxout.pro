@@ -12,3 +12,4 @@ INSTALLS   += target
 
 HEADERS += dmx4linuxout.h
 SOURCES += dmx4linuxout.cpp
+HEADERS += ../interfaces/qlcoutplugin.h
