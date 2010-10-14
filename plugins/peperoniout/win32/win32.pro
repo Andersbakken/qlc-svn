@@ -19,6 +19,8 @@ SOURCES += peperoni/usbdmx-dynamic.cpp \
            peperoniout.cpp \
            peperonidevice.cpp
 
+HEADERS += ../../interfaces/qlcoutplugin.h
+
 # Installation
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target
