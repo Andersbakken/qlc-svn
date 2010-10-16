@@ -883,7 +883,7 @@ Kann Gerät nicht speichern.</translation>
     <message>
         <location filename="fixtureeditor.cpp" line="767"/>
         <source>Are you sure you wish to remove mode: %1</source>
-        <translation type="unfinished">Bist du dir sicher, dass du den Modus %1 entfernen möchtest?</translation>
+        <translation>Bist du dir sicher, dass du den Modus %1 entfernen möchtest?</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="818"/>
