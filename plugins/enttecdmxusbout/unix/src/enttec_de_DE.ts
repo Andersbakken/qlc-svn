@@ -6,7 +6,7 @@
     <message>
         <location filename="enttecdmxusbout.cpp" line="194"/>
         <source>Do you wish to re-scan your hardware?</source>
-        <translation>Nach neuer Hardware suchen?</translation>
+        <translation>Willst du deine Hardware neu scannen?</translation>
     </message>
     <message>
         <location filename="enttecdmxusbout.cpp" line="220"/>
