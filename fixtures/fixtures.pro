@@ -82,6 +82,7 @@ fixtures.files += JB-Lighting-Varyscan-3-SpecialPlus.qxf
 fixtures.files += JB-Lighting-Varyscan-4-Compact-Plus.qxf
 fixtures.files += JB-Lighting-Varyscan-4-EV.qxf
 fixtures.files += JB-Lighting-Varyscan-P2.qxf
+fixtures.files += JB-Systems-The-WinnerII.qxf
 fixtures.files += Lite-Works-ColorChanger.qxf
 fixtures.files += MacMah-WiderPanel.qxf
 fixtures.files += Martin-Atomic-3000.qxf
