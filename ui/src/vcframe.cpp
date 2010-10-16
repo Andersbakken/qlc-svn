@@ -40,6 +40,7 @@
 #include "vcslider.h"
 #include "vcframe.h"
 #include "vclabel.h"
+#include "vcsoloframe.h"
 #include "vcxypad.h"
 #include "app.h"
 #include "doc.h"
@@ -62,16 +63,21 @@ bool VCFrame::isBottomFrame()
 {
     /* If this widget has a parent that is NOT a VCFrame, this widget
        is the bottom frame. */
+    
+    /* This code don't work, as VCSoloFrame inherits from VCFrame:
+    
     if (parentWidget() != NULL &&
-            QString(parentWidget()->metaObject()->className()) !=
-            QString(VCFrame::staticMetaObject.className()))
+        QString(parentWidget()->metaObject()->className()) !=
+        QString(VCFrame::staticMetaObject.className()))        
     {
         return true;
     }
     else
     {
         return false;
-    }
+    }*/
+    
+    return (parentWidget() != NULL && qobject_cast<VCFrame*>(parentWidget()) == NULL);
 }
 
 /*****************************************************************************
@@ -143,7 +149,7 @@ bool VCFrame::loadXML(const QDomElement* root)
 
     Q_ASSERT(root != NULL);
 
-    if (root->tagName() != KXMLQLCVCFrame)
+    if (root->tagName() != xmlTagName())
     {
         qDebug() << "Frame node not found!";
         return false;
@@ -186,6 +192,10 @@ bool VCFrame::loadXML(const QDomElement* root)
         {
             VCSlider::loader(&tag, this);
         }
+        else if (tag.tagName() == KXMLQLCVCSoloFrame)
+        {
+            VCSoloFrame::loader(&tag, this);
+        }
         else if (tag.tagName() == KXMLQLCVCCueList)
         {
             VCCueList::loader(&tag, this);
@@ -212,7 +222,7 @@ bool VCFrame::saveXML(QDomDocument* doc, QDomElement* vc_root)
     Q_ASSERT(vc_root != NULL);
 
     /* VC Frame entry */
-    root = doc->createElement(KXMLQLCVCFrame);
+    root = doc->createElement(xmlTagName());
     vc_root->appendChild(root);
 
     /* Caption */

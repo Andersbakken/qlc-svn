@@ -2582,7 +2582,7 @@ void EFX_Test::writeStartStopScenes()
     MasterTimerStub* mts = new MasterTimerStub(this, oms, unis);
 
     QVERIFY(e->stopped() == true);
-    mts->startFunction(e);
+    mts->startFunction(e, false);
     QVERIFY(e->stopped() == false);
 
     e->write(mts, &unis);

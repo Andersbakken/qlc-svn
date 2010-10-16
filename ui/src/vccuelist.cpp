@@ -200,7 +200,8 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
     connect(m_current, SIGNAL(stopped(t_function_id)),
             this, SLOT(slotFunctionStopped(t_function_id)));
 
-    _app->masterTimer()->startFunction(m_current);
+    // TODO: not sure how a cuelist should behave in a solopanel...
+    _app->masterTimer()->startFunction(m_current, true);
 }
 
 /*****************************************************************************

@@ -463,7 +463,7 @@ void Collection_Test::write()
     /* Collection starts all of its members immediately when it is started
        itself. */
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, false);
     QVERIFY(c->stopped() == false);
 
     c->write(mts, &uni);

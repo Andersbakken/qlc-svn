@@ -295,7 +295,7 @@ void Collection::write(MasterTimer* timer, QByteArray* universes)
             connect(function, SIGNAL(stopped(t_function_id)),
                     this, SLOT(slotChildStopped(t_function_id)));
 
-            timer->startFunction(function);
+            timer->startFunction(function, true);
         }
     }
 

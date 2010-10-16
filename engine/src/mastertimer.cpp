@@ -72,14 +72,17 @@ int MasterTimer::runningFunctions()
     return n;
 }
 
-void MasterTimer::startFunction(Function* function)
+void MasterTimer::startFunction(Function* function, bool initiatedByOtherFunction)
 {
     if (function == NULL)
         return;
 
     m_functionListMutex.lock();
     if (m_functionList.contains(function) == false)
+    {        
         m_functionList.append(function);
+        function->setInitiatedByOtherFunction(initiatedByOtherFunction);        
+    }
     m_functionListMutex.unlock();
 }
 

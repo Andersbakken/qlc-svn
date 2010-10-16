@@ -52,6 +52,7 @@
 #include "vcslider.h"
 #include "vcframe.h"
 #include "vclabel.h"
+#include "vcsoloframe.h"
 #include "vcxypad.h"
 #include "app.h"
 #include "doc.h"
@@ -253,6 +254,11 @@ void VirtualConsole::initActions()
                                    tr("Frame"), this);
     connect(m_addFrameAction, SIGNAL(triggered(bool)),
             this, SLOT(slotAddFrame()));
+        
+    m_addSoloFrameAction = new QAction(QIcon(":/soloframe.png"),
+                       tr("Solo frame"), this);
+    connect(m_addSoloFrameAction, SIGNAL(triggered(bool)),
+        this, SLOT(slotAddSoloFrame()));
 
     m_addLabelAction = new QAction(QIcon(":/label.png"),
                                    tr("Label"), this);
@@ -269,6 +275,7 @@ void VirtualConsole::initActions()
     m_addActionGroup->addAction(m_addXYPadAction);
     m_addActionGroup->addAction(m_addCueListAction);
     m_addActionGroup->addAction(m_addFrameAction);
+    m_addActionGroup->addAction(m_addSoloFrameAction);
     m_addActionGroup->addAction(m_addLabelAction);
 
     /* Tools menu actions */
@@ -459,6 +466,7 @@ void VirtualConsole::initMenuBar()
     m_addMenu->addAction(m_addCueListAction);
     m_addMenu->addSeparator();
     m_addMenu->addAction(m_addFrameAction);
+    m_addMenu->addAction(m_addSoloFrameAction);
     m_addMenu->addAction(m_addLabelAction);
 
     /* Edit menu */
@@ -536,6 +544,7 @@ void VirtualConsole::initMenuBar()
     toolBar->addAction(m_addXYPadAction);
     toolBar->addAction(m_addCueListAction);
     toolBar->addAction(m_addFrameAction);
+    toolBar->addAction(m_addSoloFrameAction);    
     toolBar->addAction(m_addLabelAction);
     toolBar->addSeparator();
     toolBar->addAction(m_editCutAction);
@@ -856,6 +865,19 @@ void VirtualConsole::slotAddFrame()
     _app->doc()->setModified();
 }
 
+void VirtualConsole::slotAddSoloFrame()
+{
+    VCFrame* parent(closestParent());
+    if (parent == NULL)
+        return;
+
+    VCSoloFrame* soloframe = new VCSoloFrame(parent);
+    Q_ASSERT(soloframe != NULL);
+    soloframe->show();
+    soloframe->move(parent->lastClickPoint());
+    _app->doc()->setModified();
+}
+
 void VirtualConsole::slotAddLabel()
 {
     VCFrame* parent(closestParent());
@@ -1073,7 +1095,7 @@ void VirtualConsole::slotEditRename()
     {
         VCWidget* widget;
         foreach(widget, m_selectedWidgets)
-        widget->setCaption(text);
+            widget->setCaption(text);
     }
 }
 
@@ -1103,7 +1125,7 @@ void VirtualConsole::slotBackgroundColor()
         {
             VCWidget* widget;
             foreach(widget, m_selectedWidgets)
-            widget->setBackgroundColor(color);
+                widget->setBackgroundColor(color);
         }
     }
 }
@@ -1133,7 +1155,7 @@ void VirtualConsole::slotBackgroundImage()
         {
             VCWidget* widget;
             foreach(widget, m_selectedWidgets)
-            widget->setBackgroundImage(path);
+                widget->setBackgroundImage(path);
         }
     }
 }
@@ -1150,7 +1172,7 @@ void VirtualConsole::slotBackgroundNone()
     {
         VCWidget* widget;
         foreach(widget, m_selectedWidgets)
-        widget->resetBackgroundColor();
+            widget->resetBackgroundColor();
     }
 }
 
@@ -1171,7 +1193,7 @@ void VirtualConsole::slotForegroundColor()
     {
         VCWidget* widget;
         foreach(widget, m_selectedWidgets)
-        widget->setForegroundColor(color);
+            widget->setForegroundColor(color);
     }
 }
 
@@ -1184,7 +1206,7 @@ void VirtualConsole::slotForegroundNone()
 
     VCWidget* widget;
     foreach(widget, m_selectedWidgets)
-    widget->resetForegroundColor();
+        widget->resetForegroundColor();
 }
 
 /*****************************************************************************
@@ -1214,7 +1236,7 @@ void VirtualConsole::slotFont()
         {
             VCWidget* widget;
             foreach(widget, m_selectedWidgets)
-            widget->setFont(font);
+                widget->setFont(font);
         }
     }
 }
@@ -1231,7 +1253,7 @@ void VirtualConsole::slotResetFont()
     {
         VCWidget* widget;
         foreach(widget, m_selectedWidgets)
-        widget->resetFont();
+            widget->resetFont();
     }
 }
 
@@ -1248,7 +1270,7 @@ void VirtualConsole::slotStackingRaise()
 
     VCWidget* widget;
     foreach(widget, m_selectedWidgets)
-    widget->raise();
+        widget->raise();
 }
 
 void VirtualConsole::slotStackingLower()
@@ -1260,7 +1282,7 @@ void VirtualConsole::slotStackingLower()
 
     VCWidget* widget;
     foreach(widget, m_selectedWidgets)
-    widget->lower();
+        widget->lower();
 }
 
 /*****************************************************************************
@@ -1276,7 +1298,7 @@ void VirtualConsole::slotFrameSunken()
 
     VCWidget* widget;
     foreach(widget, m_selectedWidgets)
-    widget->setFrameStyle(KVCFrameStyleSunken);
+        widget->setFrameStyle(KVCFrameStyleSunken);
 }
 
 void VirtualConsole::slotFrameRaised()
@@ -1288,7 +1310,7 @@ void VirtualConsole::slotFrameRaised()
 
     VCWidget* widget;
     foreach(widget, m_selectedWidgets)
-    widget->setFrameStyle(KVCFrameStyleRaised);
+        widget->setFrameStyle(KVCFrameStyleRaised);
 }
 
 void VirtualConsole::slotFrameNone()
@@ -1300,7 +1322,7 @@ void VirtualConsole::slotFrameNone()
 
     VCWidget* widget;
     foreach(widget, m_selectedWidgets)
-    widget->setFrameStyle(KVCFrameStyleNone);
+        widget->setFrameStyle(KVCFrameStyleNone);
 }
 
 /*****************************************************************************
@@ -1462,6 +1484,7 @@ void VirtualConsole::slotModeChanged(Doc::Mode mode)
         m_addXYPadAction->setShortcut(QKeySequence());
         m_addCueListAction->setShortcut(QKeySequence());
         m_addFrameAction->setShortcut(QKeySequence());
+        m_addSoloFrameAction->setShortcut(QKeySequence());
         m_addLabelAction->setShortcut(QKeySequence());
 
         m_editCutAction->setShortcut(QKeySequence());
@@ -1504,6 +1527,7 @@ void VirtualConsole::slotModeChanged(Doc::Mode mode)
         m_addXYPadAction->setShortcut(QKeySequence("CTRL+SHIFT+X"));
         m_addCueListAction->setShortcut(QKeySequence("CTRL+SHIFT+C"));
         m_addFrameAction->setShortcut(QKeySequence("CTRL+SHIFT+F"));
+        m_addSoloFrameAction->setShortcut(QKeySequence("CTRL+SHIFT+O"));
         m_addLabelAction->setShortcut(QKeySequence("CTRL+SHIFT+L"));
 
         m_editCutAction->setShortcut(QKeySequence("CTRL+X"));

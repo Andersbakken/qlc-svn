@@ -25,6 +25,8 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QMutex>
+#include <QWaitCondition>
 
 #include "qlctypes.h"
 
@@ -385,6 +387,13 @@ public:
      */
     virtual void postRun(MasterTimer* timer, QByteArray* universes);
 
+	/**
+	* @return true if the function was started by another function. False if started by button press.
+	*/
+	bool initiatedByOtherFunction() const { return m_initiatedByOtherFunction; }
+	
+	void setInitiatedByOtherFunction(bool state) { m_initiatedByOtherFunction = state; }
+	
 signals:
     /**
      * Emitted when a function is started (i.e. added to MasterTimer's
@@ -401,6 +410,9 @@ signals:
      * @param id The ID of the stopped function
      */
     void stopped(t_function_id id);
+	
+private:
+	bool m_initiatedByOtherFunction;
 
     /*********************************************************************
      * Elapsed
@@ -443,9 +455,21 @@ public:
      */
     virtual bool stopped() const;
 
+    /**
+     * Mark the function to be stopped and block the calling thread until it is
+     * actually stopped. To prevent deadlocks the function only waits for 2s.
+     *
+     * @return true if the function was stopped. false if the function did not
+     *              stop withing two seconds
+     */
+    bool stopAndWait();
+
 private:
     /** Stop flag, private to keep functions from modifying it. */
     bool m_stop;
+
+    QMutex m_stopMutex;
+    QWaitCondition m_functionStopped;
 };
 
 #endif

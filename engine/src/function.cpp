@@ -382,8 +382,11 @@ void Function::postRun(MasterTimer* timer, QByteArray* universes)
     Q_UNUSED(timer);
     Q_UNUSED(universes);
 
+    m_stopMutex.lock();
     resetElapsed();
     m_stop = true;
+    m_functionStopped.wakeAll();
+    m_stopMutex.unlock();
     emit stopped(m_id);
 }
 
@@ -420,3 +423,33 @@ bool Function::stopped() const
     return m_stop;
 }
 
+/*****************************************************************************
+ * Stopping
+ *****************************************************************************/
+
+bool Function::stopAndWait()
+{
+    bool result = true;
+
+    m_stopMutex.lock();
+    m_stop = true;
+
+    QTime watchdog;
+    watchdog.start();
+
+    // block thread for maximum 2 seconds
+    while (m_elapsed > 0)
+    {
+        if (watchdog.elapsed() > 2000)
+        {
+              result = false;
+              break;
+        }
+
+        // wait until the function has stopped
+        m_functionStopped.wait(&m_stopMutex, 100);
+    }
+
+    m_stopMutex.unlock();
+    return result;
+}

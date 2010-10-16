@@ -186,6 +186,7 @@ public:
     }
 
 protected:
+    bool isChildOfSoloFrame();
     bool m_on;
 
     /*********************************************************************
@@ -288,6 +289,10 @@ protected slots:
 
     /** Slot for brief widget blink when controlled function stops */
     void slotBlinkReady();
+
+signals:
+    /** Signal telling the buttons function was started as a result of a toggle action */
+    void functionStarting ();
 
     /*********************************************************************
     * Custom menu

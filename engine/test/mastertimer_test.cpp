@@ -117,11 +117,13 @@ void MasterTimer_Test::startStopFunction()
 
     QVERIFY(mt.runningFunctions() == 0);
 
-    mt.startFunction(&fs);
+    mt.startFunction(&fs, true);
     QVERIFY(mt.runningFunctions() == 1);
+    QVERIFY(fs.initiatedByOtherFunction() == true);
 
-    mt.startFunction(&fs);
+    mt.startFunction(&fs, false);
     QVERIFY(mt.runningFunctions() == 1);
+    QVERIFY(fs.initiatedByOtherFunction() == true);
 
 #ifdef WIN32
     Sleep(100);
@@ -201,7 +203,7 @@ void MasterTimer_Test::interval()
     usleep(100000);
 #endif
 
-    mt.startFunction(&fs);
+    mt.startFunction(&fs, false);
     QVERIFY(mt.runningFunctions() == 1);
 
     mt.registerDMXSource(&dss);
@@ -237,7 +239,7 @@ void MasterTimer_Test::functionInitiatedStop()
 
     mt.start();
 
-    mt.startFunction(&fs);
+    mt.startFunction(&fs, false);
     QVERIFY(mt.runningFunctions() == 1);
 
     /* Wait a while so that the function starts running */
@@ -270,15 +272,15 @@ void MasterTimer_Test::runMultipleFunctions()
     mt.start();
 
     Function_Stub fs1(m_doc);
-    mt.startFunction(&fs1);
+    mt.startFunction(&fs1, false);
     QVERIFY(mt.runningFunctions() == 1);
 
     Function_Stub fs2(m_doc);
-    mt.startFunction(&fs2);
+    mt.startFunction(&fs2, false);
     QVERIFY(mt.runningFunctions() == 2);
 
     Function_Stub fs3(m_doc);
-    mt.startFunction(&fs3);
+    mt.startFunction(&fs3, false);
     QVERIFY(mt.runningFunctions() == 3);
 
     /* Wait a while so that the functions start running */
@@ -307,19 +309,19 @@ void MasterTimer_Test::stopAllFunctions()
     mt.start();
 
     Function_Stub fs1(m_doc);
-    mt.startFunction(&fs1);
+    mt.startFunction(&fs1, false);
 
     DMXSource_Stub s1;
     mt.registerDMXSource(&s1);
 
     Function_Stub fs2(m_doc);
-    mt.startFunction(&fs2);
+    mt.startFunction(&fs2, false);
 
     DMXSource_Stub s2;
     mt.registerDMXSource(&s2);
 
     Function_Stub fs3(m_doc);
-    mt.startFunction(&fs3);
+    mt.startFunction(&fs3, false);
 
     QVERIFY(mt.runningFunctions() == 3);
     QVERIFY(mt.m_dmxSourceList.size() == 2);
@@ -338,13 +340,13 @@ void MasterTimer_Test::stop()
     mt.start();
 
     Function_Stub fs1(m_doc);
-    mt.startFunction(&fs1);
+    mt.startFunction(&fs1, false);
 
     Function_Stub fs2(m_doc);
-    mt.startFunction(&fs2);
+    mt.startFunction(&fs2, false);
 
     Function_Stub fs3(m_doc);
-    mt.startFunction(&fs3);
+    mt.startFunction(&fs3, false);
     QVERIFY(mt.runningFunctions() == 3);
 
     mt.stop();
@@ -358,13 +360,13 @@ void MasterTimer_Test::restart()
     mt.start();
 
     Function_Stub fs1(m_doc);
-    mt.startFunction(&fs1);
+    mt.startFunction(&fs1, false);
 
     Function_Stub fs2(m_doc);
-    mt.startFunction(&fs2);
+    mt.startFunction(&fs2, false);
 
     Function_Stub fs3(m_doc);
-    mt.startFunction(&fs3);
+    mt.startFunction(&fs3, false);
     QVERIFY(mt.runningFunctions() == 3);
 
     mt.stop();
@@ -387,9 +389,9 @@ void MasterTimer_Test::restart()
     QVERIFY(mt.m_running == true);
     QVERIFY(mt.m_stopAllFunctions == false);
 
-    mt.startFunction(&fs1);
-    mt.startFunction(&fs2);
-    mt.startFunction(&fs3);
+    mt.startFunction(&fs1, false);
+    mt.startFunction(&fs2, false);
+    mt.startFunction(&fs3, false);
     QVERIFY(mt.runningFunctions() == 3);
 
     mt.stopAllFunctions();

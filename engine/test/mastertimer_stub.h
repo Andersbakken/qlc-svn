@@ -41,7 +41,7 @@ public:
                     QByteArray& universes);
     ~MasterTimerStub();
 
-    void startFunction(Function* function);
+    void startFunction(Function* function, bool initiatedByOtherFunction);
     void stopFunction(Function* function);
     QList <Function*> m_functionList;
 

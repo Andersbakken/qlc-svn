@@ -633,7 +633,7 @@ void Chaser_Test::writeBusZeroLoopForward()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, true);
     QVERIFY(c->stopped() == false);
 
     /* Since hold bus' value is 0 each call to write() starts the next
@@ -736,7 +736,7 @@ void Chaser_Test::writeBusZeroLoopBackward()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, true);
     QVERIFY(c->stopped() == false);
 
     /* Since hold bus' value is 0 each call to write() starts the next
@@ -838,7 +838,7 @@ void Chaser_Test::writeBusZeroSingleShotForward()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, true);
     QVERIFY(c->stopped() == false);
 
     /* SingleShot will stop automatically after the last step */
@@ -915,7 +915,7 @@ void Chaser_Test::writeBusZeroSingleShotBackward()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, true);
     QVERIFY(c->stopped() == false);
 
     /* SingleShot will stop automatically after the last step */
@@ -996,7 +996,7 @@ void Chaser_Test::writeBusZeroPingPongForward()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, true);
     QVERIFY(c->stopped() == false);
 
     /* Since hold bus' value is 0 each call to write() starts the next
@@ -1145,7 +1145,7 @@ void Chaser_Test::writeBusZeroPingPongBackward()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
-    mts->startFunction(c);
+    mts->startFunction(c, true);
     QVERIFY(c->stopped() == false);
 
     /* Since hold bus' value is 0 each call to write() starts the next

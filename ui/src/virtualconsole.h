@@ -190,6 +190,7 @@ protected:
     QAction* m_addXYPadAction;
     QAction* m_addCueListAction;
     QAction* m_addFrameAction;
+    QAction* m_addSoloFrameAction;
     QAction* m_addLabelAction;
 
     QAction* m_toolsSettingsAction;
@@ -248,6 +249,7 @@ public slots:
     void slotAddXYPad();
     void slotAddCueList();
     void slotAddFrame();
+    void slotAddSoloFrame();
     void slotAddLabel();
 
     /*********************************************************************

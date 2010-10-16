@@ -81,6 +81,10 @@ public:
     static bool loader(const QDomElement* root, QWidget* parent);
     bool loadXML(const QDomElement* vc_root);
     bool saveXML(QDomDocument* doc, QDomElement* vc_root);
+	
+protected:
+	/** Can be overridden by subclasses */
+	virtual QString xmlTagName() const { return KXMLQLCVCFrame; }
 
     /*********************************************************************
      * Custom menu

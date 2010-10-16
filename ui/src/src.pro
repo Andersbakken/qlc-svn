@@ -64,6 +64,7 @@ HEADERS += aboutbox.h \
            vcproperties.h \
            vcslider.h \
            vcsliderproperties.h \
+           vcsoloframe.h \
            vcwidget.h \
            vcwidgetproperties.h \
            vcxypad.h \
@@ -137,6 +138,7 @@ SOURCES += aboutbox.cpp \
            vcproperties.cpp \
            vcslider.cpp \
            vcsliderproperties.cpp \
+           vcsoloframe.cpp \
            vcwidget.cpp \
            vcwidgetproperties.cpp \
            vcxypad.cpp \

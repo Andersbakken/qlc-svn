@@ -43,6 +43,7 @@
 
 #include "vcbuttonproperties.h"
 #include "functionselection.h"
+#include "vcsoloframe.h"
 #include "virtualconsole.h"
 #include "mastertimer.h"
 #include "outputmap.h"
@@ -489,6 +490,18 @@ void VCButton::setOn(bool on)
     update();
 }
 
+bool VCButton::isChildOfSoloFrame()
+{
+    QWidget* parent = parentWidget();
+    while (parent != NULL)
+    {
+        if (qobject_cast<VCSoloFrame*>(parent) != NULL)
+            return true;
+        parent = parent->parentWidget();
+    }
+    return false;
+}
+
 /*****************************************************************************
  * Key sequence handler
  *****************************************************************************/
@@ -629,10 +642,16 @@ void VCButton::pressFunction()
         f = _app->doc()->function(m_function);
         if (f != NULL)
         {
-            if (isOn() == true)
+            /* if the button is in a SoloFrame and the function is running but was started by a different function (a chaser or collection), 
+             * turn of other functions and start it anyway.
+             */            
+            if (isOn() == true && !(isChildOfSoloFrame() && f->initiatedByOtherFunction()))
                 f->stop();
             else
-                _app->masterTimer()->startFunction(f);
+            {              
+                emit functionStarting();
+                _app->masterTimer()->startFunction(f, false);
+            }
         }
     }
     else if (m_action == Flash && isOn() == false)

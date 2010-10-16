@@ -713,6 +713,7 @@ void VCWidget::paintEvent(QPaintEvent* e)
     /* Draw frame according to style */
     QStyleOptionFrame option;
     option.initFrom(this);
+        
     if (frameStyle() == KVCFrameStyleSunken)
         option.state = QStyle::State_Sunken;
     else if (frameStyle() == KVCFrameStyleRaised)
@@ -737,7 +738,7 @@ void VCWidget::paintEvent(QPaintEvent* e)
         pen.setCapStyle(Qt::RoundCap);
         pen.setWidth(0);
         painter.setPen(pen);
-        painter.drawRect(0, 0, rect().width(), rect().height());
+        painter.drawRect(0, 0, rect().width() - 1, rect().height() - 1);
 
         /* Draw a resize handle */
         QIcon icon(":/resize.png");

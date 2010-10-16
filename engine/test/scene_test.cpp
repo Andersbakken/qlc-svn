@@ -571,7 +571,7 @@ void Scene_Test::writeBusZero()
     QByteArray uni(4 * 512, 0);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
-    mts->startFunction(s1);
+    mts->startFunction(s1, false);
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == true);
     QVERIFY(uni[0] == (char) UCHAR_MAX);
@@ -616,7 +616,7 @@ void Scene_Test::writeBusOne()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
-    mts->startFunction(s1);
+    mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
     QVERIFY(uni[0] == (char) 0);
@@ -673,7 +673,7 @@ void Scene_Test::writeBusTwo()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
-    mts->startFunction(s1);
+    mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
     QVERIFY(uni[0] == (char) 0);
@@ -739,7 +739,7 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
-    mts->startFunction(s1);
+    mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
     QVERIFY(uni[0] == (char) 0);
@@ -805,7 +805,7 @@ void Scene_Test::writeNonZeroStartingValues()
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
-    mts->startFunction(s1);
+    mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
     uni[0] = (char) 100;

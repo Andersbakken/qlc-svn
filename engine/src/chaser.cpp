@@ -482,7 +482,7 @@ void Chaser::startCurrent(MasterTimer* timer)
     t_function_id fid = m_steps.at(m_runTimePosition);
     Function* function = doc->function(fid);
     if (function != NULL)
-        timer->startFunction(function);
+        timer->startFunction(function, true);
     else
         qWarning() << name() << "step" << m_runTimePosition
         << "doesn't exist";

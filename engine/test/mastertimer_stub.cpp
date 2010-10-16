@@ -37,9 +37,10 @@ MasterTimerStub::~MasterTimerStub()
 {
 }
 
-void MasterTimerStub::startFunction(Function* function)
+void MasterTimerStub::startFunction(Function* function, bool initiatedByOtherFunction)
 {
     m_functionList.append(function);
+    function->setInitiatedByOtherFunction(initiatedByOtherFunction);
     function->preRun(this);
 }
 
