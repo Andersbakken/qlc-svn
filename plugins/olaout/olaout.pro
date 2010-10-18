@@ -4,41 +4,35 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET   = olaout
 
-# These don't belong to variables.pri because plugins should not know
-# anything about the host app (except what's written in the plugin interface)
-# that's loading them, nor vice versa.
-#
-# OLA Directories
-unix:OLA_GIT = /usr/src/ola
-
-# Should contain google/protobuf/common.h which can be got through
-# Macports on Mac
-unix:PROTOBUF = /opt/local/include/
+QT       += core gui
+CONFIG   += plugin
+QTPLUGIN  =
 
 INCLUDEPATH += ../interfaces
-INCLUDEPATH += $$OLA_GIT $$PROTOBUF
-unix:LIBS   += -lola -lolaserver -lolacommon
-
-CONFIG += plugin # link_pkgconfig
-CONFIG -= ppc # LibOLA is not a universal binary 
-#PKGCONFIG += libola
+LIBS        += -L/usr/local/lib -lolaserver -lola -lolacommon -lprotobuf
 
 # Forms
 FORMS += configureolaout.ui
 
 # Headers
-HEADERS += configureolaout.h \
-           olaout.h \
+HEADERS += olaout.h \
            olaoutthread.h \
+           configureolaout.h \
            qlclogdestination.h
 
 # Source
-SOURCES += configureolaout.cpp \
-           olaout.cpp \
+SOURCES += olaout.cpp \
            olaoutthread.cpp \
+           configureolaout.cpp \
            qlclogdestination.cpp
 
 HEADERS += ../interfaces/qlcoutplugin.h
+
+# This must be after "TARGET = " and before target installation so that
+# install_name_tool can be run before target installation
+macx {
+    include(../../macx/nametool.pri)
+}
 
 # Installation
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
