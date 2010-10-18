@@ -198,7 +198,7 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
     if (item == NULL)
     {
         /* Nothing selected */
-        info = tr("No information");
+        info = _app->outputMap()->pluginStatus(QString::null, 0);
         configurable = false;
     }
     else
