@@ -237,10 +237,12 @@ void InputPatchEditor::fillPluginItem(const QString& pluginName, QTreeWidgetItem
 void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
 {
     QString info;
+    bool configurable;
 
     if (item == NULL)
     {
         info = _app->inputMap()->pluginStatus(QString::null, 0);
+        configurable = false;
     }
     else
     {
@@ -261,10 +263,14 @@ void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
         }
 
         info = _app->inputMap()->pluginStatus(plugin, input);
+        configurable = _app->inputMap()->canConfigurePlugin(plugin);
     }
 
     /* Display information for the selected plugin or input */
     m_infoBrowser->setText(info);
+
+    /* Enable configuration if plugin supports it */
+    m_configureButton->setEnabled(configurable);
 }
 
 void InputPatchEditor::slotMapItemChanged(QTreeWidgetItem* item)
