@@ -36,6 +36,7 @@ private slots:
     void blackout();
     void pluginNames();
     void pluginOutputs();
+    void configure();
 };
 
 #endif

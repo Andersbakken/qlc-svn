@@ -30,6 +30,8 @@
 
 OutputPluginStub::OutputPluginStub() : QLCOutPlugin()
 {
+    m_configureCalled = 0;
+    m_canConfigure = false;
     m_array = QByteArray(int(KUniverseCount * 512), char(0));
 }
 
@@ -88,9 +90,10 @@ void OutputPluginStub::outputDMX(quint32 output, const QByteArray& universe)
 
 void OutputPluginStub::configure()
 {
+    m_configureCalled++;
 }
 
 bool OutputPluginStub::canConfigure()
 {
-    return false;
+    return m_canConfigure;
 }

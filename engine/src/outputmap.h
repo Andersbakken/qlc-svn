@@ -261,6 +261,14 @@ public:
     void configurePlugin(const QString& pluginName);
 
     /**
+     * Check, whether a plugin provides additional configuration options.
+     *
+     * @param pluginName The name of the plugin to check from.
+     * @return true if plugin can be configured. Otherwise false.
+     */
+    bool canConfigurePlugin(const QString& pluginName);
+
+    /**
      * Get a status text for the given plugin. If no plugin name is
      * given, an overall mapping status of all universes is returned.
      *

@@ -255,3 +255,21 @@ void OutputMap_Test::pluginOutputs()
     QVERIFY(ls == stub->outputs());
     QVERIFY(ls != om.m_dummyOut->outputs());
 }
+
+void OutputMap_Test::configure()
+{
+    OutputMap om(this);
+
+    OutputPluginStub* stub = new OutputPluginStub();
+    om.appendPlugin(stub);
+
+    QCOMPARE(om.canConfigurePlugin("Foo"), false);
+    QCOMPARE(om.canConfigurePlugin(stub->name()), false);
+    stub->m_canConfigure = true;
+    QCOMPARE(om.canConfigurePlugin(stub->name()), true);
+
+    om.configurePlugin("Foo");
+    QCOMPARE(stub->m_configureCalled, 0);
+    om.configurePlugin(stub->name());
+    QCOMPARE(stub->m_configureCalled, 1);
+}

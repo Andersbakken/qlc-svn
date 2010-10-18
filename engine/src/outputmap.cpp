@@ -362,6 +362,15 @@ void OutputMap::configurePlugin(const QString& pluginName)
         outputPlugin->configure();
 }
 
+bool OutputMap::canConfigurePlugin(const QString& pluginName)
+{
+    QLCOutPlugin* outputPlugin = plugin(pluginName);
+    if (outputPlugin != NULL)
+        return outputPlugin->canConfigure();
+    else
+        return false;
+}
+
 QString OutputMap::pluginStatus(const QString& pluginName, quint32 output)
 {
     QLCOutPlugin* outputPlugin = NULL;

@@ -78,6 +78,10 @@ public:
 
     /** @reimp */
     bool canConfigure();
+
+public:
+    int m_configureCalled;
+    bool m_canConfigure;
 };
 
 #endif
