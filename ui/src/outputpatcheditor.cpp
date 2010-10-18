@@ -193,11 +193,13 @@ void OutputPatchEditor::fillTree()
 void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
 {
     QString info;
+    bool configurable;
 
     if (item == NULL)
     {
         /* Nothing selected */
         info = tr("No information");
+        configurable = false;
     }
     else
     {
@@ -218,10 +220,14 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
         }
 
         info = _app->outputMap()->pluginStatus(plugin, output);
+        configurable = _app->outputMap()->canConfigurePlugin(plugin);
     }
 
     /* Display information for the selected plugin or output */
     m_infoBrowser->setText(info);
+
+    /* Enable configuration if plugin supports it */
+    m_configureButton->setEnabled(configurable);
 }
 
 void OutputPatchEditor::slotItemChanged(QTreeWidgetItem* item)
