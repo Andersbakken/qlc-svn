@@ -283,6 +283,15 @@ void InputMap::configurePlugin(const QString& pluginName)
         inputPlugin->configure();
 }
 
+bool InputMap::canConfigurePlugin(const QString& pluginName)
+{
+    QLCInPlugin* inputPlugin = plugin(pluginName);
+    if (inputPlugin != NULL)
+        return inputPlugin->canConfigure();
+    else
+        return false;
+}
+
 QString InputMap::pluginStatus(const QString& pluginName, quint32 input)
 {
     QLCInPlugin* inputPlugin = NULL;

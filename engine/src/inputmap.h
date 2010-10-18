@@ -190,6 +190,14 @@ public:
     void configurePlugin(const QString& pluginName);
 
     /**
+     * Check, whether a plugin provides additional configuration options.
+     *
+     * @param pluginName The name of the plugin to check from.
+     * @return true if plugin can be configured. Otherwise false.
+     */
+    bool canConfigurePlugin(const QString& pluginName);
+
+    /**
      * Get a status text for the given plugin.
      *
      * @param pluginName Name of the plugin, whose status to get

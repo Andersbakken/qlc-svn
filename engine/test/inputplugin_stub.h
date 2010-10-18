@@ -68,8 +68,9 @@ public:
 
     bool canConfigure();
 
-    /** Number of times configure() has been called */
+public:
     int m_configureCalled;
+    bool m_canConfigure;
 
     /*********************************************************************
      * Feedback

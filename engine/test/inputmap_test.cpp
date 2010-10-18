@@ -105,6 +105,11 @@ void InputMap_Test::configurePlugin()
     QVERIFY(stub->m_configureCalled == 0);
     im.appendPlugin(stub);
 
+    QCOMPARE(im.canConfigurePlugin("Foo"), false);
+    QCOMPARE(im.canConfigurePlugin(stub->name()), false);
+    stub->m_canConfigure = true;
+    QCOMPARE(im.canConfigurePlugin(stub->name()), true);
+
     /* Must be able to call multiple times */
     im.configurePlugin(stub->name());
     QVERIFY(stub->m_configureCalled == 1);

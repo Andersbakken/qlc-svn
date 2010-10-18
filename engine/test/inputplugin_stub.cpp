@@ -25,6 +25,7 @@
 InputPluginStub::InputPluginStub()
 {
     m_configureCalled = 0;
+    m_canConfigure = false;
 }
 
 InputPluginStub::~InputPluginStub()
@@ -68,7 +69,7 @@ void InputPluginStub::configure()
 
 bool InputPluginStub::canConfigure()
 {
-    return true;
+    return m_canConfigure;
 }
 
 QString InputPluginStub::infoText(quint32 input)
