@@ -39,6 +39,8 @@
 #include "mastertimer.h"
 #include "vcslider.h"
 #include "inputmap.h"
+#include "inputpatch.h"
+#include "qlcinputchannel.h"
 #include "app.h"
 #include "doc.h"
 
@@ -732,8 +734,30 @@ void VCSlider::slotTapButtonClicked()
  * External input
  *****************************************************************************/
 
-void VCSlider::slotInputValueChanged(quint32 universe,
-                                     quint32 channel,
+bool VCSlider::isButton(quint32 universe, quint32 channel)
+{
+    InputPatch* patch = NULL;
+    QLCInputProfile* profile = NULL;
+    QLCInputChannel* ch = NULL;
+
+    patch = _app->inputMap()->patch(universe);
+    if (patch != NULL)
+    {
+        profile = patch->profile();
+        if (profile != NULL)
+        {
+            ch = profile->channels()[channel];
+            if (ch != NULL)
+            {
+                return (ch->type() == QLCInputChannel::Button);
+            }
+        }
+    }
+
+    return false;
+}
+
+void VCSlider::slotInputValueChanged(quint32 universe, quint32 channel,
                                      uchar value)
 {
     /* Don't let input data thru in design mode */
@@ -742,16 +766,25 @@ void VCSlider::slotInputValueChanged(quint32 universe,
 
     if (universe == m_inputUniverse && channel == m_inputChannel)
     {
-        /* Scale the from input value range to this slider's range */
-        float val;
-        val = SCALE((float) value, (float) 0, (float) UCHAR_MAX,
-                    (float) m_slider->minimum(),
-                    (float) m_slider->maximum());
-
-        if (m_slider->invertedAppearance() == true)
-            m_slider->setValue(m_slider->maximum() - (int) val);
+        if (m_sliderMode == Bus && isButton(universe, channel) == true)
+        {
+            // Check value here so that value == 0 won't end up in the else branch
+            if (value > 0)
+                slotTapButtonClicked();
+        }
         else
-            m_slider->setValue((int) val);
+        {
+            /* Scale the from input value range to this slider's range */
+            float val;
+            val = SCALE((float) value, (float) 0, (float) UCHAR_MAX,
+                        (float) m_slider->minimum(),
+                        (float) m_slider->maximum());
+
+            if (m_slider->invertedAppearance() == true)
+                m_slider->setValue(m_slider->maximum() - (int) val);
+            else
+                m_slider->setValue((int) val);
+        }
     }
 }
 
