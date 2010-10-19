@@ -48,6 +48,7 @@
 #include "addfixture.h"
 #include "collection.h"
 #include "fixture.h"
+#include "apputil.h"
 #include "app.h"
 #include "doc.h"
 
@@ -138,7 +139,7 @@ void FixtureManager::create(QWidget* parent)
     if (var.isValid() == true)
     {
         window->restoreGeometry(var.toByteArray());
-        App::ensureWidgetIsVisible(window);
+        AppUtil::ensureWidgetIsVisible(window);
     }
     else
     {

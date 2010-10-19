@@ -40,6 +40,7 @@
 #include "inputmanager.h"
 #include "inputpatch.h"
 #include "inputmap.h"
+#include "apputil.h"
 #include "app.h"
 
 #define SETTINGS_GEOMETRY "inputmanager/geometry"
@@ -150,7 +151,7 @@ void InputManager::create(QWidget* parent)
     if (var.isValid() == true)
     {
         window->restoreGeometry(var.toByteArray());
-        App::ensureWidgetIsVisible(window);
+        AppUtil::ensureWidgetIsVisible(window);
     }
     else
     {

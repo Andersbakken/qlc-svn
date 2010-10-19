@@ -36,6 +36,7 @@
 #include "monitorlayout.h"
 #include "outputmap.h"
 #include "monitor.h"
+#include "apputil.h"
 #include "app.h"
 #include "doc.h"
 
@@ -189,7 +190,7 @@ void Monitor::create(QWidget* parent)
     QVariant var = settings.value(SETTINGS_GEOMETRY);
     if (var.isValid() == true)
         window->restoreGeometry(var.toByteArray());
-    App::ensureWidgetIsVisible(window);
+    AppUtil::ensureWidgetIsVisible(window);
     window->show();
 }
 

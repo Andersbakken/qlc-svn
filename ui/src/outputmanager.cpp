@@ -35,6 +35,7 @@
 #include "outputmanager.h"
 #include "outputpatch.h"
 #include "outputmap.h"
+#include "apputil.h"
 #include "app.h"
 
 #define SETTINGS_GEOMETRY "outputmanager/geometry"
@@ -129,7 +130,7 @@ void OutputManager::create(QWidget* parent)
     if (var.isValid() == true)
     {
         window->restoreGeometry(var.toByteArray());
-        App::ensureWidgetIsVisible(window);
+        AppUtil::ensureWidgetIsVisible(window);
     }
     else
     {

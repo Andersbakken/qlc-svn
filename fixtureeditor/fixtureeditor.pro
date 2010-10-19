@@ -14,7 +14,8 @@ DEPENDPATH  += ../engine/src
 
 INCLUDEPATH += ../ui/src
 DEPENDPATH  += ../ui/src
-unix:LIBS    += -L../engine/src -lqlcengine
+unix:QMAKE_LIBDIR += ../engine/src 
+unix:LIBS    += -lqlcengine
 win32:{
     CONFIG(release, debug|release) LIBS += -L../engine/src/release -lqlcengine
     CONFIG(debug, debug|release) LIBS += -L../engine/src/debug -lqlcengine
@@ -26,6 +27,7 @@ win32:RC_FILE = fixtureeditor.rc
 
 HEADERS += ../ui/src/aboutbox.h \
            ../ui/src/docbrowser.h \
+           ../ui/src/apputil.h \
            app.h \
            capabilitywizard.h \
            editcapability.h \
@@ -42,6 +44,7 @@ FORMS += ../ui/src/aboutbox.ui \
 
 SOURCES += ../ui/src/aboutbox.cpp \
            ../ui/src/docbrowser.cpp \
+           ../ui/src/apputil.cpp \
            app.cpp \
            capabilitywizard.cpp \
            editcapability.cpp \

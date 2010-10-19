@@ -46,6 +46,7 @@
 #include "collection.h"
 #include "efxeditor.h"
 #include "function.h"
+#include "apputil.h"
 #include "chaser.h"
 #include "scene.h"
 #include "app.h"
@@ -130,7 +131,7 @@ void FunctionManager::create(QWidget* parent)
     if (var.isValid() == true)
     {
         window->restoreGeometry(var.toByteArray());
-        App::ensureWidgetIsVisible(window);
+        AppUtil::ensureWidgetIsVisible(window);
     }
     else
     {

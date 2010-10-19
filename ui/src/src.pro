@@ -10,7 +10,8 @@ QT     += core xml gui
 # Engine
 INCLUDEPATH += ../../engine/src
 DEPENDPATH  += ../../engine/src
-unix:LIBS   += -L../../engine/src -lqlcengine
+unix:QMAKE_LIBDIR += ../../engine/src
+unix:LIBS   += -lqlcengine
 win32:{
     CONFIG(release, debug|release) LIBS += -L../../engine/src/release -lqlcengine
     CONFIG(debug, debug|release) LIBS += -L../../engine/src/debug -lqlcengine
@@ -28,6 +29,7 @@ HEADERS += aboutbox.h \
            addfixture.h \
            addvcbuttonmatrix.h \
            app.h \
+           apputil.h \
            assignhotkey.h \
            busmanager.h \
            chasereditor.h \
@@ -101,6 +103,7 @@ SOURCES += aboutbox.cpp \
            addfixture.cpp \
            addvcbuttonmatrix.cpp \
            app.cpp \
+           apputil.cpp \
            assignhotkey.cpp \
            busmanager.cpp \
            chasereditor.cpp \

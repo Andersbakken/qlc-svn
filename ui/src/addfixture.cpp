@@ -39,6 +39,7 @@
 
 #include "addfixture.h"
 #include "outputmap.h"
+#include "apputil.h"
 #include "doc.h"
 #include "app.h"
 
@@ -145,7 +146,7 @@ AddFixture::AddFixture(QWidget* parent,
     QVariant var = settings.value(SETTINGS_GEOMETRY);
     if (var.isValid() == true)
         restoreGeometry(var.toByteArray());
-    App::ensureWidgetIsVisible(this);
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 AddFixture::~AddFixture()

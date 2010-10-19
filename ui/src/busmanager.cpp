@@ -34,6 +34,7 @@
 #include <QIcon>
 
 #include "busmanager.h"
+#include "apputil.h"
 #include "app.h"
 #include "bus.h"
 
@@ -122,7 +123,7 @@ void BusManager::create(QWidget* parent)
     if (var.isValid() == true)
     {
         window->restoreGeometry(var.toByteArray());
-        App::ensureWidgetIsVisible(window);
+        AppUtil::ensureWidgetIsVisible(window);
     }
     else
     {

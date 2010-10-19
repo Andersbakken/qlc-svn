@@ -11,7 +11,8 @@ QTPLUGIN =
 INCLUDEPATH += ../src
 DEPENDPATH  += ../src
 INCLUDEPATH += ../../plugins/interfaces
-unix:LIBS   += -L../src -lqlcengine
+unix:QMAKE_LIBDIR += ../src
+unix:LIBS   += -lqlcengine
 win32:{
     CONFIG(release, debug|release) LIBS += -L../src/release -lqlcengine
     CONFIG(debug, debug|release) LIBS += -L../src/debug -lqlcengine

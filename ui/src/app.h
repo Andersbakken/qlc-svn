@@ -348,20 +348,6 @@ public:
 
 protected:
     QString m_fileName;
-
-    /************************************************************************
-     * Widget visibility helper
-     ************************************************************************/
-public:
-    /**
-     * This helper makes sure that the given widget is within the widget's
-     * parent's visible area (if the parent exists). If there is no parent,
-     * it ensures that the widget is exposed on an existing screen. The widget
-     * is automatically moved to a safe and visible place ONLY if necessary.
-     *
-     * @param widget The widget to expose
-     */
-    static void ensureWidgetIsVisible(QWidget* widget);
 };
 
 #endif
