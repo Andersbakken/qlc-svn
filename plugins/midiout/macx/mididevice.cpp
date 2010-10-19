@@ -74,7 +74,7 @@ bool MIDIDevice::extractName()
     OSStatus s;
 
     /* Get the name property */
-    s = MIDIObjectGetStringProperty(m_entity, kMIDIPropertyName, &str);
+    s = MIDIObjectGetStringProperty(m_entity, kMIDIPropertyModel, &str);
     if (s != 0)
     {
         qWarning() << "Unable to get manufacturer for MIDI entity:"
