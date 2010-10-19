@@ -1465,3 +1465,50 @@ QFile::FileError App::saveXML(const QString& fileName)
 
     return retval;
 }
+
+/****************************************************************************
+ * Widget visibility helper
+ ****************************************************************************/
+
+void App::ensureWidgetIsVisible(QWidget* widget)
+{
+    if (widget == NULL)
+        return;
+
+    QWidget* parent = widget->parentWidget();
+    if (widget->windowFlags() & Qt::Window)
+    {
+        // The widget is a top-level window (a dialog, for instance)
+        QDesktopWidget dw;
+        QWidget* screen(dw.screen());
+        if (screen != NULL)
+        {
+            // Move the widget to the center of the default screen
+            const QRect screenRect(screen->rect());
+            if (screenRect.contains(widget->pos()) == false)
+            {
+                QRect widgetRect(widget->rect());
+                widgetRect.moveCenter(screenRect.center());
+                widget->setGeometry(widgetRect);
+            }
+        }
+        else
+        {
+            // Last resort: move to top left and hope the widget is visible
+            widget->move(0, 0);
+        }
+    }
+    else if (parent != NULL)
+    {
+        // The widget's placement is bounded by a parent
+        const QRect parentRect(parent->rect());
+        if (parentRect.contains(widget->pos()) == false)
+        {
+            // Move the widget to the center of the parent if wouldn't
+            // otherwise be visible
+            QRect widgetRect(widget->rect());
+            widgetRect.moveCenter(parentRect.center());
+            widget->setGeometry(widgetRect);
+        }
+    }
+}

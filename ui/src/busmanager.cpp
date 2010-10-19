@@ -122,6 +122,7 @@ void BusManager::create(QWidget* parent)
     if (var.isValid() == true)
     {
         window->restoreGeometry(var.toByteArray());
+        App::ensureWidgetIsVisible(window);
     }
     else
     {

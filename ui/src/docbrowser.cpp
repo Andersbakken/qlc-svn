@@ -30,7 +30,7 @@
 
 #include "docbrowser.h"
 #include "qlcconfig.h"
-#include "qlctypes.h"
+#include "app.h"
 
 #define SETTINGS_GEOMETRY "documentbrowser/geometry"
 
@@ -46,6 +46,7 @@ DocBrowser::DocBrowser(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
     QVariant var = settings.value(SETTINGS_GEOMETRY);
     if (var.isValid() == true)
         restoreGeometry(var.toByteArray());
+    App::ensureWidgetIsVisible(this);
 
     /* Actions */
     m_backwardAction = new QAction(QIcon(":/back.png"), tr("Backward"), this);
