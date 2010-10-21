@@ -151,19 +151,6 @@ void MIDIDevice::saveSettings()
  * File operations
  *****************************************************************************/
 
-static void postEvent(MIDIDevice* self, quint32 channelOffset,
-                      Byte first, Byte second)
-{
-    Q_ASSERT(self != NULL);
-
-    quint32 channel = channelOffset + static_cast<quint32> (first);
-    uchar value = uchar(SCALE(double(second), double(0), double(127),
-                              double(0), double(UCHAR_MAX)));
-
-    MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
-    QApplication::postEvent(self, event);
-}
-
 static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
                        void* srcConnRefCon)
 {
@@ -176,102 +163,30 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
     {
         MIDIPacket packet = pktList->packet[i];
 
-        // MIDI commands 0xF0 - 0xFF don't contain channel information
-        if (packet.data[0] & 0xF0 != 0xF0)
-        {
-            /* Check that the data came to the correct MIDI channel */
-            // @todo Make OMNI available
-            if (MIDI_CH(packet.data[0]) != (Byte) self->midiChannel())
-                continue;
-        }
+        // MIDI System Exclusive messages contain just the one sysex message
+        // that we're not interested in.
+        if (packet.data[0] == MIDI_SYSEX)
+            continue;
 
         for (quint32 j = 0; j < packet.length; j++)
         {
-            switch(MIDI_CMD(packet.data[j]))
+            uchar cmd = packet.data[j];
+            uchar data1 = 0;
+            uchar data2 = 0;
+            quint32 channel = 0;
+            uchar value = 0;
+
+            if ((++j) < packet.length)
+                data1 = packet.data[j];
+            if ((++j) < packet.length)
+                data2 = packet.data[j];
+
+            if (QLCMIDIProtocol::midiToInput(cmd, data1, data2,
+                                             (uchar) self->midiChannel(),
+                                             &channel, &value) == true)
             {
-                case MIDI_NOTE_OFF:
-                    if (packet.length < (j + 2))
-                        break;
-
-                    postEvent(self, CHANNEL_OFFSET_NOTE, packet.data[j + 1], 0);
-                    j += 2;
-                    break;
-
-                case MIDI_NOTE_ON:
-                    if (packet.length < (j + 2))
-                        break;
-                    // Can't use (++j, ++j) because execution order is not
-                    // defined for all compilers.
-                    postEvent(self, CHANNEL_OFFSET_NOTE, packet.data[j + 1],
-                              packet.data[j + 2]);
-                    j += 2;
-                    break;
-
-                case MIDI_NOTE_AFTERTOUCH:
-                    if (packet.length < (j + 2))
-                        break;
-                    // Can't use (++j, ++j) because execution order is not
-                    // defined for all compilers.
-                    postEvent(self, CHANNEL_OFFSET_NOTE_AFTERTOUCH,
-                              packet.data[j + 1], packet.data[j + 2]);
-                    j += 2;
-                    break;
-
-                case MIDI_CONTROL_CHANGE:
-                    if (packet.length < (j + 2))
-                        break;
-                    // Can't use (++j, ++j) because execution order is not
-                    // defined for all compilers.
-                    postEvent(self, CHANNEL_OFFSET_CONTROL_CHANGE,
-                              packet.data[j + 1], packet.data[j + 2]);
-                    j += 2;
-                    break;
-
-                case MIDI_PROGRAM_CHANGE:
-                    if (packet.length < (j + 1))
-                        break;
-                    postEvent(self, CHANNEL_OFFSET_PROGRAM_CHANGE, 0,
-                              packet.data[++j]);
-                    break;
-
-                case MIDI_CHANNEL_AFTERTOUCH:
-                    if (packet.length < (j + 1))
-                        break;
-                    postEvent(self, CHANNEL_OFFSET_CHANNEL_AFTERTOUCH, 0,
-                              packet.data[++j]);
-                    break;
-
-                case MIDI_PITCH_WHEEL:
-                    if (packet.length < (j + 1))
-                        break;
-                    j++; // Skip LSB
-                    postEvent(self, CHANNEL_OFFSET_PITCH_WHEEL, 0,
-                              packet.data[++j]);
-                    break;
-
-                case MIDI_SYSEX:
-                    // Skip all sysex data
-                    for (; j < packet.length; j++)
-                    {
-                        if (packet.data[j] == MIDI_SYSEX_EOX)
-                            break;
-                    }
-                    break;
-
-                case MIDI_TIME_CODE:
-                    // Skip time code
-                    j += 1;
-                    break;
-
-                case MIDI_SONG_POSITION:
-                case MIDI_SONG_SELECT:
-                    // Skip song position / selection
-                    j += 2;
-                    break;
-
-                default:
-                    qDebug() << "Ignoring MIDI message"
-                             << MIDI_CMD(packet.data[j]);
+                MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
+                QApplication::postEvent(self, event);
             }
         }
     }
@@ -464,76 +379,34 @@ void MIDIDevice::customEvent(QEvent* event)
 
 void MIDIDevice::feedBack(quint32 channel, uchar value)
 {
-    Byte cmd[3];
-    quint32 valueByte = 0;
-
     /* If there's no output port or a destination, the endpoint probably
        doesn't have a MIDI IN port -> no feedback. */
     if (m_outPort == 0 || m_destination == 0)
         return;
 
-    if (/*channel >= CHANNEL_OFFSET_NOTE &&*/ channel <= CHANNEL_OFFSET_NOTE_MAX)
+    Byte cmd[3];
+    bool d2v = false;
+    if (QLCMIDIProtocol::feedbackToMidi(channel, value, midiChannel(),
+                                        cmd, cmd + 1, cmd + 2, &d2v) == true)
     {
-        if (value == 0)
-            cmd[0] = MIDI_NOTE_OFF;
+        /* Construct a MIDI packet list containing one packet */
+        Byte buffer[32]; // Should be enough
+        MIDIPacketList* list = (MIDIPacketList*) buffer;
+        MIDIPacket* packet = MIDIPacketListInit(list);
+        if (d2v == true)
+            packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0, 3, cmd);
         else
-            cmd[0] = MIDI_NOTE_ON;
-        cmd[1] = static_cast <Byte> (channel);
-        valueByte = 2;
-    }
-    else if (channel >= CHANNEL_OFFSET_CONTROL_CHANGE &&
-             channel <= CHANNEL_OFFSET_CONTROL_CHANGE_MAX)
-    {
-        cmd[0] = MIDI_CONTROL_CHANGE;
-        cmd[1] = static_cast <Byte> (channel - CHANNEL_OFFSET_CONTROL_CHANGE);
-        valueByte = 2;
-    }
-    else if (channel >= CHANNEL_OFFSET_NOTE_AFTERTOUCH &&
-             channel <= CHANNEL_OFFSET_NOTE_AFTERTOUCH_MAX)
-    {
-        cmd[0] = MIDI_NOTE_AFTERTOUCH;
-        cmd[1] = static_cast <Byte> (channel - CHANNEL_OFFSET_NOTE_AFTERTOUCH);
-        valueByte = 2;
-    }
-    else if (channel == CHANNEL_OFFSET_CHANNEL_AFTERTOUCH)
-    {
-        cmd[0] = MIDI_CHANNEL_AFTERTOUCH;
-        valueByte = 1;
-    }
-    else if (channel == CHANNEL_OFFSET_PROGRAM_CHANGE)
-    {
-        cmd[0] = MIDI_PROGRAM_CHANGE;
-        valueByte = 1;
-    }
-    else if (channel == CHANNEL_OFFSET_PITCH_WHEEL)
-    {
-        cmd[0] = MIDI_PITCH_WHEEL;
-        valueByte = 1;
-    }
-
-    /* Set MIDI channel */
-    cmd[0] |= (Byte) midiChannel();
-
-    /* Set input channel (note or cc number) and value */
-    cmd[valueByte] = static_cast <Byte> (SCALE(double(value),
-                                               double(0), double(UCHAR_MAX),
-                                               double(0), double(127)));
-
-    /* Construct a MIDI packet list containing one packet */
-    Byte buffer[32]; // Should be enough
-    MIDIPacketList* list = (MIDIPacketList*) buffer;
-    MIDIPacket* packet = MIDIPacketListInit(list);
-    packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0,
-                               sizeof(cmd), cmd);
-    if (packet == 0)
-    {
-        qWarning() << "MIDI buffer overflow";
-    }
-    else
-    {
-        /* Send the MIDI packet */
-        OSStatus s = MIDISend(m_outPort, m_destination, list);
-        if (s != 0)
-            qWarning() << "Unable to send feedback to" << name();
+            packet = MIDIPacketListAdd(list, sizeof(buffer), packet, 0, 2, cmd);
+        if (packet == 0)
+        {
+            qWarning() << "MIDI buffer overflow";
+        }
+        else
+        {
+            /* Send the MIDI packet */
+            OSStatus s = MIDISend(m_outPort, m_destination, list);
+            if (s != 0)
+                qWarning() << "Unable to send feedback to" << name();
+        }
     }
 }

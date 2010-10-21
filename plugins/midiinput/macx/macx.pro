@@ -16,12 +16,14 @@ FORMS += ../common/configuremidiinput.ui \
 HEADERS += ../common/midiinputevent.h \
            ../common/configuremidiinput.h \
            ../common/configuremidiline.h \
+           ../common/midiprotocol.h \
            mididevice.h \
            midiinput.h
 
 SOURCES += ../common/midiinputevent.cpp \
            ../common/configuremidiinput.cpp \
            ../common/configuremidiline.cpp \
+           ../common/midiprotocol.cpp \
            mididevice.cpp \
            midiinput.cpp
 
