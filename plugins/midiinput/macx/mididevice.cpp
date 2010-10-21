@@ -151,17 +151,15 @@ void MIDIDevice::saveSettings()
  * File operations
  *****************************************************************************/
 
-static void postEvent(MIDIDevice* self, MIDIPacket packet)
+static void postEvent(MIDIDevice* self, quint32 channelOffset,
+                      Byte first, Byte second)
 {
-    quint32 channel;
-    uchar value;
+    Q_ASSERT(self != NULL);
 
-    channel = static_cast<quint32> (packet.data[1]);
-    value = uchar(SCALE(double(packet.data[2]),
-                        double(0),
-                        double(127),
-                        double(0),
-                        double(UCHAR_MAX)));
+    quint32 channel = channelOffset + static_cast<quint32> (first);
+    uchar value = uchar(SCALE(double(second), double(0), double(127),
+                              double(0), double(UCHAR_MAX)));
+
     MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
     QApplication::postEvent(self, event);
 }
@@ -174,28 +172,107 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
     MIDIDevice* self = static_cast<MIDIDevice*>(srcConnRefCon);
     Q_ASSERT(self != 0);
 
-    for (UInt32 i = 0; i < pktList->numPackets; i++)
+    for (quint32 i = 0; i < pktList->numPackets; i++)
     {
         MIDIPacket packet = pktList->packet[i];
 
-        /* Check that the packet contains enough data */
-        if (packet.length < 3)
-            continue;
-
-        /* Check that the data came to the correct MIDI channel */
-        if ((packet.data[0] & 0x0F) != (Byte) self->midiChannel())
-            continue;
-
-        /* Read the event */
-        if (self->mode() == MIDIDevice::Note &&
-                ((packet.data[0] & 0xF0) == MIDI_NOTE_ON ||
-                 (packet.data[0] & 0xF0) == MIDI_NOTE_OFF))
+        // MIDI commands 0xF0 - 0xFF don't contain channel information
+        if (packet.data[0] & 0xF0 != 0xF0)
         {
-            postEvent(self, packet);
+            /* Check that the data came to the correct MIDI channel */
+            // @todo Make OMNI available
+            if (MIDI_CH(packet.data[0]) != (Byte) self->midiChannel())
+                continue;
         }
-        else if (packet.data[0] & MIDI_CONTROL_CHANGE)
+
+        for (quint32 j = 0; j < packet.length; j++)
         {
-            postEvent(self, packet);
+            switch(MIDI_CMD(packet.data[j]))
+            {
+                case MIDI_NOTE_OFF:
+                    if (packet.length < (j + 2))
+                        break;
+
+                    postEvent(self, CHANNEL_OFFSET_NOTE, packet.data[j + 1], 0);
+                    j += 2;
+                    break;
+
+                case MIDI_NOTE_ON:
+                    if (packet.length < (j + 2))
+                        break;
+                    // Can't use (++j, ++j) because execution order is not
+                    // defined for all compilers.
+                    postEvent(self, CHANNEL_OFFSET_NOTE, packet.data[j + 1],
+                              packet.data[j + 2]);
+                    j += 2;
+                    break;
+
+                case MIDI_NOTE_AFTERTOUCH:
+                    if (packet.length < (j + 2))
+                        break;
+                    // Can't use (++j, ++j) because execution order is not
+                    // defined for all compilers.
+                    postEvent(self, CHANNEL_OFFSET_NOTE_AFTERTOUCH,
+                              packet.data[j + 1], packet.data[j + 2]);
+                    j += 2;
+                    break;
+
+                case MIDI_CONTROL_CHANGE:
+                    if (packet.length < (j + 2))
+                        break;
+                    // Can't use (++j, ++j) because execution order is not
+                    // defined for all compilers.
+                    postEvent(self, CHANNEL_OFFSET_CONTROL_CHANGE,
+                              packet.data[j + 1], packet.data[j + 2]);
+                    j += 2;
+                    break;
+
+                case MIDI_PROGRAM_CHANGE:
+                    if (packet.length < (j + 1))
+                        break;
+                    postEvent(self, CHANNEL_OFFSET_PROGRAM_CHANGE, 0,
+                              packet.data[++j]);
+                    break;
+
+                case MIDI_CHANNEL_AFTERTOUCH:
+                    if (packet.length < (j + 1))
+                        break;
+                    postEvent(self, CHANNEL_OFFSET_CHANNEL_AFTERTOUCH, 0,
+                              packet.data[++j]);
+                    break;
+
+                case MIDI_PITCH_WHEEL:
+                    if (packet.length < (j + 1))
+                        break;
+                    j++; // Skip LSB
+                    postEvent(self, CHANNEL_OFFSET_PITCH_WHEEL, 0,
+                              packet.data[++j]);
+                    break;
+
+                case MIDI_SYSEX:
+                    // Skip all sysex data
+                    for (; j < packet.length; j++)
+                    {
+                        if (packet.data[j] == MIDI_SYSEX_EOX)
+                            break;
+                    }
+                    break;
+
+                case MIDI_TIME_CODE:
+                    // Skip time code
+                    j += 1;
+                    break;
+
+                case MIDI_SONG_POSITION:
+                case MIDI_SONG_SELECT:
+                    // Skip song position / selection
+                    j += 2;
+                    break;
+
+                default:
+                    qDebug() << "Ignoring MIDI message"
+                             << MIDI_CMD(packet.data[j]);
+            }
         }
     }
 }
@@ -388,39 +465,59 @@ void MIDIDevice::customEvent(QEvent* event)
 void MIDIDevice::feedBack(quint32 channel, uchar value)
 {
     Byte cmd[3];
+    quint32 valueByte = 0;
 
     /* If there's no output port or a destination, the endpoint probably
        doesn't have a MIDI IN port -> no feedback. */
     if (m_outPort == 0 || m_destination == 0)
         return;
 
-    /* MIDI doesn't support more than 127 distinct notes/cc's */
-    if (channel > 127)
-        return;
-
-    /* Set MIDI command */
-    if (m_mode == Note)
+    if (/*channel >= CHANNEL_OFFSET_NOTE &&*/ channel <= CHANNEL_OFFSET_NOTE_MAX)
     {
         if (value == 0)
             cmd[0] = MIDI_NOTE_OFF;
         else
             cmd[0] = MIDI_NOTE_ON;
+        cmd[1] = static_cast <Byte> (channel);
+        valueByte = 2;
     }
-    else
+    else if (channel >= CHANNEL_OFFSET_CONTROL_CHANGE &&
+             channel <= CHANNEL_OFFSET_CONTROL_CHANGE_MAX)
     {
         cmd[0] = MIDI_CONTROL_CHANGE;
+        cmd[1] = static_cast <Byte> (channel - CHANNEL_OFFSET_CONTROL_CHANGE);
+        valueByte = 2;
+    }
+    else if (channel >= CHANNEL_OFFSET_NOTE_AFTERTOUCH &&
+             channel <= CHANNEL_OFFSET_NOTE_AFTERTOUCH_MAX)
+    {
+        cmd[0] = MIDI_NOTE_AFTERTOUCH;
+        cmd[1] = static_cast <Byte> (channel - CHANNEL_OFFSET_NOTE_AFTERTOUCH);
+        valueByte = 2;
+    }
+    else if (channel == CHANNEL_OFFSET_CHANNEL_AFTERTOUCH)
+    {
+        cmd[0] = MIDI_CHANNEL_AFTERTOUCH;
+        valueByte = 1;
+    }
+    else if (channel == CHANNEL_OFFSET_PROGRAM_CHANGE)
+    {
+        cmd[0] = MIDI_PROGRAM_CHANGE;
+        valueByte = 1;
+    }
+    else if (channel == CHANNEL_OFFSET_PITCH_WHEEL)
+    {
+        cmd[0] = MIDI_PITCH_WHEEL;
+        valueByte = 1;
     }
 
     /* Set MIDI channel */
     cmd[0] |= (Byte) midiChannel();
 
     /* Set input channel (note or cc number) and value */
-    cmd[1] = static_cast <Byte> (channel);
-    cmd[2] = static_cast <Byte> (SCALE(double(value),
-                                       double(0),
-                                       double(UCHAR_MAX),
-                                       double(0),
-                                       double(127)));
+    cmd[valueByte] = static_cast <Byte> (SCALE(double(value),
+                                               double(0), double(UCHAR_MAX),
+                                               double(0), double(127)));
 
     /* Construct a MIDI packet list containing one packet */
     Byte buffer[32]; // Should be enough
