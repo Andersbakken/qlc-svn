@@ -104,25 +104,6 @@ void MIDIDevice::saveSettings()
  * File operations
  *****************************************************************************/
 
-static void postEvent(MIDIDevice* self, BYTE data1, BYTE data2)
-{
-    quint32 channel = 0;
-    uchar value = 0;
-
-    Q_ASSERT(self != NULL);
-
-    channel = static_cast<quint32> (data1);
-    value = uchar(SCALE(double(data2),
-                        double(0),
-                        double(127),
-                        double(0),
-                        double(UCHAR_MAX)));
-
-    /* Create, post and forget. Qt takes care of event de-allocation. */
-    MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
-    QApplication::postEvent(self, event);
-}
-
 static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
                                 DWORD_PTR dwInstance, DWORD_PTR dwParam1,
                                 DWORD_PTR dwParam2)
@@ -132,22 +113,17 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
 
     if (wMsg == MIM_DATA)
     {
-        BYTE status = dwParam1 & 0xFF;
+        BYTE cmd = dwParam1 & 0xFF;
         BYTE data1 = (dwParam1 & 0xFF00) >> 8;
         BYTE data2 = (dwParam1 & 0xFF0000) >> 16;
+        quint32 channel = 0;
+        uchar value = 0;
 
-        if (self->mode() == MIDIDevice::Note
-                && ((status & 0xF0) == MIDI_NOTE_ON ||
-                    (status & 0xF0) == MIDI_NOTE_OFF)
-                && ((status & 0x0F) == (BYTE) self->midiChannel()))
+        if (QLCMIDIProtocol::midiToInput(cmd, data1, data2,
+            uchar(self->midiChannel()), &channel, &value) == true)
         {
-            postEvent(self, data1, data2);
-        }
-        else if (self->mode() == MIDIDevice::ControlChange
-                 && ((status & 0xF0) == MIDI_CONTROL_CHANGE)
-                 && ((status & 0x0F) == (BYTE) self->midiChannel()))
-        {
-            postEvent(self, data1, data2);
+            MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
+            QApplication::postEvent(self, event);
         }
     }
 }
@@ -162,35 +138,35 @@ bool MIDIDevice::open()
     if (res == MMSYSERR_ALLOCATED)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Resource is already allocated.");
+                 << QString("Resource is already allocated.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_BADDEVICEID)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Bad device ID.");
+                 << QString("Bad device ID.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_INVALFLAG)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Invalid flags.");
+                 << QString("Invalid flags.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_INVALPARAM)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Invalid parameters.");
+                 << QString("Invalid parameters.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_NOMEM)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Out of memory.");
+                 << QString("Out of memory.");
         result = false;
     }
     else
@@ -436,52 +412,23 @@ void MIDIDevice::feedBack(quint32 channel, uchar value)
     if (m_feedBackId != UINT_MAX && m_feedBackHandle == NULL)
         openOutput();
 
-    /* MIDI devices can have only 128 real channels */
-    if (channel > 127)
-        return;
-
-    char scaled = static_cast <char> (SCALE(double(value),
-                                            double(0),
-                                            double(UCHAR_MAX),
-                                            double(0),
-                                            double(127)));
-
-    union
+    uchar cmd = 0;
+    uchar data1 = 0;
+    uchar data2 = 0;
+    bool d2v = false;
+    if (QLCMIDIProtocol::feedbackToMidi(channel, value, midiChannel(),
+        &cmd, &data1, &data2, &d2v) == true)
     {
-        DWORD dwData;
-        BYTE bData[4];
-    } msg;
+        union
+        {
+            DWORD dwData;
+            BYTE bData[4];
+        } msg;
 
-    if (mode() == ControlChange)
-    {
-        /* Use control change numbers as DMX channels and
-           control values as DMX channel values */
-        msg.bData[0] = MIDI_CONTROL_CHANGE | (BYTE) midiChannel();
-        msg.bData[1] = (BYTE) channel;
-        msg.bData[2] = (BYTE) scaled;
+        msg.bData[0] = (BYTE) cmd;
+        msg.bData[1] = (BYTE) data1;
+        msg.bData[2] = (BYTE) data2;
         msg.bData[3] = 0;
-
-        /* Push the message out */
-        midiOutShortMsg(m_feedBackHandle, msg.dwData);
-    }
-    else
-    {
-        /* Use note numbers as DMX channels and velocities as
-           DMX channel values. 0 is written as note off */
-        if (value == 0)
-        {
-            msg.bData[0] = MIDI_NOTE_OFF | (BYTE) midiChannel();
-            msg.bData[1] = (BYTE) channel;
-            msg.bData[2] = 0;
-            msg.bData[3] = 0;
-        }
-        else
-        {
-            msg.bData[0] = MIDI_NOTE_ON | (BYTE) midiChannel();
-            msg.bData[1] = (BYTE) channel;
-            msg.bData[2] = (BYTE) scaled;
-            msg.bData[3] = 0;
-        }
 
         /* Push the message out */
         midiOutShortMsg(m_feedBackHandle, msg.dwData);

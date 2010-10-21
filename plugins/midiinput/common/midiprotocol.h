@@ -23,6 +23,43 @@
 #define MIDIPROTOCOL_H
 
 /****************************************************************************
+ * MIDI conversion functions
+ ****************************************************************************/
+
+namespace QLCMIDIProtocol
+{
+    /**
+    * Convert MIDI message to QLC input data
+    *
+    * @param cmd MIDI command byte
+    * @param data1 MIDI first data byte
+    * @param data2 MIDI second data byte (unused for some commands)
+    * @param midiChannel MIDI channel to expect data on (255 for all)
+    * @param channel The input channel that is mapped from the given MIDI data
+    * @param value The value for the input channel
+    * @return true if the values were parsed successfully, otherwise false
+    */
+    bool midiToInput(uchar cmd, uchar data1, uchar data2, uchar midiChannel,
+                     quint32* channel, uchar* value);
+
+    /**
+    * Convert QLC feedback data to MIDI message
+    *
+    * @param channel The input channel that receives feedback data
+    * @param value The channel's feedback value
+    * @param MIDI channel to send data on (0-15)
+    * @param cmd MIDI command byte
+    * @param data1 MIDI first data byte
+    * @param data2 MIDI second data byte
+    * @param data2Valid true if $data2 contains data, otherwise false
+    * @return true if the values were parsed successfully, otherwise false
+    */
+    bool feedbackToMidi(quint32 channel, uchar value, uchar midiChannel,
+                        uchar* cmd, uchar* data1,
+                        uchar* data2, bool* data2Valid);
+}
+
+/****************************************************************************
  * MIDI helper macros
  ****************************************************************************/
 /** Extract the MIDI channel part from a MIDI message (0x*0 - 0x*F) */
@@ -30,6 +67,14 @@
 
 /** Extract the MIDI command part from a MIDI message (0x8* - 0xF*) */
 #define MIDI_CMD(x) (x & 0xF0)
+
+/** Convert MIDI value to DMX value */
+#define MIDI2DMX(x) uchar(SCALE(double(x), double(0), double(127), \
+                                double(0), double(255)))
+
+/** Convert DMX value to MIDI value */
+#define DMX2MIDI(x) uchar(SCALE(double(x), double(0), double(255), \
+                                double(0), double(127)))
 
 /****************************************************************************
  * MIDI commands
