@@ -27,6 +27,7 @@ FORMS += ../common/configuremidiinput.ui \
 HEADERS += ../common/configuremidiinput.h \
            ../common/configuremidiline.h \
            ../common/midiinputevent.h \
+           ../common/midiprotocol.h \
            mididevice.h \
            midiinput.h \
            midipoller.h
@@ -34,6 +35,7 @@ HEADERS += ../common/configuremidiinput.h \
 SOURCES += ../common/configuremidiinput.cpp \
            ../common/configuremidiline.cpp \
            ../common/midiinputevent.cpp \
+           ../common/midiprotocol.cpp \
            mididevice.cpp \
            midiinput.cpp \
            midipoller.cpp

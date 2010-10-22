@@ -25,6 +25,7 @@
 #include <poll.h>
 
 #include "midiinputevent.h"
+#include "midiprotocol.h"
 #include "midipoller.h"
 #include "mididevice.h"
 #include "midiinput.h"
@@ -239,18 +240,14 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
     do
     {
         snd_seq_event_t* ev = NULL;
-        uchar value;
-        MIDIDevice* device;
-        MIDIInputEvent* e;
-        quint64 hash;
-        int r;
+        MIDIDevice* device = NULL;
 
         /* Receive an event */
-        r = snd_seq_event_input(alsa, &ev);
+        snd_seq_event_input(alsa, &ev);
 
         /* Find a device matching the event's address. If one isn't
            found, skip this event, since we're not interested in it */
-        hash = addressHash(&ev->source);
+        quint64 hash = addressHash(&ev->source);
         if (m_devices.contains(hash) == true)
             device = m_devices[hash];
         else
@@ -258,58 +255,46 @@ void MIDIPoller::readEvent(snd_seq_t* alsa)
 
         Q_ASSERT(device != NULL);
 
-        /* Parse the MIDI event into an internal MIDIInputEvent */
-        if (device->mode() == MIDIDevice::ControlChange &&
-                (ev->type == SND_SEQ_EVENT_CONTROLLER ||
-                 ev->type == SND_SEQ_EVENT_NONREGPARAM ||
-                 ev->type == SND_SEQ_EVENT_REGPARAM ||
-                 ev->type == SND_SEQ_EVENT_KEYPRESS ||
-                 ev->type == SND_SEQ_EVENT_CHANPRESS))
+        uchar cmd = 0;
+        uchar data1 = 0;
+        uchar data2 = 0;
+
+        if (snd_seq_ev_is_control_type(ev))
         {
-            /* Check the incoming midi channel */
-            if (ev->data.control.channel != device->midiChannel())
-                continue;
-
-            /* Scale the value from [0-127] to [0-255] */
-            value = uchar(
-                        SCALE(double(ev->data.control.value),
-                              double(0), double(127),
-                              double(0), double(UCHAR_MAX)));
-
-            e = new MIDIInputEvent(device, ev->data.control.param,
-                                   value);
-            QApplication::postEvent(parent(), e);
+            cmd = MIDI_CONTROL_CHANGE | ev->data.control.channel;
+            data1 = ev->data.control.param;
+            data2 = ev->data.control.value;
         }
-        else if (device->mode() == MIDIDevice::Note &&
-                 ev->type == SND_SEQ_EVENT_NOTEON)
+        else if (snd_seq_ev_is_note_type(ev))
         {
-            /* Check the incoming midi channel */
-            if (ev->data.note.channel != device->midiChannel())
-                continue;
-
-            /* Scale the value from [0-127] to [0-255] */
-            value = uchar(
-                        SCALE(double(ev->data.note.velocity),
-                              double(0), double(127),
-                              double(0), double(UCHAR_MAX)));
-
-            e = new MIDIInputEvent(device, ev->data.note.note,
-                                   value);
-            QApplication::postEvent(parent(), e);
+            if (ev->data.note.velocity == 0 && ev->data.note.off_velocity == 0)
+                cmd = MIDI_NOTE_OFF | ev->data.note.channel;
+            else
+                cmd = MIDI_NOTE_ON | ev->data.note.channel;
+            data1 = ev->data.note.note;
+            data2 = ev->data.note.velocity;
         }
-        else if (device->mode() == MIDIDevice::Note &&
-                 ev->type == SND_SEQ_EVENT_NOTEOFF)
+        else
         {
-            /* Check the incoming midi channel */
-            if (ev->data.note.channel != device->midiChannel())
-                continue;
-
-            /* It's a note off message -> send a zero value */
-            e = new MIDIInputEvent(device, ev->data.note.note, 0);
-            QApplication::postEvent(parent(), e);
+            qDebug() << "Unrecognized type" << ev->type;
         }
-    }
-    while (snd_seq_event_input_pending(alsa, 0) > 0);
+
+        // ALSA API is a bit controversial on this. snd_seq_event_input() says
+        // it ALLOCATES the event but snd_seq_free_event() says this is not
+        // needed because the event IS NOT allocated. No crashes observed
+        // either way, so I guess freeing nevertheless is a bit safer.
+        snd_seq_free_event(ev);
+
+        quint32 channel = 0;
+        uchar value = 0;
+        if (QLCMIDIProtocol::midiToInput(cmd, data1, data2, device->midiChannel(),
+                                         &channel, &value) == true)
+        {
+            qDebug() << channel << value;
+            MIDIInputEvent* event = new MIDIInputEvent(device, channel, value);
+            QApplication::postEvent(parent(), event);
+        }
+    } while (snd_seq_event_input_pending(alsa, 0) > 0);
 
     m_mutex.unlock();
 }
