@@ -24,6 +24,7 @@
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QMessageBox>
+#include <QSettings>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QVariant>
@@ -40,9 +41,12 @@
 #include "inputpatcheditor.h"
 #include "inputpatch.h"
 #include "inputmap.h"
+#include "apputil.h"
 #include "app.h"
 
 extern App* _app;
+
+#define SETTINGS_GEOMETRY "inputpatcheditor/geometry"
 
 /* Plugin column structure */
 #define KMapColumnName  0
@@ -88,10 +92,18 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, quint32 universe,
     connect(_app->inputMap(),
             SIGNAL(pluginConfigurationChanged(const QString&)),
             this, SLOT(slotPluginConfigurationChanged(const QString&)));
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 InputPatchEditor::~InputPatchEditor()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 void InputPatchEditor::reject()

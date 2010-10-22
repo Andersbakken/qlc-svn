@@ -25,6 +25,7 @@
 #include <QToolButton>
 #include <QMessageBox>
 #include <QTabWidget>
+#include <QSettings>
 #include <QDialog>
 #include <QDebug>
 #include <QFile>
@@ -37,9 +38,12 @@
 #include "inputchanneleditor.h"
 #include "inputprofileeditor.h"
 #include "inputmap.h"
+#include "apputil.h"
 #include "app.h"
 
 extern App* _app;
+
+#define SETTINGS_GEOMETRY "inputprofileeditor/geometry"
 
 #define KColumnNumber 0
 #define KColumnName   1
@@ -92,10 +96,19 @@ InputProfileEditor::InputProfileEditor(QWidget* parent, QLCInputProfile* profile
 
     /* Fill up the tree with profile's channels */
     fillTree();
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 InputProfileEditor::~InputProfileEditor()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+
     delete m_profile;
 }
 
