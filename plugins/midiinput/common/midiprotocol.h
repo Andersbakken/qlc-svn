@@ -95,11 +95,12 @@ namespace QLCMIDIProtocol
 /****************************************************************************
  * MIDI control/msg -> QLC input channel mappings
  ****************************************************************************/
-#define CHANNEL_OFFSET_NOTE                0
-#define CHANNEL_OFFSET_NOTE_MAX            127
+// Most MIDI sliderboards use control change messages -> put them first
+#define CHANNEL_OFFSET_CONTROL_CHANGE      0
+#define CHANNEL_OFFSET_CONTROL_CHANGE_MAX  127
 
-#define CHANNEL_OFFSET_CONTROL_CHANGE      128
-#define CHANNEL_OFFSET_CONTROL_CHANGE_MAX  255
+#define CHANNEL_OFFSET_NOTE                128
+#define CHANNEL_OFFSET_NOTE_MAX            255
 
 #define CHANNEL_OFFSET_NOTE_AFTERTOUCH     256
 #define CHANNEL_OFFSET_NOTE_AFTERTOUCH_MAX 383

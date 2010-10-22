@@ -86,7 +86,7 @@ bool QLCMIDIProtocol::feedbackToMidi(quint32 channel, uchar value,
                                      uchar* data1, uchar* data2,
                                      bool* data2Valid)
 {
-    if (channel <= CHANNEL_OFFSET_NOTE_MAX)
+    if (channel >= CHANNEL_OFFSET_NOTE && channel <= CHANNEL_OFFSET_NOTE_MAX)
     {
         if (value == 0)
             *cmd = MIDI_NOTE_OFF;
@@ -98,7 +98,7 @@ bool QLCMIDIProtocol::feedbackToMidi(quint32 channel, uchar value,
         *data2 = DMX2MIDI(value);
         *data2Valid = true;
     }
-    else if (channel >= CHANNEL_OFFSET_CONTROL_CHANGE &&
+    else if (/*channel >= CHANNEL_OFFSET_CONTROL_CHANGE &&*/
              channel <= CHANNEL_OFFSET_CONTROL_CHANGE_MAX)
     {
         *cmd = MIDI_CONTROL_CHANGE | midiChannel;
