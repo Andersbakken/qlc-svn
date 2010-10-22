@@ -30,10 +30,12 @@ class MIDIDevice;
 class ConfigureMIDILine : public QDialog, public Ui_ConfigureMIDILine
 {
     Q_OBJECT
+
 public:
     ConfigureMIDILine(QWidget* parent, MIDIDevice* device);
     ~ConfigureMIDILine();
 
+public slots:
     void accept();
 
 protected:

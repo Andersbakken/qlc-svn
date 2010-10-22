@@ -43,7 +43,6 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, MIDIEntityRef entity)
         m_inPort(0),
         m_outPort(0),
         m_isOK(false),
-        m_mode(ControlChange),
         m_midiChannel(0)
 {
 }
@@ -123,14 +122,6 @@ void MIDIDevice::loadSettings()
         setMidiChannel(value.toInt());
     else
         setMidiChannel(0);
-
-    /* Attempt to get the mode from settings */
-    key = QString("/midiinput/%1/mode").arg(m_name);
-    value = settings.value(key);
-    if (value.isValid() == true)
-        setMode(stringToMode(value.toString()));
-    else
-        setMode(ControlChange);
 }
 
 void MIDIDevice::saveSettings()
@@ -141,10 +132,6 @@ void MIDIDevice::saveSettings()
     /* Store MIDI channel to settings */
     key = QString("/midiinput/%1/midichannel").arg(m_name);
     settings.setValue(key, m_midiChannel);
-
-    /* Store mode to settings */
-    key = QString("/midiinput/%1/mode").arg(m_name);
-    settings.setValue(key, MIDIDevice::modeToString(m_mode));
 }
 
 /*****************************************************************************
@@ -325,49 +312,25 @@ QString MIDIDevice::infoText() const
     {
         info += QString("<B>%1</B>").arg(name());
         info += QString("<P>");
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
         info += QString("</P>");
         info += QString("<P>");
-        info += QString("<B>MIDI Channel: </B>%1<BR>")
-                .arg(midiChannel() + 1);
-        info += QString("<B>Mode: </B>%1").arg(modeToString(mode()));
+        info += QString("<B>%1:</B> ").arg(tr("MIDI Channel"));
+        if (midiChannel() < 16)
+            info += QString("%1<BR/>").arg(midiChannel() + 1);
+        else
+            info += QString("%1<BR/>").arg(tr("Any Channel"));
         info += QString("</P>");
     }
     else
     {
-        info += QString("<B>Unknown device</B>");
+        info += QString("<B>%1</B>").arg(tr("Unknown device"));
         info += QString("<P>");
-        info += QString("MIDI interface is not available.");
+        info += tr("MIDI interface is not available.");
         info += QString("</P>");
     }
 
     return info;
-}
-
-/*****************************************************************************
- * Operational mode
- *****************************************************************************/
-
-QString MIDIDevice::modeToString(Mode mode)
-{
-    switch (mode)
-    {
-    default:
-    case ControlChange:
-        return QString("Control Change");
-        break;
-    case Note:
-        return QString("Note Velocity");
-        break;
-    }
-}
-
-MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
-{
-    if (mode == QString("Note Velocity"))
-        return Note;
-    else
-        return ControlChange;
 }
 
 /*****************************************************************************

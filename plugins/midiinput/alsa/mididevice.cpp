@@ -26,6 +26,7 @@
 #include <QFile>
 
 #include "midiinputevent.h"
+#include "midiprotocol.h"
 #include "mididevice.h"
 #include "midiinput.h"
 
@@ -33,7 +34,6 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, const snd_seq_addr_t* address)
         : QObject(parent)
 {
     m_address = NULL;
-    m_mode = ControlChange;
     m_midiChannel = 0;
 
     setAddress(address);
@@ -62,14 +62,6 @@ void MIDIDevice::loadSettings()
         setMidiChannel(value.toInt());
     else
         setMidiChannel(0);
-
-    /* Attempt to get the mode from settings */
-    key = QString("/midiinput/%1/mode").arg(m_name);
-    value = settings.value(key);
-    if (value.isValid() == true)
-        setMode(stringToMode(value.toString()));
-    else
-        setMode(ControlChange);
 }
 
 void MIDIDevice::saveSettings()
@@ -80,10 +72,6 @@ void MIDIDevice::saveSettings()
     /* Store MIDI channel to settings */
     key = QString("/midiinput/%1/midichannel").arg(m_name);
     settings.setValue(key, m_midiChannel);
-
-    /* Store mode to settings */
-    key = QString("/midiinput/%1/mode").arg(m_name);
-    settings.setValue(key, MIDIDevice::modeToString(m_mode));
 }
 
 /*****************************************************************************
@@ -115,12 +103,10 @@ void MIDIDevice::setAddress(const snd_seq_addr_t* address)
 
 QString MIDIDevice::infoText()
 {
-    MIDIInput* plugin;
-    QString info;
-
-    plugin = static_cast<MIDIInput*> (parent());
+    MIDIInput* plugin = static_cast<MIDIInput*> (parent());
     Q_ASSERT(plugin != NULL);
 
+    QString info;
     if (plugin->alsa() != NULL)
     {
         info += QString("<B>%1</B>").arg(name());
@@ -128,17 +114,18 @@ QString MIDIDevice::infoText()
         info += QString("Device is working correctly.");
         info += QString("</P>");
         info += QString("<P>");
-        info += QString("<B>MIDI Channel: </B>%1<BR>")
-                .arg(m_midiChannel + 1);
-        info += QString("<B>Mode: </B>%1")
-                .arg(modeToString(m_mode));
+        info += QString("<B>%1:</B> ").arg(tr("MIDI Channel"));
+        if (midiChannel() < 16)
+            info += QString("%1<BR/>").arg(midiChannel() + 1);
+        else
+            info += QString("%1<BR/>").arg(tr("Any"));
         info += QString("</P>");
     }
     else
     {
-        info += QString("<B>Unknown device</B>");
+        info += tr("<B>Unknown device</B>");
         info += QString("<P>");
-        info += QString("ALSA sequencer interface is not available.");
+        info += tr("ALSA sequencer interface is not available.");
         info += QString("</P>");
     }
 
@@ -167,82 +154,49 @@ void MIDIDevice::extractName()
 }
 
 /*****************************************************************************
- * Operational mode
- *****************************************************************************/
-
-QString MIDIDevice::modeToString(Mode mode)
-{
-    switch (mode)
-    {
-    default:
-    case ControlChange:
-        return QString("Control Change");
-        break;
-    case Note:
-        return QString("Note Velocity");
-        break;
-    }
-}
-
-MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
-{
-    if (mode == QString("Note Velocity"))
-        return Note;
-    else
-        return ControlChange;
-}
-
-/*****************************************************************************
  * Input data
  *****************************************************************************/
 
 void MIDIDevice::feedBack(quint32 channel, uchar value)
 {
-    /* MIDI devices can have only 128 notes or controllers */
-    if (channel < 128)
+    MIDIInput* plugin = static_cast<MIDIInput*> (parent());
+    Q_ASSERT(plugin != NULL);
+    Q_ASSERT(plugin->alsa() != NULL);
+    Q_ASSERT(m_address != NULL);
+
+    uchar cmd = 0;
+    uchar data1 = 0;
+    uchar data2 = 0;
+    bool d2v = false;
+
+    if (QLCMIDIProtocol::feedbackToMidi(channel, value, midiChannel(), &cmd,
+                                        &data1, &data2, &d2v) == true)
     {
-        snd_seq_event_t ev;
-        MIDIInput* plugin;
-
-        plugin = static_cast<MIDIInput*> (parent());
-        Q_ASSERT(plugin != NULL);
-        Q_ASSERT(plugin->alsa() != NULL);
-        Q_ASSERT(m_address != NULL);
-
         /* Setup an event structure */
+        snd_seq_event_t ev;
         snd_seq_ev_clear(&ev);
         snd_seq_ev_set_dest(&ev, m_address->client, m_address->port);
         snd_seq_ev_set_subs(&ev);
         snd_seq_ev_set_direct(&ev);
 
-        char scaled = static_cast <char> (SCALE(double(value),
-                                                double(0),
-                                                double(UCHAR_MAX),
-                                                double(0),
-                                                double(127)));
-
-        if (m_mode == ControlChange)
+        if (MIDI_CMD(cmd) == MIDI_NOTE_OFF)
         {
-            /* Send control change */
-            snd_seq_ev_set_controller(&ev, midiChannel(),
-                                      channel, scaled);
+            /* Send data as note off command */
+            snd_seq_ev_set_noteoff(&ev, midiChannel(), data1, data2);
             snd_seq_event_output(plugin->alsa(), &ev);
             snd_seq_drain_output(plugin->alsa());
         }
-        else
+        else if (MIDI_CMD(cmd) == MIDI_NOTE_ON)
         {
-            /* Send note on/off */
-            if (value == 0)
-            {
-                snd_seq_ev_set_noteoff(&ev, midiChannel(),
-                                       channel, scaled);
-            }
-            else
-            {
-                snd_seq_ev_set_noteon(&ev, midiChannel(),
-                                      channel, scaled);
-            }
-
+            /* Send data as note on command */
+            snd_seq_ev_set_noteon(&ev, midiChannel(), data1, data2);
+            snd_seq_event_output(plugin->alsa(), &ev);
+            snd_seq_drain_output(plugin->alsa());
+        }
+        else if (MIDI_CMD(cmd) == MIDI_CONTROL_CHANGE)
+        {
+            /* Send data as control change command */
+            snd_seq_ev_set_controller(&ev, midiChannel(), data1, data2);
             snd_seq_event_output(plugin->alsa(), &ev);
             snd_seq_drain_output(plugin->alsa());
         }

@@ -39,7 +39,6 @@ MIDIDevice::MIDIDevice(MIDIInput* parent, UINT id) : QObject(parent)
     m_handle = NULL;
     m_feedBackHandle = NULL;
     m_isOK = false;
-    m_mode = ControlChange;
     m_midiChannel = 0;
 
     extractName();
@@ -72,14 +71,6 @@ void MIDIDevice::loadSettings()
         setMidiChannel(value.toInt());
     else
         setMidiChannel(0);
-
-    /* Attempt to get the mode from settings */
-    key = QString("/midiinput/%1/mode").arg(m_id);
-    value = settings.value(key);
-    if (value.isValid() == true)
-        setMode(stringToMode(value.toString()));
-    else
-        setMode(ControlChange);
 }
 
 void MIDIDevice::saveSettings()
@@ -94,10 +85,6 @@ void MIDIDevice::saveSettings()
     /* Store MIDI channel to settings */
     key = QString("/midiinput/%1/midichannel").arg(m_id);
     settings.setValue(key, m_midiChannel);
-
-    /* Store mode to settings */
-    key = QString("/midiinput/%1/mode").arg(m_id);
-    settings.setValue(key, MIDIDevice::modeToString(m_mode));
 }
 
 /*****************************************************************************
@@ -189,18 +176,15 @@ void MIDIDevice::close()
     res = midiInClose(m_handle);
     if (res == MIDIERR_STILLPLAYING)
     {
-        qDebug() << QString("Unable to close %1: Buffer not empty")
-        .arg(m_name);
+        qDebug() << QString("Unable to close %1: Buffer not empty").arg(m_name);
     }
     else if (res == MMSYSERR_INVALHANDLE)
     {
-        qDebug() << QString("Unable to close %1: Invalid handle")
-        .arg(m_name);
+        qDebug() << QString("Unable to close %1: Invalid handle").arg(m_name);
     }
     else if (res == MMSYSERR_NOMEM)
     {
-        qDebug() << QString("Unable t close %1: Out of memory")
-        .arg(m_name);
+        qDebug() << QString("Unable t close %1: Out of memory").arg(m_name);
     }
     else
     {
@@ -223,27 +207,32 @@ QString MIDIDevice::infoText()
 
     if (m_isOK == true)
     {
-        QStringList fbNames(feedBackNames());
-
         info += QString("<P>");
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
         info += QString("</P>");
         info += QString("<P>");
-        if (feedBackId() < quint32(fbNames.size()))
-            info += QString("<B>Feedback Line: </B>%1<BR>")
-                    .arg(fbNames[feedBackId()]);
+
+        // MIDI channel
+        info += QString("<B>%1:</B> ").arg(tr("MIDI Channel"));
+        if (midiChannel() < 16)
+            info += QString("%1<BR/>").arg(midiChannel() + 1);
         else
-            info += QString("<B>Feedback Line: </B>None<BR>");
-        info += QString("<B>MIDI Channel: </B>%1<BR>")
-                .arg(m_midiChannel + 1);
-        info += QString("<B>Mode: </B>%1")
-                .arg(modeToString(m_mode));
+            info += QString("%1<BR/>").arg(tr("Any"));
+
+        // Feedback line
+        QStringList fbNames(feedBackNames());
+        info += QString("<B>%1:</B> ").arg(tr("Feedback Line"));
+        if (feedBackId() < quint32(fbNames.size()))
+            info += QString("%1<BR/>").arg(fbNames[feedBackId()]);
+        else
+            info += QString("%1<BR/>").arg(tr("None"));
+
         info += QString("</P>");
     }
     else
     {
         info += QString("<P>");
-        info += QString("MIDI Input not available.");
+        info += tr("MIDI Input is not available.");
         info += QString("</P>");
     }
 
@@ -288,32 +277,6 @@ void MIDIDevice::extractName()
         m_name += QString::fromWCharArray(inCaps.szPname);
         m_isOK = true;
     }
-}
-
-/*****************************************************************************
- * Operational mode
- *****************************************************************************/
-
-QString MIDIDevice::modeToString(Mode mode)
-{
-    switch (mode)
-    {
-    default:
-    case ControlChange:
-        return QString("Control Change");
-        break;
-    case Note:
-        return QString("Note Velocity");
-        break;
-    }
-}
-
-MIDIDevice::Mode MIDIDevice::stringToMode(const QString& mode)
-{
-    if (mode == QString("Note Velocity"))
-        return Note;
-    else
-        return ControlChange;
 }
 
 /*****************************************************************************

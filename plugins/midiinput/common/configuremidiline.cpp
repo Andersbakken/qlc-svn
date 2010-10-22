@@ -40,11 +40,7 @@ ConfigureMIDILine::ConfigureMIDILine(QWidget* parent, MIDIDevice* device)
     m_feedBackLabel->hide();
     m_feedBackCombo->hide();
 #endif
-    m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::ControlChange));
-    m_modeCombo->addItem(MIDIDevice::modeToString(MIDIDevice::Note));
-
-    m_midiChannelSpin->setValue(device->midiChannel() + 1);
-    m_modeCombo->setCurrentIndex(device->mode());
+    m_midiChannelCombo->setCurrentIndex(device->midiChannel());
 }
 
 ConfigureMIDILine::~ConfigureMIDILine()
@@ -56,8 +52,7 @@ void ConfigureMIDILine::accept()
 #ifdef WIN32
     m_device->setFeedBackId(m_feedBackCombo->currentIndex());
 #endif
-    m_device->setMidiChannel(m_midiChannelSpin->value() - 1);
-    m_device->setMode(MIDIDevice::stringToMode(m_modeCombo->currentText()));
+    m_device->setMidiChannel(m_midiChannelCombo->currentIndex());
 
     QDialog::accept();
 }

@@ -35,8 +35,7 @@
 #define KColumnNumber   0
 #define KColumnName     1
 #define KColumnChannel  2
-#define KColumnMode     3
-#define KColumnFeedBack 4
+#define KColumnFeedBack 3
 
 ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
         : QDialog(parent)
@@ -51,8 +50,7 @@ ConfigureMIDIInput::ConfigureMIDIInput(QWidget* parent, MIDIInput* plugin)
 
     /* One needs to choose the particular output line for feedback only
        in windows, where input & output lines don't have the same ID. */
-    headerLabels << tr("Input") << tr("Name") << tr("MIDI Channel")
-    << tr("Mode");
+    headerLabels << tr("Input") << tr("Name") << tr("MIDI Channel");
 #ifdef WIN32
     headerLabels << tr("Feedback line");
 #endif
@@ -102,10 +100,11 @@ void ConfigureMIDIInput::refreshList()
         item = new QTreeWidgetItem(m_tree);
         item->setText(KColumnNumber, QString("%1").arg(i++));
         item->setText(KColumnName, dev->name());
-        item->setText(KColumnChannel,
-                      QString("%1").arg(dev->midiChannel() + 1));
-        item->setText(KColumnMode,
-                      MIDIDevice::modeToString(dev->mode()));
+        uchar channel = dev->midiChannel();
+        if (channel < 16)
+            item->setText(KColumnChannel, tr("Channel %1").arg(channel + 1));
+        else
+            item->setText(KColumnChannel, tr("Any Channel"));
 
 #ifdef WIN32
         if (dev->feedBackId() != UINT_MAX)
