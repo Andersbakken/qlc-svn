@@ -159,36 +159,47 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
     MIDIDevice* self = static_cast<MIDIDevice*>(srcConnRefCon);
     Q_ASSERT(self != 0);
 
-    for (quint32 i = 0; i < pktList->numPackets; i++)
+    // Go thru all packets in the midi packet list
+    const MIDIPacket* packet = &pktList->packet[0];
+    for (quint32 p = 0; p < pktList->numPackets && packet != NULL; ++p)
     {
-        MIDIPacket packet = pktList->packet[i];
-
-        // MIDI System Exclusive messages contain just the one sysex message
-        // that we're not interested in.
-        if (packet.data[0] == MIDI_SYSEX)
-            continue;
-
-        for (quint32 j = 0; j < packet.length; j++)
+        // Go thru all simultaneously-occurring messages in the packet
+        for (quint32 i = 0; i < packet->length && i < 256; ++i)
         {
-            uchar cmd = packet.data[j];
+            uchar cmd = 0;
             uchar data1 = 0;
             uchar data2 = 0;
             quint32 channel = 0;
             uchar value = 0;
 
-            if ((++j) < packet.length)
-                data1 = packet.data[j];
-            if ((++j) < packet.length)
-                data2 = packet.data[j];
+            // MIDI Command
+            cmd = packet->data[0];
+            if (!MIDI_IS_CMD(cmd))
+                continue; // Not a MIDI command. Skip to the next byte.
+            if (MIDI_CMD(cmd) == MIDI_SYSEX)
+                break; // Sysex reserves the whole packet. Not interested.
 
+            // 1 or 2 MIDI Data bytes
+            if (packet->length > (i + 1) && !MIDI_IS_CMD(packet->data[i + 1]))
+            {
+                data1 = packet->data[++i];
+                if (packet->length > (i + 1) && !MIDI_IS_CMD(packet->data[i + 1]))
+                    data2 = packet->data[++i];
+            }
+
+            // Convert the data to QLC input channel & value
             if (QLCMIDIProtocol::midiToInput(cmd, data1, data2,
-                                             (uchar) self->midiChannel(),
+                                             self->midiChannel(),
                                              &channel, &value) == true)
             {
-                MIDIInputEvent* event = new MIDIInputEvent(self, channel, value);
-                QApplication::postEvent(self, event);
+                // If message was parsed successfully, send an event downstream
+                MIDIInputEvent* ev = new MIDIInputEvent(self, channel, value);
+                QApplication::postEvent(self, ev);
             }
         }
+
+        // Get the next packet in the packet list
+        packet = MIDIPacketNext(packet);
     }
 }
 

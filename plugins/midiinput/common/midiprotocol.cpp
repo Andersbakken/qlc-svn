@@ -32,7 +32,7 @@ bool QLCMIDIProtocol::midiToInput(uchar cmd, uchar data1, uchar data2,
                                   uchar* value)
 {
     /* Check if cmd is a MIDI COMMAND byte */
-    if ((cmd & 0x80) == 0)
+    if (!MIDI_IS_CMD(cmd))
         return false;
 
     /* Check that the command came on the correct MIDI channel */
