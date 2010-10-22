@@ -421,6 +421,13 @@ QLCOutPlugin* OutputMap::plugin(const QString& name)
     return NULL;
 }
 
+void OutputMap::slotConfigurationChanged()
+{
+    QLCOutPlugin* plugin = qobject_cast<QLCOutPlugin*> (QObject::sender());
+    if (plugin != NULL)
+        emit pluginConfigurationChanged(plugin->name());
+}
+
 /*****************************************************************************
  * Defaults
  *****************************************************************************/

@@ -296,6 +296,14 @@ protected:
      */
     QLCOutPlugin* plugin(const QString& name);
 
+protected slots:
+   /** Slot that catches plugin configuration change notifications */
+    void slotConfigurationChanged();
+
+signals:
+    /** Notifies (OutputManager) of plugin configuration changes */
+    void pluginConfigurationChanged(const QString& pluginName);
+
 protected:
     /** The dummy out plugin that is used for unused universes */
     QLCOutPlugin* m_dummyOut;
