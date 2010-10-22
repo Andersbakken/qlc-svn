@@ -7,6 +7,518 @@
  </Creator>
  <Manufacturer>Generic</Manufacturer>
  <Model>MIDI</Model>
+ <Channel Number="0">
+  <Name>Bank select MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="1">
+  <Name>Modulation wheel MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="2">
+  <Name>Breath control MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="3">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="4">
+  <Name>Foot controller MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="5">
+  <Name>Portamento MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="6">
+  <Name>Data entry MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="7">
+  <Name>Channel volume MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="8">
+  <Name>Balance MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="9">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="10">
+  <Name>Pan MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="11">
+  <Name>Expression controller MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="12">
+  <Name>Effect 1 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="13">
+  <Name>Effect 2 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="14">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="15">
+  <Name>Undefined 16 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="16">
+  <Name>General Purpose #1 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="17">
+  <Name>General Purpose #2 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="18">
+  <Name>General Purpose #3 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="19">
+  <Name>General Purpose #4 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="20">
+  <Name>Undefined 21 MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="21">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="22">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="23">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="24">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="25">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="26">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="27">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="28">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="29">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="30">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="31">
+  <Name>Undefined MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="32">
+  <Name>Bank select LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="33">
+  <Name>Modulation wheel LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="34">
+  <Name>Breath control LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="35">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="36">
+  <Name>Foot controller LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="37">
+  <Name>Portamento LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="38">
+  <Name>Data entry LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="39">
+  <Name>Channel volume LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="40">
+  <Name>Balance LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="41">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="42">
+  <Name>Pan LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="43">
+  <Name>Expression controller LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="44">
+  <Name>Effect 1 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="45">
+  <Name>Effect 2 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="46">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="47">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="48">
+  <Name>General Purpose #1 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="49">
+  <Name>General Purpose #2 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="50">
+  <Name>General Purpose #3 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="51">
+  <Name>General Purpose #4 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="52">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="53">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="54">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="55">
+  <Name>Undefined LSB </Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="56">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="57">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="58">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="58">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="60">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="61">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="62">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="63">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="64">
+  <Name>Sustain pedal</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="65">
+  <Name>Portamento control</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="66">
+  <Name>Sostenuto pedal</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="67">
+  <Name>Soft pedal</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="68">
+  <Name>Legato pedal</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="69">
+  <Name>Hold 2</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="70">
+  <Name>Sound control 1 (Sound variation) LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="71">
+  <Name>Sound control 2 (Timbre) LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="72">
+  <Name>Sound control 3 (Release time) LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="73">
+  <Name>Sound control 4 (Attack time) LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="74">
+  <Name>Sound control 5 (Brightness) LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="75">
+  <Name>Sound control 6 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="76">
+  <Name>Sound control 7 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="77">
+  <Name>Sound control 8 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="78">
+  <Name>Sound control 9 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="79">
+  <Name>Sound control 10 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="80">
+  <Name>General purpose control #5 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="81">
+  <Name>General purpose control #6 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="82">
+  <Name>General purpose control #7 LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="83">
+  <Name>General purpose control #8 Source</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="84">
+  <Name>Portamento control Note</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="85">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="86">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="87">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="88">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="89">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="90">
+  <Name>Undefined LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="91">
+  <Name>Effects 1 (Reverb) Depth LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="92">
+  <Name>Effects 2 (Tremolo) Depth LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="93">
+  <Name>Effects 3 (Chorus) Depth LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="94">
+  <Name>Effects 4 (Detune) Depth LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="95">
+  <Name>Effects 5 (Phaser) Depth LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="96">
+  <Name>Data entry +1</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="97">
+  <Name>Data entry -1</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="98">
+  <Name>NRPN LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="99">
+  <Name>NRPN MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="100">
+  <Name>RPN LSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="101">
+  <Name>RPN MSB</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="102">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="103">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="104">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="105">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="106">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="107">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="108">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="109">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="110">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="111">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="112">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="113">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="114">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="115">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="116">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="117">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="118">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="119">
+  <Name>Undefined</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="120">
+  <Name>All sound off</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="121">
+  <Name>Reset all controllers</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="122">
+  <Name>Local control</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="123">
+  <Name>All notes off</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="124">
+  <Name>Omni mode off</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="125">
+  <Name>Omni mode on</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="126">
+  <Name>Poly mode on/off</Name>
+  <Type>Slider</Type>
+ </Channel>
+ <Channel Number="127">
+  <Name>Poly mode on</Name>
+  <Type>Slider</Type>
+ </Channel>
  <Channel Number="128">
   <Name>C-1</Name>
   <Type>Slider</Type>
