@@ -69,7 +69,7 @@ namespace QLCMIDIProtocol
 #define MIDI_CMD(x) (x & 0xF0)
 
 /** Check, whether a byte contains a MIDI command */
-#define MIDI_IS_CMD(x) (x & 0x80)
+#define MIDI_IS_CMD(x) ((x & 0x80) ? true : false)
 
 /** Convert MIDI value to DMX value */
 #define MIDI2DMX(x) uchar(SCALE(double(x), double(0), double(127), \

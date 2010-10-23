@@ -4,9 +4,9 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET   = midiinput
 
-INCLUDEPATH += ../common
+INCLUDEPATH += ../common/src
 INCLUDEPATH += ../../interfaces
-DEPENDPATH  += ../common
+DEPENDPATH  += ../common/src
 CONFIG      += plugin link_pkgconfig
 PKGCONFIG   += alsa
 
@@ -21,21 +21,21 @@ INSTALLS   += target
 # Sources
 ###############################################################################
 
-FORMS += ../common/configuremidiinput.ui \
-         ../common/configuremidiline.ui
+FORMS += ../common/src/configuremidiinput.ui \
+         ../common/src/configuremidiline.ui
 
-HEADERS += ../common/configuremidiinput.h \
-           ../common/configuremidiline.h \
-           ../common/midiinputevent.h \
-           ../common/midiprotocol.h \
+HEADERS += ../common/src/configuremidiinput.h \
+           ../common/src/configuremidiline.h \
+           ../common/src/midiinputevent.h \
+           ../common/src/midiprotocol.h \
            mididevice.h \
            midiinput.h \
            midipoller.h
 
-SOURCES += ../common/configuremidiinput.cpp \
-           ../common/configuremidiline.cpp \
-           ../common/midiinputevent.cpp \
-           ../common/midiprotocol.cpp \
+SOURCES += ../common/src/configuremidiinput.cpp \
+           ../common/src/configuremidiline.cpp \
+           ../common/src/midiinputevent.cpp \
+           ../common/src/midiprotocol.cpp \
            mididevice.cpp \
            midiinput.cpp \
            midipoller.cpp

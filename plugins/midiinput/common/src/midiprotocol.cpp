@@ -94,7 +94,7 @@ bool QLCMIDIProtocol::feedbackToMidi(quint32 channel, uchar value,
             *cmd = MIDI_NOTE_ON;
         *cmd |= midiChannel;
 
-        *data1 = static_cast <uchar> (channel);
+        *data1 = static_cast <uchar> (channel - CHANNEL_OFFSET_NOTE);
         *data2 = DMX2MIDI(value);
         *data2Valid = true;
     }

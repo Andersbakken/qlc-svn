@@ -89,6 +89,20 @@ fi
 popd
 
 #############################################################################
+# MIDI Input tests
+#############################################################################
+
+pushd .
+cd plugins/midiinput/common/test
+./test_common
+RESULT=$?
+if [ $RESULT != 0 ]; then
+    echo "MIDI Input common unit test failed ($RESULT). Please fix before commit."
+    exit $RESULT
+fi
+popd
+
+#############################################################################
 # Final judgment
 #############################################################################
 

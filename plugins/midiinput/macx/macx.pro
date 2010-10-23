@@ -5,25 +5,25 @@ LANGUAGE = C++
 TARGET   = midiinput
 
 CONFIG      += plugin
-INCLUDEPATH += ../common
+INCLUDEPATH += ../common/src
 INCLUDEPATH += ../../interfaces
-DEPENDPATH  += ../common
+DEPENDPATH  += ../common/src
 LIBS        += -framework CoreMIDI -framework CoreFoundation
 
-FORMS += ../common/configuremidiinput.ui \
-         ../common/configuremidiline.ui
+FORMS += ../common/src/configuremidiinput.ui \
+         ../common/src/configuremidiline.ui
 
-HEADERS += ../common/midiinputevent.h \
-           ../common/configuremidiinput.h \
-           ../common/configuremidiline.h \
-           ../common/midiprotocol.h \
+HEADERS += ../common/src/midiinputevent.h \
+           ../common/src/configuremidiinput.h \
+           ../common/src/configuremidiline.h \
+           ../common/src/midiprotocol.h \
            mididevice.h \
            midiinput.h
 
-SOURCES += ../common/midiinputevent.cpp \
-           ../common/configuremidiinput.cpp \
-           ../common/configuremidiline.cpp \
-           ../common/midiprotocol.cpp \
+SOURCES += ../common/src/midiinputevent.cpp \
+           ../common/src/configuremidiinput.cpp \
+           ../common/src/configuremidiline.cpp \
+           ../common/src/midiprotocol.cpp \
            mididevice.cpp \
            midiinput.cpp
 
