@@ -30,14 +30,21 @@ class MIDIProtocol_Test : public QObject
 
 private slots:
     void macros();
+
     void noteToInput();
+    void noteAftertouchToInput();
     void noteToInputAnyMidiChannel();
     void noteToInputWrongMidiChannel();
     void ccToInput();
     void ccToInputAnyMidiChannel();
     void ccToInputWrongMidiChannel();
+    void singleChannelCommandsToInput();
+
     void inputToNote();
-    void inputToCc();
+    void inputToControl();
+    void inputToNoteAftertouch();
+    void unknownInputCh();
+    void inputToSingleChannelCommands();
 };
 
 #endif

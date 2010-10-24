@@ -51,17 +51,46 @@ void MIDIProtocol_Test::macros()
 
 void MIDIProtocol_Test::noteToInput()
 {
+    quint32 ch = 0;
+    uchar val = 0;
+
     for (uchar midich = 0; midich < 16; midich++)
     {
         for (uchar note = 0; note < 128; note++)
         {
             for (uchar velocity = 0; velocity < 128; velocity++)
             {
-                quint32 ch = 0;
-                uchar val = 0;
-                QCOMPARE(midiToInput(MIDI_NOTE_ON | midich, note, velocity,
+                uchar cmd = 0;
+                if (velocity == 0)
+                    cmd = MIDI_NOTE_OFF;
+                else
+                    cmd = MIDI_NOTE_ON;
+                QCOMPARE(midiToInput(cmd | midich, note, velocity,
                                      midich, &ch, &val), true);
                 QCOMPARE(ch, quint32(CHANNEL_OFFSET_NOTE + note));
+                QCOMPARE(val, MIDI2DMX(velocity));
+            }
+        }
+    }
+
+    // Check that a non-command (<0x80) doesn't succeed
+    QCOMPARE(midiToInput(0x60, 15, 127, 0, &ch, &val), false);
+}
+
+void MIDIProtocol_Test::noteAftertouchToInput()
+{
+    quint32 ch = 0;
+    uchar val = 0;
+
+    for (uchar midich = 0; midich < 16; midich++)
+    {
+        for (uchar note = 0; note < 128; note++)
+        {
+            for (uchar velocity = 0; velocity < 128; velocity++)
+            {
+                QCOMPARE(midiToInput(MIDI_NOTE_AFTERTOUCH | midich, note,
+                                     velocity, midich, &ch, &val), true);
+                QCOMPARE(ch, quint32(CHANNEL_OFFSET_NOTE_AFTERTOUCH + note));
                 QCOMPARE(val, MIDI2DMX(velocity));
             }
         }
@@ -100,6 +129,36 @@ void MIDIProtocol_Test::noteToInputWrongMidiChannel()
                 QCOMPARE(midiToInput(MIDI_NOTE_ON | (15 - midich), note,
                                      velocity, midich, &ch, &val), false);
             }
+        }
+    }
+}
+
+void MIDIProtocol_Test::singleChannelCommandsToInput()
+{
+    for (uchar midich = 0; midich < 16; midich++)
+    {
+        for (uchar data1 = 0; data1 < 128; data1++)
+        {
+            quint32 ch = 0;
+            uchar val = 0;
+            QCOMPARE(midiToInput(MIDI_PROGRAM_CHANGE | midich, data1, 0x00,
+                                 midich, &ch, &val), true);
+            QCOMPARE(ch, quint32(CHANNEL_OFFSET_PROGRAM_CHANGE));
+            QCOMPARE(val, uchar(MIDI2DMX(data1)));
+
+            ch = val = 0;
+
+            QCOMPARE(midiToInput(MIDI_CHANNEL_AFTERTOUCH | midich, data1, 0x00,
+                                 midich, &ch, &val), true);
+            QCOMPARE(ch, quint32(CHANNEL_OFFSET_CHANNEL_AFTERTOUCH));
+            QCOMPARE(val, uchar(MIDI2DMX(data1)));
+
+            ch = val = 0;
+
+            QCOMPARE(midiToInput(MIDI_PITCH_WHEEL | midich, 0x00, data1,
+                                 midich, &ch, &val), true);
+            QCOMPARE(ch, quint32(CHANNEL_OFFSET_PITCH_WHEEL));
+            QCOMPARE(val, uchar(MIDI2DMX(data1)));
         }
     }
 }
@@ -186,7 +245,7 @@ void MIDIProtocol_Test::inputToNote()
     }
 }
 
-void MIDIProtocol_Test::inputToCc()
+void MIDIProtocol_Test::inputToControl()
 {
     for (quint32 ch = CHANNEL_OFFSET_CONTROL_CHANGE;
          ch < CHANNEL_OFFSET_CONTROL_CHANGE_MAX; ch++)
@@ -207,6 +266,77 @@ void MIDIProtocol_Test::inputToCc()
                 QCOMPARE(data2, DMX2MIDI(val));
                 QCOMPARE(d2v, true);
             }
+        }
+    }
+}
+
+void MIDIProtocol_Test::inputToNoteAftertouch()
+{
+    for (quint32 ch = CHANNEL_OFFSET_NOTE_AFTERTOUCH;
+         ch < CHANNEL_OFFSET_NOTE_AFTERTOUCH_MAX; ch++)
+    {
+        for (uchar val = 0; val < 255; val++)
+        {
+            for (uchar midich = 0; midich < 16; midich++)
+            {
+                uchar cmd = 0;
+                uchar data1 = 0;
+                uchar data2 = 0;
+                bool d2v = false;
+
+                QCOMPARE(feedbackToMidi(ch, val, midich, &cmd, &data1, &data2,
+                                        &d2v), true);
+                QCOMPARE(cmd, uchar(MIDI_NOTE_AFTERTOUCH | midich));
+                QCOMPARE(data1, uchar(ch - CHANNEL_OFFSET_NOTE_AFTERTOUCH));
+                QCOMPARE(data2, DMX2MIDI(val));
+                QCOMPARE(d2v, true);
+            }
+        }
+    }
+}
+
+void MIDIProtocol_Test::unknownInputCh()
+{
+    uchar cmd = 0;
+    uchar data1 = 0;
+    uchar data2 = 0;
+    bool d2v = false;
+
+    QCOMPARE(feedbackToMidi(1000, 10, 0, &cmd, &data1, &data2, &d2v), false);
+}
+
+void MIDIProtocol_Test::inputToSingleChannelCommands()
+{
+    for (uchar val = 0; val < 127; val++)
+    {
+        for (uchar midich = 0; midich < 16; midich++)
+        {
+            uchar cmd = 0;
+            uchar data1 = 0;
+            uchar data2 = 0;
+            bool d2v = false;
+
+            QCOMPARE(feedbackToMidi(CHANNEL_OFFSET_CHANNEL_AFTERTOUCH, val,
+                                    midich, &cmd, &data1, &data2, &d2v), true);
+            QCOMPARE(cmd, uchar(MIDI_CHANNEL_AFTERTOUCH | midich));
+            QCOMPARE(data1, uchar(DMX2MIDI(val)));
+            QCOMPARE(d2v, false);
+
+            cmd = data1 = data2 = 0;
+
+            QCOMPARE(feedbackToMidi(CHANNEL_OFFSET_PROGRAM_CHANGE, val,
+                                    midich, &cmd, &data1, &data2, &d2v), true);
+            QCOMPARE(cmd, uchar(MIDI_PROGRAM_CHANGE | midich));
+            QCOMPARE(data1, uchar(DMX2MIDI(val)));
+            QCOMPARE(d2v, false);
+
+            cmd = data1 = data2 = 0;
+
+            QCOMPARE(feedbackToMidi(CHANNEL_OFFSET_PITCH_WHEEL, val,
+                                    midich, &cmd, &data1, &data2, &d2v), true);
+            QCOMPARE(cmd, uchar(MIDI_PITCH_WHEEL | midich));
+            QCOMPARE(data1, uchar(DMX2MIDI(val)));
+            QCOMPARE(d2v, false);
         }
     }
 }
