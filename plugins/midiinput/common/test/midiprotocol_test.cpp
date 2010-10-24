@@ -27,15 +27,26 @@
 
 using namespace QLCMIDIProtocol;
 
-void MIDIProtocol_Test::isCmd()
+void MIDIProtocol_Test::macros()
 {
     uchar cmd;
-    for (cmd = 0x00; cmd < 128; cmd++)
+    for (cmd = 0x00; cmd < 0x80; cmd++)
         QVERIFY(MIDI_IS_CMD(cmd) == false);
 
-    for (cmd = 128; cmd < 255; cmd++)
-        QVERIFY(MIDI_IS_CMD(cmd) == true);
-    QVERIFY(MIDI_IS_CMD(255) == true);
+    for (cmd = 0x80; cmd <= 0x0F; cmd += 0x10)
+    {
+        for (uchar ch = 0x00; ch <= 0xF; ch++)
+        {
+            uchar cmdch = cmd | ch;
+            QCOMPARE(uchar(MIDI_CH(cmdch)), ch);
+            QCOMPARE(uchar(MIDI_CMD(cmdch)), cmd);
+            QVERIFY(MIDI_IS_CMD(cmdch) == true);
+        }
+    }
+
+    QCOMPARE(uchar(MIDI_CH(0xFF)), uchar(0x0F));
+    QCOMPARE(uchar(MIDI_CMD(0xFF)), uchar(0xF0));
+    QVERIFY(MIDI_IS_CMD(0xFF) == true);
 }
 
 void MIDIProtocol_Test::noteToInput()

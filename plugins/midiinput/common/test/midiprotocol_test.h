@@ -29,7 +29,7 @@ class MIDIProtocol_Test : public QObject
     Q_OBJECT
 
 private slots:
-    void isCmd();
+    void macros();
     void noteToInput();
     void noteToInputAnyMidiChannel();
     void noteToInputWrongMidiChannel();
