@@ -3,6 +3,7 @@ include(../variables.pri)
 TEMPLATE = subdirs
 TARGET = fixtures
 
+fixtures.files += American-DJ-Mega-Bar-LED.qxf
 fixtures.files += American-DJ-Quad-Gem-DMX.qxf
 fixtures.files += American-DJ-Vizi-LED-Spot.qxf
 fixtures.files += Elation-Color-Spot-150.qxf
@@ -129,6 +130,7 @@ fixtures.files += Stairville-LED-PAR56.qxf
 fixtures.files += Stairville-ZF-1500.qxf
 fixtures.files += Varytec-Easy-Move-LED-XS-Spot.qxf
 fixtures.files += Varytec-Easy-Move-LED-XS-Wash.qxf
+fixtures.files += Venue-LEDPAR64.qxf
 
 fixtures.path = $$INSTALLROOT/$$FIXTUREDIR
 INSTALLS += fixtures
