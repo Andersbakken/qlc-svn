@@ -24,23 +24,22 @@
 #include <QHeaderView>
 #include <QTreeWidget>
 #include <QPushButton>
-#include <QMessageBox>
 #include <QLineEdit>
-#include <QCheckBox>
-#include <QLabel>
-#include <QTimer>
-#include <QIcon>
+#include <QSettings>
 
 #include "qlcfixturedef.h"
 
 #include "functionselection.h"
 #include "chasereditor.h"
+#include "apputil.h"
 #include "fixture.h"
 #include "chaser.h"
 #include "app.h"
 #include "doc.h"
 
 extern App* _app;
+
+#define SETTINGS_GEOMETRY "chasereditor/geometry"
 
 #define KColumnNumber     0
 #define KColumnFunction   1
@@ -110,10 +109,19 @@ ChaserEditor::ChaserEditor(QWidget* parent, Chaser* chaser) : QDialog(parent)
 
     /* Chaser steps */
     updateStepList(0);
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 ChaserEditor::~ChaserEditor()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+
     delete m_chaser;
 }
 
