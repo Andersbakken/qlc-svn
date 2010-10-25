@@ -21,10 +21,9 @@
 
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
-#include <QMessageBox>
+#include <QSettings>
 #include <QLineEdit>
 #include <QLabel>
-#include <QTimer>
 
 #include "qlcfixturedef.h"
 
@@ -33,10 +32,13 @@
 #include "collection.h"
 #include "function.h"
 #include "fixture.h"
+#include "apputil.h"
 #include "app.h"
 #include "doc.h"
 
 extern App* _app;
+
+#define SETTINGS_GEOMETRY "collectioneditor/geometry"
 
 #define KColumnFunction 0
 #define KColumnFunctionID 1
@@ -62,10 +64,19 @@ CollectionEditor::CollectionEditor(QWidget* parent, Collection* fc)
     slotNameEdited(m_fc->name());
 
     updateFunctionList();
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 CollectionEditor::~CollectionEditor()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+
     Q_ASSERT(m_fc != NULL);
     delete m_fc;
     m_fc = NULL;
