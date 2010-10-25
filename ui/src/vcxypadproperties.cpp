@@ -22,6 +22,8 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidget>
 #include <QMessageBox>
+#include <QHeaderView>
+#include <QSettings>
 
 #include "qlcchannel.h"
 #include "vcxypadfixtureeditor.h"
@@ -29,8 +31,11 @@
 #include "fixtureselection.h"
 #include "vcxypadfixture.h"
 #include "vcxypad.h"
+#include "apputil.h"
 
 extern App* _app;
+
+#define SETTINGS_GEOMETRY "vcxypad/geometry"
 
 #define KColumnFixture   0
 #define KColumnXAxis     1
@@ -51,10 +56,19 @@ VCXYPadProperties::VCXYPadProperties(QWidget* parent, VCXYPad* xypad)
     m_nameEdit->setText(m_xypad->caption());
     slotSelectionChanged(NULL);
     fillTree();
+    m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 VCXYPadProperties::~VCXYPadProperties()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 /****************************************************************************
