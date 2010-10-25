@@ -413,10 +413,15 @@ bool VCProperties::loadProperties(const QDomElement* root)
  *****************************************************************************/
 
 VCPropertiesEditor::VCPropertiesEditor(QWidget* parent,
-                                       const VCProperties& properties) : QDialog(parent)
+                                       const VCProperties& properties)
+    : QDialog(parent)
 {
     setupUi(this);
 
+    connect(m_autoDetectFadeInputButton, SIGNAL(toggled(bool)),
+            this, SLOT(slotAutoDetectFadeInputToggled(bool)));
+    connect(m_autoDetectHoldInputButton, SIGNAL(toggled(bool)),
+            this, SLOT(slotAutoDetectHoldInputToggled(bool)));
     connect(m_chooseFadeInputButton, SIGNAL(clicked()),
             this, SLOT(slotChooseFadeInputClicked()));
     connect(m_chooseHoldInputButton, SIGNAL(clicked()),
@@ -493,13 +498,64 @@ void VCPropertiesEditor::slotHoldLimitsChanged()
                                m_holdHighSpin->value());
 }
 
+void VCPropertiesEditor::slotAutoDetectFadeInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        if (m_autoDetectHoldInputButton->isChecked() == true)
+            m_autoDetectHoldInputButton->toggle();
+
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotFadeInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotFadeInputValueChanged(quint32,quint32)));
+    }
+}
+
+void VCPropertiesEditor::slotAutoDetectHoldInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        if (m_autoDetectFadeInputButton->isChecked() == true)
+            m_autoDetectFadeInputButton->toggle();
+
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotHoldInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotHoldInputValueChanged(quint32,quint32)));
+    }
+}
+
+void VCPropertiesEditor::slotFadeInputValueChanged(quint32 universe,
+                                                   quint32 channel)
+{
+    m_properties.setFadeInputSource(universe, channel);
+    updateFadeInputSource();
+}
+
+void VCPropertiesEditor::slotHoldInputValueChanged(quint32 universe,
+                                                   quint32 channel)
+{
+    m_properties.setHoldInputSource(universe, channel);
+    updateHoldInputSource();
+}
+
 void VCPropertiesEditor::slotChooseFadeInputClicked()
 {
     SelectInputChannel sic(this);
     if (sic.exec() == QDialog::Accepted)
     {
-        m_properties.setFadeInputSource(sic.universe(),
-                                        sic.channel());
+        m_properties.setFadeInputSource(sic.universe(), sic.channel());
         updateFadeInputSource();
     }
 }
@@ -509,9 +565,18 @@ void VCPropertiesEditor::slotChooseHoldInputClicked()
     SelectInputChannel sic(this);
     if (sic.exec() == QDialog::Accepted)
     {
-        m_properties.setHoldInputSource(sic.universe(),
-                                        sic.channel());
+        m_properties.setHoldInputSource(sic.universe(), sic.channel());
         updateHoldInputSource();
+    }
+}
+
+void VCPropertiesEditor::doAutoDetectConnections(bool checked)
+{
+    if (checked == true)
+    {
+    }
+    else
+    {
     }
 }
 

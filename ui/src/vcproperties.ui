@@ -1,50 +1,51 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>VCPropertiesEditor</class>
- <widget class="QDialog" name="VCPropertiesEditor" >
-  <property name="geometry" >
+ <widget class="QDialog" name="VCPropertiesEditor">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>503</width>
-    <height>312</height>
+    <width>642</width>
+    <height>314</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Virtual Console properties</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="m_tab" >
-     <property name="currentIndex" >
+    <widget class="QTabWidget" name="m_tab">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
        <string>Layout</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_3" >
-       <item row="0" column="0" >
-        <widget class="QGroupBox" name="m_keyboardGroup" >
-         <property name="title" >
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="m_keyboardGroup">
+         <property name="title">
           <string>Keyboard</string>
          </property>
-         <layout class="QVBoxLayout" >
+         <layout class="QVBoxLayout">
           <item>
-           <widget class="QCheckBox" name="m_grabKeyboardCheck" >
-            <property name="toolTip" >
+           <widget class="QCheckBox" name="m_grabKeyboardCheck">
+            <property name="toolTip">
              <string>Make virtual console to take exclusive keyboard control during operate mode</string>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Grab keyboard in operate mode</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="m_keyRepeatOffCheck" >
-            <property name="toolTip" >
+           <widget class="QCheckBox" name="m_keyRepeatOffCheck">
+            <property name="toolTip">
              <string>Prevent flickering when a keyboard hotkey has been pressed in operate mode</string>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Turn off key repeat in operate mode</string>
             </property>
            </widget>
@@ -52,60 +53,60 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="1" >
-        <widget class="QGroupBox" name="m_gridGroup" >
-         <property name="toolTip" >
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="m_gridGroup">
+         <property name="toolTip">
           <string>Use a grid layout for virtual console widgets</string>
          </property>
-         <property name="title" >
+         <property name="title">
           <string>Grid</string>
          </property>
-         <property name="checkable" >
+         <property name="checkable">
           <bool>true</bool>
          </property>
-         <layout class="QGridLayout" name="gridLayout_5" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="label" >
-            <property name="text" >
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
              <string>Horizontal (X)</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <widget class="QSpinBox" name="m_gridXSpin" >
-            <property name="toolTip" >
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="m_gridXSpin">
+            <property name="toolTip">
              <string>Widget grid layout X resolution</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>px</string>
             </property>
-            <property name="minimum" >
+            <property name="minimum">
              <number>1</number>
             </property>
-            <property name="value" >
+            <property name="value">
              <number>10</number>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QLabel" name="label_2" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
              <string>Vertical (Y)</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" >
-           <widget class="QSpinBox" name="m_gridYSpin" >
-            <property name="toolTip" >
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="m_gridYSpin">
+            <property name="toolTip">
              <string>Widget grid layout Y resolution</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>px</string>
             </property>
-            <property name="minimum" >
+            <property name="minimum">
              <number>1</number>
             </property>
-            <property name="value" >
+            <property name="value">
              <number>10</number>
             </property>
            </widget>
@@ -113,12 +114,12 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0" >
-        <spacer name="verticalSpacer_2" >
-         <property name="orientation" >
+       <item row="1" column="0">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>111</height>
@@ -126,12 +127,12 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="1" >
-        <spacer name="verticalSpacer_3" >
-         <property name="orientation" >
+       <item row="1" column="1">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>111</height>
@@ -141,104 +142,104 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="DefaultSliders" >
-      <attribute name="title" >
+     <widget class="QWidget" name="DefaultSliders">
+      <attribute name="title">
        <string>Default sliders</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" >
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QGroupBox" name="m_defaultFadeGroup" >
-         <property name="title" >
+        <widget class="QGroupBox" name="m_defaultFadeGroup">
+         <property name="title">
           <string>Default fade slider</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="m_lowFadeLabel" >
-            <property name="text" >
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_lowFadeLabel">
+            <property name="text">
              <string>Low limit</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" colspan="2" >
-           <widget class="QSpinBox" name="m_fadeLowSpin" >
-            <property name="toolTip" >
+          <item row="0" column="1" colspan="3">
+           <widget class="QSpinBox" name="m_fadeLowSpin">
+            <property name="toolTip">
              <string>Lowest value that can be set to the 'fade' bus with the default sliders</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>s</string>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>998</number>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QLabel" name="m_highFadeLabel" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QLabel" name="m_highFadeLabel">
+            <property name="text">
              <string>High limit</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="2" >
-           <widget class="QSpinBox" name="m_fadeHighSpin" >
-            <property name="toolTip" >
+          <item row="1" column="1" colspan="3">
+           <widget class="QSpinBox" name="m_fadeHighSpin">
+            <property name="toolTip">
              <string>Highest value that can be set to the 'fade' bus with the default sliders</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>s</string>
             </property>
-            <property name="minimum" >
+            <property name="minimum">
              <number>1</number>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>999</number>
             </property>
-            <property name="value" >
+            <property name="value">
              <number>5</number>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="3" >
-           <widget class="Line" name="line" >
-            <property name="orientation" >
+          <item row="2" column="0" colspan="4">
+           <widget class="Line" name="line">
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
-          <item row="3" column="0" >
-           <widget class="QLabel" name="label_3" >
-            <property name="text" >
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
              <string>Input universe</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2" >
-           <widget class="QLineEdit" name="m_fadeInputUniverseEdit" >
-            <property name="readOnly" >
+          <item row="3" column="1" colspan="3">
+           <widget class="QLineEdit" name="m_fadeInputUniverseEdit">
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="4" column="0" >
-           <widget class="QLabel" name="label_4" >
-            <property name="text" >
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
              <string>Input channel</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1" colspan="2" >
-           <widget class="QLineEdit" name="m_fadeInputChannelEdit" >
-            <property name="readOnly" >
+          <item row="4" column="1" colspan="3">
+           <widget class="QLineEdit" name="m_fadeInputChannelEdit">
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2" >
-           <spacer name="horizontalSpacer" >
-            <property name="orientation" >
+          <item row="5" column="0" colspan="2">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>118</width>
               <height>20</height>
@@ -246,10 +247,23 @@
             </property>
            </spacer>
           </item>
-          <item row="5" column="2" >
-           <widget class="QPushButton" name="m_chooseFadeInputButton" >
-            <property name="text" >
+          <item row="5" column="3">
+           <widget class="QPushButton" name="m_chooseFadeInputButton">
+            <property name="text">
              <string>Choose...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="m_autoDetectFadeInputButton">
+            <property name="toolTip">
+             <string>When toggled, you can move an external slider/knob to assign it to the default fade slider.</string>
+            </property>
+            <property name="text">
+             <string>Auto Detect</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -257,98 +271,98 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="m_defaultHoldGroup" >
-         <property name="title" >
+        <widget class="QGroupBox" name="m_defaultHoldGroup">
+         <property name="title">
           <string>Default hold slider</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="m_lowHoldLabel" >
-            <property name="text" >
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_lowHoldLabel">
+            <property name="text">
              <string>Low limit</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" colspan="2" >
-           <widget class="QSpinBox" name="m_holdLowSpin" >
-            <property name="toolTip" >
+          <item row="0" column="1" colspan="3">
+           <widget class="QSpinBox" name="m_holdLowSpin">
+            <property name="toolTip">
              <string>Lowest value that can be set to the 'hold' bus with the default sliders</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>s</string>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>998</number>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QLabel" name="m_highHoldLabel" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QLabel" name="m_highHoldLabel">
+            <property name="text">
              <string>High limit</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="2" >
-           <widget class="QSpinBox" name="m_holdHighSpin" >
-            <property name="toolTip" >
+          <item row="1" column="1" colspan="3">
+           <widget class="QSpinBox" name="m_holdHighSpin">
+            <property name="toolTip">
              <string>Highest value that can be set to the 'hold' bus with the default sliders</string>
             </property>
-            <property name="suffix" >
+            <property name="suffix">
              <string>s</string>
             </property>
-            <property name="minimum" >
+            <property name="minimum">
              <number>1</number>
             </property>
-            <property name="maximum" >
+            <property name="maximum">
              <number>999</number>
             </property>
-            <property name="value" >
+            <property name="value">
              <number>5</number>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="3" >
-           <widget class="Line" name="line_2" >
-            <property name="orientation" >
+          <item row="2" column="0" colspan="4">
+           <widget class="Line" name="line_2">
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
-          <item row="3" column="0" >
-           <widget class="QLabel" name="label_5" >
-            <property name="text" >
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
              <string>Input universe</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2" >
-           <widget class="QLineEdit" name="m_holdInputUniverseEdit" >
-            <property name="readOnly" >
+          <item row="3" column="1" colspan="3">
+           <widget class="QLineEdit" name="m_holdInputUniverseEdit">
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="4" column="0" >
-           <widget class="QLabel" name="label_6" >
-            <property name="text" >
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
              <string>Input channel</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1" colspan="2" >
-           <widget class="QLineEdit" name="m_holdInputChannelEdit" >
-            <property name="readOnly" >
+          <item row="4" column="1" colspan="3">
+           <widget class="QLineEdit" name="m_holdInputChannelEdit">
+            <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2" >
-           <spacer name="horizontalSpacer_2" >
-            <property name="orientation" >
+          <item row="5" column="0" colspan="2">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>117</width>
               <height>20</height>
@@ -356,10 +370,23 @@
             </property>
            </spacer>
           </item>
-          <item row="5" column="2" >
-           <widget class="QPushButton" name="m_chooseHoldInputButton" >
-            <property name="text" >
+          <item row="5" column="3">
+           <widget class="QPushButton" name="m_chooseHoldInputButton">
+            <property name="text">
              <string>Choose...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="m_autoDetectHoldInputButton">
+            <property name="toolTip">
+             <string>When toggled, you can move an external slider/knob to assign it to the default hold slider.</string>
+            </property>
+            <property name="text">
+             <string>Auto Detect</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -371,11 +398,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="orientation" >
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -390,11 +417,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>257</x>
      <y>302</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -406,11 +433,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>325</x>
      <y>302</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>
@@ -422,11 +449,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotGrabKeyboardClicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>57</x>
      <y>72</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>3</x>
      <y>75</y>
     </hint>
@@ -438,11 +465,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotKeyRepeatOffClicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>42</x>
      <y>98</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>4</x>
      <y>100</y>
     </hint>
@@ -454,11 +481,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotGridClicked()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>471</x>
      <y>48</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>498</x>
      <y>49</y>
     </hint>
@@ -470,11 +497,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotGridXChanged(int)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>439</x>
      <y>74</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>499</x>
      <y>80</y>
     </hint>
@@ -486,11 +513,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotGridYChanged(int)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>447</x>
      <y>102</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>497</x>
      <y>116</y>
     </hint>
@@ -502,11 +529,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotFadeLimitsChanged()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>151</x>
      <y>81</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>5</x>
      <y>65</y>
     </hint>
@@ -518,11 +545,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotFadeLimitsChanged()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>185</x>
      <y>111</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>2</x>
      <y>126</y>
     </hint>
@@ -534,11 +561,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotHoldLimitsChanged()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>388</x>
      <y>78</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>497</x>
      <y>75</y>
     </hint>
@@ -550,11 +577,11 @@
    <receiver>VCPropertiesEditor</receiver>
    <slot>slotHoldLimitsChanged()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>406</x>
      <y>111</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>495</x>
      <y>145</y>
     </hint>

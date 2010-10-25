@@ -67,6 +67,8 @@ VCButtonProperties::VCButtonProperties(VCButton* button, QWidget* parent)
     m_inputChannel = m_button->inputChannel();
     updateInputSource();
 
+    connect(m_autoDetectInputButton, SIGNAL(toggled(bool)),
+            this, SLOT(slotAutoDetectInputToggled(bool)));
     connect(m_chooseInputButton, SIGNAL(clicked()),
             this, SLOT(slotChooseInputClicked()));
 
@@ -132,6 +134,30 @@ void VCButtonProperties::slotDetachKey()
 {
     m_keySequence = QKeySequence();
     m_keyEdit->setText(m_keySequence.toString());
+}
+
+void VCButtonProperties::slotAutoDetectInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotInputValueChanged(quint32,quint32)));
+    }
+}
+
+void VCButtonProperties::slotInputValueChanged(quint32 universe,
+                                               quint32 channel)
+{
+    m_inputUniverse = universe;
+    m_inputChannel = channel;
+    updateInputSource();
 }
 
 void VCButtonProperties::slotChooseInputClicked()

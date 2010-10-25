@@ -130,8 +130,10 @@ VCSliderProperties::VCSliderProperties(QWidget* parent, VCSlider* slider)
      ********************************************************************/
     m_inputUniverse = m_slider->inputUniverse();
     m_inputChannel = m_slider->inputChannel();
-    updateInputUniverseChannel();
+    updateInputSource();
 
+    connect(m_autoDetectInputButton, SIGNAL(toggled(bool)),
+            this, SLOT(slotAutoDetectInputToggled(bool)));
     connect(m_chooseInputButton, SIGNAL(clicked()),
             this, SLOT(slotChooseInputClicked()));
 
@@ -219,6 +221,30 @@ void VCSliderProperties::slotModeSubmasterClicked()
     m_sliderMode = VCSlider::Submaster;
 }
 
+void VCSliderProperties::slotAutoDetectInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotInputValueChanged(quint32,quint32)));
+    }
+}
+
+void VCSliderProperties::slotInputValueChanged(quint32 universe,
+                                               quint32 channel)
+{
+    m_inputUniverse = universe;
+    m_inputChannel = channel;
+    updateInputSource();
+}
+
 void VCSliderProperties::slotChooseInputClicked()
 {
     SelectInputChannel sic(this);
@@ -227,11 +253,11 @@ void VCSliderProperties::slotChooseInputClicked()
         m_inputUniverse = sic.universe();
         m_inputChannel = sic.channel();
 
-        updateInputUniverseChannel();
+        updateInputSource();
     }
 }
 
-void VCSliderProperties::updateInputUniverseChannel()
+void VCSliderProperties::updateInputSource()
 {
     QLCInputProfile* profile;
     InputPatch* patch;

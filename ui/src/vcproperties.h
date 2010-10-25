@@ -248,6 +248,7 @@ protected:
 class VCPropertiesEditor : public QDialog, public Ui_VCPropertiesEditor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCPropertiesEditor)
 
     /*********************************************************************
      * Initialization
@@ -259,9 +260,6 @@ public:
     VCProperties properties() const {
         return m_properties;
     }
-
-private:
-    Q_DISABLE_COPY(VCPropertiesEditor)
 
 protected:
     VCProperties m_properties;
@@ -284,10 +282,16 @@ protected slots:
     void slotFadeLimitsChanged();
     void slotHoldLimitsChanged();
 
+    void slotAutoDetectFadeInputToggled(bool checked);
+    void slotAutoDetectHoldInputToggled(bool checked);
+    void slotFadeInputValueChanged(quint32 universe, quint32 channel);
+    void slotHoldInputValueChanged(quint32 universe, quint32 channel);
+
     void slotChooseFadeInputClicked();
     void slotChooseHoldInputClicked();
 
 protected:
+    void doAutoDetectConnections(bool checked);
     void updateFadeInputSource();
     void updateHoldInputSource();
 };

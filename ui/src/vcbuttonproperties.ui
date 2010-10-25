@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0" >
+<ui version="4.0">
  <class>VCButtonProperties</class>
- <widget class="QDialog" name="VCButtonProperties" >
-  <property name="geometry" >
+ <widget class="QDialog" name="VCButtonProperties">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>418</height>
+    <height>470</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Button properties</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
       <string>General</string>
      </property>
-     <layout class="QGridLayout" name="gridLayoutGeneral" >
-      <item row="0" column="0" >
-       <widget class="QLabel" name="m_nameLabel" >
-        <property name="text" >
+     <layout class="QGridLayout" name="gridLayoutGeneral">
+      <item row="0" column="0">
+       <widget class="QLabel" name="m_nameLabel">
+        <property name="text">
          <string>Button label</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="3" >
-       <widget class="QLineEdit" name="m_nameEdit" >
-        <property name="toolTip" >
+      <item row="0" column="1" colspan="3">
+       <widget class="QLineEdit" name="m_nameEdit">
+        <property name="toolTip">
          <string>Text to display on the button</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" >
-       <widget class="QLabel" name="m_functionLabel" >
-        <property name="text" >
+      <item row="1" column="0">
+       <widget class="QLabel" name="m_functionLabel">
+        <property name="text">
          <string>Function</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" >
-       <widget class="QLineEdit" name="m_functionEdit" >
-        <property name="toolTip" >
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="m_functionEdit">
+        <property name="toolTip">
          <string>The function that this button controls</string>
         </property>
-        <property name="readOnly" >
+        <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="2" >
-       <widget class="QToolButton" name="m_attachFunction" >
-        <property name="toolTip" >
+      <item row="1" column="2">
+       <widget class="QToolButton" name="m_attachFunction">
+        <property name="toolTip">
          <string>Attach a function to this button</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string notr="true">...</string>
         </property>
-        <property name="icon" >
-         <iconset resource="main.qrc" >
+        <property name="icon">
+         <iconset resource="main.qrc">
           <normaloff>:/attach.png</normaloff>:/attach.png</iconset>
         </property>
-        <property name="iconSize" >
+        <property name="iconSize">
          <size>
           <width>26</width>
           <height>26</height>
@@ -71,19 +71,19 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3" >
-       <widget class="QToolButton" name="m_detachFunction" >
-        <property name="toolTip" >
+      <item row="1" column="3">
+       <widget class="QToolButton" name="m_detachFunction">
+        <property name="toolTip">
          <string>Detach the button's function attachment</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string notr="true">...</string>
         </property>
-        <property name="icon" >
-         <iconset resource="main.qrc" >
+        <property name="icon">
+         <iconset resource="main.qrc">
           <normaloff>:/detach.png</normaloff>:/detach.png</iconset>
         </property>
-        <property name="iconSize" >
+        <property name="iconSize">
          <size>
           <width>26</width>
           <height>26</height>
@@ -95,41 +95,41 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
       <string>Keyboard hotkey</string>
      </property>
-     <layout class="QHBoxLayout" >
+     <layout class="QHBoxLayout">
       <item>
-       <widget class="QLabel" name="m_keyLabel" >
-        <property name="text" >
+       <widget class="QLabel" name="m_keyLabel">
+        <property name="text">
          <string>Key combination</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="m_keyEdit" >
-        <property name="toolTip" >
+       <widget class="QLineEdit" name="m_keyEdit">
+        <property name="toolTip">
          <string>Keyboard combination that toggles this button</string>
         </property>
-        <property name="readOnly" >
+        <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="m_attachKey" >
-        <property name="toolTip" >
+       <widget class="QToolButton" name="m_attachKey">
+        <property name="toolTip">
          <string>Set a key combination for this button</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string notr="true">...</string>
         </property>
-        <property name="icon" >
-         <iconset resource="main.qrc" >
+        <property name="icon">
+         <iconset resource="main.qrc">
           <normaloff>:/key_bindings.png</normaloff>:/key_bindings.png</iconset>
         </property>
-        <property name="iconSize" >
+        <property name="iconSize">
          <size>
           <width>26</width>
           <height>26</height>
@@ -138,18 +138,18 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="m_detachKey" >
-        <property name="toolTip" >
+       <widget class="QToolButton" name="m_detachKey">
+        <property name="toolTip">
          <string>Remove the button's keyboard shortcut key</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string notr="true">...</string>
         </property>
-        <property name="icon" >
-         <iconset resource="main.qrc" >
+        <property name="icon">
+         <iconset resource="main.qrc">
           <normaloff>:/fileclose.png</normaloff>:/fileclose.png</iconset>
         </property>
-        <property name="iconSize" >
+        <property name="iconSize">
          <size>
           <width>26</width>
           <height>26</height>
@@ -161,51 +161,51 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
       <string>External Input</string>
      </property>
-     <layout class="QGridLayout" name="gridLayoutExternalInput" >
-      <item row="0" column="0" >
-       <widget class="QLabel" name="label_4" >
-        <property name="text" >
+     <layout class="QGridLayout" name="gridLayoutExternalInput">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
          <string>Input Universe</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="2" >
-       <widget class="QLineEdit" name="m_inputUniverseEdit" >
-        <property name="toolTip" >
+      <item row="0" column="1" colspan="3">
+       <widget class="QLineEdit" name="m_inputUniverseEdit">
+        <property name="toolTip">
          <string>The input universe that sends data to this widget</string>
         </property>
-        <property name="readOnly" >
+        <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" >
-       <widget class="QLabel" name="label_5" >
-        <property name="text" >
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
          <string>Input Channel</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" colspan="2" >
-       <widget class="QLineEdit" name="m_inputChannelEdit" >
-        <property name="toolTip" >
+      <item row="1" column="1" colspan="3">
+       <widget class="QLineEdit" name="m_inputChannelEdit">
+        <property name="toolTip">
          <string>The particular input channel within the input universe that sends data to this widget</string>
         </property>
-        <property name="readOnly" >
+        <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2" >
-       <spacer name="horizontalSpacer" >
-        <property name="orientation" >
+      <item row="2" column="0" colspan="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>268</width>
           <height>20</height>
@@ -213,19 +213,38 @@
         </property>
        </spacer>
       </item>
-      <item row="2" column="2" >
-       <widget class="QPushButton" name="m_chooseInputButton" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Fixed" hsizetype="Maximum" >
+      <item row="2" column="3">
+       <widget class="QPushButton" name="m_chooseInputButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="toolTip" >
+        <property name="toolTip">
          <string>Choose the external input universe &amp; channel that this widget should listen to</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Choose...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="m_autoDetectInputButton">
+        <property name="toolTip">
+         <string>When toggled, you can click an external button to assign it to this virtual console button.</string>
+        </property>
+        <property name="text">
+         <string>Auto Detect</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -233,40 +252,40 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_4" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
       <string>On button press...</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QVBoxLayout">
       <item>
-       <widget class="QRadioButton" name="m_toggle" >
-        <property name="toolTip" >
+       <widget class="QRadioButton" name="m_toggle">
+        <property name="toolTip">
          <string>Toggle the assigned function on/off with this button</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Toggle function on/off</string>
         </property>
-        <property name="checked" >
+        <property name="checked">
          <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="m_flash" >
-        <property name="toolTip" >
+       <widget class="QRadioButton" name="m_flash">
+        <property name="toolTip">
          <string>Flash the assigned function with this button</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Flash function (only for scenes)</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="verticalSpacer" >
-        <property name="orientation" >
+       <spacer name="verticalSpacer">
+        <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
           <height>40</height>
@@ -278,11 +297,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="m_buttonBox" >
-     <property name="orientation" >
+    <widget class="QDialogButtonBox" name="m_buttonBox">
+     <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="standardButtons" >
+     <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
@@ -295,7 +314,7 @@
   <zorder>groupBox_4</zorder>
  </widget>
  <resources>
-  <include location="main.qrc" />
+  <include location="main.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -304,11 +323,11 @@
    <receiver>VCButtonProperties</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -320,11 +339,11 @@
    <receiver>VCButtonProperties</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

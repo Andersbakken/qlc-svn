@@ -51,6 +51,8 @@ protected slots:
     void slotAttachKey();
     void slotDetachKey();
 
+    void slotAutoDetectInputToggled(bool checked);
+    void slotInputValueChanged(quint32 universe, quint32 channel);
     void slotChooseInputClicked();
 
     void accept();

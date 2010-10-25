@@ -53,10 +53,12 @@ protected slots:
     void slotModeLevelClicked();
     void slotModeSubmasterClicked();
 
+    void slotAutoDetectInputToggled(bool checked);
+    void slotInputValueChanged(quint32 universe, quint32 channel);
     void slotChooseInputClicked();
 
 protected:
-    void updateInputUniverseChannel();
+    void updateInputSource();
 
 protected:
     quint32 m_inputUniverse;
