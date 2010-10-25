@@ -223,26 +223,25 @@ void InputMap::loadPlugins()
     QStringListIterator it(dir.entryList());
     while (it.hasNext() == true)
     {
-        QLCInPlugin* p;
-        QString path;
-
         /* Attempt to load a plugin from the path */
-        path = dir.absoluteFilePath(it.next());
+        QString fileName(it.next());
+        QString path = dir.absoluteFilePath(fileName);
         QPluginLoader loader(path, this);
-        p = qobject_cast<QLCInPlugin*> (loader.instance());
+        QLCInPlugin* p = qobject_cast<QLCInPlugin*> (loader.instance());
         if (p != NULL)
         {
             /* Check for duplicates */
             if (plugin(p->name()) == NULL)
             {
                 /* New plugin. Append and init. */
+                qDebug() << "Input plugin" << p->name() << "from" << fileName;
                 p->init();
                 appendPlugin(p);
             }
             else
             {
                 /* Duplicate plugin. Unload it. */
-                qWarning() << "Discarded duplicate plugin" << path;
+                qWarning() << "Discarded duplicate input plugin" << fileName;
                 loader.unload();
             }
         }
@@ -322,7 +321,6 @@ bool InputMap::appendPlugin(QLCInPlugin* inputPlugin)
 
     if (plugin(inputPlugin->name()) == NULL)
     {
-        qDebug() << "Found an input plugin:" << inputPlugin->name();
         m_plugins.append(inputPlugin);
         connect(inputPlugin, SIGNAL(configurationChanged()),
                 this, SLOT(slotConfigurationChanged()));

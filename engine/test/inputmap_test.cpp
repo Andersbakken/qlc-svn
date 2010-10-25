@@ -64,6 +64,7 @@ void InputMap_Test::appendPlugin()
 
     InputPluginStub* stub = new InputPluginStub();
     QVERIFY(im.appendPlugin(stub) == true);
+    QVERIFY(im.appendPlugin(stub) == false);
     QVERIFY(im.m_plugins.size() == 1);
     QVERIFY(im.plugin(stub->name()) == stub);
     QVERIFY(im.plugin("Foobar") == NULL);

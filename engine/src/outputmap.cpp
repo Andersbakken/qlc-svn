@@ -106,26 +106,25 @@ void OutputMap::loadPlugins()
     QStringListIterator it(dir.entryList());
     while (it.hasNext() == true)
     {
-        QLCOutPlugin* p;
-        QString path;
-
         /* Attempt to load a plugin from the path */
-        path = dir.absoluteFilePath(it.next());
+        QString fileName(it.next());
+        QString path = dir.absoluteFilePath(fileName);
         QPluginLoader loader(path, this);
-        p = qobject_cast<QLCOutPlugin*> (loader.instance());
+        QLCOutPlugin* p = qobject_cast<QLCOutPlugin*> (loader.instance());
         if (p != NULL)
         {
             /* Check for duplicates */
             if (plugin(p->name()) == NULL)
             {
                 /* New plugin. Append and init. */
+                qDebug() << "Output plugin" << p->name() << "from" << fileName;
                 p->init();
                 appendPlugin(p);
             }
             else
             {
                 /* Duplicate plugin. Unload it. */
-                qWarning() << "Discarded duplicate plugin" << path;
+                qWarning() << "Discarded duplicate output plugin" << path;
                 loader.unload();
             }
         }
@@ -393,7 +392,6 @@ bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
 
     if (plugin(outputPlugin->name()) == NULL)
     {
-        qDebug() << "Found an output plugin:" << outputPlugin->name();
         m_plugins.append(outputPlugin);
         connect(outputPlugin, SIGNAL(configurationChanged()),
                 this, SLOT(slotConfigurationChanged()));
@@ -402,7 +400,7 @@ bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
     else
     {
         qWarning() << "Output plugin" << outputPlugin->name()
-        << "is already loaded. Skipping";
+                   << "is already loaded. Skipping";
         return false;
     }
 }
