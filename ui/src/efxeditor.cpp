@@ -23,6 +23,7 @@
 #include <QTreeWidget>
 #include <QMessageBox>
 #include <QPaintEvent>
+#include <QSettings>
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLineEdit>
@@ -38,10 +39,13 @@
 #include "fixtureselection.h"
 #include "efxeditor.h"
 #include "fixture.h"
+#include "apputil.h"
 #include "app.h"
 #include "doc.h"
 
 extern App* _app;
+
+#define SETTINGS_GEOMETRY "efxeditor/geometry"
 
 #define KColumnNumber  0
 #define KColumnName    1
@@ -71,10 +75,19 @@ EFXEditor::EFXEditor(QWidget* parent, EFX* efx) : QDialog(parent)
     initGeneralPage();
     initMovementPage();
     initInitializationPage();
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 EFXEditor::~EFXEditor()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
+
     delete m_efx;
 }
 
