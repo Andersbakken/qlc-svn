@@ -300,6 +300,12 @@ void FunctionManager::initToolbar()
     m_toolbar->addAction(m_cloneAction);
     m_toolbar->addSeparator();
     m_toolbar->addAction(m_deleteAction);
+
+    m_busButton = new QToolButton(this);
+    m_busButton->setIcon(QIcon(":/bus.png"));
+    m_busButton->setMenu(m_busMenu);
+    m_busButton->setPopupMode(QToolButton::InstantPopup);
+    m_toolbar->addWidget(m_busButton);
 }
 
 void FunctionManager::slotBusTriggered(QAction* action)
@@ -519,6 +525,7 @@ void FunctionManager::updateActionStatus()
         m_selectAllAction->setEnabled(true);
 
         m_busGroup->setEnabled(true);
+        m_busButton->setEnabled(true);
     }
     else
     {
@@ -530,6 +537,7 @@ void FunctionManager::updateActionStatus()
         m_selectAllAction->setEnabled(false);
 
         m_busGroup->setEnabled(false);
+        m_busButton->setEnabled(false);
     }
 }
 

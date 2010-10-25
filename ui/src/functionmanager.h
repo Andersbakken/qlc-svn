@@ -41,6 +41,7 @@ class QMenu;
 class FunctionManager : public QWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(FunctionManager)
 
     /*********************************************************************
      * Initialization
@@ -56,9 +57,6 @@ public:
 
     /** Normal public destructor */
     ~FunctionManager();
-
-private:
-    Q_DISABLE_COPY(FunctionManager)
 
 protected:
     /** Protected constructor to prevent multiple instances. */
@@ -150,6 +148,7 @@ protected:
     QAction* m_selectAllAction;
 
     QActionGroup* m_busGroup;
+    QToolButton* m_busButton;
 
     /*********************************************************************
      * Helpers
