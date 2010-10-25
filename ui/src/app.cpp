@@ -304,7 +304,15 @@ void App::initOutputMap()
     m_outputMap = new OutputMap(this, KUniverseCount);
     Q_ASSERT(m_outputMap != NULL);
 
-    m_outputMap->loadPlugins();
+    /* Load output plugins */
+    QString path;
+#ifdef __APPLE__
+    path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
+                              .arg(OUTPUTPLUGINDIR);
+#else
+    path = QString(OUTPUTPLUGINDIR);
+#endif
+    m_outputMap->loadPlugins(path);
     m_outputMap->loadDefaults();
 
     connect(m_outputMap, SIGNAL(blackoutChanged(bool)),
@@ -363,14 +371,20 @@ void App::initInputMap()
     Q_ASSERT(m_inputMap != NULL);
 
     /* Load input plugins */
-    m_inputMap->loadPlugins();
+    QString path;
+#ifdef __APPLE__
+    path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
+                              .arg(INPUTPLUGINDIR);
+#else
+    path = QString(INPUTPLUGINDIR);
+#endif
+    m_inputMap->loadPlugins(path);
 
 #ifdef Q_WS_X11
     /* First, load user profiles (UNIX only). Override system profiles,
      * since duplicates in system profiles are ignored. */
     QDir dir(QString(getenv("HOME")));
-    m_inputMap->loadProfiles(dir.absoluteFilePath(
-                                 QString(USERINPUTPROFILEDIR)));
+    m_inputMap->loadProfiles(dir.absoluteFilePath(USERINPUTPROFILEDIR));
 #endif
 
     /* Then, load system profiles */

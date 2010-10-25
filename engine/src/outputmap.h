@@ -66,10 +66,11 @@ public:
     ~OutputMap();
 
     /**
-     * Load all output plugins from the plugin directory (varies between
-     * platforms).
+     * Load all output plugins from the given directory.
+     *
+     * @param path The directory to load plugins from
      */
-    void loadPlugins();
+    void loadPlugins(const QString& path);
 
 protected:
     /** Total number of supported universes */

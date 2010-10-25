@@ -198,24 +198,15 @@ quint32 InputMap::mapping(const QString& pluginName, quint32 input) const
  * Plugins
  *****************************************************************************/
 
-void InputMap::loadPlugins()
+void InputMap::loadPlugins(const QString& path)
 {
-    QString path;
-
-#ifdef __APPLE__
-    path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
-           .arg(INPUTPLUGINDIR);
-#else
-    path = QString(INPUTPLUGINDIR);
-#endif
-
     /* Find plugins from input plugin dir, sort by name, get regular files */
     QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
 
     /* Check that we can access the directory */
     if (dir.exists() == false || dir.isReadable() == false)
     {
-        qWarning() << "Unable to load input plugins from" << dir.absolutePath();
+        qWarning() << "Unable to load input plugins from" << path;
         return;
     }
 

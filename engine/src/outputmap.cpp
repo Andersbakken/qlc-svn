@@ -82,17 +82,8 @@ OutputMap::~OutputMap()
     m_dummyOut = NULL;
 }
 
-void OutputMap::loadPlugins()
+void OutputMap::loadPlugins(const QString& path)
 {
-    QString path;
-
-#ifdef __APPLE__
-    path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
-           .arg(OUTPUTPLUGINDIR);
-#else
-    path = QString(OUTPUTPLUGINDIR);
-#endif
-
     QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
 
     /* Check that we can access the directory */

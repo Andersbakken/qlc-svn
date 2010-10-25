@@ -158,9 +158,11 @@ protected:
      *************************************************************************/
 public:
     /**
-     * Load all input plugins from the input plugin directory
+     * Load all input plugins from the given directory
+     *
+     * @param path The directory to load plugins from
      */
-    void loadPlugins();
+    void loadPlugins(const QString& path);
 
     /**
      * Get a list of available input plugins as a string list
