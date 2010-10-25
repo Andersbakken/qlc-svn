@@ -38,24 +38,20 @@ class InputMap;
 class InputManager : public QWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(InputManager)
 
-    /*********************************************************************
+    /*************************************************************************
      * Initialization
-     *********************************************************************/
+     *************************************************************************/
 public:
     /** Get the InputManager singleton instance. Can be NULL. */
-    static InputManager* instance() {
-        return s_instance;
-    }
+    static InputManager* instance() { return s_instance; }
 
     /** Create an instance with parent. Fails if s_instance is not NULL. */
     static void create(QWidget* parent);
 
     /** Normal public destructor */
     virtual ~InputManager();
-
-private:
-    Q_DISABLE_COPY(InputManager)
 
 protected:
     /** Protected constructor to prevent multiple instances. */
@@ -68,9 +64,9 @@ protected slots:
 protected:
     static InputManager* s_instance;
 
-    /*********************************************************************
+    /*************************************************************************
      * Tree widget
-     *********************************************************************/
+     *************************************************************************/
 public:
     /** Update the input mapping tree */
     void updateTree();
@@ -83,9 +79,8 @@ protected:
 protected slots:
     /** Listens to input data and displays a small icon to indicate a
         working connection between a plugin and an input device. */
-    void slotInputValueChanged(quint32 universe,
-                               quint32 channel,
-                               uchar value);
+    void slotInputValueChanged(quint32 universe, quint32 channel, uchar value);
+
     /** Hides the small icon after a while ^^ */
     void slotTimerTimeout();
 
@@ -93,9 +88,9 @@ protected:
     QTreeWidget* m_tree;
     QTimer* m_timer;
 
-    /*********************************************************************
+    /*************************************************************************
      * Toolbar
-     *********************************************************************/
+     *************************************************************************/
 protected slots:
     void slotEditClicked();
 
