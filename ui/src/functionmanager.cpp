@@ -298,14 +298,13 @@ void FunctionManager::initToolbar()
     m_toolbar->addSeparator();
     m_toolbar->addAction(m_editAction);
     m_toolbar->addAction(m_cloneAction);
-    m_toolbar->addSeparator();
-    m_toolbar->addAction(m_deleteAction);
-
     m_busButton = new QToolButton(this);
     m_busButton->setIcon(QIcon(":/bus.png"));
     m_busButton->setMenu(m_busMenu);
     m_busButton->setPopupMode(QToolButton::InstantPopup);
     m_toolbar->addWidget(m_busButton);
+    m_toolbar->addSeparator();
+    m_toolbar->addAction(m_deleteAction);
 }
 
 void FunctionManager::slotBusTriggered(QAction* action)
