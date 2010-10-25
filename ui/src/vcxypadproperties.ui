@@ -244,10 +244,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_tree</sender>
+   <signal>currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)</signal>
+   <receiver>VCXYPadProperties</receiver>
+   <slot>slotSelectionChanged(QTreeWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>161</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>154</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotAddClicked()</slot>
   <slot>slotRemoveClicked()</slot>
   <slot>slotEditClicked()</slot>
+  <slot>slotSelectionChanged(QTreeWidgetItem*)</slot>
  </slots>
 </ui>

@@ -41,7 +41,7 @@ extern App* _app;
  ****************************************************************************/
 
 VCXYPadProperties::VCXYPadProperties(QWidget* parent, VCXYPad* xypad)
-        : QDialog(parent)
+    : QDialog(parent)
 {
     Q_ASSERT(xypad != NULL);
     m_xypad = xypad;
@@ -49,6 +49,7 @@ VCXYPadProperties::VCXYPadProperties(QWidget* parent, VCXYPad* xypad)
     setupUi(this);
 
     m_nameEdit->setText(m_xypad->caption());
+    slotSelectionChanged(NULL);
     fillTree();
 }
 
@@ -67,10 +68,11 @@ void VCXYPadProperties::fillTree()
     QListIterator <VCXYPadFixture> it(m_xypad->fixtures());
     while (it.hasNext() == true)
         updateFixtureItem(new QTreeWidgetItem(m_tree), it.next());
+    m_tree->setCurrentItem(m_tree->topLevelItem(0));
 }
 
 void VCXYPadProperties::updateFixtureItem(QTreeWidgetItem* item,
-        const VCXYPadFixture& fxi)
+                                          const VCXYPadFixture& fxi)
 {
     Q_ASSERT(item != NULL);
 
@@ -182,6 +184,7 @@ void VCXYPadProperties::slotAddClicked()
     }
 
     /* Get a list of new fixtures to add to the pad */
+    QTreeWidgetItem* item = NULL;
     FixtureSelection fs(this, _app->doc(), true, disabled);
     if (fs.exec() == QDialog::Accepted)
     {
@@ -190,9 +193,13 @@ void VCXYPadProperties::slotAddClicked()
         {
             VCXYPadFixture fxi;
             fxi.setFixture(it.next());
-            updateFixtureItem(new QTreeWidgetItem(m_tree), fxi);
+            item = new QTreeWidgetItem(m_tree);
+            updateFixtureItem(item, fxi);
         }
     }
+
+    if (item != NULL)
+        m_tree->setCurrentItem(item);
 }
 
 void VCXYPadProperties::slotRemoveClicked()
@@ -204,12 +211,9 @@ void VCXYPadProperties::slotRemoveClicked()
 
     if (r == QMessageBox::Yes)
     {
-        QListIterator <t_fixture_id> it(selectedFixtureIDs());
+        QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
         while (it.hasNext() == true)
-        {
-            t_fixture_id fxi_id = it.next();
-            removeFixtureItem(fxi_id);
-        }
+            delete it.next();
     }
 }
 
@@ -230,6 +234,20 @@ void VCXYPadProperties::slotEditClicked()
 
             updateFixtureItem(item, fxi);
         }
+    }
+}
+
+void VCXYPadProperties::slotSelectionChanged(QTreeWidgetItem* item)
+{
+    if (item == NULL)
+    {
+        m_removeButton->setEnabled(false);
+        m_editButton->setEnabled(false);
+    }
+    else
+    {
+        m_removeButton->setEnabled(true);
+        m_editButton->setEnabled(true);
     }
 }
 

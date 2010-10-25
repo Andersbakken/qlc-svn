@@ -61,6 +61,7 @@ protected slots:
     void slotAddClicked();
     void slotRemoveClicked();
     void slotEditClicked();
+    void slotSelectionChanged(QTreeWidgetItem* item);
 
     void accept();
 
