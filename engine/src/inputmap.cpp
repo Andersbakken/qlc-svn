@@ -119,8 +119,7 @@ void InputMap::slotValueChanged(quint32 input, quint32 channel, uchar value)
     }
 }
 
-bool InputMap::feedBack(quint32 universe, quint32 channel,
-                        uchar value)
+bool InputMap::feedBack(quint32 universe, quint32 channel, uchar value)
 {
     if (universe >= quint32(m_patch.size()))
         return false;
@@ -216,8 +215,7 @@ void InputMap::loadPlugins()
     /* Check that we can access the directory */
     if (dir.exists() == false || dir.isReadable() == false)
     {
-        qWarning() << "Unable to load input plugins from"
-        << dir.absolutePath();
+        qWarning() << "Unable to load input plugins from" << dir.absolutePath();
         return;
     }
 

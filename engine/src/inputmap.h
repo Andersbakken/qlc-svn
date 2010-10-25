@@ -50,25 +50,24 @@ class InputMap : public QObject
     friend class InputMapEditor;
     friend class InputPatchEditor;
 
-    /*********************************************************************
+    /*************************************************************************
      * Initialization
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
      * Create a new InputMap object, with the given amount of input
      * universes.
      */
-    InputMap(QObject* parent,
-             quint32 universes = KInputUniverseCount);
+    InputMap(QObject* parent, quint32 universes = KInputUniverseCount);
 
     /**
      * Destroy an InputMap object
      */
     virtual ~InputMap();
 
-    /*********************************************************************
+    /*************************************************************************
      * Input data
-     *********************************************************************/
+     *************************************************************************/
 public slots:
     /** Slot that catches input plugins' value changes */
     void slotValueChanged(quint32 input, quint32 channel, uchar value);
@@ -79,20 +78,18 @@ public slots:
 public:
     /** Send feedback value to the input profile e.g. to move a motorized
         sliders & knobs, set indicator leds etc. */
-    bool feedBack(quint32 universe, quint32 channel,
-                  uchar value);
+    bool feedBack(quint32 universe, quint32 channel, uchar value);
 
 signals:
     /** Everyone interested in input data should connect to this signal */
-    void inputValueChanged(quint32 universe,
-                           quint32 channel, uchar value);
+    void inputValueChanged(quint32 universe, quint32 channel, uchar value);
 
     /** Notifies (InputManager) of plugin configuration changes */
     void pluginConfigurationChanged(const QString& pluginName);
 
-    /*********************************************************************
+    /*************************************************************************
      * Patch
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
      * Get the number of supported input universes
@@ -156,9 +153,9 @@ protected:
     /** The universe used to edit functions etc. */
     quint32 m_editorUniverse;
 
-    /*********************************************************************
+    /*************************************************************************
      * Plugins
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
      * Load all input plugins from the input plugin directory
@@ -228,9 +225,9 @@ protected:
     /** List containing all available input plugins */
     QList <QLCInPlugin*> m_plugins;
 
-    /*********************************************************************
+    /*************************************************************************
      * Input profiles
-     *********************************************************************/
+     *************************************************************************/
 public:
     /** Load all profile profiles from the given path */
     void loadProfiles(const QString& profilePath);
