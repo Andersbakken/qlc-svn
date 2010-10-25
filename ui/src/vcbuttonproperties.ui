@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>470</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -222,7 +222,7 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string>Choose the external input universe &amp; channel that this widget should listen to</string>
+         <string>Choose an external input universe &amp; channel that this button should listen to.</string>
         </property>
         <property name="text">
          <string>Choose...</string>

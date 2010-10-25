@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>642</width>
-    <height>314</height>
+    <width>612</width>
+    <height>338</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -249,6 +249,9 @@
           </item>
           <item row="5" column="3">
            <widget class="QPushButton" name="m_chooseFadeInputButton">
+            <property name="toolTip">
+             <string>Choose an external input universe &amp; channel that the default fade slider should listen to.</string>
+            </property>
             <property name="text">
              <string>Choose...</string>
             </property>
@@ -372,6 +375,9 @@
           </item>
           <item row="5" column="3">
            <widget class="QPushButton" name="m_chooseHoldInputButton">
+            <property name="toolTip">
+             <string>Choose an external input universe &amp; channel that the default hold slider should listen to.</string>
+            </property>
             <property name="text">
              <string>Choose...</string>
             </property>
