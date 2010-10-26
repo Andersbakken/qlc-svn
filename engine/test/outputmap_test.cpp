@@ -21,13 +21,20 @@
 
 #include <QtTest>
 
-#include "outputplugin_stub.h"
+#include "outputpluginstub.h"
 #include "outputmap_test.h"
+#include "qlcoutplugin.h"
 
 #define protected public
 #include "outputpatch.h"
 #include "outputmap.h"
 #undef protected
+
+#ifndef WIN32
+#   define TESTPLUGINDIR "../outputpluginstub"
+#else
+#   define TESTPLUGINDIR "../../outputpluginstub"
+#endif
 
 void OutputMap_Test::initial()
 {
@@ -68,9 +75,13 @@ void OutputMap_Test::initial()
 void OutputMap_Test::appendPlugin()
 {
     OutputMap om(this);
+    QVERIFY(om.m_plugins.size() == 1);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    QVERIFY(om.appendPlugin(stub) == true);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
+
     QVERIFY(om.appendPlugin(stub) == false);
     QVERIFY(om.plugin(stub->name()) == stub);
     QVERIFY(om.plugin(om.m_dummyOut->name()) == om.m_dummyOut);
@@ -80,8 +91,10 @@ void OutputMap_Test::setPatch()
 {
     OutputMap om(this);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     QVERIFY(om.setPatch(0, "Foobar", 0) == false);
     QVERIFY(om.patch(0)->plugin() == om.m_dummyOut);
@@ -134,8 +147,10 @@ void OutputMap_Test::claimReleaseDump()
 {
     OutputMap om(this);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     om.setPatch(0, stub->name(), 0);
     om.setPatch(1, stub->name(), 1);
@@ -165,8 +180,10 @@ void OutputMap_Test::blackout()
 {
     OutputMap om(this);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     om.setPatch(0, stub->name(), 0);
     om.setPatch(1, stub->name(), 1);
@@ -236,8 +253,10 @@ void OutputMap_Test::pluginNames()
     QVERIFY(om.pluginNames().size() == 1);
     QVERIFY(om.pluginNames().at(0) == om.m_dummyOut->name());
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     QVERIFY(om.pluginNames().size() == 2);
     QVERIFY(om.pluginNames().at(0) == om.m_dummyOut->name());
@@ -248,8 +267,10 @@ void OutputMap_Test::pluginOutputs()
 {
     OutputMap om(this);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     QStringList ls(om.pluginOutputs(stub->name()));
     QVERIFY(ls == stub->outputs());
@@ -260,8 +281,10 @@ void OutputMap_Test::configure()
 {
     OutputMap om(this);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     QCOMPARE(om.canConfigurePlugin("Foo"), false);
     QCOMPARE(om.canConfigurePlugin(stub->name()), false);
@@ -278,11 +301,13 @@ void OutputMap_Test::slotConfigurationChanged()
 {
     OutputMap om(this);
 
-    OutputPluginStub* stub = new OutputPluginStub();
-    om.appendPlugin(stub);
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     QSignalSpy spy(&om, SIGNAL(pluginConfigurationChanged(QString)));
-    stub->emitConfigurationChanged();
+    stub->configure();
     QCOMPARE(spy.size(), 1);
     QCOMPARE(spy.at(0).size(), 1);
     QCOMPARE(spy.at(0).at(0).toString(), QString(stub->name()));

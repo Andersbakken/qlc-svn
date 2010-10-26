@@ -1,6 +1,6 @@
 /*
   Q Light Controller
-  outputplugin_stub.h
+  outputpluginstub.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,24 +19,25 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef OUTPUTPLUGIN_STUB_H
-#define OUTPUTPLUGIN_STUB_H
+#ifndef OUTPUTPLUGINSTUB_H
+#define OUTPUTPLUGINSTUB_H
 
+#include <QStringList>
+#include <QString>
 #include <QList>
+
 #include "qlcoutplugin.h"
+#include "qlctypes.h"
 
 class OutputPluginStub : public QLCOutPlugin
 {
     Q_OBJECT
-    Q_DISABLE_COPY(OutputPluginStub)
+    Q_INTERFACES(QLCOutPlugin)
 
     /*********************************************************************
      * Initialization
      *********************************************************************/
 public:
-    /** @reimp */
-    OutputPluginStub();
-
     /** @reimp */
     virtual ~OutputPluginStub();
 
@@ -78,9 +79,6 @@ public:
 
     /** @reimp */
     bool canConfigure();
-
-    /** Tell the stub to emit configurationChanged() signal */
-    void emitConfigurationChanged();
 
 public:
     int m_configureCalled;

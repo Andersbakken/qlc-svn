@@ -19,21 +19,12 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QString>
-#include <QtTest>
-
-#include "outputplugin_stub.h"
+#include <QtPlugin>
+#include "outputpluginstub.h"
 
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
-
-OutputPluginStub::OutputPluginStub() : QLCOutPlugin()
-{
-    m_configureCalled = 0;
-    m_canConfigure = false;
-    m_array = QByteArray(int(KUniverseCount * 512), char(0));
-}
 
 OutputPluginStub::~OutputPluginStub()
 {
@@ -41,6 +32,9 @@ OutputPluginStub::~OutputPluginStub()
 
 void OutputPluginStub::init()
 {
+    m_configureCalled = 0;
+    m_canConfigure = false;
+    m_array = QByteArray(int(KUniverseCount * 512), char(0));
 }
 
 QString OutputPluginStub::name()
@@ -91,6 +85,7 @@ void OutputPluginStub::outputDMX(quint32 output, const QByteArray& universe)
 void OutputPluginStub::configure()
 {
     m_configureCalled++;
+    emit configurationChanged();
 }
 
 bool OutputPluginStub::canConfigure()
@@ -98,7 +93,7 @@ bool OutputPluginStub::canConfigure()
     return m_canConfigure;
 }
 
-void OutputPluginStub::emitConfigurationChanged()
-{
-    emit configurationChanged();
-}
+/*****************************************************************************
+ * Plugin export
+ *****************************************************************************/
+Q_EXPORT_PLUGIN2(outputpluginstub, OutputPluginStub)

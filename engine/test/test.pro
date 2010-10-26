@@ -11,7 +11,7 @@ QTPLUGIN =
 INCLUDEPATH += ../src
 DEPENDPATH  += ../src
 INCLUDEPATH += ../../plugins/interfaces
-INCLUDEPATH += ../inputpluginstub
+INCLUDEPATH += ../inputpluginstub ../outputpluginstub
 unix:QMAKE_LIBDIR += ../src
 unix:LIBS   += -lqlcengine
 win32:{
@@ -55,7 +55,6 @@ HEADERS += bus_test.h \
 HEADERS += mastertimer_stub.h \
            dmxsource_stub.h \
            scene_stub.h \
-           outputplugin_stub.h \
            outputmap_stub.h \
            function_stub.h
 
@@ -94,7 +93,6 @@ SOURCES += bus_test.cpp \
 SOURCES += mastertimer_stub.cpp \
        dmxsource_stub.cpp \
        scene_stub.cpp \
-       outputplugin_stub.cpp \
        outputmap_stub.cpp \
        function_stub.cpp
 

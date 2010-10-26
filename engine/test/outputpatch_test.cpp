@@ -22,14 +22,20 @@
 #include <QtTest>
 #include <QtXml>
 
-#include "outputplugin_stub.h"
+#include "outputpluginstub.h"
 #include "outputpatch_test.h"
-#include "outputmap.h"
 
 /* Expose protected members to unit test */
 #define protected public
 #include "outputpatch.h"
+#include "outputmap.h"
 #undef protected
+
+#ifndef WIN32
+#   define TESTPLUGINDIR "../outputpluginstub"
+#else
+#   define TESTPLUGINDIR "../../outputpluginstub"
+#endif
 
 void OutputPatch_Test::defaults()
 {
@@ -42,27 +48,32 @@ void OutputPatch_Test::defaults()
 
 void OutputPatch_Test::patch()
 {
-    OutputPluginStub stub;
+    OutputMap om(this);
+
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
 
     OutputPatch* op = new OutputPatch(this);
-    op->set(&stub, 0);
-    QVERIFY(op->m_plugin == &stub);
+    op->set(stub, 0);
+    QVERIFY(op->m_plugin == stub);
     QVERIFY(op->m_output == 0);
-    QVERIFY(op->pluginName() == stub.name());
-    QVERIFY(op->outputName() == stub.outputs()[0]);
-    QVERIFY(stub.m_openLines.size() == 1);
-    QVERIFY(stub.m_openLines.at(0) == 0);
+    QVERIFY(op->pluginName() == stub->name());
+    QVERIFY(op->outputName() == stub->outputs()[0]);
+    QVERIFY(stub->m_openLines.size() == 1);
+    QVERIFY(stub->m_openLines.at(0) == 0);
 
-    op->set(&stub, 3);
-    QVERIFY(op->m_plugin == &stub);
+    op->set(stub, 3);
+    QVERIFY(op->m_plugin == stub);
     QVERIFY(op->m_output == 3);
-    QVERIFY(op->pluginName() == stub.name());
-    QVERIFY(op->outputName() == stub.outputs()[3]);
-    QVERIFY(stub.m_openLines.size() == 1);
-    QVERIFY(stub.m_openLines.at(0) == 3);
+    QVERIFY(op->pluginName() == stub->name());
+    QVERIFY(op->outputName() == stub->outputs()[3]);
+    QVERIFY(stub->m_openLines.size() == 1);
+    QVERIFY(stub->m_openLines.at(0) == 3);
 
     delete op;
-    QVERIFY(stub.m_openLines.size() == 0);
+    QVERIFY(stub->m_openLines.size() == 0);
 }
 
 void OutputPatch_Test::dump()
@@ -72,8 +83,14 @@ void OutputPatch_Test::dump()
     uni[169] = 50;
     uni[511] = 25;
 
+    OutputMap om(this);
     OutputPatch* op = new OutputPatch(this);
-    OutputPluginStub* stub = new OutputPluginStub;
+
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
+
     op->set(stub, 0);
     QVERIFY(stub->m_array[0] == (char) 0);
     QVERIFY(stub->m_array[169] == (char) 0);
@@ -85,5 +102,4 @@ void OutputPatch_Test::dump()
     QVERIFY(stub->m_array[511] == (char) 25);
 
     delete op;
-    delete stub;
 }
