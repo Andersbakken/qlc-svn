@@ -138,12 +138,8 @@ void OLAOut::close(quint32 output)
 QStringList OLAOut::outputs()
 {
     QStringList list;
-    for (int i = 0; i != m_output_list.size(); ++i)
-    {
-        QString s;
-        s.sprintf("OLA Output %d", i+1);
-        list << s;
-    }
+    for (int i = 0; i < m_output_list.size(); ++i)
+        list << QString("%1: OLA Universe %1").arg(i + 1);
     return list;
 }
 
@@ -153,7 +149,7 @@ QStringList OLAOut::outputs()
  */
 QString OLAOut::name()
 {
-    return QString("OLA Output Plugin");
+    return QString("OLA Output");
 }
 
 
