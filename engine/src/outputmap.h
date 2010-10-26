@@ -202,24 +202,6 @@ public:
     QStringList universeNames() const;
 
     /**
-     * Check, whether the given universe should be displayed as 0-511
-     * or 1-512.
-     *
-     * @param universe The universe to check the setting for
-     * @return true for 0-511, false for 1-512
-     */
-    bool isDMXZeroBased(int universe) const;
-
-    /**
-     * Change, whether the given universe should be displayed as 0-511
-     * or 1-512.
-     *
-     * @param universe The universe to change the setting for
-     * @param set true for 0-511, false for 1-512
-     */
-    void setDMXZeroBased(int universe, bool set);
-
-    /**
      * Check, whether a certain output in a certain plugin has been mapped
      * to a universe. Returns the mapped universe number or -1 if not
      * mapped.

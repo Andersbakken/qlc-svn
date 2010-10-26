@@ -72,12 +72,7 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
     /* Zero-based DMX setting */
     connect(m_zeroBasedDMXCheckBox, SIGNAL(clicked()),
             this, SLOT(slotZeroBasedDMXClicked()));
-    key = QString("/outputmap/universe%1/dmxzerobased").arg(universe);
-    value = settings.value(key);
-    if (value.isValid() == true)
-        m_zeroBasedDMXCheckBox->setChecked(value.toBool());
-    else
-        m_zeroBasedDMXCheckBox->setChecked(false);
+    m_zeroBasedDMXCheckBox->setChecked(patch->isDMXZeroBased());
     m_originalDMXZeroBasedSetting = m_zeroBasedDMXCheckBox->isChecked();
 
     fillTree();
@@ -316,8 +311,9 @@ void OutputPatchEditor::slotZeroBasedDMXClicked()
 
 void OutputPatchEditor::storeDMXZeroBasedSetting(bool set)
 {
-    Q_ASSERT(_app->outputMap() != NULL);
-    _app->outputMap()->setDMXZeroBased(m_universe, set);
+    OutputPatch* outputPatch = _app->outputMap()->patch(m_universe);
+    if (outputPatch != NULL)
+        outputPatch->setDMXZeroBased(set);
 
     /* Update fixture manager so the setting is visible immediately */
     if (FixtureManager::instance() != NULL)

@@ -28,8 +28,10 @@
 #include <QFont>
 #include <cmath>
 
-#include "qlctypes.h"
 #include "monitorfixture.h"
+#include "outputpatch.h"
+#include "outputmap.h"
+#include "qlctypes.h"
 #include "fixture.h"
 #include "app.h"
 #include "doc.h"
@@ -170,7 +172,9 @@ void MonitorFixture::slotChannelStyleChanged(Monitor::ChannelStyle style)
         i = 1;
 
     /* +1 if addresses should be shown 1-based */
-    if (fxi->isDMXZeroBased() == false && style == Monitor::DMXChannels)
+    OutputPatch* op = _app->outputMap()->patch(fxi->universe());
+    if (op != NULL && op->isDMXZeroBased() == true &&
+        style == Monitor::DMXChannels)
     {
         /* 1-based addresses */
         i = i + 1;

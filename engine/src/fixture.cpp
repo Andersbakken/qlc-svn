@@ -262,24 +262,6 @@ void Fixture::createGenericChannel()
 }
 
 /*****************************************************************************
- * DMX display style
- *****************************************************************************/
-
-bool Fixture::isDMXZeroBased() const
-{
-    QSettings settings;
-    QVariant value;
-    QString key;
-
-    key = QString("/outputmap/universe%1/dmxzerobased").arg(universe());
-    value = settings.value(key);
-    if (value.isValid() == true)
-        return value.toBool();
-    else
-        return false;
-}
-
-/*****************************************************************************
  * Fixture definition
  *****************************************************************************/
 

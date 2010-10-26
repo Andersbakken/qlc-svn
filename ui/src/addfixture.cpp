@@ -37,6 +37,7 @@
 #include "qlcfixturemode.h"
 #include "qlcfixturedef.h"
 
+#include "outputpatch.h"
 #include "addfixture.h"
 #include "outputmap.h"
 #include "apputil.h"
@@ -113,7 +114,8 @@ AddFixture::AddFixture(QWidget* parent,
         m_universeCombo->setCurrentIndex(selectUniverse);
         slotUniverseActivated(selectUniverse);
 
-        if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+        OutputPatch* op = m_outputMap.patch(selectUniverse);
+        if (op != NULL && op->isDMXZeroBased() == true)
             m_addressSpin->setValue(selectAddress);
         else
             m_addressSpin->setValue(selectAddress + 1);
@@ -246,7 +248,8 @@ void AddFixture::findAddress()
     {
         m_universeCombo->setCurrentIndex(address >> 9);
 
-        if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+        OutputPatch* op = m_outputMap.patch(m_universeValue);
+        if (op != NULL && op->isDMXZeroBased() == true)
             m_addressSpin->setValue(address & 0x01FF);
         else
             m_addressSpin->setValue((address & 0x01FF) + 1);
@@ -296,8 +299,10 @@ void AddFixture::slotUniverseActivated(int universe)
     int value = m_addressSpin->value();
     bool zeroBaseChanged = true;
 
-    if (m_outputMap.isDMXZeroBased(m_universeValue) ==
-            m_outputMap.isDMXZeroBased(universe))
+    OutputPatch* op1 = m_outputMap.patch(m_universeValue);
+    OutputPatch* op2 = m_outputMap.patch(universe);
+    if (op1 != NULL && op2 != NULL &&
+        op1->isDMXZeroBased() == op2->isDMXZeroBased())
     {
         zeroBaseChanged = false;
     }
@@ -311,7 +316,8 @@ void AddFixture::slotUniverseActivated(int universe)
        setting accordingly (e.g. x in 0-511 is x+1 in 1-512 & vice versa) */
     if (zeroBaseChanged == true)
     {
-        if (m_outputMap.isDMXZeroBased(universe) == true)
+        OutputPatch* op = m_outputMap.patch(universe);
+        if (op != NULL && op->isDMXZeroBased() == true)
             m_addressSpin->setValue(value - 1);
         else
             m_addressSpin->setValue(value + 1);
@@ -320,7 +326,8 @@ void AddFixture::slotUniverseActivated(int universe)
 
 void AddFixture::slotAddressChanged(int value)
 {
-    if (m_outputMap.isDMXZeroBased(m_universeCombo->currentIndex()) == true)
+    OutputPatch* op = m_outputMap.patch(m_universeCombo->currentIndex());
+    if (op != NULL && op->isDMXZeroBased() == true)
         m_addressValue = value;
     else
         m_addressValue = value - 1;
@@ -335,7 +342,8 @@ void AddFixture::slotChannelsChanged(int value)
 
     /* Set the maximum possible address so that channels cannot overflow
        beyond DMX's range of 512 channels */
-    if (m_outputMap.isDMXZeroBased(m_universeValue) == true)
+    OutputPatch* op = m_outputMap.patch(m_universeValue);
+    if (op != NULL && op->isDMXZeroBased() == true)
         m_addressSpin->setRange(0, 512 - value);
     else
         m_addressSpin->setRange(1, 513 - value);

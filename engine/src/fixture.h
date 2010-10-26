@@ -256,19 +256,6 @@ protected:
     QLCChannel* m_genericChannel;
 
     /*********************************************************************
-     * DMX display style
-     *********************************************************************/
-public:
-    /**
-     * Check, whether this fixture's address and channels should be shown
-     * zero-based. This is just a convenience method that accesses a setting
-     * owned by outputmap.
-     *
-     * @return true if DMX address space is 0-511, false for 1-512
-     */
-    bool isDMXZeroBased() const;
-
-    /*********************************************************************
      * Fixture definition
      *********************************************************************/
 public:

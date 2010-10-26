@@ -44,6 +44,7 @@ void OutputPatch_Test::defaults()
     QVERIFY(op.m_output == KOutputInvalid);
     QVERIFY(op.pluginName() == KOutputNone);
     QVERIFY(op.outputName() == KOutputNone);
+    QVERIFY(op.isDMXZeroBased() == false);
 }
 
 void OutputPatch_Test::patch()
@@ -74,6 +75,22 @@ void OutputPatch_Test::patch()
 
     delete op;
     QVERIFY(stub->m_openLines.size() == 0);
+}
+
+void OutputPatch_Test::dmxZeroBased()
+{
+    OutputPatch op(this);
+    QVERIFY(op.isDMXZeroBased() == false);
+
+    op.setDMXZeroBased(true);
+    QVERIFY(op.isDMXZeroBased() == true);
+    QVERIFY(op.m_dmxZeroBased == true);
+    op.setDMXZeroBased(true);
+    QVERIFY(op.isDMXZeroBased() == true);
+    QVERIFY(op.m_dmxZeroBased == true);
+    op.setDMXZeroBased(false);
+    QVERIFY(op.isDMXZeroBased() == false);
+    QVERIFY(op.m_dmxZeroBased == false);
 }
 
 void OutputPatch_Test::dump()

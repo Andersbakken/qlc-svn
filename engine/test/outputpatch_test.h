@@ -31,6 +31,7 @@ class OutputPatch_Test : public QObject
 private slots:
     void defaults();
     void patch();
+    void dmxZeroBased();
     void dump();
 };
 

@@ -45,8 +45,10 @@
 
 #include "fixtureconsole.h"
 #include "fixturemanager.h"
+#include "outputpatch.h"
 #include "addfixture.h"
 #include "collection.h"
+#include "outputmap.h"
 #include "fixture.h"
 #include "apputil.h"
 #include "app.h"
@@ -306,7 +308,8 @@ void FixtureManager::updateItem(QTreeWidgetItem* item, Fixture* fxi)
     item->setText(KColumnUniverse, QString("%1").arg(fxi->universe() + 1));
 
     // Address column, show 0-based or 1-based DMX addresses
-    if (fxi->isDMXZeroBased() == true)
+    OutputPatch* op = _app->outputMap()->patch(fxi->universe());
+    if (op != NULL && op->isDMXZeroBased() == true)
         s.sprintf("%.3d - %.3d", fxi->address(),
                   fxi->address() + fxi->channels() - 1);
     else

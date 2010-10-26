@@ -241,7 +241,7 @@ bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
     if (int(universe) >= m_patch.size())
     {
         qWarning() << "Universe number out of bounds:" << universe
-        << "Unable to set patch.";
+                   << "Unable to set patch.";
         return false;
     }
 
@@ -249,7 +249,7 @@ bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
     if (outputPlugin == NULL)
     {
         qWarning() << "Plugin" << pluginName << "for universe number"
-        << universe << "not found.";
+                   << universe << "not found.";
         return false;
     }
 
@@ -279,29 +279,6 @@ QStringList OutputMap::universeNames() const
     }
 
     return list;
-}
-
-bool OutputMap::isDMXZeroBased(int universe) const
-{
-    QSettings settings;
-    QVariant value;
-    QString key;
-
-    key = QString("/outputmap/universe%1/dmxzerobased").arg(universe);
-    value = settings.value(key);
-    if (value.isValid() == true)
-        return value.toBool();
-    else
-        return false;
-}
-
-void OutputMap::setDMXZeroBased(int universe, bool set)
-{
-    QSettings settings;
-    QString key;
-
-    key = QString("/outputmap/universe%1/dmxzerobased").arg(universe);
-    settings.setValue(key, set);
 }
 
 int OutputMap::mapping(const QString& pluginName, quint32 output) const
@@ -427,6 +404,12 @@ void OutputMap::loadDefaults()
 
     for (int i = 0; i < KUniverseCount; i++)
     {
+        /* Zero-based addressing */
+        key = QString("/outputmap/universe%1/dmxzerobased").arg(i);
+        QVariant value = settings.value(key);
+        if (value.isValid() == true)
+            m_patch[i]->setDMXZeroBased(value.toBool());
+
         /* Plugin name */
         key = QString("/outputmap/universe%2/plugin/").arg(i);
         plugin = settings.value(key).toString();
@@ -456,7 +439,10 @@ void OutputMap::saveDefaults()
     {
         OutputPatch* outputPatch = patch(i);
         Q_ASSERT(outputPatch != NULL);
-        Q_ASSERT(outputPatch->plugin() != NULL);
+
+        /* Zero-based DMX addressing */
+        key = QString("/outputmap/universe%1/dmxzerobased").arg(i);
+        settings.setValue(key, outputPatch->isDMXZeroBased());
 
         /* Plugin name */
         key = QString("/outputmap/universe%2/plugin/").arg(i);
