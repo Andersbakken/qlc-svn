@@ -167,13 +167,31 @@ void OutputMap_Test::claimReleaseDump()
     om.dumpUniverses();
 
     for (int i = 0; i < 512; i++)
+    {
         QVERIFY(stub->m_array[i] == 'a');
+        QVERIFY(om.value(i) == 'a');
+    }
+
     for (int i = 512; i < 1024; i++)
+    {
         QVERIFY(stub->m_array[i] == 'b');
+        QVERIFY(om.value(i) == 'b');
+    }
+
     for (int i = 1024; i < 1536; i++)
+    {
         QVERIFY(stub->m_array[i] == 'c');
+        QVERIFY(om.value(i) == 'c');
+    }
+
     for (int i = 1536; i < 2048; i++)
+    {
         QVERIFY(stub->m_array[i] == 'd');
+        QVERIFY(om.value(i) == 'd');
+    }
+
+    for (int i = 2048; i < 2560; i++)
+        QVERIFY(om.value(i) == 0);
 }
 
 void OutputMap_Test::blackout()
