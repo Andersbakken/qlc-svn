@@ -295,6 +295,36 @@ void OutputMap_Test::pluginOutputs()
     QVERIFY(ls != om.m_dummyOut->outputs());
 }
 
+void OutputMap_Test::universeNames()
+{
+    OutputMap om(this);
+
+    QCOMPARE(om.universeNames().size(), om.universes());
+    QCOMPARE(om.universeNames().at(0), QString("1: Dummy Output (1: Dummy Out 1)"));
+    QCOMPARE(om.universeNames().at(1), QString("2: Dummy Output (2: Dummy Out 2)"));
+    QCOMPARE(om.universeNames().at(2), QString("3: Dummy Output (3: Dummy Out 3)"));
+    QCOMPARE(om.universeNames().at(3), QString("4: Dummy Output (4: Dummy Out 4)"));
+
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
+
+    om.setPatch(0, stub->name(), 3);
+    QCOMPARE(om.universeNames().size(), om.universes());
+    QCOMPARE(om.universeNames().at(0), QString("1: Output Plugin Stub (4: Stub 4)"));
+    QCOMPARE(om.universeNames().at(1), QString("2: Dummy Output (2: Dummy Out 2)"));
+    QCOMPARE(om.universeNames().at(2), QString("3: Dummy Output (3: Dummy Out 3)"));
+    QCOMPARE(om.universeNames().at(3), QString("4: Dummy Output (4: Dummy Out 4)"));
+
+    om.setPatch(3, stub->name(), 2);
+    QCOMPARE(om.universeNames().size(), om.universes());
+    QCOMPARE(om.universeNames().at(0), QString("1: Output Plugin Stub (4: Stub 4)"));
+    QCOMPARE(om.universeNames().at(1), QString("2: Dummy Output (2: Dummy Out 2)"));
+    QCOMPARE(om.universeNames().at(2), QString("3: Dummy Output (3: Dummy Out 3)"));
+    QCOMPARE(om.universeNames().at(3), QString("4: Output Plugin Stub (3: Stub 3)"));
+}
+
 void OutputMap_Test::configure()
 {
     OutputMap om(this);

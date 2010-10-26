@@ -268,15 +268,13 @@ OutputPatch* OutputMap::patch(int universe) const
 QStringList OutputMap::universeNames() const
 {
     QStringList list;
-
     for (quint32 i = 0; i < KUniverseCount; i++)
     {
-        QString name(patch(i)->outputName());
-        if (isDMXZeroBased(i) == true)
-            name += QString(" (0-511)");
-        else
-            name += QString(" (1-512)");
-        list << name;
+        OutputPatch* p(patch(i));
+        Q_ASSERT(p != NULL);
+        list << QString("%1: %2 (%3)").arg(i + 1)
+                                      .arg(p->pluginName())
+                                      .arg(p->outputName());
     }
 
     return list;
