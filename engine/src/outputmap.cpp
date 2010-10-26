@@ -269,15 +269,13 @@ QStringList OutputMap::universeNames() const
 {
     QStringList list;
 
-    for (int i = 0; i < KUniverseCount; i++)
+    for (quint32 i = 0; i < KUniverseCount; i++)
     {
-        QString name;
-        name = QString("%1: %2").arg(i + 1).arg(patch(i)->pluginName());
+        QString name(patch(i)->outputName());
         if (isDMXZeroBased(i) == true)
-            name += QString(" (0 - 511)");
+            name += QString(" (0-511)");
         else
-            name += QString(" (1 - 512)");
-
+            name += QString(" (1-512)");
         list << name;
     }
 
