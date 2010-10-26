@@ -238,8 +238,9 @@ void InputMap::loadPlugins(const QString& path)
         }
         else
         {
-            qWarning() << "Unable to load an input plugin from"
-                       << path << "because:" << loader.errorString();
+            qWarning() << fileName << "doesn't contain a QLC input plugin:"
+                       << loader.errorString();
+            loader.unload();
         }
     }
 }

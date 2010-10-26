@@ -121,8 +121,9 @@ void OutputMap::loadPlugins(const QString& path)
         }
         else
         {
-            qWarning() << "Unable to load an output plugin from"
-                       << path << "because:" << loader.errorString();
+            qWarning() << fileName << "doesn't contain a QLC output plugin:"
+                       << loader.errorString();
+            loader.unload();
         }
     }
 }

@@ -31,6 +31,7 @@ class OutputMap_Test : public QObject
 private slots:
     void initial();
     void appendPlugin();
+    void notOutputPlugin();
     void setPatch();
     void claimReleaseDump();
     void blackout();

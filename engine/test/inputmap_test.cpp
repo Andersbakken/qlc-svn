@@ -31,8 +31,12 @@
 
 #ifndef WIN32
 #   define TESTPLUGINDIR "../inputpluginstub"
+#   define OUTPUT_TESTPLUGINDIR "../outputpluginstub"
+#   define ENGINEDIR "../src"
 #else
 #   define TESTPLUGINDIR "../../inputpluginstub"
+#   define OUTPUT_TESTPLUGINDIR "../../outputpluginstub"
+#   define ENGINEDIR "../../src"
 #endif
 
 void InputMap_Test::initial()
@@ -70,13 +74,31 @@ void InputMap_Test::appendPlugin()
     QCOMPARE(im.m_plugins.size(), 0);
 
     im.loadPlugins(TESTPLUGINDIR);
-    QVERIFY(im.m_plugins.size() > 0);
+    QVERIFY(im.m_plugins.size() == 1);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
 
     QCOMPARE(im.appendPlugin(stub), false);
     QCOMPARE(im.plugin(stub->name()), stub);
     QVERIFY(im.plugin("Foobar") == NULL);
+
+    im.loadPlugins("foobarxyzzy42");
+    QVERIFY(im.m_plugins.size() == 1);
+    QCOMPARE(im.plugin(stub->name()), stub);
+}
+
+void InputMap_Test::notInputPlugin()
+{
+    InputMap im(this);
+    QCOMPARE(im.m_plugins.size(), 0);
+
+    // Loading should fail because the plugin is not an input plugin
+    im.loadPlugins(OUTPUT_TESTPLUGINDIR);
+    QCOMPARE(im.m_plugins.size(), 0);
+
+    // Loading should fail because the engine lib is not a plugin at all
+    im.loadPlugins(ENGINEDIR);
+    QCOMPARE(im.m_plugins.size(), 0);
 }
 
 void InputMap_Test::pluginNames()

@@ -32,8 +32,12 @@
 
 #ifndef WIN32
 #   define TESTPLUGINDIR "../outputpluginstub"
+#   define INPUT_TESTPLUGINDIR "../inputpluginstub"
+#   define ENGINEDIR "../src"
 #else
 #   define TESTPLUGINDIR "../../outputpluginstub"
+#   define INPUT_TESTPLUGINDIR "../../inputpluginstub"
+#   define ENGINEDIR "../../src"
 #endif
 
 void OutputMap_Test::initial()
@@ -78,13 +82,33 @@ void OutputMap_Test::appendPlugin()
     QVERIFY(om.m_plugins.size() == 1);
 
     om.loadPlugins(TESTPLUGINDIR);
-    QVERIFY(om.m_plugins.size() > 1);
+    QVERIFY(om.m_plugins.size() == 2);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
 
     QVERIFY(om.appendPlugin(stub) == false);
     QVERIFY(om.plugin(stub->name()) == stub);
     QVERIFY(om.plugin(om.m_dummyOut->name()) == om.m_dummyOut);
+
+    // Nonexistent location
+    om.loadPlugins("foobarxyzzy42");
+    QVERIFY(om.m_plugins.size() == 2);
+    QVERIFY(om.plugin(stub->name()) == stub);
+    QVERIFY(om.plugin(om.m_dummyOut->name()) == om.m_dummyOut);
+}
+
+void OutputMap_Test::notOutputPlugin()
+{
+    OutputMap om(this);
+    QCOMPARE(om.m_plugins.size(), 1);
+
+    // Loading should fail because the plugin is not an output plugin
+    om.loadPlugins(INPUT_TESTPLUGINDIR);
+    QCOMPARE(om.m_plugins.size(), 1);
+
+    // Loading should fail because the engine lib is not a plugin at all
+    om.loadPlugins(ENGINEDIR);
+    QCOMPARE(om.m_plugins.size(), 1);
 }
 
 void OutputMap_Test::setPatch()

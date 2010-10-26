@@ -32,6 +32,7 @@ private slots:
     void initial();
     void editorUniverse();
     void appendPlugin();
+    void notInputPlugin();
     void pluginNames();
     void pluginInputs();
     void configurePlugin();
