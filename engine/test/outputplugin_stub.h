@@ -79,6 +79,9 @@ public:
     /** @reimp */
     bool canConfigure();
 
+    /** Tell the stub to emit configurationChanged() signal */
+    void emitConfigurationChanged();
+
 public:
     int m_configureCalled;
     bool m_canConfigure;

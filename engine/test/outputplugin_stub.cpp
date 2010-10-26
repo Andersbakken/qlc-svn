@@ -97,3 +97,8 @@ bool OutputPluginStub::canConfigure()
 {
     return m_canConfigure;
 }
+
+void OutputPluginStub::emitConfigurationChanged()
+{
+    emit configurationChanged();
+}

@@ -68,6 +68,8 @@ public:
 
     bool canConfigure();
 
+    void emitConfigurationChanged();
+
 public:
     int m_configureCalled;
     bool m_canConfigure;

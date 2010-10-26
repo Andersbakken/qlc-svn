@@ -273,3 +273,18 @@ void OutputMap_Test::configure()
     om.configurePlugin(stub->name());
     QCOMPARE(stub->m_configureCalled, 1);
 }
+
+void OutputMap_Test::slotConfigurationChanged()
+{
+    OutputMap om(this);
+
+    OutputPluginStub* stub = new OutputPluginStub();
+    om.appendPlugin(stub);
+
+    QSignalSpy spy(&om, SIGNAL(pluginConfigurationChanged(QString)));
+    stub->emitConfigurationChanged();
+    QCOMPARE(spy.size(), 1);
+    QCOMPARE(spy.at(0).size(), 1);
+    QCOMPARE(spy.at(0).at(0).toString(), QString(stub->name()));
+}
+

@@ -72,6 +72,11 @@ bool InputPluginStub::canConfigure()
     return m_canConfigure;
 }
 
+void InputPluginStub::emitConfigurationChanged()
+{
+    emit configurationChanged();
+}
+
 QString InputPluginStub::infoText(quint32 input)
 {
     return QString("%1: This is a plugin stub for testing.").arg(input);

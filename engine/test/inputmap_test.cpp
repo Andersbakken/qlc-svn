@@ -273,6 +273,9 @@ void InputMap_Test::setPatch()
     QVERIFY(im.patch(3)->profile() == NULL);
     QVERIFY(im.patch(3)->feedbackEnabled() == true);
     QVERIFY(im.mapping(stub->name(), 3) == 2);
+
+    // Universe out of bounds
+    QVERIFY(im.setPatch(im.universes(), stub->name(), 0, true) == false);
 }
 
 void InputMap_Test::feedBack()
@@ -351,4 +354,18 @@ void InputMap_Test::slotValueChanged()
     QVERIFY(spy.at(1).at(0) == 0);
     QVERIFY(spy.at(1).at(1) == 5);
     QVERIFY(spy.at(1).at(2) == 127);
+}
+
+void InputMap_Test::slotConfigurationChanged()
+{
+    InputMap im(this);
+
+    InputPluginStub* stub = new InputPluginStub();
+    im.appendPlugin(stub);
+
+    QSignalSpy spy(&im, SIGNAL(pluginConfigurationChanged(QString)));
+    stub->emitConfigurationChanged();
+    QCOMPARE(spy.size(), 1);
+    QCOMPARE(spy.at(0).size(), 1);
+    QCOMPARE(spy.at(0).at(0).toString(), QString(stub->name()));
 }

@@ -37,6 +37,7 @@ private slots:
     void pluginNames();
     void pluginOutputs();
     void configure();
+    void slotConfigurationChanged();
 };
 
 #endif

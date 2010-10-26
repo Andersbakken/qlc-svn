@@ -40,6 +40,7 @@ private slots:
     void setPatch();
     void feedBack();
     void slotValueChanged();
+    void slotConfigurationChanged();
 };
 
 #endif
