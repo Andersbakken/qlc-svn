@@ -19,14 +19,14 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "inputplugin_stub.h"
-#include "inputmap.h"
+#include <QtPlugin>
 
-InputPluginStub::InputPluginStub()
-{
-    m_configureCalled = 0;
-    m_canConfigure = false;
-}
+#include "inputpluginstub.h"
+#include "qlctypes.h"
+
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
 
 InputPluginStub::~InputPluginStub()
 {
@@ -34,7 +34,18 @@ InputPluginStub::~InputPluginStub()
 
 void InputPluginStub::init()
 {
+    m_configureCalled = 0;
+    m_canConfigure = false;
 }
+
+QString InputPluginStub::name()
+{
+    return QString("Input Plugin Stub");
+}
+
+/****************************************************************************
+ * Inputs
+ ****************************************************************************/
 
 void InputPluginStub::open(quint32 input)
 {
@@ -57,14 +68,19 @@ QStringList InputPluginStub::inputs()
     return list;
 }
 
-void InputPluginStub::emitValueChanged(quint32 input, quint32 channel, uchar value)
+QString InputPluginStub::infoText(quint32 input)
 {
-    emit valueChanged(input, channel, value);
+    return QString("%1: This is a plugin stub for testing.").arg(input);
 }
+
+/****************************************************************************
+ * Configuration
+ ****************************************************************************/
 
 void InputPluginStub::configure()
 {
     m_configureCalled++;
+    emit configurationChanged();
 }
 
 bool InputPluginStub::canConfigure()
@@ -72,20 +88,9 @@ bool InputPluginStub::canConfigure()
     return m_canConfigure;
 }
 
-void InputPluginStub::emitConfigurationChanged()
-{
-    emit configurationChanged();
-}
-
-QString InputPluginStub::infoText(quint32 input)
-{
-    return QString("%1: This is a plugin stub for testing.").arg(input);
-}
-
-QString InputPluginStub::name()
-{
-    return QString("Input Plugin Stub");
-}
+/****************************************************************************
+ * Feedback
+ ****************************************************************************/
 
 void InputPluginStub::feedBack(quint32 input, quint32 channel, uchar value)
 {
@@ -93,3 +98,9 @@ void InputPluginStub::feedBack(quint32 input, quint32 channel, uchar value)
     m_feedBackChannel = channel;
     m_feedBackValue = value;
 }
+
+/****************************************************************************
+ * Plugin export
+ ****************************************************************************/
+
+Q_EXPORT_PLUGIN2(inputpluginstub, InputPluginStub)

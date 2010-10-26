@@ -21,13 +21,19 @@
 
 #include <QtTest>
 
-#include "inputplugin_stub.h"
+#include "inputpluginstub.h"
 #include "inputmap_test.h"
 
 #define protected public
 #include "inputpatch.h"
 #include "inputmap.h"
 #undef protected
+
+#ifndef WIN32
+#   define TESTPLUGINDIR "../inputpluginstub"
+#else
+#   define TESTPLUGINDIR "../../inputpluginstub"
+#endif
 
 void InputMap_Test::initial()
 {
@@ -61,12 +67,15 @@ void InputMap_Test::editorUniverse()
 void InputMap_Test::appendPlugin()
 {
     InputMap im(this);
+    QCOMPARE(im.m_plugins.size(), 0);
 
-    InputPluginStub* stub = new InputPluginStub();
-    QVERIFY(im.appendPlugin(stub) == true);
-    QVERIFY(im.appendPlugin(stub) == false);
-    QVERIFY(im.m_plugins.size() == 1);
-    QVERIFY(im.plugin(stub->name()) == stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
+
+    QCOMPARE(im.appendPlugin(stub), false);
+    QCOMPARE(im.plugin(stub->name()), stub);
     QVERIFY(im.plugin("Foobar") == NULL);
 }
 
@@ -76,8 +85,10 @@ void InputMap_Test::pluginNames()
 
     QVERIFY(im.pluginNames().size() == 0);
 
-    InputPluginStub* stub = new InputPluginStub();
-    im.appendPlugin(stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QVERIFY(im.pluginNames().size() == 1);
     QVERIFY(im.pluginNames().at(0) == stub->name());
@@ -87,11 +98,12 @@ void InputMap_Test::pluginInputs()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
+    QVERIFY(im.pluginInputs("Foo").size() == 0);
 
-    QVERIFY(im.pluginInputs(stub->name()).size() == 0);
-
-    im.appendPlugin(stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QVERIFY(im.pluginInputs(stub->name()).size() == 4);
     QVERIFY(im.pluginInputs(stub->name()) == stub->inputs());
@@ -101,10 +113,12 @@ void InputMap_Test::configurePlugin()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
-    im.configurePlugin(stub->name()); // Just a crash check
-    QVERIFY(stub->m_configureCalled == 0);
-    im.appendPlugin(stub);
+    QCOMPARE(im.canConfigurePlugin("Foo"), false);
+
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QCOMPARE(im.canConfigurePlugin("Foo"), false);
     QCOMPARE(im.canConfigurePlugin(stub->name()), false);
@@ -124,12 +138,16 @@ void InputMap_Test::pluginStatus()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
-    QVERIFY(im.pluginStatus(stub->name()).contains("No input plugin"));
-    QVERIFY(im.pluginStatus(stub->name(), 0).contains("No input plugin"));
-    QVERIFY(im.pluginStatus(stub->name(), 1).contains("No input plugin"));
-    QVERIFY(im.pluginStatus(stub->name(), 2).contains("No input plugin"));
-    QVERIFY(im.pluginStatus(stub->name(), 3).contains("No input plugin"));
+    QVERIFY(im.pluginStatus("Foo").contains("No input plugin"));
+    QVERIFY(im.pluginStatus("Bar", 0).contains("No input plugin"));
+    QVERIFY(im.pluginStatus("Baz", 1).contains("No input plugin"));
+    QVERIFY(im.pluginStatus("Xyzzy", 2).contains("No input plugin"));
+    QVERIFY(im.pluginStatus("AYBABTU", 3).contains("No input plugin"));
+
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     im.appendPlugin(stub);
     QVERIFY(im.pluginStatus(stub->name()) == stub->infoText(KInputInvalid));
@@ -167,8 +185,10 @@ void InputMap_Test::setPatch()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
-    im.appendPlugin(stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QLCInputProfile* prof = new QLCInputProfile();
     prof->setManufacturer("Foo");
@@ -282,8 +302,11 @@ void InputMap_Test::feedBack()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
-    im.appendPlugin(stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
+
     im.setPatch(0, stub->name(), 0, true);
 
     QVERIFY(im.feedBack(0, 39, 42) == true);
@@ -318,8 +341,10 @@ void InputMap_Test::slotValueChanged()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
-    im.appendPlugin(stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QVERIFY(im.setPatch(0, stub->name(), 0, false) == true);
     QVERIFY(im.patch(0)->plugin() == stub);
@@ -360,11 +385,13 @@ void InputMap_Test::slotConfigurationChanged()
 {
     InputMap im(this);
 
-    InputPluginStub* stub = new InputPluginStub();
-    im.appendPlugin(stub);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QSignalSpy spy(&im, SIGNAL(pluginConfigurationChanged(QString)));
-    stub->emitConfigurationChanged();
+    stub->configure();
     QCOMPARE(spy.size(), 1);
     QCOMPARE(spy.at(0).size(), 1);
     QCOMPARE(spy.at(0).at(0).toString(), QString(stub->name()));

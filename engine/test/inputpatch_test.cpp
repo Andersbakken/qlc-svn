@@ -22,14 +22,21 @@
 #include <QtTest>
 #include <QtXml>
 
-#include "inputplugin_stub.h"
 #include "inputpatch_test.h"
-#include "inputmap.h"
+#include "inputpluginstub.h"
+#include "qlcinplugin.h"
 
 /* Expose protected members to unit test */
 #define protected public
 #include "inputpatch.h"
+#include "inputmap.h"
 #undef protected
+
+#ifndef WIN32
+#   define TESTPLUGINDIR "../inputpluginstub"
+#else
+#   define TESTPLUGINDIR "../../inputpluginstub"
+#endif
 
 void InputPatch_Test::defaults()
 {
@@ -46,22 +53,27 @@ void InputPatch_Test::defaults()
 
 void InputPatch_Test::patch()
 {
-    InputPluginStub stub;
+    InputMap im(this);
+    im.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(im.m_plugins.size() > 0);
+
+    InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
+    QVERIFY(stub != NULL);
 
     QLCInputProfile prof1;
     prof1.setManufacturer("Foo");
     prof1.setManufacturer("Bar");
 
     InputPatch* ip = new InputPatch(this);
-    ip->set(&stub, 0, false, &prof1);
-    QVERIFY(ip->m_plugin == &stub);
+    ip->set(stub, 0, false, &prof1);
+    QVERIFY(ip->m_plugin == stub);
     QVERIFY(ip->m_input == 0);
     QVERIFY(ip->m_profile == &prof1);
-    QVERIFY(ip->pluginName() == stub.name());
-    QVERIFY(ip->inputName() == stub.inputs()[0]);
+    QVERIFY(ip->pluginName() == stub->name());
+    QVERIFY(ip->inputName() == stub->inputs()[0]);
     QVERIFY(ip->profileName() == prof1.name());
-    QVERIFY(stub.m_openLines.size() == 1);
-    QVERIFY(stub.m_openLines.at(0) == 0);
+    QVERIFY(stub->m_openLines.size() == 1);
+    QVERIFY(stub->m_openLines.at(0) == 0);
     QVERIFY(ip->m_feedbackEnabled == false);
     QVERIFY(ip->feedbackEnabled() == false);
 
@@ -69,18 +81,18 @@ void InputPatch_Test::patch()
     prof2.setManufacturer("Xyzzy");
     prof2.setManufacturer("Foobar");
 
-    ip->set(&stub, 3, true, &prof2);
-    QVERIFY(ip->m_plugin == &stub);
+    ip->set(stub, 3, true, &prof2);
+    QVERIFY(ip->m_plugin == stub);
     QVERIFY(ip->m_input == 3);
     QVERIFY(ip->m_profile == &prof2);
-    QVERIFY(ip->pluginName() == stub.name());
-    QVERIFY(ip->inputName() == stub.inputs()[3]);
+    QVERIFY(ip->pluginName() == stub->name());
+    QVERIFY(ip->inputName() == stub->inputs()[3]);
     QVERIFY(ip->profileName() == prof2.name());
-    QVERIFY(stub.m_openLines.size() == 1);
-    QVERIFY(stub.m_openLines.at(0) == 3);
+    QVERIFY(stub->m_openLines.size() == 1);
+    QVERIFY(stub->m_openLines.at(0) == 3);
     QVERIFY(ip->m_feedbackEnabled == true);
     QVERIFY(ip->feedbackEnabled() == true);
 
     delete ip;
-    QVERIFY(stub.m_openLines.size() == 0);
+    QVERIFY(stub->m_openLines.size() == 0);
 }
