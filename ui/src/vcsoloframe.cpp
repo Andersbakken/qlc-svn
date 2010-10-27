@@ -2,7 +2,7 @@
   Q Light Controller
   vcsoloframe.cpp
 
-  Copyright (c) Heikki Junnila
+  Copyright (c) Anders Thomsen
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -47,13 +47,12 @@ VCSoloFrame::VCSoloFrame(QWidget* parent) : VCFrame(parent)
     /* Set the class name "VCSoloFrame" as the object name as well */
     setObjectName(VCSoloFrame::staticMetaObject.className());
 
-    m_frameStyle = KVCFrameStyleSunken;    
+    m_frameStyle = KVCFrameStyleSunken;
 }
 
 VCSoloFrame::~VCSoloFrame()
 {
 }
-
 
 /*****************************************************************************
  * Clipboard
@@ -76,53 +75,53 @@ VCWidget* VCSoloFrame::createCopy(VCWidget* parent)
 /*****************************************************************************
 * Solo behaviour
 *****************************************************************************/
+
 void VCSoloFrame::slotModeChanged(Doc::Mode mode)
-{	
-	VCFrame::slotModeChanged(mode);
-	
+{
+    VCFrame::slotModeChanged(mode);
+
     // Get all buttons in this soloFrame
     QListIterator <VCButton*> it(findChildren<VCButton*>());
-    
+
     while (it.hasNext() == true)
     {
         VCButton* button = it.next();
-        
-        // make sure the buttons nearest soloframe is this        
+
+        // make sure the buttons nearest soloframe is this
         if (thisIsNearestSoloFrameParent(button))
-        {			
+        {
             if (mode == Doc::Operate)
             {
                 // listen to when the button function is started
                 connect(button, SIGNAL(functionStarting()),
-                    this, SLOT(slotButtonFunctionStarting()), 
-                    Qt::DirectConnection);
+                        this, SLOT(slotButtonFunctionStarting()),
+                        Qt::DirectConnection);
             }
             else
             {
                 // remove listener
                 connect(button, SIGNAL(functionStarting()),
-                    this, SLOT(slotButtonFunctionStarting()));
+                        this, SLOT(slotButtonFunctionStarting()));
             }
         }
-    }    
+    }
 }
 
 bool VCSoloFrame::thisIsNearestSoloFrameParent(QWidget* widget)
-{    
+{
 	VCSoloFrame* sf;
-	
-	while (widget != NULL)
+
+    while (widget != NULL)
     {
         widget = widget->parentWidget();
-        
+
         sf = qobject_cast<VCSoloFrame*>(widget);
-        
         if (sf != NULL)
         {
 			return sf == this;
 		}
     }
-    
+
     return false;
 }
 
@@ -132,15 +131,15 @@ void VCSoloFrame::slotButtonFunctionStarting()
 
     if (senderButton != NULL)
     {
-        // get every button that is a child of this soloFrame and turn their functions off
+        // get every button that is a child of this soloFrame and turn their
+        // functions off
         QListIterator <VCButton*> it(findChildren<VCButton*>());
-    
+
         while (it.hasNext() == true)
         {
             VCButton* button = it.next();
-            
             if (button->action() == VCButton::Toggle)
-            {				
+            {
                 Function* f = _app->doc()->function(button->function());
                 if (f != NULL)
                 {
@@ -178,75 +177,42 @@ bool VCSoloFrame::loader(const QDomElement* root, QWidget* parent)
 
 void VCSoloFrame::paintEvent(QPaintEvent* e)
 {
-	/* Draw a selection frame if appropriate */
-    //VCFrame::paintEvent(e);
-    
-	/* Draw a red dotted line inside the widget */
-	/*QPainter painter(this);
-	
-	QPen pen(Qt::DashLine);
-	pen.setCapStyle(Qt::FlatCap);
-	pen.setWidth(2);
-	pen.setColor(Qt::red);
-	painter.setPen(pen);
-	//int margin = 0;
-	//painter.drawRect(margin, margin, rect().width() - margin*2, rect().height() - margin*2);	
-	painter.drawRect(0, 0, rect().width() - 1, rect().height() - 1);	
-	painter.end();*/
-		
     /* No point coming here if there is no VC instance */
     VirtualConsole* vc = VirtualConsole::instance();
     if (vc == NULL)
         return;
-        
-    QPainter painter(this);
 
-    /* Draw frame according to style */
-    /*QStyleOptionFrame option;
-    option.initFrom(this);
-        
-    if (frameStyle() == KVCFrameStyleSunken)
-        option.state = QStyle::State_Sunken;
-    else if (frameStyle() == KVCFrameStyleRaised)
-        option.state = QStyle::State_Raised;
-    else
-        option.state = QStyle::State_None;
-*/
-    /* Draw a frame border if such is specified for this widget */
-  /*  if (option.state != QStyle::State_None)
-    {
-        style()->drawPrimitive(QStyle::PE_Frame, &option,
-                               &painter, this);
-    }*/
+    QPainter painter(this);
 
     QWidget::paintEvent(e);
 
     /* Draw selection frame */
-    bool drawSelectionFrame = mode() == Doc::Design && vc->isWidgetSelected(this);
+    bool drawSelectionFrame = false;
+    if (mode() == Doc::Design && vc->isWidgetSelected(this) == true)
+        drawSelectionFrame = true;
 
     /* Draw a dotted line around the widget */
     QPen pen(drawSelectionFrame ? Qt::DotLine : Qt::DashLine);
     pen.setColor(Qt::red);
-    
-    if (drawSelectionFrame)
+
+    if (drawSelectionFrame == true)
     {
         pen.setCapStyle(Qt::RoundCap);
-        pen.setWidth(0);        
+        pen.setWidth(0);
     }
     else
-    {     
+    {
         pen.setCapStyle(Qt::FlatCap);
-        pen.setWidth(1);        
+        pen.setWidth(1);
     }
-    
+
     painter.setPen(pen);
     painter.drawRect(0, 0, rect().width()-1, rect().height()-1);
-        
     if (drawSelectionFrame)
     {
         /* Draw a resize handle */
         QIcon icon(":/resize.png");
         painter.drawPixmap(rect().width() - 16, rect().height() - 16,
-                            icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
+                           icon.pixmap(QSize(16, 16), QIcon::Normal, QIcon::On));
     }
 }

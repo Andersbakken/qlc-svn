@@ -2,7 +2,7 @@
   Q Light Controller
   vcsoloframe.h
 
-  Copyright (c) Heikki Junnila
+  Copyright (c) Anders Thomsen
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -37,48 +37,44 @@ class QString;
 class VCSoloFrame : public VCFrame
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCSoloFrame)
 
-    /*********************************************************************
+    /*************************************************************************
      * Initialization
-     *********************************************************************/
+     *************************************************************************/
 public:
     VCSoloFrame(QWidget* parent);
     virtual ~VCSoloFrame();
 
-private:
-    /** Prevent copying thru operator= or copy constructor since QObject's
-        parental properties get confused when copied. */
-    Q_DISABLE_COPY(VCSoloFrame)
-
-    /*********************************************************************
+    /*************************************************************************
      * Clipboard
-     *********************************************************************/
+     *************************************************************************/
 public:
-    /** Create a copy of this widget into the given parent */
+    /** @reimp */
     VCWidget* createCopy(VCWidget* parent);
 
-    /*****************************************************************************
+    /*************************************************************************
     * Solo behaviour
-    *****************************************************************************/
+    *************************************************************************/
 protected:
     bool thisIsNearestSoloFrameParent(QWidget* widget);
-    
+
 protected slots:
     virtual void slotModeChanged(Doc::Mode mode);
     void slotButtonFunctionStarting();
 
-    /*********************************************************************
+    /*************************************************************************
      * Load & Save
-     *********************************************************************/
+     *************************************************************************/
 public:
     static bool loader(const QDomElement* root, QWidget* parent);
-    
-protected:    
+
+protected:
     virtual QString xmlTagName() const { return KXMLQLCVCSoloFrame; }
 
-    /*********************************************************************
+    /*************************************************************************
      * Event handlers
-     *********************************************************************/
+     *************************************************************************/
 protected:
     virtual void paintEvent(QPaintEvent* e);
 
