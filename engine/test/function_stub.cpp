@@ -96,4 +96,5 @@ void Function_Stub::postRun(MasterTimer* timer, QByteArray* universes)
 void Function_Stub::slotFixtureRemoved(t_fixture_id id)
 {
     m_slotFixtureRemovedId = id;
+    Function::slotFixtureRemoved(id);
 }
