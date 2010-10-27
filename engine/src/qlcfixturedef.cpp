@@ -160,6 +160,11 @@ QLCChannel* QLCFixtureDef::channel(const QString& name)
     return NULL;
 }
 
+QList <QLCChannel*> QLCFixtureDef::channels() const
+{
+    return m_channels;
+}
+
 /****************************************************************************
  * Modes
  ****************************************************************************/

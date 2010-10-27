@@ -138,10 +138,10 @@ public:
      * Get all channels in this fixture. Changes to the list won't end
      * up into the fixture definition. This list does not represent the actual
      * channel order for the fixture; use QLCFixtureMode for that.
+     *
+     * @return An arbitrarily-ordered list of possible channels in a fixture
      */
-    QList <QLCChannel*> channels() const {
-        return m_channels;
-    }
+    QList <QLCChannel*> channels() const;
 
 protected:
     /** Available channels */
