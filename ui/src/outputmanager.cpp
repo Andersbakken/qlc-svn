@@ -72,6 +72,7 @@ OutputManager::OutputManager(QWidget* parent, Qt::WindowFlags flags)
     m_tree->setItemsExpandable(false);
     m_tree->setSortingEnabled(false);
     m_tree->setAllColumnsShowFocus(true);
+    m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
 
     QStringList columns;
     columns << tr("Universe") << tr("Plugin") << tr("Output");
