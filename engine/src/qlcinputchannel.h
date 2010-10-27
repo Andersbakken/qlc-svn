@@ -57,19 +57,6 @@ public:
     QLCInputChannel& operator=(const QLCInputChannel& channel);
 
     /********************************************************************
-     * Channel number
-     ********************************************************************/
-public:
-    /** Set the channel number that this object represents */
-    // void setChannel(quint32 channel);
-
-    /** Get the channel number that this object represents */
-    // quint32 channel() const { return m_channel; }
-
-protected:
-    // quint32 m_channel;
-
-    /********************************************************************
      * Type
      ********************************************************************/
 public:
@@ -85,9 +72,7 @@ public:
     void setType(Type type);
 
     /** Get the type of this channel */
-    Type type() const {
-        return m_type;
-    }
+    Type type() const;
 
     /** Convert the given QLCInputChannel::Type to a QString */
     static QString typeToString(Type type);
@@ -109,9 +94,7 @@ public:
     void setName(const QString& name);
 
     /** Get the name of this channel */
-    QString name() const {
-        return m_name;
-    }
+    QString name() const;
 
 protected:
     QString m_name;

@@ -63,118 +63,63 @@ class QDomDocument;
  */
 class QLCPhysical
 {
+    /************************************************************************
+     * Initialization
+     ************************************************************************/
 public:
     QLCPhysical();
-    ~QLCPhysical();
+    virtual ~QLCPhysical();
 
     QLCPhysical& operator=(const QLCPhysical& physical);
 
+    /************************************************************************
+     * Properties
+     ************************************************************************/
 public:
-    void setBulbType(const QString& type) {
-        m_bulbType = type;
-    }
-    QString bulbType() const {
-        return m_bulbType;
-    }
+    void setBulbType(const QString& type);
+    QString bulbType() const;
 
-    void setBulbLumens(const int lumens) {
-        m_bulbLumens = lumens;
-    }
-    int bulbLumens() const {
-        return m_bulbLumens;
-    }
+    void setBulbLumens(int lumens);
+    int bulbLumens() const;
 
-    void setBulbColourTemperature(const int temp) {
-        m_bulbColourTemperature = temp;
-    }
-    int bulbColourTemperature() const {
-        return m_bulbColourTemperature;
-    }
+    void setBulbColourTemperature(int temp);
+    int bulbColourTemperature() const;
 
-    void setWeight(const int weight) {
-        m_weight = weight;
-    }
-    int weight() const {
-        return m_weight;
-    }
+    void setWeight(int weight);
+    int weight() const;
 
-    void setWidth(const int width) {
-        m_width = width;
-    }
-    int width() const {
-        return m_width;
-    }
+    void setWidth(int width);
+    int width() const;
 
-    void setHeight(const int height) {
-        m_height = height;
-    }
-    int height() const {
-        return m_height;
-    }
+    void setHeight(int height);
+    int height() const;
 
-    void setDepth(const int depth) {
-        m_depth = depth;
-    }
-    int depth() const {
-        return m_depth;
-    }
+    void setDepth(int depth);
+    int depth() const;
 
-    void setLensName(const QString& name) {
-        m_lensName = name;
-    }
-    QString lensName() const {
-        return m_lensName;
-    }
+    void setLensName(const QString& name);
+    QString lensName() const;
 
-    void setLensDegreesMin(const int degrees) {
-        m_lensDegreesMin = degrees;
-    }
-    int lensDegreesMin() const {
-        return m_lensDegreesMin;
-    }
+    void setLensDegreesMin(int degrees);
+    int lensDegreesMin() const;
 
-    void setLensDegreesMax(const int degrees) {
-        m_lensDegreesMax = degrees;
-    }
-    int lensDegreesMax() const {
-        return m_lensDegreesMax;
-    }
+    void setLensDegreesMax(int degrees);
+    int lensDegreesMax() const;
 
-    void setFocusType(const QString& type) {
-        m_focusType = type;
-    }
-    QString focusType() const {
-        return m_focusType;
-    }
+    void setFocusType(const QString& type);
+    QString focusType() const;
 
-    void setFocusPanMax(const int pan) {
-        m_focusPanMax = pan;
-    }
-    int focusPanMax() const {
-        return m_focusPanMax;
-    }
+    void setFocusPanMax(int pan);
+    int focusPanMax() const;
 
-    void setFocusTiltMax(const int tilt) {
-        m_focusTiltMax = tilt;
-    }
-    int focusTiltMax() const {
-        return m_focusTiltMax;
-    }
+    void setFocusTiltMax(int tilt);
+    int focusTiltMax() const;
 
-    void setPowerConsumption(const int watt) {
-        m_powerConsumption = watt;
-    }
+    void setPowerConsumption(int watt);
     int powerConsumption() const;
 
-    void setDmxConnector(const QString& type) {
-        m_dmxConnector = type;
-    }
-    QString dmxConnector() const {
-        return m_dmxConnector;
-    }
-
-    bool loadXML(const QDomElement* root);
-    bool saveXML(QDomDocument* doc, QDomElement* root);
+    void setDmxConnector(const QString& type);
+    QString dmxConnector() const;
 
 protected:
     QString m_bulbType;
@@ -196,6 +141,16 @@ protected:
 
     int m_powerConsumption;
     QString m_dmxConnector;
+
+    /************************************************************************
+     * Load & Save
+     ************************************************************************/
+public:
+    /** Load physical values from the given QDomElement */
+    bool loadXML(const QDomElement* root);
+
+    /** Save physical values to the given XML tag in the given document */
+    bool saveXML(QDomDocument* doc, QDomElement* root);
 };
 
 #endif

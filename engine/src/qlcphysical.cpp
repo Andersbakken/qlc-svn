@@ -24,6 +24,10 @@
 
 #include "qlcphysical.h"
 
+/****************************************************************************
+ * Initialization
+ ****************************************************************************/
+
 QLCPhysical::QLCPhysical()
 {
     /* Initialize only integer values since QStrings are null by default */
@@ -78,6 +82,178 @@ QLCPhysical& QLCPhysical::operator=(const QLCPhysical& physical)
 
     return *this;
 }
+
+/****************************************************************************
+ * Properties
+ ****************************************************************************/
+
+void QLCPhysical::setBulbType(const QString& type)
+{
+    m_bulbType = type;
+}
+
+QString QLCPhysical::bulbType() const
+{
+    return m_bulbType;
+}
+
+void QLCPhysical::setBulbLumens(int lumens)
+{
+    m_bulbLumens = lumens;
+}
+
+int QLCPhysical::bulbLumens() const
+{
+    return m_bulbLumens;
+}
+
+void QLCPhysical::setBulbColourTemperature(int temp)
+{
+    m_bulbColourTemperature = temp;
+}
+
+int QLCPhysical::bulbColourTemperature() const
+{
+    return m_bulbColourTemperature;
+}
+
+void QLCPhysical::setWeight(int weight)
+{
+    m_weight = weight;
+}
+
+int QLCPhysical::weight() const
+{
+    return m_weight;
+}
+
+void QLCPhysical::setWidth(int width)
+{
+    m_width = width;
+}
+
+int QLCPhysical::width() const
+{
+    return m_width;
+}
+
+void QLCPhysical::setHeight(int height)
+{
+    m_height = height;
+}
+
+int QLCPhysical::height() const
+{
+    return m_height;
+}
+
+void QLCPhysical::setDepth(int depth)
+{
+    m_depth = depth;
+}
+
+int QLCPhysical::depth() const
+{
+    return m_depth;
+}
+
+void QLCPhysical::setLensName(const QString& name)
+{
+    m_lensName = name;
+}
+
+QString QLCPhysical::lensName() const
+{
+    return m_lensName;
+}
+
+void QLCPhysical::setLensDegreesMin(int degrees)
+{
+    m_lensDegreesMin = degrees;
+}
+
+int QLCPhysical::lensDegreesMin() const
+{
+    return m_lensDegreesMin;
+}
+
+void QLCPhysical::setLensDegreesMax(int degrees)
+{
+    m_lensDegreesMax = degrees;
+}
+
+int QLCPhysical::lensDegreesMax() const
+{
+    return m_lensDegreesMax;
+}
+
+void QLCPhysical::setFocusType(const QString& type)
+{
+    m_focusType = type;
+}
+
+QString QLCPhysical::focusType() const
+{
+    return m_focusType;
+}
+
+void QLCPhysical::setFocusPanMax(int pan)
+{
+    m_focusPanMax = pan;
+}
+
+int QLCPhysical::focusPanMax() const
+{
+    return m_focusPanMax;
+}
+
+void QLCPhysical::setFocusTiltMax(int tilt)
+{
+    m_focusTiltMax = tilt;
+}
+
+int QLCPhysical::focusTiltMax() const
+{
+    return m_focusTiltMax;
+}
+
+void QLCPhysical::setPowerConsumption(int watt)
+{
+    m_powerConsumption = watt;
+}
+
+int QLCPhysical::powerConsumption() const
+{
+    if (m_powerConsumption != 0)
+    {
+        return m_powerConsumption;
+    }
+    else
+    {
+        /* If power consumption value is missing, return bulb watts
+         * plus a guesstimate 100W, since there's usually other
+          * electronics consuming power as well. */
+        int bulbWatts = bulbType().remove(QRegExp("[A-Z]")).toInt();
+        if (bulbWatts > 0)
+            return bulbWatts + 100;
+        else
+            return 0;
+    }
+}
+
+void QLCPhysical::setDmxConnector(const QString& type)
+{
+    m_dmxConnector = type;
+}
+
+QString QLCPhysical::dmxConnector() const
+{
+    return m_dmxConnector;
+}
+
+/****************************************************************************
+ * Load & Save
+ ****************************************************************************/
 
 bool QLCPhysical::loadXML(const QDomElement* root)
 {
@@ -186,23 +362,4 @@ bool QLCPhysical::saveXML(QDomDocument* doc, QDomElement* root)
     tag.appendChild(subtag);
 
     return true;
-}
-
-int QLCPhysical::powerConsumption() const
-{
-    if (m_powerConsumption != 0)
-    {
-        return m_powerConsumption;
-    }
-    else
-    {
-        /* If power consumption value is missing, return bulb watts
-         * plus a guesstimate 100W, since there's usually other
-          * electronics consuming power as well. */
-        int bulbWatts = bulbType().remove(QRegExp("[A-Z]")).toInt();
-        if (bulbWatts > 0)
-            return bulbWatts + 100;
-        else
-            return 0;
-    }
 }

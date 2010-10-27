@@ -49,21 +49,11 @@ QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
     {
         m_name = channel.m_name;
         m_type = channel.m_type;
-        //m_channel = channel.m_channel;
     }
 
     return *this;
 }
 
-/****************************************************************************
- * Channel number
- ****************************************************************************/
-/*
-void QLCInputChannel::setChannel(quint32 channel)
-{
-	m_channel = channel;
-}
-*/
 /****************************************************************************
  * Type
  ****************************************************************************/
@@ -71,6 +61,11 @@ void QLCInputChannel::setChannel(quint32 channel)
 void QLCInputChannel::setType(Type type)
 {
     m_type = type;
+}
+
+QLCInputChannel::Type QLCInputChannel::type() const
+{
+    return m_type;
 }
 
 QString QLCInputChannel::typeToString(Type type)
@@ -123,6 +118,11 @@ QStringList QLCInputChannel::types()
 void QLCInputChannel::setName(const QString& name)
 {
     m_name = name;
+}
+
+QString QLCInputChannel::name() const
+{
+    return m_name;
 }
 
 /****************************************************************************
