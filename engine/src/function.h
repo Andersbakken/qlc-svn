@@ -22,11 +22,11 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+#include <QWaitCondition>
 #include <QObject>
 #include <QString>
-#include <QList>
 #include <QMutex>
-#include <QWaitCondition>
+#include <QList>
 
 #include "qlctypes.h"
 
@@ -379,7 +379,7 @@ public:
      * still write its last data packet to universes during this call.
      * Used by e.g. EFX to write its stop scene values. MasterTimer's
      * function list mutex is locked during this call, so functions must
-     * not attempt to start/stop additional functions from their preRun()
+     * not attempt to start/stop additional functions from their postRun()
      * methods because it would result in a deadlock.
      *
      * @param timer The MasterTimer that has stopped running the function
@@ -388,12 +388,20 @@ public:
     virtual void postRun(MasterTimer* timer, QByteArray* universes);
 
 	/**
-	* @return true if the function was started by another function. False if started by button press.
-	*/
-	bool initiatedByOtherFunction() const { return m_initiatedByOtherFunction; }
-	
-	void setInitiatedByOtherFunction(bool state) { m_initiatedByOtherFunction = state; }
-	
+     * Check, whether the function was started by another function.
+     *
+	 * @return true If the function was started by another function.
+     *              Otherwise false.
+	 */
+    bool initiatedByOtherFunction() const;
+
+    /**
+     * Set function as "started by another function".
+     *
+     * @param state true to set the function as started by another.
+     */
+    void setInitiatedByOtherFunction(bool state);
+
 signals:
     /**
      * Emitted when a function is started (i.e. added to MasterTimer's
@@ -410,9 +418,9 @@ signals:
      * @param id The ID of the stopped function
      */
     void stopped(t_function_id id);
-	
+
 private:
-	bool m_initiatedByOtherFunction;
+    bool m_initiatedByOtherFunction;
 
     /*********************************************************************
      * Elapsed

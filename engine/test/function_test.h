@@ -30,7 +30,16 @@ class Function_Test : public QObject
 
 private slots:
     void initTestCase();
+    void initial();
+    void copyFrom();
+    void flashUnflash();
+    void elapsed();
+    void preRunPostRun();
+    void stopAndWait();
+    void stopAndWaitFail();
+    void slotFixtureRemoved();
     void invalidId();
+    void typeString();
     void typeToString();
     void stringToType();
     void runOrderToString();
@@ -43,6 +52,7 @@ private slots:
     void loaderChaser();
     void loaderCollection();
     void loaderEFX();
+    void loaderUnknownType();
 };
 
 #endif

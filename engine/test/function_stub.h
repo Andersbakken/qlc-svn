@@ -48,9 +48,16 @@ public:
     void write(MasterTimer* timer, QByteArray* universes);
     void postRun(MasterTimer* timer, QByteArray* universes);
 
+public slots:
+    void slotFixtureRemoved(t_fixture_id id);
+
+public:
     int m_writeCalls;
     int m_preRunCalls;
     int m_postRunCalls;
+
+    t_fixture_id m_slotFixtureRemovedId;
+    Function::Type m_type;
 };
 
 #endif

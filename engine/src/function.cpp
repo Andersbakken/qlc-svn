@@ -326,8 +326,7 @@ bool Function::loader(const QDomElement* root, Doc* doc)
         }
         else
         {
-            qWarning() << "Function" << name
-            << "cannot be created.";
+            qWarning() << "Function" << name << "cannot be created.";
             delete function;
             return false;
         }
@@ -390,6 +389,16 @@ void Function::postRun(MasterTimer* timer, QByteArray* universes)
     emit stopped(m_id);
 }
 
+bool Function::initiatedByOtherFunction() const
+{
+    return m_initiatedByOtherFunction;
+}
+
+void Function::setInitiatedByOtherFunction(bool state)
+{
+    m_initiatedByOtherFunction = state;
+}
+
 /*****************************************************************************
  * Elapsed ticks while running
  *****************************************************************************/
@@ -409,9 +418,9 @@ void Function::incrementElapsed()
     m_elapsed++;
 }
 
-/*************************************************************************
+/*****************************************************************************
  * Stopping
- *************************************************************************/
+ *****************************************************************************/
 
 void Function::stop()
 {
@@ -422,10 +431,6 @@ bool Function::stopped() const
 {
     return m_stop;
 }
-
-/*****************************************************************************
- * Stopping
- *****************************************************************************/
 
 bool Function::stopAndWait()
 {

@@ -20,6 +20,7 @@
 */
 
 #include "doc.h"
+#include "fixture.h"
 #include "function_stub.h"
 
 Function_Stub::Function_Stub(Doc* doc) : Function(doc)
@@ -27,6 +28,8 @@ Function_Stub::Function_Stub(Doc* doc) : Function(doc)
     m_writeCalls = 0;
     m_preRunCalls = 0;
     m_postRunCalls = 0;
+    m_slotFixtureRemovedId = Fixture::invalidId();
+    m_type = Function::Type(0xDEADBEEF);
 }
 
 Function_Stub::~Function_Stub()
@@ -41,7 +44,7 @@ Function* Function_Stub::createCopy(Doc* parent)
 
 Function::Type Function_Stub::type() const
 {
-    return Function::Type(0xDEADBEEF);
+    return m_type;
 }
 
 bool Function_Stub::saveXML(QDomDocument* doc, QDomElement* wksp_root)
@@ -88,4 +91,9 @@ void Function_Stub::postRun(MasterTimer* timer, QByteArray* universes)
     Q_UNUSED(universes);
     m_postRunCalls++;
     Function::postRun(timer, universes);
+}
+
+void Function_Stub::slotFixtureRemoved(t_fixture_id id)
+{
+    m_slotFixtureRemovedId = id;
 }

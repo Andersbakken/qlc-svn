@@ -23,9 +23,12 @@
 #include <QtXml>
 
 #include "qlcfixturedefcache.h"
-
 #include "function_test.h"
-#include "function.h"
+
+#define protected public
+#include "function_stub.h"
+#undef protected
+
 #include "doc.h"
 
 void Function_Test::initTestCase()
@@ -33,9 +36,159 @@ void Function_Test::initTestCase()
     Bus::init(this);
 }
 
+void Function_Test::initial()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    QCOMPARE(stub->name(), QString());
+    QCOMPARE(stub->runOrder(), Function::Loop);
+    QCOMPARE(stub->direction(), Function::Forward);
+    QCOMPARE(stub->busID(), Bus::defaultFade());
+    QCOMPARE(stub->elapsed(), quint32(0));
+    QCOMPARE(stub->stopped(), true);
+}
+
+void Function_Test::copyFrom()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub1 = new Function_Stub(&doc);
+    QVERIFY(stub1->copyFrom(NULL) == false);
+    stub1->setName("Stub1");
+    stub1->setRunOrder(Function::PingPong);
+    stub1->setDirection(Function::Backward);
+    stub1->setBus(15);
+
+    Function_Stub* stub2 = new Function_Stub(&doc);
+    stub2->copyFrom(stub1);
+    QCOMPARE(stub1->name(), stub2->name());
+    QCOMPARE(stub1->runOrder(), stub2->runOrder());
+    QCOMPARE(stub1->direction(), stub2->direction());
+    QCOMPARE(stub1->busID(), stub2->busID());
+}
+
+void Function_Test::flashUnflash()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    QSignalSpy spy(stub, SIGNAL(flashing(t_function_id,bool)));
+
+    QVERIFY(stub->flashing() == false);
+    stub->flash(NULL);
+    QCOMPARE(spy.size(), 1);
+    QVERIFY(stub->flashing() == true);
+    stub->flash(NULL);
+    QCOMPARE(spy.size(), 1);
+    QVERIFY(stub->flashing() == true);
+    stub->unFlash(NULL);
+    QCOMPARE(spy.size(), 2);
+    QVERIFY(stub->flashing() == false);
+}
+
+void Function_Test::elapsed()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    QCOMPARE(stub->elapsed(), quint32(0));
+    stub->incrementElapsed();
+    QCOMPARE(stub->elapsed(), quint32(1));
+    stub->incrementElapsed();
+    QCOMPARE(stub->elapsed(), quint32(2));
+    stub->incrementElapsed();
+    QCOMPARE(stub->elapsed(), quint32(3));
+    stub->resetElapsed();
+    QCOMPARE(stub->elapsed(), quint32(0));
+}
+
+void Function_Test::preRunPostRun()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    QSignalSpy spyRunning(stub, SIGNAL(running(t_function_id)));
+    stub->preRun(NULL);
+    QVERIFY(stub->stopped() == false);
+    QCOMPARE(spyRunning.size(), 1);
+    // @todo Check the contents of the signal in spyRunning
+
+    stub->incrementElapsed();
+
+    QSignalSpy spyStopped(stub, SIGNAL(stopped(t_function_id)));
+    stub->postRun(NULL, NULL);
+    QVERIFY(stub->stopped() == true);
+    QCOMPARE(stub->elapsed(), quint32(0));
+    QCOMPARE(spyRunning.size(), 1);
+    QCOMPARE(spyStopped.size(), 1);
+    // @todo Check the contents of the signal in spyStopped
+}
+
+void Function_Test::stopAndWait()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    stub->preRun(NULL);
+    stub->incrementElapsed();
+
+    // @todo Make stopAndWait() return before the 2s watchdog timer
+    //QSignalSpy spyStopped(stub, SIGNAL(stopped(t_function_id)));
+    //QVERIFY(stub->stopAndWait() == true);
+}
+
+void Function_Test::stopAndWaitFail()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    stub->preRun(NULL);
+    stub->incrementElapsed();
+
+    QSignalSpy spyStopped(stub, SIGNAL(stopped(t_function_id)));
+    QVERIFY(stub->stopAndWait() == false);
+}
+
+void Function_Test::slotFixtureRemoved()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    Fixture* fxi = new Fixture(&doc);
+    fxi->setID(42);
+    QVERIFY(doc.addFixture(fxi, fxi->id()) == true);
+    QVERIFY(doc.addFunction(stub) == true);
+
+    QCOMPARE(stub->m_slotFixtureRemovedId, Fixture::invalidId());
+    doc.deleteFixture(42);
+    QCOMPARE(stub->m_slotFixtureRemovedId, 42);
+}
+
 void Function_Test::invalidId()
 {
-    QVERIFY(Function::invalidId() == -1);
+    QCOMPARE(Function::invalidId(), -1);
+}
+
+void Function_Test::typeString()
+{
+    QLCFixtureDefCache cache;
+    Doc doc(this, cache);
+
+    Function_Stub* stub = new Function_Stub(&doc);
+    QCOMPARE(stub->typeString(), Function::typeToString(Function::Type(31337)));
+    stub->m_type = Function::Scene;
+    QCOMPARE(stub->typeString(), Function::typeToString(Function::Scene));
+    stub->m_type = Function::Chaser;
+    QCOMPARE(stub->typeString(), Function::typeToString(Function::Chaser));
 }
 
 void Function_Test::typeToString()
@@ -398,3 +551,20 @@ void Function_Test::loaderEFX()
     QVERIFY(d.function(0)->name() == QString("Guarnere"));
 }
 
+void Function_Test::loaderUnknownType()
+{
+    QLCFixtureDefCache cache;
+    Doc d(this, cache);
+
+    QDomDocument doc;
+    QDomElement root = doc.createElement("Function");
+    root.setAttribute("Type", "Major");
+    root.setAttribute("ID", 15);
+    root.setAttribute("Name", "Winters");
+
+    /* Just verify that a Scene function gets loaded. The rest of Scene
+       loading is tested in Scene_test. */
+    QVERIFY(Function::loader(&root, &d) == false);
+    QVERIFY(d.functions() == 0);
+    QVERIFY(d.function(15) == NULL);
+}
