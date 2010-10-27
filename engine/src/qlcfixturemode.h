@@ -87,7 +87,7 @@ public:
     QLCFixtureMode(QLCFixtureDef* fixtureDef, const QDomElement* tag);
 
     /** Destructor */
-    ~QLCFixtureMode();
+    virtual ~QLCFixtureMode();
 
     /** Assignment operator */
     QLCFixtureMode& operator=(const QLCFixtureMode& mode);
@@ -96,12 +96,11 @@ public:
      * Name
      *********************************************************************/
 public:
-    void setName(const QString &name) {
-        m_name = name;
-    }
-    QString name() const {
-        return m_name;
-    }
+    /** Set the name of the fixture mode */
+    void setName(const QString &name);
+
+    /** Get the name of the fixture mode */
+    QString name() const;
 
 protected:
     QString m_name;
@@ -111,9 +110,7 @@ protected:
      *********************************************************************/
 public:
     /** Get the fixture that this mode is associated to */
-    QLCFixtureDef* fixtureDef() const {
-        return m_fixtureDef;
-    }
+    QLCFixtureDef* fixtureDef() const;
 
 protected:
     QLCFixtureDef* m_fixtureDef;
@@ -163,14 +160,13 @@ public:
     QLCChannel* channel(t_channel ch) const;
 
     /**
-     * Get a list of channels in a mode. Returns a shallow copy of the
-     * list. Any modifications to the list won't end up in the mode.
+     * Get an ordered list of channels in a mode. Returns a copy of the list;
+     * Any modifications to the list won't end up in the mode, but
+     * modifications to channels are possible (discouraged).
      *
      * @return A list of channels in the mode.
      */
-    QList <QLCChannel*> channels() const {
-        return m_channels;
-    }
+    QList <QLCChannel*> channels() const;
 
     /**
      * Get a channel's index (i.e. the DMX channel number) within a mode.

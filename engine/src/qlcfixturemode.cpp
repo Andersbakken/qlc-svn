@@ -101,6 +101,29 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
 }
 
 /****************************************************************************
+ * Name
+ ****************************************************************************/
+
+void QLCFixtureMode::setName(const QString &name)
+{
+    m_name = name;
+}
+
+QString QLCFixtureMode::name() const
+{
+    return m_name;
+}
+
+/*****************************************************************************
+ * Fixture definition
+ *****************************************************************************/
+
+QLCFixtureDef* QLCFixtureMode::fixtureDef() const
+{
+    return m_fixtureDef;
+}
+
+/****************************************************************************
  * Channels
  ****************************************************************************/
 
@@ -175,6 +198,11 @@ QLCChannel* QLCFixtureMode::channel(t_channel ch) const
         return NULL;
     else
         return m_channels.at(ch);
+}
+
+QList <QLCChannel*> QLCFixtureMode::channels() const
+{
+    return m_channels;
 }
 
 t_channel QLCFixtureMode::channelNumber(QLCChannel* channel) const
