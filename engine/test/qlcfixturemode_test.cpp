@@ -434,6 +434,55 @@ void QLCFixtureMode_Test::loadNoName()
     QVERIFY(mode.channels().size() == 0);
 }
 
+void QLCFixtureMode_Test::save()
+{
+    QVERIFY(m_fixtureDef != NULL);
+    QCOMPARE(m_fixtureDef->channels().size(), 4);
+
+    QString name("Foobar");
+    QLCFixtureMode mode(m_fixtureDef);
+    mode.setName(name);
+    QVERIFY(mode.insertChannel(m_ch1, 0) == true);
+    QVERIFY(mode.insertChannel(m_ch4, 1) == true);
+    QVERIFY(mode.insertChannel(m_ch2, 2) == true);
+    QVERIFY(mode.insertChannel(m_ch3, 3) == true);
+
+    QDomDocument doc;
+    QDomElement root = doc.createElement("TestRoot");
+
+    bool physical = false;
+    QMap <int,QString> channels;
+
+    QVERIFY(mode.saveXML(&doc, &root) == true);
+    QDomNode node = root.firstChild();
+    QCOMPARE(node.toElement().tagName(), QString(KXMLQLCFixtureMode));
+    QCOMPARE(node.toElement().attribute(KXMLQLCFixtureModeName), name);
+    node = node.firstChild();
+    while (node.isNull() == false)
+    {
+        QDomElement elem = node.toElement();
+        if (elem.tagName() == KXMLQLCPhysical)
+        {
+            // Only check that physical node is there. Its contents are
+            // tested by another test case (QLCPhysical_Test)
+            physical = true;
+        }
+        else if (elem.tagName() == KXMLQLCChannel)
+        {
+            int num = elem.attribute(KXMLQLCFixtureModeChannelNumber).toInt();
+            channels[num] = elem.text();
+        }
+        node = node.nextSibling();
+    }
+
+    QVERIFY(physical == true);
+    QCOMPARE(channels.size(), 4);
+    QCOMPARE(channels[0], m_ch1->name());
+    QCOMPARE(channels[1], m_ch4->name());
+    QCOMPARE(channels[2], m_ch2->name());
+    QCOMPARE(channels[3], m_ch3->name());
+}
+
 void QLCFixtureMode_Test::cleanupTestCase()
 {
     QVERIFY(m_fixtureDef != NULL);

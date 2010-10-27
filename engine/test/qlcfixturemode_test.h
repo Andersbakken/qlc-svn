@@ -33,6 +33,7 @@ class QLCFixtureMode_Test : public QObject
 
 private slots:
     void initTestCase();
+
     void name();
     void physical();
     void insertChannel();
@@ -42,10 +43,12 @@ private slots:
     void channels();
     void channelNumber();
     void copy();
-    void cleanupTestCase();
     void load();
     void loadWrongRoot();
     void loadNoName();
+    void save();
+
+    void cleanupTestCase();
 
 private:
     QLCFixtureDef* m_fixtureDef;
