@@ -51,7 +51,7 @@ void QLCFixtureMode_Test::initTestCase()
 void QLCFixtureMode_Test::fixtureDef()
 {
     QLCFixtureMode mode(m_fixtureDef);
-    QCOMPARE(m_fixtureDef, mode->fixtureDef());
+    QCOMPARE(m_fixtureDef, mode.fixtureDef());
 }
 
 void QLCFixtureMode_Test::name()
