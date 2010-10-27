@@ -48,6 +48,12 @@ void QLCFixtureMode_Test::initTestCase()
     m_fixtureDef->addChannel(m_ch4);
 }
 
+void QLCFixtureMode_Test::fixtureDef()
+{
+    QLCFixtureMode mode(m_fixtureDef);
+    QCOMPARE(m_fixtureDef, mode->fixtureDef());
+}
+
 void QLCFixtureMode_Test::name()
 {
     /* Verify that a name can be set & get for the mode */

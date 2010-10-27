@@ -34,6 +34,7 @@ class QLCFixtureMode_Test : public QObject
 private slots:
     void initTestCase();
 
+    void fixtureDef();
     void name();
     void physical();
     void insertChannel();
