@@ -258,57 +258,43 @@ bool QLCInputProfile::loadXML(const QDomDocument& doc)
 
 bool QLCInputProfile::saveXML(const QString& fileName)
 {
-    bool retval = false;
-
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly) == false)
         return false;
 
     QDomDocument doc(QLCFile::getXMLHeader(KXMLQLCInputProfile));
-    if (doc.isNull() == false)
+    Q_ASSERT(doc.isNull() == false);
+
+    /* Create a text stream for the file */
+    QTextStream stream(&file);
+
+    /* THE MASTER XML ROOT NODE */
+    QDomElement root = doc.documentElement();
+
+    /* Manufacturer */
+    QDomElement tag = doc.createElement(KXMLQLCInputProfileManufacturer);
+    root.appendChild(tag);
+    QDomText text = doc.createTextNode(m_manufacturer);
+    tag.appendChild(text);
+
+    /* Model */
+    tag = doc.createElement(KXMLQLCInputProfileModel);
+    root.appendChild(tag);
+    text = doc.createTextNode(m_model);
+    tag.appendChild(text);
+
+    /* Write channels to the document */
+    QMapIterator <quint32, QLCInputChannel*> it(m_channels);
+    while (it.hasNext() == true)
     {
-        QDomElement root;
-        QDomElement tag;
-        QDomText text;
-
-        /* Create a text stream for the file */
-        QTextStream stream(&file);
-
-        /* THE MASTER XML ROOT NODE */
-        root = doc.documentElement();
-
-        /* Manufacturer */
-        tag = doc.createElement(KXMLQLCInputProfileManufacturer);
-        root.appendChild(tag);
-        text = doc.createTextNode(m_manufacturer);
-        tag.appendChild(text);
-
-        /* Model */
-        tag = doc.createElement(KXMLQLCInputProfileModel);
-        root.appendChild(tag);
-        text = doc.createTextNode(m_model);
-        tag.appendChild(text);
-
-        /* Write channels to the document */
-        QMapIterator <quint32, QLCInputChannel*> it(m_channels);
-        while (it.hasNext() == true)
-        {
-            it.next();
-            it.value()->saveXML(&doc, &root, it.key());
-        }
-
-        /* Write the document into the stream */
-        m_path = fileName;
-        stream << doc.toString() << "\n";
-
-        retval = true;
-    }
-    else
-    {
-        retval = false;
+        it.next();
+        it.value()->saveXML(&doc, &root, it.key());
     }
 
+    /* Write the document into the stream */
+    m_path = fileName;
+    stream << doc.toString();
     file.close();
 
-    return retval;
+    return true;
 }

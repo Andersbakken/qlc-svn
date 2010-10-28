@@ -42,6 +42,7 @@ private slots:
     void load();
     void loadNoProfile();
     void loader();
+    void save();
 };
 
 #endif

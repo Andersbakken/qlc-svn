@@ -315,3 +315,37 @@ void QLCInputProfile_Test::loader()
     QCOMPARE(prof->name(), QString("Generic MIDI"));
     QCOMPARE(prof->channels().size(), 256);
 }
+
+void QLCInputProfile_Test::save()
+{
+    QLCInputProfile ip;
+    ip.setManufacturer("TestManufacturer");
+    ip.setModel("TestModel");
+
+    QLCInputChannel* ich1 = new QLCInputChannel();
+    ich1->setName("Channel 1");
+    ip.insertChannel(0, ich1);
+
+    QLCInputChannel* ich2 = new QLCInputChannel();
+    ich2->setName("Channel 2");
+    ip.insertChannel(5, ich2);
+
+    QLCInputChannel* ich3 = new QLCInputChannel();
+    ich3->setName("Channel 3");
+    ip.insertChannel(2, ich3);
+
+    QString path("test.qxi");
+    QVERIFY(ip.saveXML(path) == true);
+
+    QLCInputProfile* prof = QLCInputProfile::loader(path);
+    QVERIFY(prof != NULL);
+    QCOMPARE(prof->manufacturer(), ip.manufacturer());
+    QCOMPARE(prof->model(), ip.model());
+    QCOMPARE(prof->name(), ip.name());
+    QCOMPARE(prof->channels().size(), ip.channels().size());
+    QCOMPARE(prof->channels()[0]->name(), ich1->name());
+    QCOMPARE(prof->channels()[2]->name(), ich3->name());
+    QCOMPARE(prof->channels()[5]->name(), ich2->name());
+
+    QVERIFY(QFile::remove(path) == true);
+}
