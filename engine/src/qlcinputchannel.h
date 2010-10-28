@@ -106,7 +106,7 @@ public:
      * @param root An input channel tag
      * @return true if successful, otherwise false
      */
-    bool loadXML(const QDomElement* root);
+    bool loadXML(const QDomElement& root);
 
     /**
      * Save this channel's contents to the given XML document, setting the

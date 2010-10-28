@@ -237,7 +237,7 @@ bool QLCInputProfile::loadXML(const QDomDocument& doc)
                 {
                     quint32 ch = str.toInt();
                     QLCInputChannel* ich = new QLCInputChannel();
-                    if (ich->loadXML(&tag) == true)
+                    if (ich->loadXML(tag) == true)
                         insertChannel(ch, ich);
                     else
                         delete ich;

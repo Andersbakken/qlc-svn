@@ -119,25 +119,20 @@ QString QLCInputChannel::name() const
  * Load & Save
  ****************************************************************************/
 
-bool QLCInputChannel::loadXML(const QDomElement* root)
+bool QLCInputChannel::loadXML(const QDomElement& root)
 {
-    QDomElement tag;
-    QDomNode node;
-
-    Q_ASSERT(root != NULL);
-
     /* Verify that the tag contains an input channel */
-    if (root->tagName() != KXMLQLCInputChannel)
+    if (root.tagName() != KXMLQLCInputChannel)
     {
         qWarning() << "Channel node not found";
         return false;
     }
 
     /* Go thru all sub tags */
-    node = root->firstChild();
+    QDomNode node = root.firstChild();
     while (node.isNull() == false)
     {
-        tag = node.toElement();
+        QDomElement tag = node.toElement();
         if (tag.tagName() == KXMLQLCInputChannelName)
         {
             setName(tag.text());

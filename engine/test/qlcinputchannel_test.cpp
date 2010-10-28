@@ -119,7 +119,7 @@ void QLCInputChannel_Test::load()
     root.appendChild(foo);
 
     QLCInputChannel ch;
-    ch.loadXML(&root);
+    ch.loadXML(root);
     QVERIFY(ch.name() == "Foobar");
     QVERIFY(ch.type() == QLCInputChannel::Slider);
 }
@@ -142,7 +142,7 @@ void QLCInputChannel_Test::loadWrongType()
     root.appendChild(type);
 
     QLCInputChannel ch;
-    ch.loadXML(&root);
+    ch.loadXML(root);
     QVERIFY(ch.name() == "Foobar");
     QVERIFY(ch.type() == QLCInputChannel::NoType);
 }
