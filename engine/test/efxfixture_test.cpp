@@ -39,11 +39,7 @@
 void EFXFixture_Test::initTestCase()
 {
     Bus::init(this);
-#ifdef WIN32
-    QVERIFY(m_cache.load("../../../fixtures/") == true);
-#else
     QVERIFY(m_cache.load("../../fixtures/") == true);
-#endif
 }
 
 void EFXFixture_Test::init()

@@ -30,15 +30,9 @@
 #include "outputmap.h"
 #undef protected
 
-#ifndef WIN32
-#   define TESTPLUGINDIR "../outputpluginstub"
-#   define INPUT_TESTPLUGINDIR "../inputpluginstub"
-#   define ENGINEDIR "../src"
-#else
-#   define TESTPLUGINDIR "../../outputpluginstub"
-#   define INPUT_TESTPLUGINDIR "../../inputpluginstub"
-#   define ENGINEDIR "../../src"
-#endif
+#define TESTPLUGINDIR "../outputpluginstub"
+#define INPUT_TESTPLUGINDIR "../inputpluginstub"
+#define ENGINEDIR "../src"
 
 void OutputMap_Test::initial()
 {

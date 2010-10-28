@@ -19,8 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QList>
 #include <QDebug>
 #include <QDir>
+#include <QSet>
 
 #include "qlcfixturedefcache.h"
 #include "qlcfixturedef.h"
@@ -38,56 +40,68 @@ QLCFixtureDefCache::~QLCFixtureDefCache()
 const QLCFixtureDef* QLCFixtureDefCache::fixtureDef(
     const QString& manufacturer, const QString& model) const
 {
-    if (m_models.contains(manufacturer) == false)
+    QListIterator <QLCFixtureDef*> it(m_defs);
+    while (it.hasNext() == true)
     {
-        return NULL;
+        const QLCFixtureDef* def = it.next();
+        if (def->manufacturer() == manufacturer && def->model() == model)
+            return def;
     }
-    else
-    {
-        QMap <QString, QLCFixtureDef*> defs(m_models[manufacturer]);
-        if (defs.contains(model) == false)
-        {
-            return NULL;
-        }
-        else
-        {
-            return defs[model];
-        }
-    }
+
+    return NULL;
 }
 
 QStringList QLCFixtureDefCache::manufacturers() const
 {
-    return m_models.keys();
+    QSet <QString> makers;
+
+    // Gather a list of manufacturers
+    QListIterator <QLCFixtureDef*> it(m_defs);
+    while (it.hasNext() == true)
+        makers << it.next()->manufacturer();
+
+    // Bounce the QSet into a QStringList
+    QStringList list;
+    foreach (QString manuf, makers)
+        list << manuf;
+
+    return list;
 }
 
 QStringList QLCFixtureDefCache::models(const QString& manufacturer) const
 {
-    if (m_models.contains(manufacturer) == true)
+    QSet <QString> models;
+    QListIterator <QLCFixtureDef*> it(m_defs);
+    while (it.hasNext() == true)
     {
-        QMap <QString, QLCFixtureDef*> defs(m_models[manufacturer]);
-        return defs.keys();
+        QLCFixtureDef* def = it.next();
+        if (def->manufacturer() == manufacturer)
+            models << def->model();
     }
-    else
-    {
-        return QStringList();
-    }
+
+    // Bounce the QSet into a QStringList
+    QStringList list;
+    foreach (QString manuf, models)
+        list << manuf;
+
+    return list;
 }
 
 bool QLCFixtureDefCache::addFixtureDef(QLCFixtureDef* fixtureDef)
 {
-    Q_ASSERT(fixtureDef != NULL);
-
-    QMap <QString, QLCFixtureDef*> defs(
-        m_models[fixtureDef->manufacturer()]);
-    /* Don't accept duplicate entries */
-    if (defs.contains(fixtureDef->model()) == true)
+    if (fixtureDef == NULL)
         return false;
 
-    /* Add the fixture definition to the manufacturer's map and emit it */
-    m_models[fixtureDef->manufacturer()][fixtureDef->model()] = fixtureDef;
-
-    return true;
+    if (models(fixtureDef->manufacturer()).contains(fixtureDef->model()) == false)
+    {
+        m_defs << fixtureDef;
+        return true;
+    }
+    else
+    {
+        qWarning() << "Cache already contains" << fixtureDef->name();
+        return false;
+    }
 }
 
 bool QLCFixtureDefCache::load(const QString& fixturePath)
@@ -96,8 +110,7 @@ bool QLCFixtureDefCache::load(const QString& fixturePath)
              QDir::Name, QDir::Files);
     if (dir.exists() == false || dir.isReadable() == false)
     {
-        qWarning() << "Unable to load fixture definitions from"
-        << fixturePath;
+        qWarning() << "Unable to load fixture definitions from" << fixturePath;
         return false;
     }
 
@@ -123,9 +136,8 @@ bool QLCFixtureDefCache::load(const QString& fixturePath)
         }
         else
         {
-            qWarning() << "Fixture definition loading from"
-            << path << "failed: "
-            << QLCFile::errorString(error);
+            qWarning() << "Fixture definition loading from" << path
+                       << "failed: " << QLCFile::errorString(error);
             delete fxi;
             fxi = NULL;
         }
@@ -136,19 +148,6 @@ bool QLCFixtureDefCache::load(const QString& fixturePath)
 
 void QLCFixtureDefCache::clear()
 {
-    QMutableMapIterator <QString, QMap <QString, QLCFixtureDef*> > it(m_models);
-    while (it.hasNext() == true)
-    {
-        it.next();
-
-        QMutableMapIterator <QString, QLCFixtureDef*> mit(it.value());
-        while (mit.hasNext() == true)
-        {
-            mit.next();
-            delete mit.value();
-            mit.remove();
-        }
-
-        it.remove();
-    }
+    while (m_defs.isEmpty() == false)
+        delete m_defs.takeFirst();
 }

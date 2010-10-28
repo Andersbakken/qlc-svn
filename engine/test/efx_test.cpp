@@ -43,11 +43,7 @@
 void EFX_Test::initTestCase()
 {
     Bus::init(this);
-#ifdef WIN32
-    QVERIFY(m_cache.load("../../../fixtures/") == true);
-#else
     QVERIFY(m_cache.load("../../fixtures/") == true);
-#endif
 }
 
 void EFX_Test::init()
@@ -2015,9 +2011,9 @@ void EFX_Test::save()
 
     QDomNode node = root.firstChild().firstChild();
     bool dir = false, run = false, bus = false, algo = false, w = false,
-                                         h = false, rot = false, xoff = false, yoff = false,
-                                                                        xfreq = false, yfreq = false, xpha = false, ypha = false,
-                                                                                                             prop = false, stas = false, stos = false;
+         h = false, rot = false, xoff = false, yoff = false,
+         xfreq = false, yfreq = false, xpha = false, ypha = false,
+         prop = false, stas = false, stos = false;
     QList <QString> fixtures;
     while (node.isNull() == false)
     {
@@ -2175,22 +2171,22 @@ void EFX_Test::save()
     }
 
     QVERIFY(fixtures.size() == 3);
-    QVERIFY(dir = true);
-    QVERIFY(run = true);
-    QVERIFY(bus = true);
-    QVERIFY(algo = true);
-    QVERIFY(w = true);
-    QVERIFY(h = true);
-    QVERIFY(rot = true);
-    QVERIFY(xoff = true);
-    QVERIFY(yoff = true);
-    QVERIFY(xfreq = true);
-    QVERIFY(yfreq = true);
-    QVERIFY(xpha = true);
-    QVERIFY(ypha = true);
-    QVERIFY(prop = true);
-    QVERIFY(stas = true);
-    QVERIFY(stos = true);
+    QVERIFY(dir == true);
+    QVERIFY(run == true);
+    QVERIFY(bus == true);
+    QVERIFY(algo == true);
+    QVERIFY(w == true);
+    QVERIFY(h == true);
+    QVERIFY(rot == true);
+    QVERIFY(xoff == true);
+    QVERIFY(yoff == true);
+    QVERIFY(xfreq == true);
+    QVERIFY(yfreq == true);
+    QVERIFY(xpha == true);
+    QVERIFY(ypha == true);
+    QVERIFY(prop == true);
+    QVERIFY(stas == true);
+    QVERIFY(stos == true);
 }
 
 void EFX_Test::armSuccess()

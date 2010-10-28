@@ -8,11 +8,7 @@ QT     += core gui network testlib
 
 INCLUDEPATH += ../../interfaces
 INCLUDEPATH += ../src
-unix:LIBS   += -L../src -lewinginput
-win32 {
-    CONFIG(release, debug|release) LIBS += -L../src/release -lewinginput
-    CONFIG(debug, debug|release) LIBS += -L../src/debug -lewinginput
-}
+LIBS   += -L../src -lewinginput
 
 SOURCES += testeplaybackwing.cpp \
            testeprogramwing.cpp \

@@ -31,11 +31,7 @@
 #include "outputmap.h"
 #undef protected
 
-#ifndef WIN32
-#   define TESTPLUGINDIR "../outputpluginstub"
-#else
-#   define TESTPLUGINDIR "../../outputpluginstub"
-#endif
+#define TESTPLUGINDIR "../outputpluginstub"
 
 void OutputPatch_Test::defaults()
 {

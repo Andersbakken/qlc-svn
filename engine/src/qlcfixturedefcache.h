@@ -109,8 +109,7 @@ public:
     void clear();
 
 protected:
-    /** Map of manufacturers (key) and their models (value) */
-    QMap <QString, QMap <QString,QLCFixtureDef*> > m_models;
+    QList <QLCFixtureDef*> m_defs;
 };
 
 #endif

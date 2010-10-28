@@ -29,15 +29,9 @@
 #include "inputmap.h"
 #undef protected
 
-#ifndef WIN32
-#   define TESTPLUGINDIR "../inputpluginstub"
-#   define OUTPUT_TESTPLUGINDIR "../outputpluginstub"
-#   define ENGINEDIR "../src"
-#else
-#   define TESTPLUGINDIR "../../inputpluginstub"
-#   define OUTPUT_TESTPLUGINDIR "../../outputpluginstub"
-#   define ENGINEDIR "../../src"
-#endif
+#define TESTPLUGINDIR "../inputpluginstub"
+#define OUTPUT_TESTPLUGINDIR "../outputpluginstub"
+#define ENGINEDIR "../src"
 
 void InputMap_Test::initial()
 {

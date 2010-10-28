@@ -10,12 +10,8 @@ QT     += core xml gui
 # Engine
 INCLUDEPATH += ../../engine/src
 DEPENDPATH  += ../../engine/src
-unix:QMAKE_LIBDIR += ../../engine/src
-unix:LIBS   += -lqlcengine
-win32:{
-    CONFIG(release, debug|release) LIBS += -L../../engine/src/release -lqlcengine
-    CONFIG(debug, debug|release) LIBS += -L../../engine/src/debug -lqlcengine
-}
+QMAKE_LIBDIR += ../../engine/src
+LIBS   += -lqlcengine
 
 # Types
 INCLUDEPATH += ../../plugins/interfaces

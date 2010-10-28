@@ -12,12 +12,8 @@ INCLUDEPATH += ../src
 DEPENDPATH  += ../src
 INCLUDEPATH += ../../plugins/interfaces
 INCLUDEPATH += ../inputpluginstub ../outputpluginstub
-unix:QMAKE_LIBDIR += ../src
-unix:LIBS   += -lqlcengine
-win32:{
-    CONFIG(release, debug|release) LIBS += -L../src/release -lqlcengine
-    CONFIG(debug, debug|release) LIBS += -L../src/debug -lqlcengine
-}
+QMAKE_LIBDIR += ../src
+LIBS   += -lqlcengine
 
 # Fixture metadata
 HEADERS += qlcphysical_test.h \

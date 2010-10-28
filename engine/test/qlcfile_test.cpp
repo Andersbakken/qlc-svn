@@ -47,15 +47,16 @@ void QLCFile_Test::readXML()
     QCOMPARE(doc.firstChild().toElement().tagName(), QString("Workspace"));
     QCOMPARE(doc.firstChild().firstChild().toElement().tagName(), QString("Creator"));
 
-#ifdef WIN32
-#else
-    chmod("readonly.xml", 0);
-    doc = QLCFile::readXML("readonly.xml");
+	QString path("readonly.xml");
+#ifndef WIN32
+	QFile::Permissions perms = QFile::permissions(path);
+	QFile::setPermissions(path, 0);
+    doc = QLCFile::readXML(path);
     QVERIFY(doc.isNull() == true);
-    chmod("readonly.xml", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	QFile::setPermissions(path, perms);
 #endif
 
-    doc = QLCFile::readXML("readonly.xml");
+    doc = QLCFile::readXML(path);
     QVERIFY(doc.isNull() == false);
     QCOMPARE(doc.firstChild().toElement().tagName(), QString("Workspace"));
     QCOMPARE(doc.firstChild().firstChild().toElement().tagName(), QString("Creator"));

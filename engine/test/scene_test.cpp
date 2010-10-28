@@ -33,11 +33,7 @@
 void Scene_Test::initTestCase()
 {
     Bus::init(this);
-#ifdef WIN32
-    QVERIFY(m_cache.load("../../../fixtures/") == true);
-#else
     QVERIFY(m_cache.load("../../fixtures/") == true);
-#endif
 }
 
 void Scene_Test::init()

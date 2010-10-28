@@ -4,31 +4,31 @@ pushd .
 
 REM Enttec wing test
 SET OLDPATH=%PATH%
-PATH=%PATH%;plugins\ewinginput\src\%1
-plugins\ewinginput\test\%1\test_ewing.exe
+PATH=%PATH%;plugins\ewinginput\src
+plugins\ewinginput\test\test_ewing.exe
+IF NOT %ERRORLEVEL%==0 exit /B %ERRORLEVEL%
 SET PATH=%OLDPATH%
-IF NOT ERRORLEVEL 0 exit /B %ERRORLEVEL%
 
 popd
 pushd .
 
 REM Engine test
-cd engine\test\%1
+cd engine\test
 SET OLDPATH=%PATH%
-PATH=%PATH%;..\..\src\%1
+PATH=%PATH%;..\src
 test_engine.exe
+IF NOT %ERRORLEVEL%==0 exit /B %ERRORLEVEL%
 SET PATH=%OLDPATH%
-IF NOT ERRORLEVEL 0 exit /B %ERRORLEVEL%
 
 popd
 pushd .
 
 REM UI test
-cd ui\test\%1
+cd ui\test
 SET OLDPATH=%PATH%
-PATH=%PATH%;..\..\..\engine\src\%1
+PATH=%PATH%;..\..\engine\src
 test_ui.exe
+IF NOT %ERRORLEVEL%==0 exit /B %ERRORLEVEL%
 SET PATH=%OLDPATH%
-IF NOT ERRORLEVEL 0 exit /B %ERRORLEVEL%
 
 popd

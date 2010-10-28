@@ -26,11 +26,7 @@
 #include "qlcinputprofile.h"
 #include "qlcinputchannel.h"
 
-#ifndef WIN32
-#   define PROFILEDIR "../../inputprofiles/"
-#else
-#   define PROFILEDIR "../../../inputprofiles/"
-#endif
+#define PROFILEDIR "../../inputprofiles/"
 
 void QLCInputProfile_Test::manufacturer()
 {
@@ -340,10 +336,12 @@ void QLCInputProfile_Test::save()
     QString path("test.qxi");
     QVERIFY(ip.saveXML(path) == true);
 
+#ifndef WIN32
     QFile::Permissions perm = QFile::permissions(path);
     QFile::setPermissions(path, 0);
     QVERIFY(ip.saveXML(path) == false);
     QFile::setPermissions(path, perm);
+#endif
 
     QLCInputProfile* prof = QLCInputProfile::loader(path);
     QVERIFY(prof != NULL);

@@ -32,11 +32,7 @@
 #include "inputmap.h"
 #undef protected
 
-#ifndef WIN32
-#   define TESTPLUGINDIR "../inputpluginstub"
-#else
-#   define TESTPLUGINDIR "../../inputpluginstub"
-#endif
+#define TESTPLUGINDIR "../inputpluginstub"
 
 void InputPatch_Test::defaults()
 {

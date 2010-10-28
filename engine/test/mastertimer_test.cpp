@@ -38,11 +38,7 @@
 void MasterTimer_Test::initTestCase()
 {
     m_oms = new OutputMapStub(this);
-#ifdef WIN32
-    QVERIFY(m_cache.load("../../../fixtures/") == true);
-#else
     QVERIFY(m_cache.load("../../fixtures/") == true);
-#endif
 }
 
 void MasterTimer_Test::init()

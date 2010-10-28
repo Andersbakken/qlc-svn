@@ -22,6 +22,9 @@ unix:OLA_GIT    = /usr/src/ola    # OLA directories
 #macx:CONFIG   += x86 ppc  # Build universal binaries (Leopard only)
 #CONFIG        += coverage # Unit test coverage measurement
 
+# Produce build targets to the source directory
+win32:DESTDIR  = ./
+
 #############################################################################
 # Installation paths
 #############################################################################

@@ -17,21 +17,11 @@ unix:!macx:DEBIAN_CLEAN    += debian/files debian/dirs
 unix:!macx:QMAKE_CLEAN     += $$DEBIAN_CLEAN
 unix:!macx:QMAKE_DISTCLEAN += $$DEBIAN_CLEAN
 
+# Unit testing thru "make test"
 unittests.target = test
 QMAKE_EXTRA_TARGETS += unittests
-
-unix {
-    unittests.commands += ./unittest.sh
-}
-
-win32 {
-    # *sigh*.. Mr Ballmer's shell is just so utterly depressing
-    CONFIG(debug) {
-		unittests.commands   += unittest.bat debug
-	} else {
-		unittests.commands += unittest.bat release
-	}
-}
+unix:unittests.commands += ./unittest.sh
+win32:unittests.commands += unittest.bat
 
 # Leave this on the last row of this file
 macx:SUBDIRS += macx

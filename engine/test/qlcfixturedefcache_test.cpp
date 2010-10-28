@@ -27,11 +27,7 @@
 #include "qlcfixturedef.h"
 #include "qlcfile.h"
 
-#ifdef WIN32
-#	define INTERNAL_FIXTUREDIR "../../../fixtures/"
-#else
-#	define INTERNAL_FIXTUREDIR "../../fixtures/"
-#endif
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
 
 void QLCFixtureDefCache_Test::init()
 {
@@ -152,10 +148,6 @@ void QLCFixtureDefCache_Test::fixtureDef()
 
 void QLCFixtureDefCache_Test::load()
 {
-    /* Test only that all available files get loaded properly. Actual
-       contents of fixtureDefs should be tested in QLCFixtureDef_Test. */
-    QDir dir(INTERNAL_FIXTUREDIR, QString("*%1").arg(KExtFixture));
-
     /* At least these should be available */
     QVERIFY(cache.manufacturers().contains("Elation") == true);
     QVERIFY(cache.manufacturers().contains("Eurolite") == true);
