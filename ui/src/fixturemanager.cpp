@@ -57,6 +57,7 @@
 extern App* _app;
 
 #define SETTINGS_GEOMETRY "fixturemanager/geometry"
+#define SETTINGS_SPLITTER "fixturemanager/splitterstate"
 
 // List view column numbers
 #define KColumnUniverse 0
@@ -101,6 +102,7 @@ FixtureManager::FixtureManager(QWidget* parent, Qt::WindowFlags flags)
 FixtureManager::~FixtureManager()
 {
     QSettings settings;
+    settings.setValue(SETTINGS_SPLITTER, m_splitter->saveState());
 #ifdef __APPLE__
     settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 #else
@@ -244,6 +246,11 @@ void FixtureManager::initDataView()
 
     m_splitter->setStretchFactor(0, 1);
     m_splitter->setStretchFactor(1, 0);
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_SPLITTER);
+    if (var.isValid() == true)
+        m_splitter->restoreState(var.toByteArray());
 
     slotSelectionChanged();
 }
