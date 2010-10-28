@@ -2009,12 +2009,14 @@ void EFX_Test::save()
     QVERIFY(root.firstChild().toElement().attribute("Type") == "EFX");
     QVERIFY(root.firstChild().toElement().attribute("Name") == "First");
 
-    QDomNode node = root.firstChild().firstChild();
     bool dir = false, run = false, bus = false, algo = false, w = false,
          h = false, rot = false, xoff = false, yoff = false,
          xfreq = false, yfreq = false, xpha = false, ypha = false,
          prop = false, stas = false, stos = false;
+    int fixtureid = 0, fixturedirection = 0;
     QList <QString> fixtures;
+
+    QDomNode node = root.firstChild().firstChild();
     while (node.isNull() == false)
     {
         QDomElement tag = node.toElement();
@@ -2062,7 +2064,7 @@ void EFX_Test::save()
         {
             QVERIFY(tag.text() == "99");
             QVERIFY(tag.attribute("Enabled") == "True");
-            stos = true;
+            stas = true;
         }
         else if (tag.tagName() == "StopScene")
         {
@@ -2081,86 +2083,94 @@ void EFX_Test::save()
                 QFAIL("Invalid axis!");
 
             QDomNode subnode = tag.firstChild();
-            QDomElement subtag = subnode.toElement();
-            if (subtag.tagName() == "Offset")
+            while (subnode.isNull() == false)
             {
-                if (axis == true)
+                QDomElement subtag = subnode.toElement();
+                if (subtag.tagName() == "Offset")
                 {
-                    QVERIFY(subtag.text() == "34");
-                    xoff = true;
+                    if (axis == true)
+                    {
+                        QVERIFY(subtag.text() == "34");
+                        xoff = true;
+                    }
+                    else
+                    {
+                        QVERIFY(subtag.text() == "27");
+                        yoff = true;
+                    }
+                }
+                else if (subtag.tagName() == "Frequency")
+                {
+                    if (axis == true)
+                    {
+                        QVERIFY(subtag.text() == "5");
+                        xfreq = true;
+                    }
+                    else
+                    {
+                        QVERIFY(subtag.text() == "4");
+                        yfreq = true;
+                    }
+                }
+                else if (subtag.tagName() == "Phase")
+                {
+                    if (axis == true)
+                    {
+                        QVERIFY(subtag.text() == "163");
+                        xpha = true;
+                    }
+                    else
+                    {
+                        QVERIFY(subtag.text() == "94");
+                        ypha = true;
+                    }
                 }
                 else
                 {
-                    QVERIFY(subtag.text() == "27");
-                    yoff = true;
+                    QFAIL("Unexpected axis tag!");
                 }
-            }
-            else if (subtag.tagName() == "Frequency")
-            {
-                if (axis == true)
-                {
-                    QVERIFY(subtag.text() == "5");
-                    xfreq = true;
-                }
-                else
-                {
-                    QVERIFY(subtag.text() == "4");
-                    yfreq = true;
-                }
-            }
-            else if (subtag.tagName() == "Phase")
-            {
-                if (axis == true)
-                {
-                    QVERIFY(subtag.text() == "163");
-                    xpha = true;
-                }
-                else
-                {
-                    QVERIFY(subtag.text() == "94");
-                    ypha = true;
-                }
-            }
-            else
-            {
-                QFAIL("Unexpected axis tag!");
-            }
 
-            subnode = subnode.nextSibling();
+                subnode = subnode.nextSibling();
+            }
         }
         else if (tag.tagName() == "Fixture")
         {
             bool expectBackward = false;
 
             QDomNode subnode = tag.firstChild();
-            QDomElement subtag = subnode.toElement();
-
-            if (subtag.tagName() == "ID")
+            while (subnode.isNull() == false)
             {
-                if (fixtures.contains(subtag.text()) == true)
-                    QFAIL("Same fixture multiple times!");
-                else
-                    fixtures.append(subtag.text());
-
-                if (subtag.text() == "34")
-                    expectBackward = true;
-                else
-                    expectBackward = false;
-            }
-            else if (subtag.tagName() == "Direction")
-            {
-                if (expectBackward == false &&
-                        subtag.text() == "Backward")
+                QDomElement subtag = subnode.toElement();
+                if (subtag.tagName() == "ID")
                 {
-                    QFAIL("Not expecting reversal!");
-                }
-            }
-            else
-            {
-                QFAIL("Unexpected fixture tag!");
-            }
+                    if (fixtures.contains(subtag.text()) == true)
+                        QFAIL("Same fixture multiple times!");
+                    else
+                        fixtures.append(subtag.text());
 
-            subnode = subnode.nextSibling();
+                    if (subtag.text() == "34")
+                        expectBackward = true;
+                    else
+                        expectBackward = false;
+
+                    fixtureid++;
+                }
+                else if (subtag.tagName() == "Direction")
+                {
+                    if (expectBackward == false && subtag.text() == "Backward")
+                    {
+                        QFAIL("Not expecting reversal!");
+                    }
+
+                    fixturedirection++;
+                }
+                else
+                {
+                    QFAIL("Unexpected fixture tag!");
+                }
+
+                subnode = subnode.nextSibling();
+            }
         }
         else
         {
@@ -2170,7 +2180,9 @@ void EFX_Test::save()
         node = node.nextSibling();
     }
 
-    QVERIFY(fixtures.size() == 3);
+    QCOMPARE(fixtures.size(), 3);
+    QCOMPARE(fixtureid, 3);
+    QCOMPARE(fixturedirection, 3);
     QVERIFY(dir == true);
     QVERIFY(run == true);
     QVERIFY(bus == true);
