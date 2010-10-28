@@ -26,8 +26,11 @@ unix {
 
 win32 {
     # *sigh*.. Mr Ballmer's shell is just so utterly depressing
-    debug:unittests.commands   += unittest.bat debug
-    release:unittests.commands += unittest.bat release
+    CONFIG(debug) {
+		unittests.commands   += unittest.bat debug
+	} else {
+		unittests.commands += unittest.bat release
+	}
 }
 
 # Leave this on the last row of this file
