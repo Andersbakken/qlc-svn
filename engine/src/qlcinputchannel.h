@@ -53,9 +53,6 @@ public:
     /** Destructor */
     virtual ~QLCInputChannel();
 
-    /** Assignment operator */
-    QLCInputChannel& operator=(const QLCInputChannel& channel);
-
     /********************************************************************
      * Type
      ********************************************************************/

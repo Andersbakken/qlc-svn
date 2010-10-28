@@ -37,8 +37,24 @@ QLCInputProfile::QLCInputProfile()
 
 QLCInputProfile::QLCInputProfile(const QLCInputProfile& profile)
 {
-    /* Copy contents with operator=() */
-    *this = profile;
+    if (this != &profile)
+    {
+        m_manufacturer = profile.m_manufacturer;
+        m_model = profile.m_model;
+        m_path = profile.m_path;
+
+        /* Copy the other profile's channels */
+        QMapIterator <quint32,QLCInputChannel*> it(profile.m_channels);
+        while (it.hasNext() == true)
+        {
+            it.next();
+
+            quint32 number = it.key();
+            QLCInputChannel* ich = it.value();
+
+            insertChannel(number, new QLCInputChannel(*ich));
+        }
+    }
 }
 
 QLCInputProfile::~QLCInputProfile()
@@ -52,40 +68,6 @@ QLCInputProfile::~QLCInputProfile()
     m_channels.clear();
 }
 
-QLCInputProfile& QLCInputProfile::operator=(const QLCInputProfile& profile)
-{
-    if (this != &profile)
-    {
-        m_manufacturer = profile.m_manufacturer;
-        m_model = profile.m_model;
-        m_path = profile.m_path;
-
-        /* Delete existing channels */
-        QMutableMapIterator <quint32,QLCInputChannel*>
-        old_it(m_channels);
-        while (old_it.hasNext() == true)
-            delete old_it.next().value();
-
-        /* Clear the list of freed pointers */
-        m_channels.clear();
-
-        /* Copy the other profile's channels */
-        QMapIterator <quint32,QLCInputChannel*>
-        it(profile.m_channels);
-        while (it.hasNext() == true)
-        {
-            it.next();
-
-            quint32 number = it.key();
-            QLCInputChannel* ich = it.value();
-
-            insertChannel(number, new QLCInputChannel(*ich));
-        }
-    }
-
-    return *this;
-}
-
 /****************************************************************************
  * profile information
  ****************************************************************************/
@@ -95,9 +77,19 @@ void QLCInputProfile::setManufacturer(const QString& manufacturer)
     m_manufacturer = manufacturer;
 }
 
+QString QLCInputProfile::manufacturer() const
+{
+    return m_manufacturer;
+}
+
 void QLCInputProfile::setModel(const QString& model)
 {
     m_model = model;
+}
+
+QString QLCInputProfile::model() const
+{
+    return m_model;
 }
 
 QString QLCInputProfile::name() const
@@ -169,8 +161,7 @@ QLCInputChannel* QLCInputProfile::channel(quint32 channel) const
         return NULL;
 }
 
-quint32 QLCInputProfile::channelNumber(
-    const QLCInputChannel* channel) const
+quint32 QLCInputProfile::channelNumber(const QLCInputChannel* channel) const
 {
     if (channel == NULL)
         return KInputChannelInvalid;
@@ -186,6 +177,11 @@ quint32 QLCInputProfile::channelNumber(
     return KInputChannelInvalid;
 }
 
+QMap <quint32,QLCInputChannel*> QLCInputProfile::channels() const
+{
+    return m_channels;
+}
+
 /****************************************************************************
  * Load & Save
  ****************************************************************************/
@@ -196,11 +192,11 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
     if (doc.isNull() == true)
     {
         qWarning() << "Unable to load input profile from" << path;
-        return false;
+        return NULL;
     }
 
     QLCInputProfile* profile = new QLCInputProfile();
-    if (profile->loadXML(&doc) == false)
+    if (profile->loadXML(doc) == false)
     {
         delete profile;
         profile = NULL;
@@ -213,24 +209,15 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
     return profile;
 }
 
-bool QLCInputProfile::loadXML(const QDomDocument* doc)
+bool QLCInputProfile::loadXML(const QDomDocument& doc)
 {
-    QLCInputChannel* ich;
-    quint32 ch;
-    QDomElement root;
-    QDomElement tag;
-    QDomNode node;
-    QString str;
-
-    Q_ASSERT(doc != NULL);
-
-    root = doc->documentElement();
+    QDomElement root = doc.documentElement();
     if (root.tagName() == KXMLQLCInputProfile)
     {
-        node = root.firstChild();
+        QDomNode node = root.firstChild();
         while (node.isNull() == false)
         {
-            tag = node.toElement();
+            QDomElement tag = node.toElement();
             if (tag.tagName() == KXMLQLCCreator)
             {
                 /* Ignore */
@@ -245,11 +232,11 @@ bool QLCInputProfile::loadXML(const QDomDocument* doc)
             }
             else if (tag.tagName() == KXMLQLCInputChannel)
             {
-                str = tag.attribute(KXMLQLCInputChannelNumber);
+                QString str = tag.attribute(KXMLQLCInputChannelNumber);
                 if (str.isEmpty() == false)
                 {
-                    ch = str.toInt();
-                    ich = new QLCInputChannel();
+                    quint32 ch = str.toInt();
+                    QLCInputChannel* ich = new QLCInputChannel();
                     if (ich->loadXML(&tag) == true)
                         insertChannel(ch, ich);
                     else
@@ -259,13 +246,14 @@ bool QLCInputProfile::loadXML(const QDomDocument* doc)
 
             node = node.nextSibling();
         }
+
+        return true;
     }
     else
     {
         qDebug() << "Input profile node not found in file!";
+        return false;
     }
-
-    return true;
 }
 
 bool QLCInputProfile::saveXML(const QString& fileName)

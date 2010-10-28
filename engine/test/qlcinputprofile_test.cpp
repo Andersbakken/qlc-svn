@@ -26,6 +26,12 @@
 #include "qlcinputprofile.h"
 #include "qlcinputchannel.h"
 
+#ifndef WIN32
+#   define PROFILEDIR "../../inputprofiles/"
+#else
+#   define PROFILEDIR "../../../inputprofiles/"
+#endif
+
 void QLCInputProfile_Test::manufacturer()
 {
     QLCInputProfile ip;
@@ -181,6 +187,26 @@ void QLCInputProfile_Test::channels()
     QVERIFY(ip.channels()[5] == ich2);
 }
 
+void QLCInputProfile_Test::channelNumber()
+{
+    QLCInputProfile ip;
+    QVERIFY(ip.channels().size() == 0);
+
+    QLCInputChannel* ich1 = new QLCInputChannel();
+    ip.insertChannel(0, ich1);
+
+    QLCInputChannel* ich2 = new QLCInputChannel();
+    ip.insertChannel(6510, ich2);
+
+    QLCInputChannel* ich3 = new QLCInputChannel();
+    ip.insertChannel(5, ich3);
+
+    QCOMPARE(ip.channelNumber(NULL), KInputChannelInvalid);
+    QCOMPARE(ip.channelNumber(ich1), quint32(0));
+    QCOMPARE(ip.channelNumber(ich2), quint32(6510));
+    QCOMPARE(ip.channelNumber(ich3), quint32(5));
+}
+
 void QLCInputProfile_Test::copy()
 {
     QLCInputProfile ip;
@@ -203,12 +229,13 @@ void QLCInputProfile_Test::copy()
     ich4->setName("Channel 4");
     ip.insertChannel(9000, ich4);
 
-    QLCInputProfile copy(ip);
+    QLCInputProfile copy = ip;
     QVERIFY(copy.manufacturer() == "Behringer");
     QVERIFY(copy.model() == "BCF2000");
 
     QVERIFY(copy.channels().size() == 4);
 
+    /* Verify that it's a deep copy */
     QVERIFY(copy.channel(0) != ich1);
     QVERIFY(copy.channel(0) != NULL);
     QVERIFY(copy.channel(0)->name() == "Channel 1");
@@ -256,11 +283,35 @@ void QLCInputProfile_Test::load()
     ch.appendChild(type);
 
     QLCInputProfile ip;
-    QVERIFY(ip.loadXML(&doc) == true);
+    QVERIFY(ip.loadXML(doc) == true);
     QVERIFY(ip.manufacturer() == "Behringer");
     QVERIFY(ip.model() == "BCF2000");
     QVERIFY(ip.channels().size() == 1);
     QVERIFY(ip.channel(492) != NULL);
     QVERIFY(ip.channel(492)->name() == "Foobar");
     QVERIFY(ip.channel(492)->type() == QLCInputChannel::Slider);
+}
+
+void QLCInputProfile_Test::loadNoProfile()
+{
+    QDomDocument doc;
+    QLCInputProfile ip;
+    QVERIFY(ip.loadXML(doc) == false);
+
+    QDomElement root = doc.createElement("Whatever");
+    doc.appendChild(root);
+    QVERIFY(ip.loadXML(doc) == false);
+}
+
+void QLCInputProfile_Test::loader()
+{
+    QLCInputProfile* prof = QLCInputProfile::loader("foobar");
+    QVERIFY(prof == NULL);
+
+    QString path(PROFILEDIR "Generic-MIDI.qxi");
+    prof = QLCInputProfile::loader(path);
+    QVERIFY(prof != NULL);
+    QCOMPARE(prof->path(), path);
+    QCOMPARE(prof->name(), QString("Generic MIDI"));
+    QCOMPARE(prof->channels().size(), 256);
 }

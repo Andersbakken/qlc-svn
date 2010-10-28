@@ -37,8 +37,11 @@ private slots:
     void remapChannel();
     void channel();
     void channels();
+    void channelNumber();
     void copy();
     void load();
+    void loadNoProfile();
+    void loader();
 };
 
 #endif

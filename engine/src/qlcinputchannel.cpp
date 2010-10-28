@@ -36,22 +36,12 @@ QLCInputChannel::QLCInputChannel()
 
 QLCInputChannel::QLCInputChannel(const QLCInputChannel& channel)
 {
-    *this = channel;
+    m_name = channel.m_name;
+    m_type = channel.m_type;
 }
 
 QLCInputChannel::~QLCInputChannel()
 {
-}
-
-QLCInputChannel& QLCInputChannel::operator=(const QLCInputChannel& channel)
-{
-    if (this != &channel)
-    {
-        m_name = channel.m_name;
-        m_type = channel.m_type;
-    }
-
-    return *this;
 }
 
 /****************************************************************************
@@ -143,9 +133,6 @@ bool QLCInputChannel::loadXML(const QDomElement* root)
         return false;
     }
 
-    /* Get the channel number */
-    // setChannel(root->attribute(KXMLQLCInputChannelNumber).toInt());
-
     /* Go thru all sub tags */
     node = root->firstChild();
     while (node.isNull() == false)
@@ -161,8 +148,7 @@ bool QLCInputChannel::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown input channel tag"
-            << tag.tagName();
+            qDebug() << "Unknown input channel tag" << tag.tagName();
         }
 
         node = node.nextSibling();

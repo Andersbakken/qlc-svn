@@ -53,22 +53,15 @@ public:
     /** Destructor */
     virtual ~QLCInputProfile();
 
-    /** Assignment operator */
-    QLCInputProfile& operator=(const QLCInputProfile& profile);
-
     /********************************************************************
      * Profile information
      ********************************************************************/
 public:
     void setManufacturer(const QString& manufacturer);
-    QString manufacturer() const {
-        return m_manufacturer;
-    }
+    QString manufacturer() const;
 
     void setModel(const QString& model);
-    QString model() const {
-        return m_model;
-    }
+    QString model() const;
 
     /** Get the profile name (manufacturer - model) */
     QString name() const;
@@ -133,17 +126,14 @@ public:
     quint32 channelNumber(const QLCInputChannel* channel) const;
 
     /**
-     * Get available channels in a non-modifiable map
+     * Get available channels.
      */
-    const QMap <quint32, QLCInputChannel*> channels() const
-    {
-        return m_channels;
-    }
+    QMap <quint32,QLCInputChannel*> channels() const;
 
 protected:
     /** Channel objects present in this profile. This is a QMap and not a
         QList because not all channels might be present. */
-    QMap <quint32, QLCInputChannel*> m_channels;
+    QMap <quint32,QLCInputChannel*> m_channels;
 
     /********************************************************************
      * Load & Save
@@ -156,7 +146,7 @@ public:
     bool saveXML(const QString& fileName);
 
     /** Load an input profile from the given document */
-    bool loadXML(const QDomDocument* doc);
+    bool loadXML(const QDomDocument& doc);
 };
 
 #endif
