@@ -308,6 +308,9 @@ void QLCInputProfile_Test::loader()
     QLCInputProfile* prof = QLCInputProfile::loader("foobar");
     QVERIFY(prof == NULL);
 
+    prof = QLCInputProfile::loader("broken.xml");
+    QVERIFY(prof == NULL);
+
     QString path(PROFILEDIR "Generic-MIDI.qxi");
     prof = QLCInputProfile::loader(path);
     QVERIFY(prof != NULL);
@@ -337,6 +340,11 @@ void QLCInputProfile_Test::save()
     QString path("test.qxi");
     QVERIFY(ip.saveXML(path) == true);
 
+    QFile::Permissions perm = QFile::permissions(path);
+    QFile::setPermissions(path, 0);
+    QVERIFY(ip.saveXML(path) == false);
+    QFile::setPermissions(path, perm);
+
     QLCInputProfile* prof = QLCInputProfile::loader(path);
     QVERIFY(prof != NULL);
     QCOMPARE(prof->manufacturer(), ip.manufacturer());
@@ -348,4 +356,5 @@ void QLCInputProfile_Test::save()
     QCOMPARE(prof->channels()[5]->name(), ich2->name());
 
     QVERIFY(QFile::remove(path) == true);
+    delete prof;
 }

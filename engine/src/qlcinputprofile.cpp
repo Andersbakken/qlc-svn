@@ -260,7 +260,10 @@ bool QLCInputProfile::saveXML(const QString& fileName)
 {
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly) == false)
+    {
+        qWarning() << "Unable to open" << fileName << "for writing.";
         return false;
+    }
 
     QDomDocument doc(QLCFile::getXMLHeader(KXMLQLCInputProfile));
     Q_ASSERT(doc.isNull() == false);
