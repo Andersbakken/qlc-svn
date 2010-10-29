@@ -411,7 +411,7 @@ QTreeWidgetItem* VCSliderProperties::levelFixtureNode(t_fixture_id id)
 }
 
 void VCSliderProperties::levelUpdateChannels(QTreeWidgetItem* parent,
-        Fixture* fxi)
+                                             Fixture* fxi)
 {
     t_channel channels = 0;
     t_channel ch = 0;
@@ -425,22 +425,22 @@ void VCSliderProperties::levelUpdateChannels(QTreeWidgetItem* parent,
 }
 
 void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
-        Fixture* fxi, t_channel ch)
+                                                Fixture* fxi, t_channel ch)
 {
-    QTreeWidgetItem* item;
-    const QLCChannel* channel;
-    QString str;
-
     Q_ASSERT(parent != NULL);
 
-    channel = fxi->channel(ch);
-    Q_ASSERT(channel != NULL);
+    if (fxi == NULL)
+        return;
 
-    item = levelChannelNode(parent, ch);
+    const QLCChannel* channel = fxi->channel(ch);
+    if (channel == NULL)
+        return;
+
+    QTreeWidgetItem* item = levelChannelNode(parent, ch);
     if (item == NULL)
     {
         item = new QTreeWidgetItem(parent);
-        item->setText(KColumnID, str.setNum(ch));
+        item->setText(KColumnID, QString::number(ch));
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
         item->setCheckState(KColumnName, Qt::Unchecked);
     }
@@ -453,16 +453,13 @@ void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
 }
 
 QTreeWidgetItem* VCSliderProperties::levelChannelNode(QTreeWidgetItem* parent,
-        t_channel ch)
+                                                      t_channel ch)
 {
-    QTreeWidgetItem* item;
-    int i;
-
     Q_ASSERT(parent != NULL);
 
-    for (i = 0; i < parent->childCount(); i++)
+    for (int i = 0; i < parent->childCount(); i++)
     {
-        item = parent->child(i);
+        QTreeWidgetItem* item = parent->child(i);
         if (item->text(KColumnID).toInt() == ch)
             return item;
     }
@@ -471,7 +468,7 @@ QTreeWidgetItem* VCSliderProperties::levelChannelNode(QTreeWidgetItem* parent,
 }
 
 void VCSliderProperties::levelUpdateCapabilities(QTreeWidgetItem* parent,
-        const QLCChannel* channel)
+                                                 const QLCChannel* channel)
 {
     Q_ASSERT(parent != NULL);
     Q_ASSERT(channel != NULL);
@@ -515,10 +512,12 @@ void VCSliderProperties::levelUpdateChannelSelections()
         VCSlider::splitCombinedValue(it.next(), &fxi_id, &ch);
 
         fxiNode = levelFixtureNode(fxi_id);
-        Q_ASSERT(fxiNode != NULL);
+        if (fxiNode == NULL)
+            continue;
 
         chNode = levelChannelNode(fxiNode, ch);
-        Q_ASSERT(chNode != NULL);
+        if (chNode == NULL)
+            continue;
 
         chNode->setCheckState(KColumnName, Qt::Checked);
     }
