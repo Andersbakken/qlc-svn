@@ -525,9 +525,9 @@ void FixtureManager::slotAdd()
     t_fixture_id latestFxi = Fixture::invalidId();
 
     QString name = af.name();
-    t_channel address = af.address();
-    t_channel universe = af.universe();
-    t_channel channels = af.channels();
+    quint32 address = af.address();
+    quint32 universe = af.universe();
+    quint32 channels = af.channels();
     int gap = af.gap();
 
     const QLCFixtureDef* fixtureDef = af.fixtureDef();

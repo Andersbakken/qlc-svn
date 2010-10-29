@@ -61,7 +61,7 @@ QStringList OutputPluginStub::outputs()
 {
     QStringList list;
 
-    for (int i = 0; i < KUniverseCount; i++)
+    for (quint32 i = 0; i < KUniverseCount; i++)
         list << QString("%1: Stub %1").arg(i + 1);
 
     return list;

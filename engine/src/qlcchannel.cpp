@@ -73,9 +73,10 @@ QLCChannel& QLCChannel::operator=(const QLCChannel& channel)
     return *this;
 }
 
-/*****************************************************************************
- * Channel groups
- *****************************************************************************/
+/*************************************************************************
+ * Properties
+ *************************************************************************/
+
 QStringList QLCChannel::groupList()
 {
     QStringList list;
@@ -95,72 +96,6 @@ QStringList QLCChannel::groupList()
 
     return list;
 }
-
-int QLCChannel::groupToIndex(QString group)
-{
-    if (group == KQLCChannelGroupBeam)
-        return 0;
-    else if (group == KQLCChannelGroupColour)
-        return 1;
-    else if (group == KQLCChannelGroupEffect)
-        return 2;
-    else if (group == KQLCChannelGroupGobo)
-        return 3;
-    else if (group == KQLCChannelGroupIntensity)
-        return 4;
-    else if (group == KQLCChannelGroupMaintenance)
-        return 5;
-    else if (group == KQLCChannelGroupNothing)
-        return 6;
-    else if (group == KQLCChannelGroupPan)
-        return 7;
-    else if (group == KQLCChannelGroupPrism)
-        return 8;
-    else if (group == KQLCChannelGroupShutter)
-        return 9;
-    else if (group == KQLCChannelGroupSpeed)
-        return 10;
-    else if (group == KQLCChannelGroupTilt)
-        return 11;
-    else
-        return -1;
-}
-
-QString QLCChannel::indexToGroup(int index)
-{
-    switch (index)
-    {
-    case 0:
-        return KQLCChannelGroupBeam;
-    case 1:
-        return KQLCChannelGroupColour;
-    case 2:
-        return KQLCChannelGroupEffect;
-    case 3:
-        return KQLCChannelGroupGobo;
-    case 4:
-        return KQLCChannelGroupIntensity;
-    case 5:
-        return KQLCChannelGroupMaintenance;
-    default:
-    case 6:
-        return KQLCChannelGroupNothing;
-    case 7:
-        return KQLCChannelGroupPan;
-    case 8:
-        return KQLCChannelGroupPrism;
-    case 9:
-        return KQLCChannelGroupShutter;
-    case 10:
-        return KQLCChannelGroupSpeed;
-    case 11:
-        return KQLCChannelGroupTilt;
-    }
-}
-
-/*************************************************************************
- * Properties
- *************************************************************************/
 
 QString QLCChannel::name() const
 {

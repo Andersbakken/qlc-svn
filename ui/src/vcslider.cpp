@@ -458,7 +458,7 @@ void VCSlider::slotBusNameChanged(quint32 bus, const QString&)
  * Level
  *****************************************************************************/
 
-void VCSlider::addLevelChannel(t_fixture_id fixture, t_channel channel)
+void VCSlider::addLevelChannel(t_fixture_id fixture, quint32 channel)
 {
     LevelChannel lch(fixture, channel);
 
@@ -474,7 +474,7 @@ void VCSlider::addLevelChannel(t_fixture_id fixture, t_channel channel)
     }
 }
 
-void VCSlider::removeLevelChannel(t_fixture_id fixture, t_channel channel)
+void VCSlider::removeLevelChannel(t_fixture_id fixture, quint32 channel)
 {
     LevelChannel lch(fixture, channel);
     if (m_levelChannels.removeAll(lch) == 0)
@@ -556,7 +556,7 @@ void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
         Fixture* fxi = _app->doc()->fixture(lch.fixture);
         if (fxi != NULL)
         {
-            t_channel dmx_ch = fxi->channelAddress(lch.channel);
+            quint32 dmx_ch = fxi->channelAddress(lch.channel);
             (*universes)[dmx_ch] = m_lastWrittenLevelValue;
         }
     }
@@ -904,7 +904,7 @@ bool VCSlider::loadXMLLevel(const QDomElement* level_root)
             str = tag.attribute(KXMLQLCVCSliderChannelFixture);
             addLevelChannel(
                 static_cast<t_fixture_id>(str.toInt()),
-                static_cast<t_channel> (tag.text().toInt()));
+                static_cast<quint32> (tag.text().toInt()));
         }
         else
         {
@@ -1006,7 +1006,7 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
  * LevelChannel implementation
  ****************************************************************************/
 
-VCSlider::LevelChannel::LevelChannel(t_fixture_id fid, t_channel ch)
+VCSlider::LevelChannel::LevelChannel(t_fixture_id fid, quint32 ch)
 {
     this->fixture = fid;
     this->channel = ch;

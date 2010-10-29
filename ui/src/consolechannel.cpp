@@ -53,7 +53,7 @@ extern App* _app;
  *****************************************************************************/
 
 ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
-                               t_channel channel) : QGroupBox(parent)
+                               quint32 channel) : QGroupBox(parent)
 {
     /* Set the class name as the object name */
     setObjectName(ConsoleChannel::staticMetaObject.className());
@@ -476,7 +476,7 @@ void ConsoleChannel::writeDMX(MasterTimer* timer, QByteArray* universes)
     m_valueChangedMutex.lock();
     if (m_valueChanged == true)
     {
-        t_channel ch = m_fixture->universeAddress() + m_channel;
+        quint32 ch = m_fixture->universeAddress() + m_channel;
         (*universes)[ch] = char(m_value);
         m_valueChanged = false;
     }

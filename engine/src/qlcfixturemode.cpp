@@ -76,7 +76,7 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
 
         Q_ASSERT(m_fixtureDef != NULL);
 
-        int i = 0;
+        quint32 i = 0;
         QListIterator <QLCChannel*> it(mode.m_channels);
         while (it.hasNext() == true)
         {
@@ -91,9 +91,8 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
             if (actual != NULL)
                 insertChannel(actual, i++);
             else
-                qWarning() << "Unable to find channel"
-                << ch->name() << "for mode"
-                << m_name << "from its fixture def";
+                qWarning() << "Unable to find channel" << ch->name() << "for mode"
+                           << m_name << "from its fixture def";
         }
     }
 
@@ -127,7 +126,7 @@ QLCFixtureDef* QLCFixtureMode::fixtureDef() const
  * Channels
  ****************************************************************************/
 
-bool QLCFixtureMode::insertChannel(QLCChannel* channel, t_channel index)
+bool QLCFixtureMode::insertChannel(QLCChannel* channel, quint32 index)
 {
     if (channel == NULL)
     {
@@ -192,9 +191,9 @@ QLCChannel* QLCFixtureMode::channel(const QString& name) const
     return NULL;
 }
 
-QLCChannel* QLCFixtureMode::channel(t_channel ch) const
+QLCChannel* QLCFixtureMode::channel(quint32 ch) const
 {
-    if (ch >= m_channels.size())
+    if (ch >= quint32(m_channels.size()))
         return NULL;
     else
         return m_channels.at(ch);
@@ -205,7 +204,7 @@ QList <QLCChannel*> QLCFixtureMode::channels() const
     return m_channels;
 }
 
-t_channel QLCFixtureMode::channelNumber(QLCChannel* channel) const
+quint32 QLCFixtureMode::channelNumber(QLCChannel* channel) const
 {
     if (channel == NULL)
         return KChannelInvalid;

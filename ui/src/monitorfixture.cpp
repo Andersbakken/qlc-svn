@@ -113,14 +113,11 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
     fxi = _app->doc()->fixture(m_fixture);
     if (fxi != NULL)
     {
-        QGridLayout* lay;
-        int i;
-
         /* The grid layout uses columns and rows. The first row is for
            the fixture name, second row for channel numbers and the
            third row for channel values. Each channel is in its own
            column. */
-        lay = qobject_cast<QGridLayout*> (layout());
+        QGridLayout* lay = qobject_cast<QGridLayout*> (layout());
 
         /* Create a new fixture label and set the fixture name there */
         m_fixtureLabel = new QLabel(this);
@@ -133,7 +130,7 @@ void MonitorFixture::setFixture(t_fixture_id fxi_id)
                        Qt::AlignLeft);
 
         /* Create channel numbers and value labels */
-        for (i = 0; i < fxi->channels(); i++)
+        for (quint32 i = 0; i < fxi->channels(); i++)
         {
             QLabel* label;
             QString str;

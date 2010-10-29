@@ -128,7 +128,7 @@ bool Fixture::isDimmer() const
  * Universe
  *****************************************************************************/
 
-void Fixture::setUniverse(t_channel universe)
+void Fixture::setUniverse(quint32 universe)
 {
     /* The universe part is stored in the highest 7 bits */
     m_address = (m_address & 0x01FF) | (universe << 9);
@@ -136,7 +136,7 @@ void Fixture::setUniverse(t_channel universe)
     emit changed(m_id);
 }
 
-t_channel Fixture::universe() const
+quint32 Fixture::universe() const
 {
     /* The universe part is stored in the highest 7 bits */
     return (m_address >> 9);
@@ -146,7 +146,7 @@ t_channel Fixture::universe() const
  * Address
  *****************************************************************************/
 
-void Fixture::setAddress(t_channel address)
+void Fixture::setAddress(quint32 address)
 {
     /* Don't allow more than 512 channels per universe */
     if (address > 511)
@@ -158,13 +158,13 @@ void Fixture::setAddress(t_channel address)
     emit changed(m_id);
 }
 
-t_channel Fixture::address() const
+quint32 Fixture::address() const
 {
     /* The address part is stored in the lowest 9 bits */
     return (m_address & 0x01FF);
 }
 
-t_channel Fixture::universeAddress() const
+quint32 Fixture::universeAddress() const
 {
     return m_address;
 }
@@ -173,12 +173,12 @@ t_channel Fixture::universeAddress() const
  * Channels
  *****************************************************************************/
 
-void Fixture::setChannels(t_channel channels)
+void Fixture::setChannels(quint32 channels)
 {
     m_channels = channels;
 }
 
-t_channel Fixture::channels() const
+quint32 Fixture::channels() const
 {
     if (m_fixtureDef != NULL && m_fixtureMode != NULL)
         return m_fixtureMode->channels().size();
@@ -186,7 +186,7 @@ t_channel Fixture::channels() const
         return m_channels;
 }
 
-const QLCChannel* Fixture::channel(t_channel channel) const
+const QLCChannel* Fixture::channel(quint32 channel) const
 {
     if (m_fixtureDef != NULL && m_fixtureMode != NULL)
         return m_fixtureMode->channel(channel);
@@ -196,7 +196,7 @@ const QLCChannel* Fixture::channel(t_channel channel) const
         return NULL;
 }
 
-int Fixture::channelAddress(t_channel channel) const
+quint32 Fixture::channelAddress(quint32 channel) const
 {
     if (channel < channels())
         return universeAddress() + channel;
@@ -204,7 +204,7 @@ int Fixture::channelAddress(t_channel channel) const
         return invalidChannel();
 }
 
-t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
+quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
                            const QString& group) const
 {
     if (m_fixtureDef == NULL && m_fixtureMode == NULL)
@@ -219,7 +219,7 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
     else
     {
         /* Search for the channel name (and group) from our list */
-        for (t_channel i = 0; i < m_fixtureMode->channels().size(); i++)
+        for (quint32 i = 0; i < quint32(m_fixtureMode->channels().size()); i++)
         {
             const QLCChannel* ch;
 
@@ -243,7 +243,7 @@ t_channel Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
     }
 }
 
-t_channel Fixture::invalidChannel()
+quint32 Fixture::invalidChannel()
 {
     return KInvalidFixtureChannel;
 }
@@ -343,9 +343,9 @@ bool Fixture::loadXML(const QDomElement* root,
     QString modeName;
     QString name;
     t_fixture_id id = KInvalidFixtureID;
-    t_channel universe = 0;
-    t_channel address = 0;
-    t_channel channels = 0;
+    quint32 universe = 0;
+    quint32 address = 0;
+    quint32 channels = 0;
 
     QDomElement tag;
     QDomNode node;
@@ -427,12 +427,11 @@ bool Fixture::loadXML(const QDomElement* root,
     }
 
     /* Number of channels */
-    if (channels <= 0 || channels > KFixtureChannelsMax)
+    if (channels <= 0)
     {
-        qDebug() << QString("Fixture [%1] channels %2 out of bounds "
-                            "(%3 - %4).").arg(name).arg(channels).arg(1)
-        .arg(KFixtureChannelsMax);
-        channels = KFixtureChannelsMax;
+        qDebug() << QString("Fixture [%1] channels %2 out of bounds")
+                            .arg(name).arg(channels);
+        channels = 1;
     }
 
     /* Make sure that address is something sensible */
@@ -618,7 +617,7 @@ QString Fixture::status()
     info += QString("<TD CLASS='subhi'>%1</TD></TR>").arg(tr("Name"));
 
     // Fill table with the fixture's channels
-    for (t_channel ch = 0; ch < channels();	ch++)
+    for (quint32 ch = 0; ch < channels();	ch++)
     {
         QString chInfo("<TR><TD>%1</TD><TD>%2</TD><TD>%3</TD></TR>");
         info += chInfo.arg(ch + 1).arg(address() + ch + 1)

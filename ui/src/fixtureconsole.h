@@ -87,15 +87,15 @@ public:
 
     /** Get a console channel instance for the given channel (first ch is
         always number zero, so these are not DMX channels) */
-    ConsoleChannel* channel(t_channel ch);
+    ConsoleChannel* channel(quint32 ch);
 
 protected slots:
     /** Slot that captures individual channel value changes */
-    void slotValueChanged(t_channel channel, uchar value, bool enabled);
+    void slotValueChanged(quint32 channel, uchar value, bool enabled);
 
 signals:
     /** Signal telling one of this console's channels has changed value */
-    void valueChanged(t_fixture_id fxi, t_channel channel, uchar value,
+    void valueChanged(t_fixture_id fxi, quint32 channel, uchar value,
                       bool enabled);
 
 protected:

@@ -1062,7 +1062,7 @@ void EFX::arm()
             continue;
 
         /* Find exact channel numbers for MSB/LSB pan and tilt */
-        for (t_channel i = 0; i < mode->channels().size(); i++)
+        for (quint32 i = 0; i < quint32(mode->channels().size()); i++)
         {
             QLCChannel* ch = mode->channel(i);
             Q_ASSERT(ch != NULL);

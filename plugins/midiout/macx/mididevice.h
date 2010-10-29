@@ -135,17 +135,17 @@ protected:
      *********************************************************************/
 public:
     /** Get this device's MIDI channel */
-    t_channel midiChannel() const {
+    quint32 midiChannel() const {
         return m_midiChannel;
     }
 
     /** Set this device's MIDI channel */
-    void setMidiChannel(t_channel channel) {
+    void setMidiChannel(quint32 channel) {
         m_midiChannel = channel;
     }
 
 protected:
-    t_channel m_midiChannel;
+    quint32 m_midiChannel;
 
     /********************************************************************
      * Write

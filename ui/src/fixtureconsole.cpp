@@ -78,8 +78,8 @@ void FixtureConsole::setFixture(t_fixture_id id)
         cc->setCheckable(m_channelsCheckable);
         layout()->addWidget(cc);
 
-        connect(cc, SIGNAL(valueChanged(t_channel,uchar,bool)),
-                this, SLOT(slotValueChanged(t_channel,uchar,bool)));
+        connect(cc, SIGNAL(valueChanged(quint32,uchar,bool)),
+                this, SLOT(slotValueChanged(quint32,uchar,bool)));
 
         m_channels.append(cc);
     }
@@ -141,7 +141,7 @@ void FixtureConsole::setSceneValue(const SceneValue& scv)
     }
 }
 
-void FixtureConsole::slotValueChanged(t_channel channel, uchar value,
+void FixtureConsole::slotValueChanged(quint32 channel, uchar value,
                                       bool enabled)
 {
     emit valueChanged(m_fixture, channel, value, enabled);
@@ -175,7 +175,7 @@ void FixtureConsole::setValues(const QList <SceneValue>& list)
     while (it.hasNext() == true)
     {
         SceneValue val(it.next());
-        if (val.channel < children().count())
+        if (val.channel < quint32(children().size()))
         {
             ConsoleChannel* cc = channel(val.channel);
             if (cc != NULL)
@@ -187,7 +187,7 @@ void FixtureConsole::setValues(const QList <SceneValue>& list)
     }
 }
 
-ConsoleChannel* FixtureConsole::channel(t_channel ch)
+ConsoleChannel* FixtureConsole::channel(quint32 ch)
 {
     QListIterator <QObject*> it(children());
     while (it.hasNext() == true)

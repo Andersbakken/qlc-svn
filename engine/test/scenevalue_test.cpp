@@ -119,20 +119,6 @@ void SceneValue_Test::loadWrongFixture()
     QVERIFY(scv.loadXML(&val) == false);
 }
 
-void SceneValue_Test::loadWrongChannel()
-{
-    QDomDocument doc;
-
-    QDomElement val = doc.createElement("Value");
-    val.setAttribute("Fixture", 5);
-    val.setAttribute("Channel", 65535);
-    QDomText valText = doc.createTextNode("100");
-    val.appendChild(valText);
-
-    SceneValue scv;
-    QVERIFY(scv.loadXML(&val) == false);
-}
-
 void SceneValue_Test::loadWrongValue()
 {
     QDomDocument doc;

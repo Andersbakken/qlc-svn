@@ -52,7 +52,7 @@
  * Initialization
  *****************************************************************************/
 
-OutputMap::OutputMap(QObject* parent, int universes) : QObject(parent)
+OutputMap::OutputMap(QObject* parent, quint32 universes) : QObject(parent)
 {
     m_universes = universes;
     m_dummyOut = NULL;
@@ -69,7 +69,7 @@ OutputMap::~OutputMap()
     delete m_universeArray;
     m_universeArray = NULL;
 
-    for (int i = 0; i < m_universes; i++)
+    for (quint32 i = 0; i < m_universes; i++)
     {
         delete m_patch[i];
         m_patch[i] = NULL;
@@ -152,7 +152,7 @@ void OutputMap::setBlackout(bool blackout)
     if (blackout == true)
     {
         QByteArray zeros(512, 0);
-        for (int i = 0; i < m_universes; i++)
+        for (quint32 i = 0; i < m_universes; i++)
             m_patch[i]->dump(zeros);
     }
     else
@@ -190,7 +190,7 @@ void OutputMap::dumpUniverses()
     m_universeMutex.lock();
     if (m_universeChanged == true && m_blackout == false)
     {
-        for (int i = 0; i < m_universes; i++)
+        for (quint32 i = 0; i < m_universes; i++)
             m_patch[i]->dump(m_universeArray->mid(i * 512, 512));
 
         m_universeChanged = false;
@@ -198,9 +198,9 @@ void OutputMap::dumpUniverses()
     m_universeMutex.unlock();
 }
 
-uchar OutputMap::value(t_channel channel) const
+uchar OutputMap::value(quint32 channel) const
 {
-    if (channel < (m_universes * 512))
+    if (channel < quint32(m_universes * 512))
         return (*m_universeArray)[channel];
     else
         return 0;
@@ -217,7 +217,7 @@ void OutputMap::initPatch()
     m_dummyOut->init();
     appendPlugin(m_dummyOut);
 
-    for (int i = 0; i < m_universes; i++)
+    for (quint32 i = 0; i < m_universes; i++)
     {
         OutputPatch* outputPatch;
 
@@ -230,13 +230,13 @@ void OutputMap::initPatch()
     }
 }
 
-int OutputMap::universes() const
+quint32 OutputMap::universes() const
 {
     return m_universes;
 }
 
-bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
-                         unsigned int output)
+bool OutputMap::setPatch(quint32 universe, const QString& pluginName,
+                         quint32 output)
 {
     if (int(universe) >= m_patch.size())
     {
@@ -258,9 +258,9 @@ bool OutputMap::setPatch(unsigned int universe, const QString& pluginName,
     return true;
 }
 
-OutputPatch* OutputMap::patch(int universe) const
+OutputPatch* OutputMap::patch(quint32 universe) const
 {
-    if (universe >= 0 && universe < KUniverseCount)
+    if (universe < KUniverseCount)
         return m_patch[universe];
     else
         return NULL;
@@ -281,16 +281,16 @@ QStringList OutputMap::universeNames() const
     return list;
 }
 
-int OutputMap::mapping(const QString& pluginName, quint32 output) const
+quint32 OutputMap::mapping(const QString& pluginName, quint32 output) const
 {
-    for (int uni = 0; uni < universes(); uni++)
+    for (quint32 uni = 0; uni < universes(); uni++)
     {
         const OutputPatch* p = patch(uni);
         if (p->pluginName() == pluginName && p->output() == output)
             return uni;
     }
 
-    return -1;
+    return KChannelInvalid;
 }
 
 /*****************************************************************************
@@ -402,7 +402,7 @@ void OutputMap::loadDefaults()
     QString output;
     QString key;
 
-    for (int i = 0; i < KUniverseCount; i++)
+    for (quint32 i = 0; i < KUniverseCount; i++)
     {
         /* Zero-based addressing */
         key = QString("/outputmap/universe%1/dmxzerobased").arg(i);
@@ -422,8 +422,8 @@ void OutputMap::loadDefaults()
         {
             /* Check that the same plugin & output are not mapped
                to more than one universe at a time. */
-            int m = mapping(plugin, output.toInt());
-            if (m == -1 || m == i)
+            quint32 m = mapping(plugin, output.toInt());
+            if (m == KChannelInvalid || m == i)
                 setPatch(i, plugin, output.toInt());
         }
     }
@@ -435,7 +435,7 @@ void OutputMap::saveDefaults()
     QString key;
     QString str;
 
-    for (int i = 0; i < KUniverseCount; i++)
+    for (quint32 i = 0; i < KUniverseCount; i++)
     {
         OutputPatch* outputPatch = patch(i);
         Q_ASSERT(outputPatch != NULL);

@@ -332,8 +332,8 @@ void SceneEditor::slotColorTool()
     FixtureConsole* fc;
     Fixture* fxi;
     QColor color;
-    t_channel cyan, magenta, yellow;
-    t_channel red, green, blue;
+    quint32 cyan, magenta, yellow;
+    quint32 red, green, blue;
 
     /* QObject cast fails unless the widget is a FixtureConsole */
     fc = qobject_cast<FixtureConsole*> (m_tab->currentWidget());
@@ -395,8 +395,8 @@ bool SceneEditor::isColorToolAvailable()
     FixtureConsole* fc;
     Fixture* fxi;
     QColor color;
-    t_channel cyan, magenta, yellow;
-    t_channel red, green, blue;
+    quint32 cyan, magenta, yellow;
+    quint32 red, green, blue;
 
     /* QObject cast fails unless the widget is a FixtureConsole */
     fc = qobject_cast<FixtureConsole*> (m_tab->currentWidget());
@@ -555,7 +555,7 @@ void SceneEditor::slotRemoveFixtureClicked()
             removeFixtureItem(fixture);
 
             /* Remove all values associated to the fixture */
-            for (int i = 0; i < fixture->channels(); i++)
+            for (quint32 i = 0; i < fixture->channels(); i++)
                 m_scene->unsetValue(fixture->id(), i);
         }
     }
@@ -596,9 +596,9 @@ void SceneEditor::addFixtureTab(Fixture* fixture)
     console->enableAllChannels(false);
 
     connect(console,
-            SIGNAL(valueChanged(t_fixture_id,t_channel,uchar,bool)),
+            SIGNAL(valueChanged(t_fixture_id,quint32,uchar,bool)),
             this,
-            SLOT(slotValueChanged(t_fixture_id,t_channel,uchar,bool)));
+            SLOT(slotValueChanged(t_fixture_id,quint32,uchar,bool)));
 }
 
 void SceneEditor::removeFixtureTab(Fixture* fixture)
@@ -622,7 +622,7 @@ void SceneEditor::removeFixtureTab(Fixture* fixture)
     }
 }
 
-void SceneEditor::slotValueChanged(t_fixture_id fxi_id, t_channel channel,
+void SceneEditor::slotValueChanged(t_fixture_id fxi_id, quint32 channel,
                                    uchar value, bool enabled)
 {
     /* Don't accept any changes during initialization */

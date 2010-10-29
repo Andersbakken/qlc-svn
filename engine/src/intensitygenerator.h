@@ -128,7 +128,7 @@ public:
      * @return A list of channels in the given fixture, belonging
      *         to the specified channel group
      */
-    static QList <t_channel> findChannels(const Fixture* fixture,
+    static QList <quint32> findChannels(const Fixture* fixture,
                                           const QString& group);
 
 private:

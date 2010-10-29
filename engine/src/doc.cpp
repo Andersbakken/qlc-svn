@@ -223,12 +223,12 @@ Fixture* Doc::fixture(t_fixture_id id)
         return NULL;
 }
 
-t_channel Doc::findAddress(t_channel numChannels) const
+quint32 Doc::findAddress(quint32 numChannels) const
 {
     /* Try to find contiguous space from one universe at a time */
-    for (int universe = 0; universe < KUniverseCount; universe++)
+    for (quint32 universe = 0; universe < KUniverseCount; universe++)
     {
-        t_channel ch = findAddress(universe, numChannels);
+        quint32 ch = findAddress(universe, numChannels);
         if (ch != KChannelInvalid)
             return ch;
     }
@@ -236,10 +236,10 @@ t_channel Doc::findAddress(t_channel numChannels) const
     return KChannelInvalid;
 }
 
-t_channel Doc::findAddress(int universe, t_channel numChannels) const
+quint32 Doc::findAddress(quint32 universe, quint32 numChannels) const
 {
-    t_channel freeSpace = 0;
-    t_channel maxChannels = 512;
+    quint32 freeSpace = 0;
+    quint32 maxChannels = 512;
 
     /* Construct a map of unallocated channels */
     int map[maxChannels];
@@ -255,12 +255,12 @@ t_channel Doc::findAddress(int universe, t_channel numChannels) const
         if (fxi->universe() != universe)
             continue;
 
-        for (t_channel ch = 0; ch < fxi->channels(); ch++)
+        for (quint32 ch = 0; ch < fxi->channels(); ch++)
             map[fxi->universeAddress() + ch] = 1;
     }
 
     /* Try to find the next contiguous free address space */
-    for (t_channel ch = 0; ch < maxChannels; ch++)
+    for (quint32 ch = 0; ch < maxChannels; ch++)
     {
         if (map[ch] == 0)
             freeSpace++;

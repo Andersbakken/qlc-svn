@@ -34,7 +34,6 @@ private slots:
     void loadSuccess();
     void loadWrongRoot();
     void loadWrongFixture();
-    void loadWrongChannel();
     void loadWrongValue();
     void save();
 };

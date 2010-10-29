@@ -151,14 +151,14 @@ public:
      *
      * @param universe A zero-based DMX universe (i.e. 0-7; not 1-8)
      */
-    void setUniverse(t_channel universe);
+    void setUniverse(quint32 universe);
 
     /**
      * Get the fixture instance's DMX universe
      *
      * @return A zero-based DMX address (i.e. 0-511; not 1-512)
      */
-    t_channel universe() const;
+    quint32 universe() const;
 
     /*********************************************************************
      * Address
@@ -169,14 +169,14 @@ public:
      *
      * @param address A zero-based DMX address (i.e. 0-511; not 1-512)
      */
-    void setAddress(t_channel address);
+    void setAddress(quint32 address);
 
     /**
      * Get the fixture instance's DMX address
      *
      * @return A zero-based DMX address (i.e. 0-511; not 1-512)
      */
-    t_channel address() const;
+    quint32 address() const;
 
 public:
     /**
@@ -184,7 +184,7 @@ public:
      *
      * @return The fixture's address & universe
      */
-    t_channel universeAddress() const;
+    quint32 universeAddress() const;
 
     /*********************************************************************
      * Channels
@@ -196,7 +196,7 @@ public:
      *
      * @param channels The new number of channels
      */
-    void setChannels(t_channel channels);
+    void setChannels(quint32 channels);
 
     /**
      * Get the number of channels occupied by this fixture instance.
@@ -205,7 +205,7 @@ public:
      *
      * @return Number of channels
      */
-    t_channel channels() const;
+    quint32 channels() const;
 
     /**
      * Get a specific channel object by the channel's number. For generic
@@ -214,13 +214,13 @@ public:
      * @param channel The channel number to get
      * @return A QLCChannel* instance that should not be modified
      */
-    const QLCChannel* channel(t_channel channel) const;
+    const QLCChannel* channel(quint32 channel) const;
 
     /**
      * Get a fixture's channel's DMX address.
      *
      */
-    int channelAddress(t_channel channel) const;
+    quint32 channelAddress(quint32 channel) const;
 
     /**
      * Get a channel by its name from the given group of channels.
@@ -232,14 +232,14 @@ public:
      * @param cs Case sensitivity of the search
      * @param group Group name of the channel
      */
-    t_channel channel(const QString& name,
+    quint32 channel(const QString& name,
                       Qt::CaseSensitivity cs = Qt::CaseSensitive,
                       const QString& group = QString::null) const;
 
     /**
      * The invalid channel number (for comparison etc...)
      */
-    static t_channel invalidChannel();
+    static quint32 invalidChannel();
 
 protected:
     /** Create a generic intensity channel */
@@ -247,10 +247,10 @@ protected:
 
 protected:
     /** DMX address & universe */
-    t_channel m_address;
+    quint32 m_address;
 
     /** Number of channels (ONLY for dimmer fixtures!) */
-    t_channel m_channels;
+    quint32 m_channels;
 
     /** Generic intensity channel for dimmer fixtures */
     QLCChannel* m_genericChannel;

@@ -143,11 +143,9 @@ void OutputPatchEditor::fillTree()
             }
             else
             {
-                int uni;
-
                 oitem->setCheckState(KColumnName, Qt::Unchecked);
-                uni = _app->outputMap()->mapping(pluginName, i);
-                if (uni != -1)
+                quint32 uni = _app->outputMap()->mapping(pluginName, i);
+                if (uni != KChannelInvalid)
                 {
                     /* If a mapping exists for this plugin
                        and output, make it impossible to

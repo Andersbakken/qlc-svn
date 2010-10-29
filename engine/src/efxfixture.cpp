@@ -219,22 +219,22 @@ Scene* EFXFixture::stopScene() const
     return m_stopScene;
 }
 
-void EFXFixture::setLsbPanChannel(t_channel ch)
+void EFXFixture::setLsbPanChannel(quint32 ch)
 {
     m_lsbPanChannel = ch;
 }
 
-void EFXFixture::setMsbPanChannel(t_channel ch)
+void EFXFixture::setMsbPanChannel(quint32 ch)
 {
     m_msbPanChannel = ch;
 }
 
-void EFXFixture::setLsbTiltChannel(t_channel ch)
+void EFXFixture::setLsbTiltChannel(quint32 ch)
 {
     m_lsbTiltChannel = ch;
 }
 
-void EFXFixture::setMsbTiltChannel(t_channel ch)
+void EFXFixture::setMsbTiltChannel(quint32 ch)
 {
     m_msbTiltChannel = ch;
 }

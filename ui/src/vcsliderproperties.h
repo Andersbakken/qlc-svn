@@ -101,7 +101,7 @@ protected:
     /** Update a fixture channel node to the listview on the level page */
     void levelUpdateChannelNode(QTreeWidgetItem* parent,
                                 Fixture* fxi,
-                                t_channel ch);
+                                quint32 ch);
 
     /** Update a channel's capabilities */
     void levelUpdateCapabilities(QTreeWidgetItem* parent,
@@ -112,7 +112,7 @@ protected:
                                    QLCCapability* cap);
 
     /** Get a fixture channel node from the listview on the level page */
-    QTreeWidgetItem* levelChannelNode(QTreeWidgetItem* parent, t_channel ch);
+    QTreeWidgetItem* levelChannelNode(QTreeWidgetItem* parent, quint32 ch);
 
     /** Update channel selections from the slider's level channel list */
     void levelUpdateChannelSelections();

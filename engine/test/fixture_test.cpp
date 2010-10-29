@@ -223,7 +223,7 @@ void Fixture_Test::fixtureDef()
     QVERIFY(fxi.fixtureDef() == fixtureDef);
     QVERIFY(fxi.fixtureMode() == fixtureMode);
 
-    QVERIFY(fxi.channels() == fixtureMode->channels().count());
+    QVERIFY(fxi.channels() == quint32(fixtureMode->channels().count()));
     QVERIFY(fxi.channel(fxi.channels() - 1) != NULL);
     QVERIFY(fxi.channel(fxi.channels()) == NULL);
 

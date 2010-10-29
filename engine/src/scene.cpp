@@ -60,7 +60,7 @@ SceneChannel::~SceneChannel()
  * SceneValue
  *****************************************************************************/
 
-SceneValue::SceneValue(t_fixture_id id, t_channel ch, uchar val) :
+SceneValue::SceneValue(t_fixture_id id, quint32 ch, uchar val) :
         fxi     ( id ),
         channel ( ch ),
         value   ( val )
@@ -128,10 +128,7 @@ bool SceneValue::loadXML(const QDomElement* tag)
     if (fxi < 0 || fxi >= KFixtureArraySize)
         return false;
 
-    channel = t_channel(tag->attribute(KXMLQLCSceneValueChannel).toInt());
-    if (channel >= KChannelMax)
-        return false;
-
+    channel = quint32(tag->attribute(KXMLQLCSceneValueChannel).toInt());
     value = uchar(tag->text().toUInt());
 
     return isValid();
@@ -241,18 +238,18 @@ void Scene::setValue(const SceneValue& scv)
     emit changed(m_id);
 }
 
-void Scene::setValue(t_fixture_id fxi, t_channel ch, uchar value)
+void Scene::setValue(t_fixture_id fxi, quint32 ch, uchar value)
 {
     setValue(SceneValue(fxi, ch, value));
 }
 
-void Scene::unsetValue(t_fixture_id fxi, t_channel ch)
+void Scene::unsetValue(t_fixture_id fxi, quint32 ch)
 {
     m_values.removeAll(SceneValue(fxi, ch, 0));
     emit changed(m_id);
 }
 
-uchar Scene::value(t_fixture_id fxi, t_channel ch)
+uchar Scene::value(t_fixture_id fxi, quint32 ch)
 {
     SceneValue scv(fxi, ch, 0);
     int index = m_values.indexOf(scv);
@@ -474,7 +471,7 @@ void Scene::write(MasterTimer* timer, QByteArray* universes)
     Q_ASSERT(universes != NULL);
 
     /* Count ready channels so that the scene can be stopped */
-    t_channel ready = m_armedChannels.count();
+    quint32 ready = m_armedChannels.count();
 
     /* Iterator for all scene channels */
     QMutableListIterator <SceneChannel> it(m_armedChannels);
@@ -547,7 +544,7 @@ void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
-            t_channel addr = m_armedChannels[i].address;
+            quint32 addr = m_armedChannels[i].address;
             universes->data()[addr] = m_values[i].value;
         }
     }
@@ -561,7 +558,7 @@ void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
-            t_channel addr = m_armedChannels[i].address;
+            quint32 addr = m_armedChannels[i].address;
             universes->data()[addr] = 0;
         }
     }

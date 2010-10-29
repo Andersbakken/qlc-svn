@@ -96,12 +96,12 @@ public:
     }
 
     /** Get the assigned DMX address */
-    t_channel address() const {
+    quint32 address() const {
         return m_addressValue;
     }
 
     /** Get the assigned DMX universe */
-    t_channel universe() const {
+    quint32 universe() const {
         return m_universeValue;
     }
 
@@ -111,12 +111,12 @@ public:
     }
 
     /** Get the number of channels to leave between two fixtures */
-    t_channel gap() const {
+    quint32 gap() const {
         return m_gapValue;
     }
 
     /** Get the number of channels to use (ONLY for generic dimmers) */
-    t_channel channels() const {
+    quint32 channels() const {
         return m_channelsValue;
     }
 
@@ -130,11 +130,11 @@ protected:
 
     QString m_nameValue;
 
-    t_channel m_addressValue;
-    t_channel m_universeValue;
+    quint32 m_addressValue;
+    quint32 m_universeValue;
     int m_amountValue;
-    t_channel m_gapValue;
-    t_channel m_channelsValue;
+    quint32 m_gapValue;
+    quint32 m_channelsValue;
 
     /*********************************************************************
      * Fillers

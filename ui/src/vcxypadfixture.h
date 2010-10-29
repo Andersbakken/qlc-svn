@@ -107,8 +107,8 @@ protected:
     double m_xMax;
     bool m_xReverse;
 
-    t_channel m_xLSB;
-    t_channel m_xMSB;
+    quint32 m_xLSB;
+    quint32 m_xMSB;
 
     /********************************************************************
      * Y-Axis
@@ -134,8 +134,8 @@ protected:
     double m_yMax;
     bool m_yReverse;
 
-    t_channel m_yLSB;
-    t_channel m_yMSB;
+    quint32 m_yLSB;
+    quint32 m_yMSB;
 
     /********************************************************************
      * Load & Save

@@ -50,7 +50,7 @@ class ConsoleChannel : public QGroupBox, public DMXSource
      *********************************************************************/
 public:
     ConsoleChannel(QWidget *parent, t_fixture_id fixtureID,
-                   t_channel channel);
+                   quint32 channel);
     ~ConsoleChannel();
 
 private:
@@ -107,7 +107,7 @@ public slots:
 
 signals:
     /** Slider value has changed */
-    void valueChanged(t_channel channel, uchar value, bool enabled);
+    void valueChanged(quint32 channel, uchar value, bool enabled);
 
 protected:
     uchar m_value;
@@ -148,12 +148,12 @@ public:
     * Fixture channel
     *********************************************************************/
 public:
-    t_channel channel() const {
+    quint32 channel() const {
         return m_channel;
     }
 
 protected:
-    t_channel m_channel;
+    quint32 m_channel;
     t_fixture_id m_fixtureID;
     Fixture* m_fixture;
 

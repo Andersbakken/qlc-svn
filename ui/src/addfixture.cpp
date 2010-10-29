@@ -240,7 +240,7 @@ void AddFixture::findAddress()
 {
     /* Find the next free address space for x fixtures, each taking y
        channels, leaving z channels gap in-between. */
-    t_channel address = m_doc.findAddress(
+    quint32 address = m_doc.findAddress(
                             (m_channelsValue + m_gapValue) * m_amountValue);
 
     /* Set the address only if the channel space was really found */

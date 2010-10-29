@@ -84,19 +84,6 @@ public:
     QLCChannel& operator=(const QLCChannel& lc);
 
     /*********************************************************************
-     * Channel groups
-     *********************************************************************/
-public:
-    /** Get a list of possible channel groups */
-    static QStringList groupList();
-
-    /** Convert a group name to an index, to be used with menus etc. */
-    static int groupToIndex(QString group);
-
-    /** Convert an index to a group name, to be used with menus etc. */
-    static QString indexToGroup(int index);
-
-    /*********************************************************************
      * Properties
      *********************************************************************/
 public:
@@ -106,11 +93,14 @@ public:
         LSB = 1
     };
 
+    /** Get a list of possible channel groups */
+    static QStringList groupList();
+
     /** Get the channel's name */
     QString name() const;
 
     /** Set the channel's name */
-    void setName(const QString &name);
+    void setName(const QString& name);
 
     /** Get the channel's group */
     QString group() const;

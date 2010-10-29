@@ -58,7 +58,7 @@ public:
      *
      * @param universes Number of universes
      */
-    OutputMap(QObject* parent, int universes = KUniverseCount);
+    OutputMap(QObject* parent, quint32 universes = KUniverseCount);
 
     /**
      * Destroy a OutputMap object
@@ -74,7 +74,7 @@ public:
 
 protected:
     /** Total number of supported universes */
-    int m_universes;
+    quint32 m_universes;
 
     /*********************************************************************
      * Blackout
@@ -149,7 +149,7 @@ public:
      * @param channel The channel to read the value from
      * @return The value of the channel (0 if channel is out of bounds)
      */
-    uchar value(t_channel channel) const;
+    uchar value(quint32 channel) const;
 
 protected:
     /** The values of all universes */
@@ -176,7 +176,7 @@ public:
      *
      * @return Universe count supported by QLC
      */
-    int universes() const;
+    quint32 universes() const;
 
     /**
      * Patch the given universe to go thru the given plugin
@@ -186,15 +186,14 @@ public:
      * @param output A universe provided by the plugin to patch to
      * @return true if successful, otherwise false
      */
-    bool setPatch(unsigned int universe, const QString& pluginName,
-                  unsigned int output = 0);
+    bool setPatch(quint32 universe, const QString& pluginName, quint32 output = 0);
 
     /**
      * Get the output mapping for a QLC universe.
      *
      * @param universe The internal universe to get mapping for
      */
-    OutputPatch* patch(int universe) const;
+    OutputPatch* patch(quint32 universe) const;
 
     /**
      * Get a list of available universes.
@@ -203,14 +202,14 @@ public:
 
     /**
      * Check, whether a certain output in a certain plugin has been mapped
-     * to a universe. Returns the mapped universe number or -1 if not
-     * mapped.
+     * to a universe. Returns the mapped universe number or KChannelInvalid
+     * if not mapped.
      *
      * @param pluginName The name of the plugin to check for
      * @param output The particular output to check for
      * @return Mapped universe number or -1 if not mapped
      */
-    int mapping(const QString& pluginName, quint32 output) const;
+    quint32 mapping(const QString& pluginName, quint32 output) const;
 
 protected:
     /** Vector containing all active plugins */

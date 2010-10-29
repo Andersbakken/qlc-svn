@@ -413,8 +413,8 @@ QTreeWidgetItem* VCSliderProperties::levelFixtureNode(t_fixture_id id)
 void VCSliderProperties::levelUpdateChannels(QTreeWidgetItem* parent,
                                              Fixture* fxi)
 {
-    t_channel channels = 0;
-    t_channel ch = 0;
+    quint32 channels = 0;
+    quint32 ch = 0;
 
     Q_ASSERT(parent != NULL);
     Q_ASSERT(fxi != NULL);
@@ -425,7 +425,7 @@ void VCSliderProperties::levelUpdateChannels(QTreeWidgetItem* parent,
 }
 
 void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
-                                                Fixture* fxi, t_channel ch)
+                                                Fixture* fxi, quint32 ch)
 {
     Q_ASSERT(parent != NULL);
 
@@ -453,14 +453,14 @@ void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
 }
 
 QTreeWidgetItem* VCSliderProperties::levelChannelNode(QTreeWidgetItem* parent,
-                                                      t_channel ch)
+                                                      quint32 ch)
 {
     Q_ASSERT(parent != NULL);
 
     for (int i = 0; i < parent->childCount(); i++)
     {
         QTreeWidgetItem* item = parent->child(i);
-        if (item->text(KColumnID).toInt() == ch)
+        if (item->text(KColumnID).toUInt() == ch)
             return item;
     }
 
@@ -668,32 +668,25 @@ void VCSliderProperties::slotLevelByGroupClicked()
 
 void VCSliderProperties::storeLevelChannels()
 {
-    QTreeWidgetItem* fxi_item;
-    QTreeWidgetItem* ch_item;
-    t_fixture_id fxi_id;
-    t_channel ch_num;
-    int i;
-    int j;
-
     /* Clear all channels from the slider first */
     m_slider->clearLevelChannels();
 
     /* Go thru all fixtures and their channels, add checked channels */
-    for (i = 0; i < m_levelList->topLevelItemCount(); i++)
+    for (int i = 0; i < m_levelList->topLevelItemCount(); i++)
     {
-        fxi_item = m_levelList->topLevelItem(i);
+        QTreeWidgetItem* fxi_item = m_levelList->topLevelItem(i);
         Q_ASSERT(fxi_item != NULL);
 
-        fxi_id = fxi_item->text(KColumnID).toInt();
+        t_fixture_id fxi_id = fxi_item->text(KColumnID).toUInt();
 
-        for (j = 0; j < fxi_item->childCount(); j++)
+        for (int j = 0; j < fxi_item->childCount(); j++)
         {
-            ch_item = fxi_item->child(j);
+            QTreeWidgetItem* ch_item = fxi_item->child(j);
             Q_ASSERT(ch_item != NULL);
 
             if (ch_item->checkState(KColumnName) == Qt::Checked)
             {
-                ch_num = ch_item->text(KColumnID).toInt();
+                quint32 ch_num = ch_item->text(KColumnID).toUInt();
                 m_slider->addLevelChannel(fxi_id, ch_num);
             }
         }

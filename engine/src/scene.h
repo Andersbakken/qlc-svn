@@ -74,7 +74,7 @@ public:
 
 public:
     /** The universe and channel that this object refers to */
-    t_channel address;
+    quint32 address;
 
     /** The value of the channel where a scene started fading from */
     qint32 start;
@@ -113,7 +113,7 @@ class SceneValue
 public:
     /** Normal constructor */
     SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
-               t_channel channel = KChannelInvalid,
+               quint32 channel = KChannelInvalid,
                uchar value = 0);
 
     /** Copy constructor */
@@ -139,7 +139,7 @@ public:
 
 public:
     t_fixture_id fxi;
-    t_channel channel;
+    quint32 channel;
     uchar value;
 };
 
@@ -208,17 +208,17 @@ public:
     /**
      * Set the value of one fixture channel, specify parameters separately
      */
-    void setValue(t_fixture_id fxi, t_channel ch, uchar value);
+    void setValue(t_fixture_id fxi, quint32 ch, uchar value);
 
     /**
      * Clear the value of one fixture channel
      */
-    void unsetValue(t_fixture_id fxi, t_channel ch);
+    void unsetValue(t_fixture_id fxi, quint32 ch);
 
     /**
      * Get the value of one fixture channel
      */
-    uchar value(t_fixture_id fxi, t_channel ch);
+    uchar value(t_fixture_id fxi, quint32 ch);
 
     /**
      * Get a list of values in this scene

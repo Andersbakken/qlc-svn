@@ -128,7 +128,7 @@ public:
      * @param index The position to insert the channel at
      * @return true, if successful, otherwise false
      */
-    bool insertChannel(QLCChannel* channel, t_channel index);
+    bool insertChannel(QLCChannel* channel, quint32 index);
 
     /**
      * Remove a channel from this mode. The channel is only removed from
@@ -157,7 +157,7 @@ public:
      * @param ch The number of the channel to get
      * @return The channel or NULL if ch >= size.
      */
-    QLCChannel* channel(t_channel ch) const;
+    QLCChannel* channel(quint32 ch) const;
 
     /**
      * Get an ordered list of channels in a mode. Returns a copy of the list;
@@ -175,7 +175,7 @@ public:
      * @param channel The channel, whose number to get
      * @return Channel number or KChannelInvalid
      */
-    t_channel channelNumber(QLCChannel* channel) const;
+    quint32 channelNumber(QLCChannel* channel) const;
 
 protected:
     /** List of channels (not owned) */

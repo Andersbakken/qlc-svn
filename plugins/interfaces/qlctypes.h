@@ -120,34 +120,14 @@ const t_function_id KFunctionArraySize ( 4096 );
  *****************************************************************************/
 
 /**
- * Type for channel numbers
- */
-typedef unsigned short t_channel;
-
-/**
  * Number of supported universes
  */
-const t_channel KUniverseCount ( 4 );
+const quint32 KUniverseCount ( 4 );
 
 /**
- * Smallest channel number
+ * Invalid channel number
  */
-const t_channel KChannelMin ( 0 );
-
-/**
- * Total number of channels (in all universes)
- */
-const t_channel KChannelMax ( 512 * KUniverseCount );
-
-/**
- * Maximum number of channels for a single fixture
- */
-const t_channel KFixtureChannelsMax ( 128 );
-
-/**
- * Invalid channel number (must be larger than KChannelMax!)
- */
-const t_channel KChannelInvalid ( USHRT_MAX );
+const quint32 KChannelInvalid ( USHRT_MAX );
 
 /*****************************************************************************
  * Output lines

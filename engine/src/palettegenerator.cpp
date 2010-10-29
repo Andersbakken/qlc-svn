@@ -96,10 +96,10 @@ void PaletteGenerator::createGroupScenes(const Fixture* fxi, const QString& grou
     Q_ASSERT(fxi != NULL);
     Q_ASSERT(group.isEmpty() == false);
 
-    QList <t_channel> channels = findChannels(fxi, group);
+    QList <quint32> channels = findChannels(fxi, group);
     for (int i = 0; i < channels.size(); i++)
     {
-        t_channel ch = channels.at(i);
+        quint32 ch = channels.at(i);
         const QLCChannel* channel = fxi->channel(ch);
         Q_ASSERT(channel != NULL);
 
@@ -144,13 +144,13 @@ void PaletteGenerator::createGroupScenes(const Fixture* fxi, const QString& grou
     }
 }
 
-QList <t_channel> PaletteGenerator::findChannels(const Fixture* fixture,
+QList <quint32> PaletteGenerator::findChannels(const Fixture* fixture,
         const QString& group) const
 {
-    QList <t_channel> channels;
+    QList <quint32> channels;
 
     Q_ASSERT(fixture != NULL);
-    for (t_channel ch = 0; ch < fixture->channels(); ch++)
+    for (quint32 ch = 0; ch < fixture->channels(); ch++)
     {
         const QLCChannel* channel(fixture->channel(ch));
         Q_ASSERT(channel != NULL);

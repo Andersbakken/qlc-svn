@@ -110,16 +110,16 @@ protected:
     Scene* stopScene() const;
 
     /** Set the low byte channel for pan movement */
-    void setLsbPanChannel(t_channel ch);
+    void setLsbPanChannel(quint32 ch);
 
     /** Set the high byte channel for pan movement */
-    void setMsbPanChannel(t_channel ch);
+    void setMsbPanChannel(quint32 ch);
 
     /** Set the low byte channel for tilt movement */
-    void setLsbTiltChannel(t_channel ch);
+    void setLsbTiltChannel(quint32 ch);
 
     /** Set the high byte channel for pan movement */
-    void setMsbTiltChannel(t_channel ch);
+    void setMsbTiltChannel(quint32 ch);
 
     /** Update the waiting threshold value for serial operation */
     void updateSkipThreshold();
@@ -195,22 +195,22 @@ protected:
     /**
      * Universe channel for LSB pan data
      */
-    t_channel m_lsbPanChannel;
+    quint32 m_lsbPanChannel;
 
     /**
      * Universe channel for MSB pan data
      */
-    t_channel m_msbPanChannel;
+    quint32 m_msbPanChannel;
 
     /**
      * Universe channel for LSB tilt data
      */
-    t_channel m_lsbTiltChannel;
+    quint32 m_lsbTiltChannel;
 
     /**
      * Universe channel for MSB tilt data
      */
-    t_channel m_msbTiltChannel;
+    quint32 m_msbTiltChannel;
 
     /*********************************************************************
      * Running

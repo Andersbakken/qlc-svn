@@ -157,7 +157,7 @@ public:
      * @param numChannels Number of channels in the address space
      * @return The address or KChannelInvalid if not found
      */
-    t_channel findAddress(t_channel numChannels) const;
+    quint32 findAddress(quint32 numChannels) const;
 
     /**
      * Get the number of fixtures currently present/allocated.
@@ -187,7 +187,7 @@ protected:
      * @param numChannels Number of free channels required
      * @return An address or KChannelInvalid if address space not available
      */
-    t_channel findAddress(int universe, t_channel numChannels) const;
+    quint32 findAddress(quint32 universe, quint32 numChannels) const;
 
     /**
      * Assign the given fixture ID to the fixture, placing the fixture

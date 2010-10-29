@@ -253,7 +253,7 @@ public:
     {
     public:
         /** Construct a new LevelChannel with the given fixture & channel */
-        LevelChannel(t_fixture_id fid, t_channel ch);
+        LevelChannel(t_fixture_id fid, quint32 ch);
         /** Copy constructor */
         LevelChannel(const LevelChannel& lc);
         /** Comparison operator */
@@ -267,7 +267,7 @@ public:
         /** The associated fixture ID */
         t_fixture_id fixture;
         /** The associated channel within the fixture */
-        t_channel channel;
+        quint32 channel;
     };
 
     /*********************************************************************
@@ -281,7 +281,7 @@ public:
      * @param fixture Fixture ID
      * @param channel A channel from the fixture
      */
-    void addLevelChannel(t_fixture_id fixture, t_channel channel);
+    void addLevelChannel(t_fixture_id fixture, quint32 channel);
 
     /**
      * Remove a fixture & channel from the slider's list of
@@ -290,7 +290,7 @@ public:
      * @param fixture Fixture ID
      * @param channel A channel from the fixture
      */
-    void removeLevelChannel(t_fixture_id fixture, t_channel channel);
+    void removeLevelChannel(t_fixture_id fixture, quint32 channel);
 
     /**
      * Clear the list of level channels

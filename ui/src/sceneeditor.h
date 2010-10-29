@@ -113,7 +113,7 @@ protected:
     void removeFixtureTab(Fixture* fixture);
 
 protected slots:
-    void slotValueChanged(t_fixture_id fxi_id, t_channel channel,
+    void slotValueChanged(t_fixture_id fxi_id, quint32 channel,
                           uchar value, bool enabled);
 
 protected:

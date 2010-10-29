@@ -31,53 +31,18 @@ void QLCChannel_Test::groupList()
 {
     QStringList list(QLCChannel::groupList());
 
-    QCOMPARE(list[0], KQLCChannelGroupBeam);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupBeam), 0);
-    QCOMPARE(QLCChannel::indexToGroup(0), KQLCChannelGroupBeam);
-
-    QCOMPARE(list[1], KQLCChannelGroupColour);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupColour), 1);
-    QCOMPARE(QLCChannel::indexToGroup(1), KQLCChannelGroupColour);
-
-    QCOMPARE(list[2], KQLCChannelGroupEffect);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupEffect), 2);
-    QCOMPARE(QLCChannel::indexToGroup(2), KQLCChannelGroupEffect);
-
-    QCOMPARE(list[3], KQLCChannelGroupGobo);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupGobo), 3);
-    QCOMPARE(QLCChannel::indexToGroup(3), KQLCChannelGroupGobo);
-
-    QCOMPARE(list[4], KQLCChannelGroupIntensity);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupIntensity), 4);
-    QCOMPARE(QLCChannel::indexToGroup(4), KQLCChannelGroupIntensity);
-
-    QCOMPARE(list[5], KQLCChannelGroupMaintenance);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupMaintenance), 5);
-    QCOMPARE(QLCChannel::indexToGroup(5), KQLCChannelGroupMaintenance);
-
-    QCOMPARE(list[6], KQLCChannelGroupNothing);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupNothing), 6);
-    QCOMPARE(QLCChannel::indexToGroup(6), KQLCChannelGroupNothing);
-
-    QCOMPARE(list[7], KQLCChannelGroupPan);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupPan), 7);
-    QCOMPARE(QLCChannel::indexToGroup(7), KQLCChannelGroupPan);
-
-    QCOMPARE(list[8], KQLCChannelGroupPrism);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupPrism), 8);
-    QCOMPARE(QLCChannel::indexToGroup(8), KQLCChannelGroupPrism);
-
-    QCOMPARE(list[9], KQLCChannelGroupShutter);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupShutter), 9);
-    QCOMPARE(QLCChannel::indexToGroup(9), KQLCChannelGroupShutter);
-
-    QCOMPARE(list[10], KQLCChannelGroupSpeed);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupSpeed), 10);
-    QCOMPARE(QLCChannel::indexToGroup(10), KQLCChannelGroupSpeed);
-
-    QCOMPARE(list[11], KQLCChannelGroupTilt);
-    QCOMPARE(QLCChannel::groupToIndex(KQLCChannelGroupTilt), 11);
-    QCOMPARE(QLCChannel::indexToGroup(11), KQLCChannelGroupTilt);
+    QVERIFY(list.contains(KQLCChannelGroupBeam));
+    QVERIFY(list.contains(KQLCChannelGroupColour));
+    QVERIFY(list.contains(KQLCChannelGroupEffect));
+    QVERIFY(list.contains(KQLCChannelGroupGobo));
+    QVERIFY(list.contains(KQLCChannelGroupIntensity));
+    QVERIFY(list.contains(KQLCChannelGroupMaintenance));
+    QVERIFY(list.contains(KQLCChannelGroupNothing));
+    QVERIFY(list.contains(KQLCChannelGroupPan));
+    QVERIFY(list.contains(KQLCChannelGroupPrism));
+    QVERIFY(list.contains(KQLCChannelGroupShutter));
+    QVERIFY(list.contains(KQLCChannelGroupSpeed));
+    QVERIFY(list.contains(KQLCChannelGroupTilt));
 }
 
 void QLCChannel_Test::name()
@@ -461,7 +426,7 @@ void QLCChannel_Test::load()
     QVERIFY(ch.loadXML(&root) == true);
     QVERIFY(ch.name() == "Channel1");
     QVERIFY(ch.group() == "Tilt");
-    QVERIFY(ch.controlByte() == 1);
+    QVERIFY(ch.controlByte() == QLCChannel::LSB);
     QVERIFY(ch.capabilities().size() == 2);
     QVERIFY(ch.capabilities()[0]->name() == "Cap1");
     QVERIFY(ch.capabilities()[1]->name() == "Cap3");

@@ -201,23 +201,23 @@ void VCXYPadFixture::arm()
         }
 
         /* Find exact channel numbers for MSB/LSB pan and tilt */
-        for (t_channel i = 0; i < mode->channels().size(); i++)
+        for (quint32 i = 0; i < quint32(mode->channels().size()); i++)
         {
             ch = mode->channel(i);
             Q_ASSERT(ch != NULL);
 
             if (ch->group() == KQLCChannelGroupPan)
             {
-                if (ch->controlByte() == 0)
+                if (ch->controlByte() == QLCChannel::MSB)
                     m_xMSB = fxi->universeAddress() + i;
-                else if (ch->controlByte() == 1)
+                else if (ch->controlByte() == QLCChannel::LSB)
                     m_xLSB = fxi->universeAddress() + i;
             }
             else if (ch->group() == KQLCChannelGroupTilt)
             {
-                if (ch->controlByte() == 0)
+                if (ch->controlByte() == QLCChannel::MSB)
                     m_yMSB = fxi->universeAddress() + i;
-                else if (ch->controlByte() == 1)
+                else if (ch->controlByte() == QLCChannel::LSB)
                     m_yLSB = fxi->universeAddress() + i;
             }
         }

@@ -169,7 +169,7 @@ void OutputManager::slotDocumentChanged(Doc* doc)
 void OutputManager::updateTree()
 {
     m_tree->clear();
-    for (int uni = 0; uni < KUniverseCount; uni++)
+    for (quint32 uni = 0; uni < KUniverseCount; uni++)
     {
         OutputPatch* op = _app->outputMap()->patch(uni);
         updateItem(new QTreeWidgetItem(m_tree), op, uni);
