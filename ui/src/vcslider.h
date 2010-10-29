@@ -241,34 +241,39 @@ protected:
     quint32 m_busLowLimit;
     quint32 m_busHighLimit;
 
+    /*************************************************************************
+     * Class LevelChannel
+     *************************************************************************/
+public:
+    /**
+     * This class is used to store one (fixture, channel) pair that is used by
+     * VCSlider to control the level of individual fixture channels.
+     */
+    class LevelChannel
+    {
+    public:
+        /** Construct a new LevelChannel with the given fixture & channel */
+        LevelChannel(t_fixture_id fid, t_channel ch);
+        /** Copy constructor */
+        LevelChannel(const LevelChannel& lc);
+        /** Comparison operator */
+        bool operator==(const LevelChannel& lc) const;
+        /** Sorting operator */
+        bool operator<(const LevelChannel& lc) const;
+        /** Save the contents of a LevelChannel instance to an XML document */
+        void saveXML(QDomDocument* doc, QDomElement* root) const;
+
+    public:
+        /** The associated fixture ID */
+        t_fixture_id fixture;
+        /** The associated channel within the fixture */
+        t_channel channel;
+    };
+
     /*********************************************************************
      * Level channels
      *********************************************************************/
 public:
-    /**
-     * Combine a fixture id and channel number into a single int.
-     * The highest 9 bits are used for the channel, while the
-     * lowest 23 bits remain for the fixture id.
-     *
-     * @param fixture A fixture id
-     * @param channel A channel from the fixture
-     * @return An integer containing the both numbers
-     */
-    static int combineFixtureAndChannel(t_fixture_id fixture,
-                                        t_channel channel);
-
-    /**
-     * Split a combined integer into a fixture id and channel number.
-     *
-     * @param combined The combined integer
-     * @param fixture Fixture ID
-     * @param channel Channel from the fixture
-     * @return Fixture ID
-     */
-    static t_fixture_id splitCombinedValue(int combined,
-                                           t_fixture_id* fixture,
-                                           t_channel* channel);
-
     /**
      * Add a channel from a fixture into the slider's list of
      * level channels.
@@ -297,7 +302,7 @@ public:
      * Get the list of channels that this slider controls
      *
      */
-    QList <int> levelChannels();
+    QList <VCSlider::LevelChannel> levelChannels();
 
     /**
      * Set low limit for levels set thru the slider
@@ -340,7 +345,7 @@ protected:
     uchar levelValue() const;
 
 protected:
-    QList <int> m_levelChannels;
+    QList <VCSlider::LevelChannel> m_levelChannels;
     uchar m_levelLowLimit;
     uchar m_levelHighLimit;
 

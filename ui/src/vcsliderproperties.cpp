@@ -500,22 +500,16 @@ void VCSliderProperties::levelUpdateChannelSelections()
        controlled channels. We don't need to set other items off,
        because this function is run only during init when everything
        is off. */
-    QListIterator <int> it(m_slider->m_levelChannels);
+    QListIterator <VCSlider::LevelChannel> it(m_slider->m_levelChannels);
     while (it.hasNext() == true)
     {
-        QTreeWidgetItem* fxiNode;
-        QTreeWidgetItem* chNode;
+        VCSlider::LevelChannel lch(it.next());
 
-        t_fixture_id fxi_id = Fixture::invalidId();
-        t_channel ch = 0;
-
-        VCSlider::splitCombinedValue(it.next(), &fxi_id, &ch);
-
-        fxiNode = levelFixtureNode(fxi_id);
+        QTreeWidgetItem* fxiNode = levelFixtureNode(lch.fixture);
         if (fxiNode == NULL)
             continue;
 
-        chNode = levelChannelNode(fxiNode, ch);
+        QTreeWidgetItem* chNode = levelChannelNode(fxiNode, lch.channel);
         if (chNode == NULL)
             continue;
 

@@ -458,54 +458,29 @@ void VCSlider::slotBusNameChanged(quint32 bus, const QString&)
  * Level
  *****************************************************************************/
 
-int VCSlider::combineFixtureAndChannel(t_fixture_id fixture, t_channel channel)
-{
-    int combined = 0;
-
-    /* Combine fixture id and channel to a single int. The channel
-       number takes the highest 9 bits, while the lowest 23 bits are
-       reserved for the fixture id */
-    combined = channel;
-    combined = (combined << 23) | fixture;
-
-    return combined;
-}
-
-t_fixture_id VCSlider::splitCombinedValue(int combined,
-        t_fixture_id* fixture,
-        t_channel* channel)
-{
-    /* Split a combined value into fixture id and channel number */
-    *channel = combined >> 23;
-    *fixture = combined & 0x007FFFFF;
-
-    return *fixture;
-}
-
 void VCSlider::addLevelChannel(t_fixture_id fixture, t_channel channel)
 {
-    int combined = combineFixtureAndChannel(fixture, channel);
+    LevelChannel lch(fixture, channel);
 
-    if (m_levelChannels.contains(combined) == false)
+    if (m_levelChannels.contains(lch) == false)
     {
-        m_levelChannels.append(combined);
+        m_levelChannels.append(lch);
         qSort(m_levelChannels.begin(), m_levelChannels.end());
     }
     else
     {
         qDebug() << QString("Fixture %1 & channel %2 already in list")
-        .arg(fixture).arg(channel);
+                            .arg(fixture).arg(channel);
     }
 }
 
 void VCSlider::removeLevelChannel(t_fixture_id fixture, t_channel channel)
 {
-    int combined = combineFixtureAndChannel(fixture, channel);
-
-    if (m_levelChannels.removeAll(combined) == 0)
+    LevelChannel lch(fixture, channel);
+    if (m_levelChannels.removeAll(lch) == 0)
     {
         qDebug() << QString("Fixture %1 & channel %2 not found")
-        .arg(fixture).arg(channel);
+                            .arg(fixture).arg(channel);
     }
 }
 
@@ -514,7 +489,7 @@ void VCSlider::clearLevelChannels()
     m_levelChannels.clear();
 }
 
-QList <int> VCSlider::levelChannels()
+QList <VCSlider::LevelChannel> VCSlider::levelChannels()
 {
     return m_levelChannels;
 }
@@ -574,18 +549,14 @@ void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
         return;
 
     /* Value has changed, write it to all selected channels */
-    QListIterator <int> it(m_levelChannels);
+    QListIterator <LevelChannel> it(m_levelChannels);
     while (it.hasNext() == true)
     {
-        t_fixture_id fxi_id = Fixture::invalidId();
-        t_channel ch = 0;
-        int dmx_ch = 0;
-
-        splitCombinedValue(it.next(), &fxi_id, &ch);
-        Fixture* fxi = _app->doc()->fixture(fxi_id);
+        LevelChannel lch(it.next());
+        Fixture* fxi = _app->doc()->fixture(lch.fixture);
         if (fxi != NULL)
         {
-            dmx_ch = fxi->channelAddress(ch);
+            t_channel dmx_ch = fxi->channelAddress(lch.channel);
             (*universes)[dmx_ch] = m_lastWrittenLevelValue;
         }
     }
@@ -937,8 +908,7 @@ bool VCSlider::loadXMLLevel(const QDomElement* level_root)
         }
         else
         {
-            qDebug() << "Unknown slider level tag:"
-            << tag.tagName();
+            qDebug() << "Unknown slider level tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -954,8 +924,6 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
     QDomElement chtag;
     QDomText text;
     QString str;
-    t_fixture_id fxi_id = Fixture::invalidId();
-    t_channel ch = 0;
 
     Q_ASSERT(doc != NULL);
     Q_ASSERT(vc_root != NULL);
@@ -1024,22 +992,55 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
     tag.setAttribute(KXMLQLCVCSliderLevelValue, str);
 
     /* Level channels */
-    QListIterator <int> it(m_levelChannels);
+    QListIterator <LevelChannel> it(m_levelChannels);
     while (it.hasNext() == true)
     {
-        splitCombinedValue(it.next(), &fxi_id, &ch);
-
-        chtag = doc->createElement(KXMLQLCVCSliderChannel);
-        tag.appendChild(chtag);
-
-        str.setNum(fxi_id);
-        chtag.setAttribute(KXMLQLCVCSliderChannelFixture, str);
-
-        str.setNum(ch);
-        text = doc->createTextNode(str);
-        chtag.appendChild(text);
+        LevelChannel lch(it.next());
+        lch.saveXML(doc, &tag);
     }
 
     return true;
 }
 
+/****************************************************************************
+ * LevelChannel implementation
+ ****************************************************************************/
+
+VCSlider::LevelChannel::LevelChannel(t_fixture_id fid, t_channel ch)
+{
+    this->fixture = fid;
+    this->channel = ch;
+}
+
+VCSlider::LevelChannel::LevelChannel(const LevelChannel& lc)
+{
+    this->fixture = lc.fixture;
+    this->channel = lc.channel;
+}
+
+bool VCSlider::LevelChannel::operator==(const LevelChannel& lc) const
+{
+    return (this->fixture == lc.fixture && this->channel == lc.channel);
+}
+
+bool VCSlider::LevelChannel::operator<(const LevelChannel& lc) const
+{
+    if (this->fixture < lc.fixture)
+        return true;
+    else if (this->fixture == lc.fixture && this->channel < lc.channel)
+        return true;
+    else
+        return false;
+}
+
+void VCSlider::LevelChannel::saveXML(QDomDocument* doc, QDomElement* root) const
+{
+    QDomElement chtag = doc->createElement(KXMLQLCVCSliderChannel);
+    root->appendChild(chtag);
+
+    chtag.setAttribute(KXMLQLCVCSliderChannelFixture,
+                       QString::number(this->fixture));
+
+    QDomText text = doc->createTextNode(QString::number(this->channel));
+    chtag.appendChild(text);
+}
