@@ -105,11 +105,14 @@ void QLCChannel_Test::group()
 
 void QLCChannel_Test::controlByte()
 {
-    QLCChannel* channel = new QLCChannel();
-    QVERIFY(channel->controlByte() == 0);
+    QCOMPARE(int(QLCChannel::MSB), 0);
+    QCOMPARE(int(QLCChannel::LSB), 1);
 
-    channel->setControlByte(1);
-    QVERIFY(channel->controlByte() == 1);
+    QLCChannel* channel = new QLCChannel();
+    QVERIFY(channel->controlByte() == QLCChannel::MSB);
+
+    channel->setControlByte(QLCChannel::LSB);
+    QVERIFY(channel->controlByte() == QLCChannel::LSB);
 
     delete channel;
 }
@@ -323,7 +326,7 @@ void QLCChannel_Test::copy()
 
     channel->setName("Foobar");
     channel->setGroup("Tilt");
-    channel->setControlByte(3);
+    channel->setControlByte(QLCChannel::ControlByte(3));
 
     QLCCapability* cap1 = new QLCCapability(10, 19, "10-19");
     QVERIFY(channel->addCapability(cap1) == true);
@@ -354,7 +357,7 @@ void QLCChannel_Test::copy()
 
     QVERIFY(copy->name() == "Foobar");
     QVERIFY(copy->group() == "Tilt");
-    QVERIFY(copy->controlByte() == 3);
+    QVERIFY(copy->controlByte() == QLCChannel::ControlByte(3));
 
     /* Verify that the capabilities in the copied channel are also
        copies i.e. their pointers are not the same as the originals. */
@@ -504,7 +507,7 @@ void QLCChannel_Test::loadWrongRoot()
     QVERIFY(ch.loadXML(&root) == false);
     QVERIFY(ch.name() == QString::null);
     QVERIFY(ch.group() == KQLCChannelGroupIntensity);
-    QVERIFY(ch.controlByte() == 0);
+    QVERIFY(ch.controlByte() == QLCChannel::MSB);
     QVERIFY(ch.capabilities().size() == 0);
 }
 
@@ -514,7 +517,7 @@ void QLCChannel_Test::save()
 
     channel->setName("Foobar");
     channel->setGroup("Tilt");
-    channel->setControlByte(1);
+    channel->setControlByte(QLCChannel::LSB);
 
     QLCCapability* cap1 = new QLCCapability(0, 9, "One");
     QVERIFY(channel->addCapability(cap1) == true);

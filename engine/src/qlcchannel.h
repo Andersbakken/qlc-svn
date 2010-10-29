@@ -100,6 +100,12 @@ public:
      * Properties
      *********************************************************************/
 public:
+    enum ControlByte
+    {
+        MSB = 0,
+        LSB = 1
+    };
+
     /** Get the channel's name */
     QString name() const;
 
@@ -113,10 +119,15 @@ public:
     void setGroup(const QString& group);
 
     /** Set the channel's control byte */
-    void setControlByte(t_controlbyte byte);
+    void setControlByte(ControlByte byte);
 
     /** Get the channel's control byte */
-    t_controlbyte controlByte() const;
+    ControlByte controlByte() const;
+
+protected:
+    QString m_name;
+    QString m_group;
+    ControlByte m_controlByte;
 
     /*********************************************************************
      * Capabilities
@@ -151,6 +162,10 @@ public:
     /** Sort capabilities to ascending order by their values */
     void sortCapabilities();
 
+protected:
+    /** List of channel's capabilities */
+    QList <QLCCapability*> m_capabilities;
+
     /*********************************************************************
      * File operations
      *********************************************************************/
@@ -160,18 +175,6 @@ public:
 
     /** Load channel contents from an XML element */
     bool loadXML(const QDomElement* tag);
-
-protected:
-    /** Name */
-    QString m_name;
-
-    /** List of channel's capabilities */
-    QList <QLCCapability*> m_capabilities;
-
-    /** Channel's group */
-    QString m_group;
-
-    t_controlbyte m_controlByte;
 };
 
 #endif

@@ -143,17 +143,17 @@ void EditChannel::slotGroupActivated(const QString& group)
 void EditChannel::slotMsbRadioToggled(bool toggled)
 {
     if (toggled == true)
-        m_channel->setControlByte(0);
+        m_channel->setControlByte(QLCChannel::MSB);
     else
-        m_channel->setControlByte(1);
+        m_channel->setControlByte(QLCChannel::LSB);
 }
 
 void EditChannel::slotLsbRadioToggled(bool toggled)
 {
     if (toggled == true)
-        m_channel->setControlByte(1);
+        m_channel->setControlByte(QLCChannel::LSB);
     else
-        m_channel->setControlByte(0);
+        m_channel->setControlByte(QLCChannel::MSB);
 }
 
 /****************************************************************************

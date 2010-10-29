@@ -149,22 +149,6 @@ const t_channel KFixtureChannelsMax ( 128 );
  */
 const t_channel KChannelInvalid ( USHRT_MAX );
 
-/**
- * QLCChannel's control byte for 16bit pan/tilt etc. (i.e. MSB/LSB)
- * 0 = the first 8 bits, 1 = bits 9-16 ... 255 = bits 2033-2040 (yikes!)
- */
-typedef unsigned char t_controlbyte;
-
-/**
- * Low control byte for 16bit DMX values
- */
-const t_controlbyte KControl16LSB ( 0 );
-
-/**
- * High control byte for 16bit DMX values
- */
-const t_controlbyte KControl16MSB ( 1 );
-
 /*****************************************************************************
  * Output lines
  *****************************************************************************/

@@ -32,14 +32,14 @@ QLCChannel::QLCChannel()
 {
     m_name = QString::null;
     m_group = QString(KQLCChannelGroupIntensity);
-    m_controlByte = 0;
+    m_controlByte = MSB;
 }
 
 QLCChannel::QLCChannel(const QLCChannel* channel)
 {
     m_name = QString::null;
     m_group = QString(KQLCChannelGroupIntensity);
-    m_controlByte = 0;
+    m_controlByte = MSB;
 
     if (channel != NULL)
         *this = *channel;
@@ -182,12 +182,12 @@ void QLCChannel::setGroup(const QString& group)
     m_group = group;
 }
 
-void QLCChannel::setControlByte(t_controlbyte byte)
+void QLCChannel::setControlByte(ControlByte byte)
 {
     m_controlByte = byte;
 }
 
-t_controlbyte QLCChannel::controlByte() const
+QLCChannel::ControlByte QLCChannel::controlByte() const
 {
     return m_controlByte;
 }
@@ -283,10 +283,9 @@ bool QLCChannel::saveXML(QDomDocument* doc, QDomElement* root) const
     QDomElement chtag;
     QDomElement grptag;
     QDomText text;
-    QString str;
 
-    Q_ASSERT(doc);
-    Q_ASSERT(root);
+    Q_ASSERT(doc != NULL);
+    Q_ASSERT(root != NULL);
 
     /* Channel entry */
     chtag = doc->createElement(KXMLQLCChannel);
@@ -299,9 +298,7 @@ bool QLCChannel::saveXML(QDomDocument* doc, QDomElement* root) const
     grptag.appendChild(text);
 
     /* Group control byte */
-    str.setNum(m_controlByte);
-    grptag.setAttribute(KXMLQLCChannelGroupByte, str);
-
+    grptag.setAttribute(KXMLQLCChannelGroupByte, QString::number(controlByte()));
     chtag.appendChild(grptag);
 
     /* Capabilities */
@@ -328,10 +325,9 @@ bool QLCChannel::loadXML(const QDomElement* root)
 
     /* Get channel name */
     str = root->attribute(KXMLQLCChannelName);
-    if (str == QString::null)
+    if (str.isEmpty() == true)
         return false;
-    else
-        setName(str);
+    setName(str);
 
     /* Subtags */
     node = root->firstChild();
@@ -361,7 +357,7 @@ bool QLCChannel::loadXML(const QDomElement* root)
         else if (tag.tagName() == KXMLQLCChannelGroup)
         {
             str = tag.attribute(KXMLQLCChannelGroupByte);
-            setControlByte(str.toInt());
+            setControlByte(ControlByte(str.toInt()));
             setGroup(tag.text());
         }
         else
