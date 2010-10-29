@@ -39,7 +39,7 @@
 
 extern App* _app;
 
-OutputPatchEditor::OutputPatchEditor(QWidget* parent, int universe,
+OutputPatchEditor::OutputPatchEditor(QWidget* parent, quint32 universe,
                                      const OutputPatch* patch)
         : QDialog(parent)
 {

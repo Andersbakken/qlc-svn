@@ -39,7 +39,7 @@ class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
      * Initialization
      ********************************************************************/
 public:
-    OutputPatchEditor(QWidget* parent, int universe,
+    OutputPatchEditor(QWidget* parent, quint32 universe,
                       const OutputPatch* patch);
     ~OutputPatchEditor();
 
