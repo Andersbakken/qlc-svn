@@ -40,12 +40,6 @@
 #include "bus.h"
 
 /* Supported EFX algorithms */
-static const char* KCircleAlgorithmName    ( "Circle" );
-static const char* KEightAlgorithmName     ( "Eight" );
-static const char* KLineAlgorithmName      ( "Line" );
-static const char* KDiamondAlgorithmName   ( "Diamond" );
-static const char* KTriangleAlgorithmName  ( "Triangle" );
-static const char* KLissajousAlgorithmName ( "Lissajous" );
 
 /*****************************************************************************
  * Initialization
@@ -53,8 +47,6 @@ static const char* KLissajousAlgorithmName ( "Lissajous" );
 
 EFX::EFX(Doc* doc) : Function(doc)
 {
-    pointFunc = NULL;
-
     m_width = 127;
     m_height = 127;
     m_xOffset = 127;
@@ -74,7 +66,7 @@ EFX::EFX(Doc* doc) : Function(doc)
     m_stopSceneID = Function::invalidId();
     m_stopSceneEnabled = false;
 
-    m_algorithm = KCircleAlgorithmName;
+    m_algorithm = EFX::Circle;
 
     m_stepSize = 0;
 
@@ -179,10 +171,68 @@ bool EFX::copyFrom(const Function* function)
 }
 
 /*****************************************************************************
- * Preview
+ * Algorithm
  *****************************************************************************/
 
-bool EFX::preview(QVector <QPoint>& polygon)
+EFX::Algorithm EFX::algorithm() const
+{
+    return m_algorithm;
+}
+
+void EFX::setAlgorithm(EFX::Algorithm algo)
+{
+    if (algo >= EFX::Circle && algo <= EFX::Lissajous)
+        m_algorithm = algo;
+    else
+        m_algorithm = EFX::Circle;
+
+    emit changed(m_id);
+}
+
+QStringList EFX::algorithmList()
+{
+    QStringList list;
+    list << algorithmToString(EFX::Circle);
+    list << algorithmToString(EFX::Eight);
+    list << algorithmToString(EFX::Line);
+    list << algorithmToString(EFX::Diamond);
+    list << algorithmToString(EFX::Lissajous);
+    return list;
+}
+
+QString EFX::algorithmToString(EFX::Algorithm algo)
+{
+    switch (algo)
+    {
+        default:
+        case EFX::Circle:
+            return QString(KXMLQLCEFXCircleAlgorithmName);
+        case EFX::Eight:
+            return QString(KXMLQLCEFXEightAlgorithmName);
+        case EFX::Line:
+            return QString(KXMLQLCEFXLineAlgorithmName);
+        case EFX::Diamond:
+            return QString(KXMLQLCEFXDiamondAlgorithmName);
+        case EFX::Lissajous:
+            return QString(KXMLQLCEFXLissajousAlgorithmName);
+    }
+}
+
+EFX::Algorithm EFX::stringToAlgorithm(const QString& str)
+{
+    if (str == QString(KXMLQLCEFXEightAlgorithmName))
+        return EFX::Eight;
+    else if (str == QString(KXMLQLCEFXLineAlgorithmName))
+        return EFX::Line;
+    else if (str == QString(KXMLQLCEFXDiamondAlgorithmName))
+        return EFX::Diamond;
+    else if (str == QString(KXMLQLCEFXLissajousAlgorithmName))
+        return EFX::Lissajous;
+    else
+        return EFX::Circle;
+}
+
+bool EFX::preview(QVector <QPoint>& polygon) const
 {
     bool retval = true;
     int stepCount = 128;
@@ -196,108 +246,64 @@ bool EFX::preview(QVector <QPoint>& polygon)
     /* Resize the array to contain stepCount points */
     polygon.resize(stepCount);
 
-    /* Since algorithm is identified by a string, we don't want to do N
-       string comparisons on each for loop increment. So, it's a bit faster
-       to check the algorithm only once and then do the looping. */
-    if (m_algorithm == KCircleAlgorithmName)
+    /* Draw a preview of a circle */
+    for (step = 0; step < stepCount; step++)
     {
-        /* Draw a preview of a circle */
-        for (step = 0; step < stepCount; step++)
-        {
-            circlePoint(this, i, &x, &y);
-            polygon[step] = QPoint(int(x), int(y));
-            i += stepSize;
-        }
-    }
-    else if (m_algorithm == KEightAlgorithmName)
-    {
-        /* Draw a preview of a eight */
-        for (step = 0; step < stepCount; step++)
-        {
-            eightPoint(this, i, &x, &y);
-            polygon[step] = QPoint(int(x), int(y));
-            i += stepSize;
-        }
-    }
-    else if (m_algorithm == KLineAlgorithmName)
-    {
-        /* Draw a preview of a line */
-        for (step = 0; step < stepCount; step++)
-        {
-            linePoint(this, i, &x, &y);
-            polygon[step] = QPoint(int(x), int(y));
-            i += stepSize;
-        }
-    }
-    else if (m_algorithm == KDiamondAlgorithmName)
-    {
-        /* Draw a preview of a diamond */
-        for (step = 0; step < stepCount; step++)
-        {
-            diamondPoint(this, i, &x, &y);
-            polygon[step] = QPoint(int(x), int(y));
-            i += stepSize;
-        }
-    }
-    else if (m_algorithm == KTriangleAlgorithmName)
-    {
-        /* Draw a preview of a triangle */
-        for (step = 0; step < stepCount; step++)
-        {
-            trianglePoint(this, i, &x, &y);
-            polygon[step] = QPoint(int(x), int(y));
-            i += stepSize;
-        }
-    }
-    else if (m_algorithm == KLissajousAlgorithmName)
-    {
-        /* Draw a preview of a lissajous */
-        for (step = 0; step < stepCount; step++)
-        {
-            lissajousPoint(this, i, &x, &y);
-            polygon[step] = QPoint(int(x), int(y));
-            i += stepSize;
-        }
-    }
-    else
-    {
-        polygon.resize(0);
-        retval = false;
+        calculatePoint(i, &x, &y);
+        polygon[step] = QPoint(int(x), int(y));
+        i += stepSize;
     }
 
     return retval;
 }
 
-/*****************************************************************************
- * Algorithm
- *****************************************************************************/
-
-QStringList EFX::algorithmList()
+void EFX::calculatePoint(qreal iterator, qreal* x, qreal* y) const
 {
-    QStringList list;
-    list.append(KCircleAlgorithmName);
-    list.append(KEightAlgorithmName);
-    list.append(KLineAlgorithmName);
-    list.append(KDiamondAlgorithmName);
-    /* list.append(KTriangleAlgorithmName); */
-    list.append(KLissajousAlgorithmName);
+    switch (algorithm())
+    {
+    default:
+    case Circle:
+        *x = cos(iterator + M_PI_2);
+        *y = cos(iterator);
+        break;
 
-    return list;
+    case Eight:
+        *x = cos((iterator * 2) + M_PI_2);
+        *y = cos(iterator);
+        break;
+
+    case Line:
+        /* @todo It's a simple line, do we really need cos()? :) */
+        *x = cos(iterator);
+        *y = cos(iterator);
+        break;
+
+    case Diamond:
+        *x = pow(cos(iterator - M_PI_2), 3);
+        *y = pow(cos(iterator), 3);
+        break;
+
+    case Lissajous:
+        *x = cos((m_xFrequency * iterator) - m_xPhase);
+        *y = cos((m_yFrequency * iterator) - m_yPhase);
+        break;
+    }
+
+    rotateAndScale(x, y);
 }
 
-QString EFX::algorithm() const
+void EFX::rotateAndScale(qreal* x, qreal* y) const
 {
-    return m_algorithm;
-}
+    qreal xx;
+    qreal yy;
+    qreal r;
 
-void EFX::setAlgorithm(const QString& algorithm)
-{
-    if (algorithmList().contains(algorithm) == true)
-        m_algorithm = QString(algorithm);
-    else
-        m_algorithm = KCircleAlgorithmName;
+    xx = *x;
+    yy = *y;
 
-    emit changed(m_id);
+    r = M_PI/180 * m_rotation;
+    *x = m_xOffset + (xx * cos(r) + yy  * sin(r)) * m_width;
+    *y = m_yOffset + (-xx * sin(r) + yy * cos(r))  * m_height;
 }
 
 /*****************************************************************************
@@ -399,14 +405,10 @@ int EFX::yFrequency() const
 
 bool EFX::isFrequencyEnabled()
 {
-    if (m_algorithm == KLissajousAlgorithmName)
-    {
+    if (m_algorithm == EFX::Lissajous)
         return true;
-    }
     else
-    {
         return false;
-    }
 }
 
 /*****************************************************************************
@@ -437,14 +439,10 @@ int EFX::yPhase() const
 
 bool EFX::isPhaseEnabled() const
 {
-    if (m_algorithm == KLissajousAlgorithmName)
-    {
+    if (m_algorithm == EFX::Lissajous)
         return true;
-    }
     else
-    {
         return false;
-    }
 }
 
 /*****************************************************************************
@@ -704,7 +702,7 @@ bool EFX::saveXML(QDomDocument* doc, QDomElement* wksp_root)
     /* Algorithm */
     tag = doc->createElement(KXMLQLCEFXAlgorithm);
     root.appendChild(tag);
-    text = doc->createTextNode(algorithm());
+    text = doc->createTextNode(algorithmToString(algorithm()));
     tag.appendChild(text);
 
     /* Width */
@@ -859,7 +857,7 @@ bool EFX::loadXML(const QDomElement* root)
         else if (tag.tagName() == KXMLQLCEFXAlgorithm)
         {
             /* Algorithm */
-            setAlgorithm(tag.text());
+            setAlgorithm(stringToAlgorithm(tag.text()));
         }
         else if (tag.tagName() == KXMLQLCFunctionDirection)
         {
@@ -1013,77 +1011,6 @@ void EFX::slotBusValueChanged(quint32 id, quint32 value)
  * Point calculation functions
  *****************************************************************************/
 
-void EFX::circlePoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
-{
-    *x = cos(iterator + M_PI_2);
-    *y = cos(iterator);
-
-    rotateAndScale(x, y, efx->m_width, efx->m_height,
-                   efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
-}
-
-void EFX::eightPoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
-{
-    *x = cos((iterator * 2) + M_PI_2);
-    *y = cos(iterator);
-
-    rotateAndScale(x, y, efx->m_width, efx->m_height,
-                   efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
-}
-
-void EFX::linePoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
-{
-    /* TODO: It's a simple line, I don't think we need cos() :) */
-    *x = cos(iterator);
-    *y = cos(iterator);
-
-    rotateAndScale(x, y, efx->m_width, efx->m_height,
-                   efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
-}
-
-void EFX::trianglePoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
-{
-    /* TODO !!! */
-    *x = cos(iterator);
-    *y = sin(iterator);
-
-    rotateAndScale(x, y, efx->m_width, efx->m_height,
-                   efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
-}
-
-void EFX::diamondPoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
-{
-    *x = pow(cos(iterator - M_PI_2), 3);
-    *y = pow(cos(iterator), 3);
-
-    rotateAndScale(x, y, efx->m_width, efx->m_height,
-                   efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
-}
-
-void EFX::lissajousPoint(EFX* efx, qreal iterator, qreal* x, qreal* y)
-{
-    *x = cos((efx->m_xFrequency * iterator) - efx->m_xPhase);
-    *y = cos((efx->m_yFrequency * iterator) - efx->m_yPhase);
-
-    rotateAndScale(x, y, efx->m_width, efx->m_height,
-                   efx->m_xOffset, efx->m_yOffset, efx->m_rotation);
-}
-
-void EFX::rotateAndScale(qreal* x, qreal* y, qreal w, qreal h,
-                         qreal xOff, qreal yOff, qreal rotation)
-{
-    qreal xx;
-    qreal yy;
-    qreal r;
-
-    xx = *x;
-    yy = *y;
-
-    r = M_PI/180 * rotation;
-    *x = xOff + (xx * cos(r) + yy  * sin(r)) * w;
-    *y = yOff + (-xx * sin(r) + yy * cos(r))  * h;
-}
-
 /*****************************************************************************
  * Running
  *****************************************************************************/
@@ -1169,29 +1096,11 @@ void EFX::arm()
         }
     }
 
-    /* Choose a point calculation function depending on the algorithm */
-    if (m_algorithm == KCircleAlgorithmName)
-        pointFunc = circlePoint;
-    else if (m_algorithm == KEightAlgorithmName)
-        pointFunc = eightPoint;
-    else if (m_algorithm == KLineAlgorithmName)
-        pointFunc = linePoint;
-    else if (m_algorithm == KTriangleAlgorithmName)
-        pointFunc = trianglePoint;
-    else if (m_algorithm == KDiamondAlgorithmName)
-        pointFunc = diamondPoint;
-    else if (m_algorithm == KLissajousAlgorithmName)
-        pointFunc = lissajousPoint;
-    else
-        pointFunc = circlePoint; // Fallback
-
     resetElapsed();
 }
 
 void EFX::disarm()
 {
-    /* Just a precaution: invalidate the algorithm worker function */
-    pointFunc = NULL;
 }
 
 void EFX::preRun(MasterTimer* timer)

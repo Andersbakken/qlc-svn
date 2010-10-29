@@ -484,7 +484,6 @@ void EFXFixture_Test::nextStepLoop()
 
     EFX e(m_doc);
     e.slotBusValueChanged(e.busID(), 50); /* 50 steps */
-    e.pointFunc = e.circlePoint;
 
     EFXFixture* ef = new EFXFixture(&e);
     ef->setFixture(0);
@@ -525,7 +524,6 @@ void EFXFixture_Test::nextStepSingleShot()
 
     EFX e(m_doc);
     e.slotBusValueChanged(e.busID(), 50); /* 50 steps */
-    e.pointFunc = e.circlePoint;
     e.setRunOrder(EFX::SingleShot);
 
     EFXFixture* ef = new EFXFixture(&e);

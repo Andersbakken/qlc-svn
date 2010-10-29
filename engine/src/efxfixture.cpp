@@ -314,7 +314,7 @@ void EFXFixture::nextStep(QByteArray* universes)
     if (m_iterator < (M_PI * 2.0))
     {
         if (m_parent->propagationMode() != EFX::Serial ||
-                m_skipIterator >= m_skipThreshold)
+            m_skipIterator >= m_skipThreshold)
         {
             /* Increment for next round. TODO: This check is made
                twice (the other is just a couple of lines above,
@@ -324,13 +324,12 @@ void EFXFixture::nextStep(QByteArray* universes)
 
         if (m_runTimeDirection == Function::Forward)
         {
-            m_parent->pointFunc(m_parent, m_iterator,
-                                &m_panValue, &m_tiltValue);
+            m_parent->calculatePoint(m_iterator, &m_panValue, &m_tiltValue);
         }
         else
         {
-            m_parent->pointFunc(m_parent, (M_PI * 2.0) - m_iterator,
-                                &m_panValue, &m_tiltValue);
+            m_parent->calculatePoint((M_PI * 2.0) - m_iterator,
+                                     &m_panValue, &m_tiltValue);
         }
 
         /* Write this fixture's data to universes. */

@@ -63,9 +63,8 @@ void EFX_Test::initial()
     QVERIFY(e.type() == Function::EFX);
     QVERIFY(e.name() == "New EFX");
     QVERIFY(e.id() == Function::invalidId());
-    QVERIFY(e.pointFunc == NULL);
 
-    QVERIFY(e.algorithm() == "Circle");
+    QVERIFY(e.algorithm() == EFX::Circle);
     QVERIFY(e.width() == 127);
     QVERIFY(e.height() == 127);
     QVERIFY(e.rotation() == 0);
@@ -102,23 +101,23 @@ void EFX_Test::algorithmNames()
     EFX e(m_doc);
 
     /* All EFX's have Circle as the initial algorithm */
-    QVERIFY(e.algorithm() == "Circle");
+    QVERIFY(e.algorithm() == EFX::Circle);
 
-    e.setAlgorithm("Eight");
-    QVERIFY(e.algorithm() == "Eight");
+    e.setAlgorithm(EFX::Eight);
+    QVERIFY(e.algorithm() == EFX::Eight);
 
-    e.setAlgorithm("Line");
-    QVERIFY(e.algorithm() == "Line");
+    e.setAlgorithm(EFX::Line);
+    QVERIFY(e.algorithm() == EFX::Line);
 
-    e.setAlgorithm("Diamond");
-    QVERIFY(e.algorithm() == "Diamond");
+    e.setAlgorithm(EFX::Diamond);
+    QVERIFY(e.algorithm() == EFX::Diamond);
 
-    e.setAlgorithm("Lissajous");
-    QVERIFY(e.algorithm() == "Lissajous");
+    e.setAlgorithm(EFX::Lissajous);
+    QVERIFY(e.algorithm() == EFX::Lissajous);
 
-    /* Invalid algorithm name results in Circle as a fallback */
-    e.setAlgorithm("Foo");
-    QVERIFY(e.algorithm() == "Circle");
+    /* Invalid algorithm results in Circle as a fallback */
+    e.setAlgorithm(EFX::Algorithm(31337));
+    QVERIFY(e.algorithm() == EFX::Circle);
 }
 
 void EFX_Test::width()
@@ -242,7 +241,7 @@ void EFX_Test::xFrequency()
     e.setXFrequency(-4);
     QVERIFY(e.xFrequency() == 0);
 
-    e.setAlgorithm("Lissajous");
+    e.setAlgorithm(EFX::Lissajous);
     QVERIFY(e.isFrequencyEnabled() == true);
 
     e.setXFrequency(10);
@@ -282,7 +281,7 @@ void EFX_Test::yFrequency()
     e.setYFrequency(-4);
     QVERIFY(e.yFrequency() == 0);
 
-    e.setAlgorithm("Lissajous");
+    e.setAlgorithm(EFX::Lissajous);
     QVERIFY(e.isFrequencyEnabled() == true);
 
     e.setXFrequency(10);
@@ -325,7 +324,7 @@ void EFX_Test::xPhase()
     e.setXPhase(-4);
     QVERIFY(e.xPhase() == 0);
 
-    e.setAlgorithm("Lissajous");
+    e.setAlgorithm(EFX::Lissajous);
     QVERIFY(e.isPhaseEnabled() == true);
 
     e.setXPhase(400);
@@ -371,7 +370,7 @@ void EFX_Test::yPhase()
     e.setYPhase(-4);
     QVERIFY(e.yPhase() == 0);
 
-    e.setAlgorithm("Lissajous");
+    e.setAlgorithm(EFX::Lissajous);
     QVERIFY(e.isPhaseEnabled() == true);
 
     e.setYPhase(400);
@@ -712,7 +711,7 @@ void EFX_Test::previewCircle()
 void EFX_Test::previewEight()
 {
     EFX e(m_doc);
-    e.setAlgorithm("Eight");
+    e.setAlgorithm(EFX::Eight);
 
     QVector <QPoint> poly;
     QVERIFY(e.preview(poly) == true);
@@ -851,7 +850,7 @@ void EFX_Test::previewEight()
 void EFX_Test::previewLine()
 {
     EFX e(m_doc);
-    e.setAlgorithm("Line");
+    e.setAlgorithm(EFX::Line);
 
     QVector <QPoint> poly;
     QVERIFY(e.preview(poly) == true);
@@ -987,14 +986,10 @@ void EFX_Test::previewLine()
     QVERIFY(poly[127] == QPoint(253,253));
 }
 
-//void EFX_Test::previewTriangle()
-//{
-//}
-
 void EFX_Test::previewDiamond()
 {
     EFX e(m_doc);
-    e.setAlgorithm("Diamond");
+    e.setAlgorithm(EFX::Diamond);
 
     QVector <QPoint> poly;
     QVERIFY(e.preview(poly) == true);
@@ -1133,7 +1128,7 @@ void EFX_Test::previewDiamond()
 void EFX_Test::previewLissajous()
 {
     EFX e(m_doc);
-    e.setAlgorithm("Lissajous");
+    e.setAlgorithm(EFX::Lissajous);
 
     QVector <QPoint> poly;
     QVERIFY(e.preview(poly) == true);
@@ -1348,6 +1343,8 @@ void EFX_Test::widthHeightOffset()
 
 void EFX_Test::rotateAndScale()
 {
+    EFX efx(m_doc);
+
     /* The X & Y params used here represent the first point in a circle
        algorithm as calculated by EFX::circlePoint(), based on iterator
        value 0, before calling rotateAndScale(). */
@@ -1356,62 +1353,112 @@ void EFX_Test::rotateAndScale()
     /* Rotation */
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 0);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(0);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 111);
     QVERIFY(floor(y + 0.5) == 253);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 90);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(90);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 253);
     QVERIFY(floor(y + 0.5) == 143);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 180);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(180);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 143);
     QVERIFY(floor(y + 0.5) == 1);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 270);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(270);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 1);
     QVERIFY(floor(y + 0.5) == 111);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 127, 127, 45);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(45);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 205);
     QVERIFY(floor(y + 0.5) == 227);
 
     /* Offset */
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 128, 128, 0);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(128);
+    efx.setYOffset(128);
+    efx.setRotation(0);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 112);
     QVERIFY(floor(y + 0.5) == 254);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 0, 0, 0);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(0);
+    efx.setYOffset(0);
+    efx.setRotation(0);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == -16);
     QVERIFY(floor(y + 0.5) == 126);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 0, 127, 0);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(0);
+    efx.setYOffset(127);
+    efx.setRotation(0);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == -16);
     QVERIFY(floor(y + 0.5) == 253);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 127, 0, 0);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(0);
+    efx.setRotation(0);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 111);
     QVERIFY(floor(y + 0.5) == 126);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 127, 1, UCHAR_MAX, 0);
+    efx.setWidth(127);
+    efx.setHeight(127);
+    efx.setXOffset(1);
+    efx.setYOffset(UCHAR_MAX);
+    efx.setRotation(0);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == -15);
     QVERIFY(floor(y + 0.5) == 381);
 
@@ -1420,31 +1467,56 @@ void EFX_Test::rotateAndScale()
        params have very little effect without offset or rotation). */
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 64, 64, 127, 127, 90);
+    efx.setWidth(64);
+    efx.setHeight(64);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(90);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 190);
     QVERIFY(floor(y + 0.5) == 135);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 10, 127, 127, 127, 90);
+    efx.setWidth(10);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(90);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 137);
     QVERIFY(floor(y + 0.5) == 143);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 64, 127, 127, 127, 90);
+    efx.setWidth(64);
+    efx.setHeight(127);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(90);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 190);
     QVERIFY(floor(y + 0.5) == 143);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 64, 0, 127, 127, 90);
+    efx.setWidth(64);
+    efx.setHeight(0);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(90);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 190);
     QVERIFY(floor(y + 0.5) == 127);
 
     x = -0.125333;
     y = 0.992115;
-    EFX::rotateAndScale(&x, &y, 127, 0, 127, 127, 90);
+    efx.setWidth(127);
+    efx.setHeight(0);
+    efx.setXOffset(127);
+    efx.setYOffset(127);
+    efx.setRotation(90);
+    efx.rotateAndScale(&x, &y);
     QVERIFY(floor(x + 0.5) == 253);
     QVERIFY(floor(y + 0.5) == 127);
 }
@@ -1456,7 +1528,7 @@ void EFX_Test::copyFrom()
     e1.setDirection(EFX::Backward);
     e1.setRunOrder(EFX::SingleShot);
     e1.setBus(15);
-    e1.setAlgorithm("Lissajous");
+    e1.setAlgorithm(EFX::Lissajous);
     e1.setWidth(13);
     e1.setHeight(42);
     e1.setRotation(78);
@@ -1483,7 +1555,7 @@ void EFX_Test::copyFrom()
     QVERIFY(e2.direction() == EFX::Backward);
     QVERIFY(e2.runOrder() == EFX::SingleShot);
     QVERIFY(e2.busID() == 15);
-    QVERIFY(e2.algorithm() == "Lissajous");
+    QVERIFY(e2.algorithm() == EFX::Lissajous);
     QVERIFY(e2.width() == 13);
     QVERIFY(e2.height() == 42);
     QVERIFY(e2.rotation() == 78);
@@ -1512,7 +1584,7 @@ void EFX_Test::copyFrom()
     e3.setDirection(EFX::Forward);
     e3.setRunOrder(EFX::Loop);
     e3.setBus(3);
-    e3.setAlgorithm("Eight");
+    e3.setAlgorithm(EFX::Eight);
     e3.setWidth(31);
     e3.setHeight(24);
     e3.setRotation(87);
@@ -1538,7 +1610,7 @@ void EFX_Test::copyFrom()
     QVERIFY(e2.direction() == EFX::Forward);
     QVERIFY(e2.runOrder() == EFX::Loop);
     QVERIFY(e2.busID() == 3);
-    QVERIFY(e2.algorithm() == "Eight");
+    QVERIFY(e2.algorithm() == EFX::Eight);
     QVERIFY(e2.width() == 31);
     QVERIFY(e2.height() == 24);
     QVERIFY(e2.rotation() == 87);
@@ -1569,7 +1641,7 @@ void EFX_Test::createCopy()
     e1->setDirection(EFX::Forward);
     e1->setRunOrder(EFX::PingPong);
     e1->setBus(15);
-    e1->setAlgorithm("Line");
+    e1->setAlgorithm(EFX::Line);
     e1->setWidth(13);
     e1->setHeight(42);
     e1->setRotation(78);
@@ -1603,7 +1675,7 @@ void EFX_Test::createCopy()
     QVERIFY(copy->direction() == EFX::Forward);
     QVERIFY(copy->runOrder() == EFX::PingPong);
     QVERIFY(copy->busID() == 15);
-    QVERIFY(copy->algorithm() == "Line");
+    QVERIFY(copy->algorithm() == EFX::Line);
     QVERIFY(copy->width() == 13);
     QVERIFY(copy->height() == 42);
     QVERIFY(copy->rotation() == 78);
@@ -1879,7 +1951,7 @@ void EFX_Test::loadSuccess()
     QVERIFY(e.direction() == EFX::Forward);
     QVERIFY(e.runOrder() == EFX::Loop);
 
-    QVERIFY(e.algorithm() == "Diamond");
+    QVERIFY(e.algorithm() == EFX::Diamond);
     QVERIFY(e.width() == 100);
     QVERIFY(e.height() == 90);
     QVERIFY(e.rotation() == 310);
@@ -1974,7 +2046,7 @@ void EFX_Test::save()
     e1.setDirection(EFX::Backward);
     e1.setRunOrder(EFX::SingleShot);
     e1.setBus(15);
-    e1.setAlgorithm("Lissajous");
+    e1.setAlgorithm(EFX::Lissajous);
     e1.setWidth(13);
     e1.setHeight(42);
     e1.setRotation(78);
@@ -2258,7 +2330,7 @@ void EFX_Test::armSuccess()
 
     e->arm();
 
-    QVERIFY(e->pointFunc == e->circlePoint);
+    QVERIFY(e->algorithm() == EFX::Circle);
 
     QVERIFY(e->m_fixtures.size() == 2);
 
@@ -2338,7 +2410,7 @@ void EFX_Test::armMissingStartScene()
 
     e->arm();
 
-    QVERIFY(e->pointFunc == e->circlePoint);
+    QVERIFY(e->algorithm() == EFX::Circle);
 
     QVERIFY(e->m_fixtures.size() == 2);
 
@@ -2418,7 +2490,7 @@ void EFX_Test::armMissingStopScene()
 
     e->arm();
 
-    QVERIFY(e->pointFunc == e->circlePoint);
+    QVERIFY(e->algorithm() == EFX::Circle);
 
     QVERIFY(e->m_fixtures.size() == 2);
 
@@ -2498,7 +2570,7 @@ void EFX_Test::armMissingFixture()
 
     e->arm();
 
-    QVERIFY(e->pointFunc == e->circlePoint);
+    QVERIFY(e->algorithm() == EFX::Circle);
 
     QVERIFY(e->m_fixtures.size() == 2);
 

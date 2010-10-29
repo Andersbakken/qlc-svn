@@ -184,10 +184,11 @@ void EFXEditor::initMovementPage()
     connect(m_yPhaseSpin, SIGNAL(valueChanged(int)),
             this, SLOT(slotYPhaseSpinChanged(int)));
 
+    QString algo(EFX::algorithmToString(m_efx->algorithm()));
     /* Select the EFX's algorithm from the algorithm combo */
     for (int i = 0; i < m_algorithmCombo->count(); i++)
     {
-        if (m_algorithmCombo->itemText(i) == m_efx->algorithm())
+        if (m_algorithmCombo->itemText(i) == algo)
         {
             m_algorithmCombo->setCurrentIndex(i);
             break;
@@ -195,7 +196,7 @@ void EFXEditor::initMovementPage()
     }
 
     /* Causes the EFX function to update the preview point array */
-    slotAlgorithmSelected(m_efx->algorithm());
+    slotAlgorithmSelected(algo);
 
     /* Get the algorithm parameters */
     m_widthSpin->setValue(m_efx->width());
@@ -533,7 +534,8 @@ void EFXEditor::slotAlgorithmSelected(const QString &text)
 {
     Q_ASSERT(m_efx != NULL);
 
-    m_efx->setAlgorithm(text);
+    EFX::Algorithm algo = EFX::stringToAlgorithm(text);
+    m_efx->setAlgorithm(algo);
 
     if (m_efx->isFrequencyEnabled())
     {

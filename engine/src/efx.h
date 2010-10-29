@@ -53,6 +53,12 @@ class Fixture;
 #define KXMLQLCEFXStartScene "StartScene"
 #define KXMLQLCEFXStopScene "StopScene"
 
+#define KXMLQLCEFXCircleAlgorithmName "Circle"
+#define KXMLQLCEFXEightAlgorithmName "Eight"
+#define KXMLQLCEFXLineAlgorithmName "Line"
+#define KXMLQLCEFXDiamondAlgorithmName "Diamond"
+#define KXMLQLCEFXLissajousAlgorithmName "Lissajous"
+
 /**
  * An EFX (effects) function that is used to create
  * more complex automation especially for moving lights
@@ -89,9 +95,33 @@ public:
     bool copyFrom(const Function* function);
 
     /*********************************************************************
-     * Preview
+     * Algorithm
      *********************************************************************/
 public:
+    enum Algorithm
+    {
+        Circle,
+        Eight,
+        Line,
+        Diamond,
+        Lissajous
+    };
+
+    /** Get the current algorithm */
+    Algorithm algorithm() const;
+
+    /** Set the current algorithm */
+    void setAlgorithm(Algorithm algo);
+
+    /** Get the supported algorithms in a string list */
+    static QStringList algorithmList();
+
+    /** Convert an algorithm type to a string */
+    static QString algorithmToString(Algorithm algo);
+
+    /** Convert a string to an algorithm type */
+    static Algorithm stringToAlgorithm(const QString& str);
+
     /**
      * Get a preview of the current algorithm. Puts 128 points to the
      * given polygon, 255px wide and 255px high at maximum, that represent
@@ -100,24 +130,35 @@ public:
      *
      * @param polygon The polygon to fill with preview points
      */
-    bool preview(QVector <QPoint>& polygon);
+    bool preview(QVector <QPoint>& polygon) const;
 
-    /*********************************************************************
-     * Algorithm
-     *********************************************************************/
-public:
-    /** Get the supported algorithms in a string list */
-    static QStringList algorithmList();
+    /**
+     * Calculate a single point with the currently selected algorithm,
+     * based on the value of iterator (which is basically a step number).
+     *
+     * @param iterator Step number (input)
+     * @param x Used to store the calculated X coordinate (output)
+     * @param y Used to store the calculated Y coordinate (output)
+     */
+    void calculatePoint(qreal iterator, qreal* x, qreal* y) const;
 
-    /** Get the current algorithm */
-    QString algorithm() const;
-
-    /** Set the current algorithm */
-    void setAlgorithm(const QString& algorithm);
+    /**
+     * Rotate a point of the pattern by rot degrees and scale the point
+     * within w/h and xOff/yOff.
+     *
+     * @param x Holds the calculated X coordinate
+     * @param y Holds the calculated Y coordinate
+     * @param w The width to scale to
+     * @param h The height to scale to
+     * @param xOff X offset of the pattern
+     * @param yOff Y offset of the pattern
+     * @param rotation Degrees to rotate
+     */
+    void rotateAndScale(qreal *x, qreal *y) const;
 
 protected:
     /** Current algorithm used by the EFX */
-    QString m_algorithm;
+    Algorithm m_algorithm;
 
     /*********************************************************************
      * Width
@@ -451,115 +492,6 @@ public slots:
      * @param value Bus' new value
      */
     void slotBusValueChanged(quint32 id, quint32 value);
-
-    /*********************************************************************
-     * Point calculation functions
-     *********************************************************************/
-protected:
-    /**
-     * Function pointer for the point calculation function.
-     * This pointer is replaced by the appropriate function pointer
-     * depending on the chosen algorithm.
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    void (*pointFunc) (EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Calculate a single point in a circle based on
-     * the value of iterator (which is basically a step number)
-     *
-     * @note This is a static function
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    static void circlePoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Calculate a single point in a eight pattern based on
-     * the value of iterator (which is basically a step number)
-     *
-     * @note This is a static function
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    static void eightPoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Calculate a single point in a line pattern based on
-     * the value of iterator (which is basically a step number)
-     *
-     * @note This is a static function
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    static void linePoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Calculate a single point in a triangle pattern based on
-     * the value of iterator (which is basically a step number)
-     *
-     * @note This is a static function
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    static void trianglePoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Calculate a single point in a diamond pattern based on
-     * the value of iterator (which is basically a step number)
-     *
-     * @note This is a static function
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    static void diamondPoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Calculate a single point in a lissajous pattern based on
-     * the value of iterator (which is basically a step number)
-     *
-     * @note This is a static function
-     *
-     * @param efx The EFX function using this
-     * @param iterator Step number
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     */
-    static void lissajousPoint(EFX* efx, qreal iterator, qreal* x, qreal* y);
-
-    /**
-     * Rotate a point of the pattern by rot degrees and scale the point
-     * within w/h and xOff/yOff.
-     *
-     * @param x Holds the calculated X coordinate
-     * @param y Holds the calculated Y coordinate
-     * @param w The width to scale to
-     * @param h The height to scale to
-     * @param xOff X offset of the pattern
-     * @param yOff Y offset of the pattern
-     * @param rotation Degrees to rotate
-     */
-    static void rotateAndScale(qreal *x, qreal *y, qreal w, qreal h,
-                               qreal xOff, qreal yOff, qreal rotation);
 
     /*********************************************************************
      * Running
