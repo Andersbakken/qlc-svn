@@ -10,10 +10,10 @@ INCLUDEPATH += ../../../interfaces
 CONFIG += plugin
 CONFIG(coverage) {
     SOURCES += ../test/ftdimock/ftdimock.cpp
-    QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi)    
+    QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi) 
 } else {
     CONFIG    += link_pkgconfig
-    PKGCONFIG += libftdi
+    PKGCONFIG += libftdi libusb
 }
 
 HEADERS += enttecdmxusbwidget.h \
