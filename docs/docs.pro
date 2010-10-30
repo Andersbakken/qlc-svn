@@ -3,9 +3,7 @@ include(../variables.pri)
 TEMPLATE = subdirs
 
 docs.path = $$INSTALLROOT/$$DOCSDIR/html
-docs.files = coding-convention.html \
-             compiling.html \
-             concept.html \
+docs.files = concept.html \
              functionmanager.html \
              functionmanager.png \
              howto-add-fixtures.html \
