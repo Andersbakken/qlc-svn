@@ -13,6 +13,9 @@ docs.files = coding-convention.html \
              howto-input-mapping.html \
              howto-output-mapping.html \
              index.html \
+             sceneeditor.html \
+             sceneeditorfixture.png \
+             sceneeditorgeneral.png \
              tutorial.html \
              tutorial.png
 INSTALLS += docs
