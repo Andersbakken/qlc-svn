@@ -6,6 +6,8 @@ docs.path = $$INSTALLROOT/$$DOCSDIR/html
 docs.files = coding-convention.html \
              compiling.html \
              concept.html \
+             functionmanager.html \
+             functionmanager.png \
              howto-add-fixtures.html \
              howto-input-devices.html \
              howto-input-mapping.html \
