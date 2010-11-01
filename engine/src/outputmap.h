@@ -35,9 +35,9 @@ class QDomElement;
 class QByteArray;
 class QString;
 
-class QLCOutPlugin;
 class OutputMap;
 class OutputPatch;
+class QLCOutPlugin;
 class OutputMapEditor;
 class OutputPatchEditor;
 
@@ -139,9 +139,7 @@ public:
      * Grab a read-only copy of the current universe array for
      * monitoring purposes.
      */
-    QByteArray peekUniverses() const {
-        return *m_universeArray;
-    }
+    QByteArray peekUniverses() const;
 
     /**
      * Read the value of a single channel

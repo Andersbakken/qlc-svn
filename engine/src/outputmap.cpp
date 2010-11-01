@@ -198,6 +198,11 @@ void OutputMap::dumpUniverses()
     m_universeMutex.unlock();
 }
 
+QByteArray OutputMap::peekUniverses() const
+{
+    return *m_universeArray;
+}
+
 uchar OutputMap::value(quint32 channel) const
 {
     if (channel < quint32(m_universes * 512))
