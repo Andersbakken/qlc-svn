@@ -95,7 +95,6 @@ void PaletteGenerator::createGroupScenes(const Fixture* fxi,
                                          QLCChannel::Group group)
 {
     Q_ASSERT(fxi != NULL);
-    Q_ASSERT(group.isEmpty() == false);
 
     QList <quint32> channels = findChannels(fxi, group);
     for (int i = 0; i < channels.size(); i++)
