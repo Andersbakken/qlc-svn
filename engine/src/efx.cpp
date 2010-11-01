@@ -1067,31 +1067,19 @@ void EFX::arm()
             QLCChannel* ch = mode->channel(i);
             Q_ASSERT(ch != NULL);
 
-            if (ch->group() == KQLCChannelGroupPan)
+            if (ch->group() == QLCChannel::Pan)
             {
-                if (ch->controlByte() == 0)
-                {
-                    ef->setMsbPanChannel(
-                        fxi->universeAddress() + i);
-                }
-                else if (ch->controlByte() == 1)
-                {
-                    ef->setLsbPanChannel(
-                        fxi->universeAddress() + i);
-                }
+                if (ch->controlByte() == QLCChannel::MSB)
+                    ef->setMsbPanChannel(fxi->universeAddress() + i);
+                else if (ch->controlByte() == QLCChannel::LSB)
+                    ef->setLsbPanChannel(fxi->universeAddress() + i);
             }
-            else if (ch->group() == KQLCChannelGroupTilt)
+            else if (ch->group() == QLCChannel::Tilt)
             {
-                if (ch->controlByte() == 0)
-                {
-                    ef->setMsbTiltChannel(
-                        fxi->universeAddress() + i);
-                }
-                else if (ch->controlByte() == 1)
-                {
-                    ef->setLsbTiltChannel(
-                        fxi->universeAddress() + i);
-                }
+                if (ch->controlByte() == QLCChannel::MSB)
+                    ef->setMsbTiltChannel(fxi->universeAddress() + i);
+                else if (ch->controlByte() == QLCChannel::LSB)
+                    ef->setLsbTiltChannel(fxi->universeAddress() + i);
             }
         }
     }

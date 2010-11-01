@@ -447,7 +447,7 @@ void VCSliderProperties::levelUpdateChannelNode(QTreeWidgetItem* parent,
 
     item->setText(KColumnName, QString("%1:%2").arg(ch + 1)
                   .arg(channel->name()));
-    item->setText(KColumnType, channel->group());
+    item->setText(KColumnType, QLCChannel::groupToString(channel->group()));
 
     levelUpdateCapabilities(item, channel);
 }

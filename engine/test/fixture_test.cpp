@@ -232,7 +232,7 @@ void Fixture_Test::fixtureDef()
     QVERIFY(ch != NULL);
     QVERIFY(ch->name().toLower() == "pan");
 
-    ch = fxi.channel(fxi.channel("Pan", Qt::CaseInsensitive, "Colour"));
+    ch = fxi.channel(fxi.channel("Pan", Qt::CaseInsensitive, QLCChannel::Colour));
     QVERIFY(ch == NULL);
 
     QVERIFY(fxi.channel("otation") != Fixture::invalidChannel());

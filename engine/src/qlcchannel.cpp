@@ -28,17 +28,30 @@
 #include "qlcchannel.h"
 #include "qlccapability.h"
 
+#define KXMLQLCChannelGroupIntensity   QString("Intensity")
+#define KXMLQLCChannelGroupColour      QString("Colour")
+#define KXMLQLCChannelGroupGobo        QString("Gobo")
+#define KXMLQLCChannelGroupPrism       QString("Prism")
+#define KXMLQLCChannelGroupShutter     QString("Shutter")
+#define KXMLQLCChannelGroupBeam        QString("Beam")
+#define KXMLQLCChannelGroupSpeed       QString("Speed")
+#define KXMLQLCChannelGroupEffect      QString("Effect")
+#define KXMLQLCChannelGroupPan         QString("Pan")
+#define KXMLQLCChannelGroupTilt        QString("Tilt")
+#define KXMLQLCChannelGroupMaintenance QString("Maintenance")
+#define KXMLQLCChannelGroupNothing     QString("Nothing")
+
 QLCChannel::QLCChannel()
 {
     m_name = QString::null;
-    m_group = QString(KQLCChannelGroupIntensity);
+    m_group = Intensity;
     m_controlByte = MSB;
 }
 
 QLCChannel::QLCChannel(const QLCChannel* channel)
 {
     m_name = QString::null;
-    m_group = QString(KQLCChannelGroupIntensity);
+    m_group = Intensity;
     m_controlByte = MSB;
 
     if (channel != NULL)
@@ -73,29 +86,103 @@ QLCChannel& QLCChannel::operator=(const QLCChannel& channel)
     return *this;
 }
 
-/*************************************************************************
- * Properties
- *************************************************************************/
+/*****************************************************************************
+ * Groups
+ *****************************************************************************/
 
 QStringList QLCChannel::groupList()
 {
     QStringList list;
 
-    list.append(KQLCChannelGroupBeam);
-    list.append(KQLCChannelGroupColour);
-    list.append(KQLCChannelGroupEffect);
-    list.append(KQLCChannelGroupGobo);
-    list.append(KQLCChannelGroupIntensity);
-    list.append(KQLCChannelGroupMaintenance);
-    list.append(KQLCChannelGroupNothing);
-    list.append(KQLCChannelGroupPan);
-    list.append(KQLCChannelGroupPrism);
-    list.append(KQLCChannelGroupShutter);
-    list.append(KQLCChannelGroupSpeed);
-    list.append(KQLCChannelGroupTilt);
+    // Keep this list in alphabetical order because it's used only in UI
+    list.append(KXMLQLCChannelGroupBeam);
+    list.append(KXMLQLCChannelGroupColour);
+    list.append(KXMLQLCChannelGroupEffect);
+    list.append(KXMLQLCChannelGroupGobo);
+    list.append(KXMLQLCChannelGroupIntensity);
+    list.append(KXMLQLCChannelGroupMaintenance);
+    list.append(KXMLQLCChannelGroupNothing);
+    list.append(KXMLQLCChannelGroupPan);
+    list.append(KXMLQLCChannelGroupPrism);
+    list.append(KXMLQLCChannelGroupShutter);
+    list.append(KXMLQLCChannelGroupSpeed);
+    list.append(KXMLQLCChannelGroupTilt);
 
     return list;
 }
+
+QString QLCChannel::groupToString(Group grp)
+{
+    switch (grp)
+    {
+    case Intensity:
+        return KXMLQLCChannelGroupIntensity;
+    case Colour:
+        return KXMLQLCChannelGroupColour;
+    case Gobo:
+        return KXMLQLCChannelGroupGobo;
+    case Prism:
+        return KXMLQLCChannelGroupPrism;
+    case Shutter:
+        return KXMLQLCChannelGroupShutter;
+    case Beam:
+        return KXMLQLCChannelGroupBeam;
+    case Speed:
+        return KXMLQLCChannelGroupSpeed;
+    case Effect:
+        return KXMLQLCChannelGroupEffect;
+    case Pan:
+        return KXMLQLCChannelGroupPan;
+    case Tilt:
+        return KXMLQLCChannelGroupTilt;
+    case Maintenance:
+        return KXMLQLCChannelGroupMaintenance;
+    default:
+        return KXMLQLCChannelGroupNothing;
+    }
+}
+
+QLCChannel::Group QLCChannel::stringToGroup(const QString& str)
+{
+    if (str == KXMLQLCChannelGroupIntensity)
+        return Intensity;
+    else if (str == KXMLQLCChannelGroupColour)
+        return Colour;
+    else if (str == KXMLQLCChannelGroupGobo)
+        return Gobo;
+    else if (str == KXMLQLCChannelGroupPrism)
+        return Prism;
+    else if (str == KXMLQLCChannelGroupShutter)
+        return Shutter;
+    else if (str == KXMLQLCChannelGroupBeam)
+        return Beam;
+    else if (str == KXMLQLCChannelGroupSpeed)
+        return Speed;
+    else if (str == KXMLQLCChannelGroupEffect)
+        return Effect;
+    else if (str == KXMLQLCChannelGroupPan)
+        return Pan;
+    else if (str == KXMLQLCChannelGroupTilt)
+        return Tilt;
+    else if (str == KXMLQLCChannelGroupMaintenance)
+        return Maintenance;
+    else
+        return NoGroup;
+}
+
+void QLCChannel::setGroup(Group grp)
+{
+    m_group = grp;
+}
+
+QLCChannel::Group QLCChannel::group() const
+{
+    return m_group;
+}
+
+/*****************************************************************************
+ * Properties
+ *****************************************************************************/
 
 QString QLCChannel::name() const
 {
@@ -105,16 +192,6 @@ QString QLCChannel::name() const
 void QLCChannel::setName(const QString &name)
 {
     m_name = name;
-}
-
-QString QLCChannel::group() const
-{
-    return m_group;
-}
-
-void QLCChannel::setGroup(const QString& group)
-{
-    m_group = group;
 }
 
 void QLCChannel::setControlByte(ControlByte byte)
@@ -229,7 +306,7 @@ bool QLCChannel::saveXML(QDomDocument* doc, QDomElement* root) const
 
     /* Group */
     grptag = doc->createElement(KXMLQLCChannelGroup);
-    text = doc->createTextNode(m_group);
+    text = doc->createTextNode(groupToString(m_group));
     grptag.appendChild(text);
 
     /* Group control byte */
@@ -293,7 +370,7 @@ bool QLCChannel::loadXML(const QDomElement* root)
         {
             str = tag.attribute(KXMLQLCChannelGroupByte);
             setControlByte(ControlByte(str.toInt()));
-            setGroup(tag.text());
+            setGroup(stringToGroup(tag.text()));
         }
         else
         {

@@ -23,9 +23,10 @@
 #define INTENSITYGENERATOR_H
 
 #include <QList>
+
+#include "qlcchannel.h"
 #include "qlctypes.h"
 
-class QLCChannel;
 class Fixture;
 class Scene;
 class Doc;
@@ -124,12 +125,12 @@ public:
      * Find a list of fixture channels belonging to the given group.
      *
      * @param fixture The fixture to search the channels from
-     * @param group Channel group name to search for
+     * @param group Channel group to search for
      * @return A list of channels in the given fixture, belonging
      *         to the specified channel group
      */
     static QList <quint32> findChannels(const Fixture* fixture,
-                                          const QString& group);
+                                        QLCChannel::Group group);
 
 private:
     Doc* m_doc;

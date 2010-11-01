@@ -32,19 +32,6 @@
 #define KXMLQLCChannelGroup     QString("Group")
 #define KXMLQLCChannelGroupByte QString("Byte")
 
-#define KQLCChannelGroupIntensity   QString("Intensity")
-#define KQLCChannelGroupColour      QString("Colour")
-#define KQLCChannelGroupGobo        QString("Gobo")
-#define KQLCChannelGroupPrism       QString("Prism")
-#define KQLCChannelGroupShutter     QString("Shutter")
-#define KQLCChannelGroupBeam        QString("Beam")
-#define KQLCChannelGroupSpeed       QString("Speed")
-#define KQLCChannelGroupEffect      QString("Effect")
-#define KQLCChannelGroupPan         QString("Pan")
-#define KQLCChannelGroupTilt        QString("Tilt")
-#define KQLCChannelGroupMaintenance QString("Maintenance")
-#define KQLCChannelGroupNothing     QString("Nothing")
-
 class QFile;
 class QString;
 class QDomDocument;
@@ -84,6 +71,44 @@ public:
     QLCChannel& operator=(const QLCChannel& lc);
 
     /*********************************************************************
+     * Groups
+     *********************************************************************/
+public:
+    enum Group
+    {
+        Intensity = 0,
+        Colour,
+        Gobo,
+        Speed,
+        Pan,
+        Tilt,
+        Shutter,
+        Prism,
+        Beam,
+        Effect,
+        Maintenance,
+        NoGroup = INT_MAX
+    };
+
+    /** Get a list of possible channel groups */
+    static QStringList groupList();
+
+    /** Convert a Group to a string */
+    static QString groupToString(Group grp);
+
+    /** Convert a string to a Group */
+    static Group stringToGroup(const QString& str);
+
+    /** Set the channel's group with the Group enum */
+    void setGroup(Group grp);
+
+    /** Get the channel's group as an enum */
+    Group group() const;
+
+protected:
+    Group m_group;
+
+    /*********************************************************************
      * Properties
      *********************************************************************/
 public:
@@ -93,20 +118,11 @@ public:
         LSB = 1
     };
 
-    /** Get a list of possible channel groups */
-    static QStringList groupList();
-
     /** Get the channel's name */
     QString name() const;
 
     /** Set the channel's name */
     void setName(const QString& name);
-
-    /** Get the channel's group */
-    QString group() const;
-
-    /** Set the channel's group */
-    void setGroup(const QString& group);
 
     /** Set the channel's control byte */
     void setControlByte(ControlByte byte);
@@ -116,7 +132,6 @@ public:
 
 protected:
     QString m_name;
-    QString m_group;
     ControlByte m_controlByte;
 
     /*********************************************************************

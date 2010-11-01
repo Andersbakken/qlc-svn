@@ -93,10 +93,11 @@ void EditChannel::init()
     /* Select the channel's group */
     for (int i = 0; i < m_groupCombo->count(); i++)
     {
-        if (m_groupCombo->itemText(i) == m_channel->group())
+        if (m_groupCombo->itemText(i) ==
+            QLCChannel::groupToString(m_channel->group()))
         {
             m_groupCombo->setCurrentIndex(i);
-            slotGroupActivated(m_channel->group());
+            slotGroupActivated(QLCChannel::groupToString(m_channel->group()));
             break;
         }
     }
@@ -132,7 +133,7 @@ void EditChannel::slotNameChanged(const QString& name)
 
 void EditChannel::slotGroupActivated(const QString& group)
 {
-    m_channel->setGroup(group);
+    m_channel->setGroup(QLCChannel::stringToGroup(group));
 
     if (m_channel->controlByte() == 0)
         m_msbRadio->click();

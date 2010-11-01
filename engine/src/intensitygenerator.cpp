@@ -267,8 +267,7 @@ void IntensityGenerator::createScenes()
 
         // Find such channels from the fixture that belong to the
         // given channel group.
-        QList <quint32> channels =
-            findChannels(fxi, KQLCChannelGroupIntensity);
+        QList <quint32> channels = findChannels(fxi, QLCChannel::Intensity);
 
         // Insert values to member scenes for each found channel
         for (int j = 0; j < channels.size(); j++)
@@ -388,7 +387,7 @@ bool IntensityGenerator::findMinMax(const QLCChannel* channel, uchar* min,
 }
 
 QList <quint32> IntensityGenerator::findChannels(const Fixture* fixture,
-        const QString& group)
+                                                 QLCChannel::Group group)
 {
     QList <quint32> channels;
 

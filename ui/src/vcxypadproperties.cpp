@@ -179,14 +179,14 @@ void VCXYPadProperties::slotAddClicked()
             continue;
 
         // If a channel with pan group exists, don't disable this fixture
-        if (fixture->channel("", Qt::CaseSensitive, KQLCChannelGroupPan)
+        if (fixture->channel("", Qt::CaseSensitive, QLCChannel::Pan)
                 != Fixture::invalidChannel())
         {
             continue;
         }
 
         // If a channel with tilt group exists, don't disable this fixture
-        if (fixture->channel("", Qt::CaseSensitive, KQLCChannelGroupTilt)
+        if (fixture->channel("", Qt::CaseSensitive, QLCChannel::Tilt)
                 != Fixture::invalidChannel())
         {
             continue;

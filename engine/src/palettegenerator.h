@@ -26,6 +26,8 @@
 #include <QList>
 #include <QHash>
 
+#include "qlcchannel.h"
+
 class Fixture;
 class Scene;
 class Doc;
@@ -70,14 +72,14 @@ protected:
      * colour channels to Cyan value.
      *
      * @param fxi The fixture instance to create functions for
-     * @param group
+     * @param group The channel group to create scenes for
      */
-    void createGroupScenes(const Fixture* fxi, const QString& group);
+    void createGroupScenes(const Fixture* fxi, QLCChannel::Group group);
 
     /** Find fixture channels that belong to a certain group and have more
         than one capability (i.e. there's something make a palette from) */
     QList <quint32> findChannels(const Fixture* fixture,
-                                   const QString& group) const;
+                                 QLCChannel::Group group) const;
 
     /** Add generated scenes to Doc */
     void addScenesToDoc();

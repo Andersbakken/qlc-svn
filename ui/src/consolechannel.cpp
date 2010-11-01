@@ -186,11 +186,15 @@ void ConsoleChannel::initMenu()
     m_presetButton->setMenu(m_menu);
     m_presetButton->setPopupMode(QToolButton::InstantPopup);
 
-    if (ch->group() == KQLCChannelGroupPan)
+    switch(ch->group())
+    {
+    case QLCChannel::Pan:
         m_presetButton->setIcon(QIcon(":/pan.png"));
-    else if (ch->group() == KQLCChannelGroupTilt)
+        break;
+    case QLCChannel::Tilt:
         m_presetButton->setIcon(QIcon(":/tilt.png"));
-    else if (ch->group() == KQLCChannelGroupColour)
+        break;
+    case QLCChannel::Colour:
     {
         if (ch->name().contains("red", Qt::CaseInsensitive) == true)
         {
@@ -230,23 +234,36 @@ void ConsoleChannel::initMenu()
         }
 
         m_presetButton->setIcon(QIcon(":/color.png"));
+        break;
     }
-    else if (ch->group() == KQLCChannelGroupEffect)
+    case QLCChannel::Effect:
         m_presetButton->setIcon(QIcon(":/efx.png"));
-    else if (ch->group() == KQLCChannelGroupGobo)
+        break;
+    case QLCChannel::Gobo:
         m_presetButton->setIcon(QIcon(":/gobo.png"));
-    else if (ch->group() == KQLCChannelGroupShutter)
+        break;
+    case QLCChannel::Shutter:
         m_presetButton->setIcon(QIcon(":/shutter.png"));
-    else if (ch->group() == KQLCChannelGroupSpeed)
+        break;
+    case QLCChannel::Speed:
         m_presetButton->setIcon(QIcon(":/speed.png"));
-    else if (ch->group() == KQLCChannelGroupPrism)
+        break;
+    case QLCChannel::Prism:
         m_presetButton->setIcon(QIcon(":/prism.png"));
-    else if (ch->group() == KQLCChannelGroupMaintenance)
+        break;
+    case QLCChannel::Maintenance:
         m_presetButton->setIcon(QIcon(":/maintenance.png"));
-    else if (ch->group() == KQLCChannelGroupIntensity)
+        break;
+    case QLCChannel::Intensity:
         m_presetButton->setIcon(QIcon(":/intensity.png"));
-    else if (ch->group() == KQLCChannelGroupBeam)
+        break;
+    case QLCChannel::Beam:
         m_presetButton->setIcon(QIcon(":/beam.png"));
+        break;
+    default:
+        m_presetButton->setText("?");
+        break;
+    }
 
     action = m_menu->addAction(m_presetButton->icon(), ch->name());
     m_menu->setTitle(ch->name());
@@ -283,7 +300,7 @@ void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
             valueMenu->setTitle(s);
 
             /* Add a color icon */
-            if (ch->group() == KQLCChannelGroupColour)
+            if (ch->group() == QLCChannel::Colour)
                 valueMenu->setIcon(colorIcon(cap->name()));
 
             for (int i = cap->min(); i <= cap->max(); i++)
@@ -302,7 +319,7 @@ void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
             action->setData(cap->min());
 
             /* Add a color icon */
-            if (ch->group() == KQLCChannelGroupColour)
+            if (ch->group() == QLCChannel::Colour)
                 action->setIcon(colorIcon(cap->name()));
         }
     }

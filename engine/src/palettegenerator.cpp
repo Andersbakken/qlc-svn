@@ -51,7 +51,7 @@ void PaletteGenerator::createColours()
         Fixture* fxi(fxiit.next());
         Q_ASSERT(fxi != NULL);
 
-        createGroupScenes(fxi, KQLCChannelGroupColour);
+        createGroupScenes(fxi, QLCChannel::Colour);
     }
 
     addScenesToDoc();
@@ -68,7 +68,7 @@ void PaletteGenerator::createGobos()
         Fixture* fxi(fxiit.next());
         Q_ASSERT(fxi != NULL);
 
-        createGroupScenes(fxi, KQLCChannelGroupGobo);
+        createGroupScenes(fxi, QLCChannel::Gobo);
     }
 
     addScenesToDoc();
@@ -85,13 +85,14 @@ void PaletteGenerator::createShutters()
         Fixture* fxi(fxiit.next());
         Q_ASSERT(fxi != NULL);
 
-        createGroupScenes(fxi, KQLCChannelGroupShutter);
+        createGroupScenes(fxi, QLCChannel::Shutter);
     }
 
     addScenesToDoc();
 }
 
-void PaletteGenerator::createGroupScenes(const Fixture* fxi, const QString& group)
+void PaletteGenerator::createGroupScenes(const Fixture* fxi,
+                                         QLCChannel::Group group)
 {
     Q_ASSERT(fxi != NULL);
     Q_ASSERT(group.isEmpty() == false);
@@ -114,15 +115,17 @@ void PaletteGenerator::createGroupScenes(const Fixture* fxi, const QString& grou
             {
                 // There's more than one channel (e.g. two gobo
                 // gobo wheels, several distinct color wheels)
-                name = QString("%1 (%2) - %3").arg(group)
-                       .arg(i + 1).arg(cap->name());
+                name = QString("%1 (%2) - %3")
+                               .arg(QLCChannel::groupToString(group))
+                               .arg(i + 1).arg(cap->name());
             }
             else
             {
                 // There's only one channel of the group
                 // in the fixture (e.g. one gobo wheel)
-                name = QString("%1 - %2").arg(group)
-                       .arg(cap->name());
+                name = QString("%1 - %2")
+                               .arg(QLCChannel::groupToString(group))
+                               .arg(cap->name());
             }
 
             Scene* scene = NULL;
@@ -145,7 +148,7 @@ void PaletteGenerator::createGroupScenes(const Fixture* fxi, const QString& grou
 }
 
 QList <quint32> PaletteGenerator::findChannels(const Fixture* fixture,
-        const QString& group) const
+                                               QLCChannel::Group group) const
 {
     QList <quint32> channels;
 

@@ -343,12 +343,12 @@ void SceneEditor::slotColorTool()
     fxi = _app->doc()->fixture(fc->fixture());
     Q_ASSERT(fxi != NULL);
 
-    cyan = fxi->channel("cyan", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    magenta = fxi->channel("magenta", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    yellow = fxi->channel("yellow", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    red = fxi->channel("red", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    green = fxi->channel("green", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    blue = fxi->channel("blue", Qt::CaseInsensitive, KQLCChannelGroupColour);
+    cyan = fxi->channel("cyan", Qt::CaseInsensitive, QLCChannel::Colour);
+    magenta = fxi->channel("magenta", Qt::CaseInsensitive, QLCChannel::Colour);
+    yellow = fxi->channel("yellow", Qt::CaseInsensitive, QLCChannel::Colour);
+    red = fxi->channel("red", Qt::CaseInsensitive, QLCChannel::Colour);
+    green = fxi->channel("green", Qt::CaseInsensitive, QLCChannel::Colour);
+    blue = fxi->channel("blue", Qt::CaseInsensitive, QLCChannel::Colour);
 
     if (cyan != KChannelInvalid && magenta != KChannelInvalid &&
             yellow != KChannelInvalid)
@@ -406,12 +406,12 @@ bool SceneEditor::isColorToolAvailable()
     fxi = _app->doc()->fixture(fc->fixture());
     Q_ASSERT(fxi != NULL);
 
-    cyan = fxi->channel("cyan", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    magenta = fxi->channel("magenta", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    yellow = fxi->channel("yellow", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    red = fxi->channel("red", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    green = fxi->channel("green", Qt::CaseInsensitive, KQLCChannelGroupColour);
-    blue = fxi->channel("blue", Qt::CaseInsensitive, KQLCChannelGroupColour);
+    cyan = fxi->channel("cyan", Qt::CaseInsensitive, QLCChannel::Colour);
+    magenta = fxi->channel("magenta", Qt::CaseInsensitive, QLCChannel::Colour);
+    yellow = fxi->channel("yellow", Qt::CaseInsensitive, QLCChannel::Colour);
+    red = fxi->channel("red", Qt::CaseInsensitive, QLCChannel::Colour);
+    green = fxi->channel("green", Qt::CaseInsensitive, QLCChannel::Colour);
+    blue = fxi->channel("blue", Qt::CaseInsensitive, QLCChannel::Colour);
 
     if (cyan != KChannelInvalid && magenta != KChannelInvalid &&
             yellow != KChannelInvalid)

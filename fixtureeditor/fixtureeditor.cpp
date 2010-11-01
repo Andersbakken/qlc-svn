@@ -587,7 +587,7 @@ void QLCFixtureEditor::updateChannelItem(const QLCChannel* channel,
     Q_ASSERT(item != NULL);
 
     item->setText(KChannelsColumnName, channel->name());
-    item->setText(KChannelsColumnGroup, channel->group());
+    item->setText(KChannelsColumnGroup, QLCChannel::groupToString(channel->group()));
 
     /* Store the channel pointer to the listview as a string */
     str.sprintf("%lu", (unsigned long) channel);
@@ -667,7 +667,7 @@ void QLCFixtureEditor::slotChannelListContextMenuRequested()
 
         ch = currentChannel();
         if (ch != NULL)
-            ch->setGroup(selectedAction->text());
+            ch->setGroup(QLCChannel::stringToGroup(selectedAction->text()));
         node = m_channelList->currentItem();
         if (node != NULL)
             node->setText(KChannelsColumnGroup,

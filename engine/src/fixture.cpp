@@ -205,7 +205,7 @@ quint32 Fixture::channelAddress(quint32 channel) const
 }
 
 quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
-                           const QString& group) const
+                         QLCChannel::Group group) const
 {
     if (m_fixtureDef == NULL && m_fixtureMode == NULL)
     {
@@ -221,12 +221,10 @@ quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
         /* Search for the channel name (and group) from our list */
         for (quint32 i = 0; i < quint32(m_fixtureMode->channels().size()); i++)
         {
-            const QLCChannel* ch;
-
-            ch = m_fixtureMode->channel(i);
+            const QLCChannel* ch = m_fixtureMode->channel(i);
             Q_ASSERT(ch != NULL);
 
-            if (group != QString::null && ch->group() != group)
+            if (group != QLCChannel::NoGroup && ch->group() != group)
             {
                 /* Given group name doesn't match */
                 continue;
@@ -254,10 +252,10 @@ void Fixture::createGenericChannel()
     {
         m_genericChannel = new QLCChannel();
         Q_ASSERT(m_genericChannel != NULL);
-        m_genericChannel->setGroup(KQLCChannelGroupIntensity);
-        m_genericChannel->setName(KQLCChannelGroupIntensity);
-        m_genericChannel->addCapability(new QLCCapability(0, UCHAR_MAX,
-                                        KQLCChannelGroupIntensity));
+        m_genericChannel->setGroup(QLCChannel::Intensity);
+        m_genericChannel->setName(tr("Intensity"));
+        m_genericChannel->addCapability(
+                            new QLCCapability(0, UCHAR_MAX, tr("Intensity")));
     }
 }
 

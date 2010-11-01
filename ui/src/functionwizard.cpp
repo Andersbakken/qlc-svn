@@ -108,29 +108,17 @@ void FunctionWizard::addFixture(t_fixture_id fxi_id)
     item->setData(KColumnID, Qt::UserRole, fxi_id);
 
     QStringList caps;
-    if (IntensityGenerator::findChannels(fxi,
-                                         KQLCChannelGroupColour).isEmpty() == false)
-    {
-        caps << KQLCChannelGroupColour;
-    }
+    if (!IntensityGenerator::findChannels(fxi, QLCChannel::Colour).isEmpty())
+        caps << QLCChannel::groupToString(QLCChannel::Colour);
 
-    if (IntensityGenerator::findChannels(fxi,
-                                         KQLCChannelGroupGobo).isEmpty() == false)
-    {
-        caps << KQLCChannelGroupGobo;
-    }
+    if (!IntensityGenerator::findChannels(fxi, QLCChannel::Gobo).isEmpty())
+        caps << QLCChannel::groupToString(QLCChannel::Gobo);
 
-    if (IntensityGenerator::findChannels(fxi,
-                                         KQLCChannelGroupShutter).isEmpty() == false)
-    {
-        caps << KQLCChannelGroupShutter;
-    }
+    if (!IntensityGenerator::findChannels(fxi, QLCChannel::Shutter).isEmpty())
+        caps << QLCChannel::groupToString(QLCChannel::Shutter);
 
-    if (IntensityGenerator::findChannels(fxi,
-                                         KQLCChannelGroupIntensity).isEmpty() == false)
-    {
-        caps << KQLCChannelGroupIntensity;
-    }
+    if (!IntensityGenerator::findChannels(fxi, QLCChannel::Intensity).isEmpty())
+        caps << QLCChannel::groupToString(QLCChannel::Intensity);
 
     item->setText(KColumnCaps, caps.join(", "));
 }

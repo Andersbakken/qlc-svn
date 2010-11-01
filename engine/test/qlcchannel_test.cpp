@@ -31,18 +31,19 @@ void QLCChannel_Test::groupList()
 {
     QStringList list(QLCChannel::groupList());
 
-    QVERIFY(list.contains(KQLCChannelGroupBeam));
-    QVERIFY(list.contains(KQLCChannelGroupColour));
-    QVERIFY(list.contains(KQLCChannelGroupEffect));
-    QVERIFY(list.contains(KQLCChannelGroupGobo));
-    QVERIFY(list.contains(KQLCChannelGroupIntensity));
-    QVERIFY(list.contains(KQLCChannelGroupMaintenance));
-    QVERIFY(list.contains(KQLCChannelGroupNothing));
-    QVERIFY(list.contains(KQLCChannelGroupPan));
-    QVERIFY(list.contains(KQLCChannelGroupPrism));
-    QVERIFY(list.contains(KQLCChannelGroupShutter));
-    QVERIFY(list.contains(KQLCChannelGroupSpeed));
-    QVERIFY(list.contains(KQLCChannelGroupTilt));
+    QVERIFY(list.size() == 12);
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Beam)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Colour)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Effect)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Gobo)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Intensity)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Maintenance)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::NoGroup)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Pan)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Prism)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Shutter)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Speed)));
+    QVERIFY(list.contains(QLCChannel::groupToString(QLCChannel::Tilt)));
 }
 
 void QLCChannel_Test::name()
@@ -60,10 +61,13 @@ void QLCChannel_Test::name()
 void QLCChannel_Test::group()
 {
     QLCChannel* channel = new QLCChannel();
-    QVERIFY(channel->group() == KQLCChannelGroupIntensity);
+    QVERIFY(channel->group() == QLCChannel::Intensity);
 
-    channel->setGroup("TestGroup");
-    QVERIFY(channel->group() == "TestGroup");
+    channel->setGroup(QLCChannel::Beam);
+    QVERIFY(channel->group() == QLCChannel::Beam);
+
+    channel->setGroup(QLCChannel::Group(31337));
+    QVERIFY(channel->group() == QLCChannel::Group(31337));
 
     delete channel;
 }
@@ -290,7 +294,7 @@ void QLCChannel_Test::copy()
     QVERIFY(channel->capabilities().size() == 0);
 
     channel->setName("Foobar");
-    channel->setGroup("Tilt");
+    channel->setGroup(QLCChannel::Tilt);
     channel->setControlByte(QLCChannel::ControlByte(3));
 
     QLCCapability* cap1 = new QLCCapability(10, 19, "10-19");
@@ -321,7 +325,7 @@ void QLCChannel_Test::copy()
     QLCChannel* copy = new QLCChannel(channel);
 
     QVERIFY(copy->name() == "Foobar");
-    QVERIFY(copy->group() == "Tilt");
+    QVERIFY(copy->group() == QLCChannel::Tilt);
     QVERIFY(copy->controlByte() == QLCChannel::ControlByte(3));
 
     /* Verify that the capabilities in the copied channel are also
@@ -425,7 +429,7 @@ void QLCChannel_Test::load()
     QLCChannel ch;
     QVERIFY(ch.loadXML(&root) == true);
     QVERIFY(ch.name() == "Channel1");
-    QVERIFY(ch.group() == "Tilt");
+    QVERIFY(ch.group() == QLCChannel::Tilt);
     QVERIFY(ch.controlByte() == QLCChannel::LSB);
     QVERIFY(ch.capabilities().size() == 2);
     QVERIFY(ch.capabilities()[0]->name() == "Cap1");
@@ -471,7 +475,7 @@ void QLCChannel_Test::loadWrongRoot()
     QLCChannel ch;
     QVERIFY(ch.loadXML(&root) == false);
     QVERIFY(ch.name() == QString::null);
-    QVERIFY(ch.group() == KQLCChannelGroupIntensity);
+    QVERIFY(ch.group() == QLCChannel::Intensity);
     QVERIFY(ch.controlByte() == QLCChannel::MSB);
     QVERIFY(ch.capabilities().size() == 0);
 }
@@ -481,7 +485,7 @@ void QLCChannel_Test::save()
     QLCChannel* channel = new QLCChannel();
 
     channel->setName("Foobar");
-    channel->setGroup("Tilt");
+    channel->setGroup(QLCChannel::Shutter);
     channel->setControlByte(QLCChannel::LSB);
 
     QLCCapability* cap1 = new QLCCapability(0, 9, "One");
@@ -514,7 +518,7 @@ void QLCChannel_Test::save()
         {
             group = true;
             QVERIFY(e.attribute("Byte") == "1");
-            QVERIFY(e.text() == "Tilt");
+            QVERIFY(e.text() == "Shutter");
         }
         else if (e.tagName() == "Capability")
         {

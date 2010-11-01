@@ -24,6 +24,8 @@
 
 #include <QObject>
 #include <QList>
+
+#include "qlcchannel.h"
 #include "qlctypes.h"
 
 #define KXMLFixture "Fixture"
@@ -43,7 +45,6 @@ class QLCFixtureDefCache;
 class QLCFixtureMode;
 class FixtureConsole;
 class QLCFixtureDef;
-class QLCChannel;
 class Doc;
 
 class Fixture : public QObject
@@ -233,8 +234,8 @@ public:
      * @param group Group name of the channel
      */
     quint32 channel(const QString& name,
-                      Qt::CaseSensitivity cs = Qt::CaseSensitive,
-                      const QString& group = QString::null) const;
+                    Qt::CaseSensitivity cs = Qt::CaseSensitive,
+                    QLCChannel::Group group = QLCChannel::NoGroup) const;
 
     /**
      * The invalid channel number (for comparison etc...)

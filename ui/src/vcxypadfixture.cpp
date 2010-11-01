@@ -206,14 +206,14 @@ void VCXYPadFixture::arm()
             ch = mode->channel(i);
             Q_ASSERT(ch != NULL);
 
-            if (ch->group() == KQLCChannelGroupPan)
+            if (ch->group() == QLCChannel::Pan)
             {
                 if (ch->controlByte() == QLCChannel::MSB)
                     m_xMSB = fxi->universeAddress() + i;
                 else if (ch->controlByte() == QLCChannel::LSB)
                     m_xLSB = fxi->universeAddress() + i;
             }
-            else if (ch->group() == KQLCChannelGroupTilt)
+            else if (ch->group() == QLCChannel::Tilt)
             {
                 if (ch->controlByte() == QLCChannel::MSB)
                     m_yMSB = fxi->universeAddress() + i;
