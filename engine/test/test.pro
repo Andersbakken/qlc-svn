@@ -38,14 +38,17 @@ HEADERS += bus_test.h \
            collection_test.h \
            efx_test.h \
            efxfixture_test.h \
+           universearray_test.h \
            outputpatch_test.h \
            inputpatch_test.h \
            outputmap_test.h \
            inputmap_test.h \
            mastertimer_test.h \
            doc_test.h \
-           dummyoutplugin_test.h \
-           ../../plugins/interfaces/qlcoutplugin.h
+           dummyoutplugin_test.h
+
+# Interfaces
+HEADERS += ../../plugins/interfaces/qlcoutplugin.h
 
 # Stubs
 HEADERS += mastertimer_stub.h \
@@ -77,6 +80,7 @@ SOURCES += bus_test.cpp \
       collection_test.cpp \
       efx_test.cpp \
       efxfixture_test.cpp \
+      universearray_test.cpp \
       outputpatch_test.cpp \
       inputpatch_test.cpp \
       outputmap_test.cpp \

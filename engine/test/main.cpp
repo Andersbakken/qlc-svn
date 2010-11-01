@@ -36,6 +36,7 @@
 
 // Engine
 #include "dummyoutplugin_test.h"
+#include "universearray_test.h"
 #include "scenechannel_test.h"
 #include "mastertimer_test.h"
 #include "outputpatch_test.h"
@@ -117,6 +118,11 @@ int main(int argc, char** argv)
     /********************************************************************
      * Engine
      ********************************************************************/
+
+    UniverseArray_Test universearray;
+    r = QTest::qExec(&universearray, argc, argv);
+    if (r != 0)
+        return r;
 
     OutputPatch_Test outputpatch;
     r = QTest::qExec(&outputpatch, argc, argv);
