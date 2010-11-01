@@ -254,7 +254,7 @@ void VirtualConsole::initActions()
                                    tr("Frame"), this);
     connect(m_addFrameAction, SIGNAL(triggered(bool)),
             this, SLOT(slotAddFrame()));
-        
+
     m_addSoloFrameAction = new QAction(QIcon(":/soloframe.png"),
                        tr("Solo frame"), this);
     connect(m_addSoloFrameAction, SIGNAL(triggered(bool)),
@@ -449,8 +449,12 @@ void VirtualConsole::initMenuBar()
     layout()->setMenuBar(widget);
 
     /* Menubar */
+#ifndef __APPLE__
     menuBar = new QMenuBar(widget);
     vbox->addWidget(menuBar);
+#else
+    menuBar = new QMenuBar(this);
+#endif
 
     /* Add menu */
     m_addMenu = new QMenu(menuBar);
@@ -544,7 +548,7 @@ void VirtualConsole::initMenuBar()
     toolBar->addAction(m_addXYPadAction);
     toolBar->addAction(m_addCueListAction);
     toolBar->addAction(m_addFrameAction);
-    toolBar->addAction(m_addSoloFrameAction);    
+    toolBar->addAction(m_addSoloFrameAction);
     toolBar->addAction(m_addLabelAction);
     toolBar->addSeparator();
     toolBar->addAction(m_editCutAction);
