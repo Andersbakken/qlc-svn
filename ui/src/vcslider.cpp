@@ -38,11 +38,12 @@
 #include "virtualconsole.h"
 #include "mastertimer.h"
 #include "vcslider.h"
-#include "inputmap.h"
-#include "inputpatch.h"
-#include "qlcinputchannel.h"
 #include "app.h"
 #include "doc.h"
+#include "inputmap.h"
+#include "inputpatch.h"
+#include "universearray.h"
+#include "qlcinputchannel.h"
 
 #include "qlcfile.h"
 
@@ -530,7 +531,7 @@ uchar VCSlider::levelValue() const
  * DMXSource
  *********************************************************************/
 
-void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
+void VCSlider::writeDMX(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
 
@@ -556,8 +557,12 @@ void VCSlider::writeDMX(MasterTimer* timer, QByteArray* universes)
         Fixture* fxi = _app->doc()->fixture(lch.fixture);
         if (fxi != NULL)
         {
+            const QLCChannel* qlcch = fxi->channel(lch.channel);
+            if (qlcch == NULL)
+                continue; //! @todo Remove fixtures properly from VCSlider!
+
             quint32 dmx_ch = fxi->channelAddress(lch.channel);
-            (*universes)[dmx_ch] = m_lastWrittenLevelValue;
+            universes->write(dmx_ch, m_lastWrittenLevelValue, qlcch->group());
         }
     }
 }

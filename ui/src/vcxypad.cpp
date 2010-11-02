@@ -157,7 +157,7 @@ void VCXYPad::setCurrentXYPosition(const QPoint& point)
     update();
 }
 
-void VCXYPad::writeDMX(MasterTimer* timer, QByteArray* universes)
+void VCXYPad::writeDMX(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
 
@@ -175,7 +175,7 @@ void VCXYPad::writeDMX(MasterTimer* timer, QByteArray* universes)
         /* Write values outside mutex lock to keep UI snappy */
         m_currentXYPositionMutex.unlock();
         foreach (VCXYPadFixture fixture, m_fixtures)
-        fixture.writeDMX(x, y, universes);
+            fixture.writeDMX(x, y, universes);
     }
     else
     {

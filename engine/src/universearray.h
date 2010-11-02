@@ -27,12 +27,17 @@
 
 #include "qlcchannel.h"
 
-class UniverseArray : public QByteArray
+class UniverseArray
 {
 public:
     /** Construct a new UniverseArray of given size */
     UniverseArray(int size);
+
+    /** Destructor */
     virtual ~UniverseArray();
+
+    /** Get the size of the UniverseArray */
+    int size() const;
 
     /************************************************************************
      * Grand Master
@@ -103,21 +108,32 @@ public:
     double grandMasterFraction() const;
 
     /**
-     * Un-apply Grand Master to a channel. Basically just removes the channel
+     * Un-apply Grand Master to all channels. Basically just removes everything
      * from a cache of Intensity-enabled channels. Useful when a fixture is
      * replaced by another (whose intensity channels might be elsewhere than
      * with the previous one).
-     *
-     * @param channel The DMX channel to reset
      */
-    void gmResetChannel(int channel);
+    void gmReset();
 
     /**
      * Get the current post-Grand-Master values (to be written to output HW)
+     * Don't write to the returned array to prevent copying. Not that it would
+     * do anything to UniverseArray's internal values, but it would be just
+     * pointless waste of CPU time.
      *
      * @return The current values
      */
-    QByteArray postGMValues() const;
+    const QByteArray postGMValues() const;
+
+    /**
+     * Get the current pre-Grand-Master values (used by functions and everyone
+     * else INSIDE QLC). Don't write to the returned array to prevent copying.
+     * Not that it would do anything to UniverseArray's internal values, but it
+     * would be just pointless waste of CPU time.
+     *
+     * @return The current values
+     */
+    const QByteArray preGMValues() const;
 
 protected:
     /**
@@ -137,6 +153,7 @@ protected:
     double m_gmFraction;
     QSet <int> m_gmChannels;
     QByteArray* m_postGMValues;
+    QByteArray* m_preGMValues;
 
     /************************************************************************
      * Writing

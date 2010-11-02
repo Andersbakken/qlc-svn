@@ -19,7 +19,6 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QByteArray>
 #include <QVector>
 #include <QDebug>
 #include <QList>
@@ -32,6 +31,7 @@
 #include "qlcchannel.h"
 #include "qlcfile.h"
 
+#include "universearray.h"
 #include "mastertimer.h"
 #include "fixture.h"
 #include "scene.h"
@@ -1098,7 +1098,7 @@ void EFX::preRun(MasterTimer* timer)
     Function::preRun(timer);
 }
 
-void EFX::postRun(MasterTimer* timer, QByteArray* universes)
+void EFX::postRun(MasterTimer* timer, UniverseArray* universes)
 {
     /* Reset all fixtures */
     QListIterator <EFXFixture*> it(m_fixtures);
@@ -1115,7 +1115,7 @@ void EFX::postRun(MasterTimer* timer, QByteArray* universes)
     Function::postRun(timer, universes);
 }
 
-void EFX::write(MasterTimer* timer, QByteArray* universes)
+void EFX::write(MasterTimer* timer, UniverseArray* universes)
 {
     int ready = 0;
 

@@ -45,8 +45,8 @@ public:
     void disarm();
 
     void preRun(MasterTimer* timer);
-    void write(MasterTimer* timer, QByteArray* universes);
-    void postRun(MasterTimer* timer, QByteArray* universes);
+    void write(MasterTimer* timer, UniverseArray* universes);
+    void postRun(MasterTimer* timer, UniverseArray* universes);
 
 public slots:
     void slotFixtureRemoved(t_fixture_id id);

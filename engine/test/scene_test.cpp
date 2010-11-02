@@ -24,6 +24,8 @@
 
 #include "mastertimer_stub.h"
 #include "scene_test.h"
+
+#include "universearray.h"
 #include "function.h"
 #include "fixture.h"
 #include "chaser.h"
@@ -502,7 +504,7 @@ void Scene_Test::flashUnflash()
 
     s1->arm();
 
-    QByteArray uni(4 * 512, 0);
+    UniverseArray uni(4 * 512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
     QVERIFY(mts->m_dmxSourceList.size() == 0);
 
@@ -512,9 +514,9 @@ void Scene_Test::flashUnflash()
     QVERIFY(s1->flashing() == true);
 
     s1->writeDMX(mts, &uni);
-    QVERIFY(uni[0] == char(123));
-    QVERIFY(uni[1] == char(45));
-    QVERIFY(uni[2] == char(67));
+    QVERIFY(uni.preGMValues()[0] == char(123));
+    QVERIFY(uni.preGMValues()[1] == char(45));
+    QVERIFY(uni.preGMValues()[2] == char(67));
 
     s1->flash(mts);
     QVERIFY(mts->m_dmxSourceList.size() == 1);
@@ -522,9 +524,9 @@ void Scene_Test::flashUnflash()
     QVERIFY(s1->flashing() == true);
 
     s1->writeDMX(mts, &uni);
-    QVERIFY(uni[0] == char(123));
-    QVERIFY(uni[1] == char(45));
-    QVERIFY(uni[2] == char(67));
+    QVERIFY(uni.preGMValues()[0] == char(123));
+    QVERIFY(uni.preGMValues()[1] == char(45));
+    QVERIFY(uni.preGMValues()[2] == char(67));
 
     s1->unFlash(mts);
     QVERIFY(mts->m_dmxSourceList.size() == 1);
@@ -533,9 +535,9 @@ void Scene_Test::flashUnflash()
 
     s1->writeDMX(mts, &uni);
     QVERIFY(mts->m_dmxSourceList.size() == 0);
-    QVERIFY(uni[0] == char(0));
-    QVERIFY(uni[1] == char(0));
-    QVERIFY(uni[2] == char(0));
+    QVERIFY(uni.preGMValues()[0] == char(0));
+    QVERIFY(uni.preGMValues()[1] == char(0));
+    QVERIFY(uni.preGMValues()[2] == char(0));
 
     s1->disarm();
 
@@ -564,21 +566,21 @@ void Scene_Test::writeBusZero()
 
     s1->arm();
 
-    QByteArray uni(4 * 512, 0);
+    UniverseArray uni(4 * 512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     mts->startFunction(s1, false);
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     mts->stopFunction(s1);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->disarm();
 
@@ -608,34 +610,34 @@ void Scene_Test::writeBusOne()
 
     s1->arm();
 
-    QByteArray uni(4 * 512, 0);
+    UniverseArray uni(4 * 512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
     mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
-    QVERIFY(uni[0] == (char) 0);
-    QVERIFY(uni[1] == (char) 0);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 0);
+    QVERIFY(uni.preGMValues()[1] == (char) 0);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
-    QVERIFY(uni[0] == (char) 127);
-    QVERIFY(uni[1] == (char) 63);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 127);
+    QVERIFY(uni.preGMValues()[1] == (char) 63);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     mts->stopFunction(s1);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->disarm();
 
@@ -665,42 +667,42 @@ void Scene_Test::writeBusTwo()
 
     s1->arm();
 
-    QByteArray uni(4 * 512, 0);
+    UniverseArray uni(4 * 512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
     mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
-    QVERIFY(uni[0] == (char) 0);
-    QVERIFY(uni[1] == (char) 0);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 0);
+    QVERIFY(uni.preGMValues()[1] == (char) 0);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
     // Result is 84 on AMD64, 85 on IA32
-    QVERIFY(uni[0] == (char) 84 || uni[0] == (char) 85);
-    QVERIFY(uni[1] == (char) 42);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 84 || uni.preGMValues()[0] == (char) 85);
+    QVERIFY(uni.preGMValues()[1] == (char) 42);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
     // Result is 169 on AMD64, 170 on IA32
-    QVERIFY(uni[0] == (char) 169 || uni[0] == (char) 170);
-    QVERIFY(uni[1] == (char) 84);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 169 || uni.preGMValues()[0] == (char) 170);
+    QVERIFY(uni.preGMValues()[1] == (char) 84);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     mts->stopFunction(s1);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->disarm();
 
@@ -731,43 +733,43 @@ void Scene_Test::writeBusFiveChangeToZeroInTheMiddle()
 
     s1->arm();
 
-    QByteArray uni(4 * 512, 0);
+    UniverseArray uni(4 * 512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
     mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
-    QVERIFY(uni[0] == (char) 0);
-    QVERIFY(uni[1] == (char) 0);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 0);
+    QVERIFY(uni.preGMValues()[1] == (char) 0);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
-    QVERIFY(uni[0] == (char) 42);
-    QVERIFY(uni[1] == (char) 21);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 42);
+    QVERIFY(uni.preGMValues()[1] == (char) 21);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
     // Result is 84 on AMD64, 85 on IA32
-    QVERIFY(uni[0] == (char) 84 || uni[0] == (char) 85);
-    QVERIFY(uni[1] == (char) 42);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) 84 || uni.preGMValues()[0] == (char) 85);
+    QVERIFY(uni.preGMValues()[1] == (char) 42);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     Bus::instance()->setValue(Bus::defaultFade(), 0);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     mts->stopFunction(s1);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->disarm();
 
@@ -797,42 +799,42 @@ void Scene_Test::writeNonZeroStartingValues()
 
     s1->arm();
 
-    QByteArray uni(4 * 512, 0);
+    UniverseArray uni(4 * 512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(s1->stopped() == true);
     mts->startFunction(s1, false);
     QVERIFY(s1->stopped() == false);
 
-    uni[0] = (char) 100;
-    uni[1] = (char) UCHAR_MAX;
-    uni[2] = (char) 3;
+    uni.write(0, 100, QLCChannel::Intensity);
+    uni.write(1, UCHAR_MAX, QLCChannel::Intensity);
+    uni.write(2, 3, QLCChannel::Intensity);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
-    QVERIFY(uni[0] == (char) 151);
-    QVERIFY(uni[1] == (char) 213);
+    QVERIFY(uni.preGMValues()[0] == (char) 151);
+    QVERIFY(uni.preGMValues()[1] == (char) 213);
     // Result is 3 on AMD64, 2 on IA32
-    QVERIFY(uni[2] == (char) 3 || uni[2] == (char) 2);
+    QVERIFY(uni.preGMValues()[2] == (char) 3 || uni.preGMValues()[2] == (char) 2);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == false);
-    QVERIFY(uni[0] == (char) 203);
-    QVERIFY(uni[1] == (char) 170);
+    QVERIFY(uni.preGMValues()[0] == (char) 203);
+    QVERIFY(uni.preGMValues()[1] == (char) 170);
     // Result is 2 on AMD64, 1 in IA32
-    QVERIFY(uni[2] == (char) 2 || uni[2] == (char) 1);
+    QVERIFY(uni.preGMValues()[2] == (char) 2 || uni.preGMValues()[2] == (char) 1);
 
     s1->write(mts, &uni);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     mts->stopFunction(s1);
     QVERIFY(s1->stopped() == true);
-    QVERIFY(uni[0] == (char) UCHAR_MAX);
-    QVERIFY(uni[1] == (char) 127);
-    QVERIFY(uni[2] == (char) 0);
+    QVERIFY(uni.preGMValues()[0] == (char) UCHAR_MAX);
+    QVERIFY(uni.preGMValues()[1] == (char) 127);
+    QVERIFY(uni.preGMValues()[2] == (char) 0);
 
     s1->disarm();
 

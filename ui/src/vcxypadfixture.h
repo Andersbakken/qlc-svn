@@ -29,6 +29,7 @@
 #include "qlctypes.h"
 
 class VCXYPadFixture;
+class UniverseArray;
 class QDomDocument;
 class QDomElement;
 
@@ -78,7 +79,7 @@ public:
     void disarm();
 
     /** Write the value using x & y multipliers for the actual range */
-    void writeDMX(double xmul, double ymul, QByteArray* universes);
+    void writeDMX(double xmul, double ymul, UniverseArray* universes);
 
 protected:
     t_fixture_id m_fixture;

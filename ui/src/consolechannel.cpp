@@ -38,6 +38,7 @@
 #include "fixture.h"
 #include "outputmap.h"
 #include "mastertimer.h"
+#include "universearray.h"
 #include "consolechannel.h"
 
 extern App* _app;
@@ -437,12 +438,10 @@ int ConsoleChannel::sliderValue() const
 
 void ConsoleChannel::updateValue()
 {
-    uchar value = 0;
-
     Q_ASSERT(m_fixture != NULL);
 
-    value = _app->outputMap()->value(m_fixture->universeAddress() +
-                                     m_channel);
+    const UniverseArray* unis(_app->outputMap()->peekUniverses());
+    uchar value = unis->preGMValues()[m_fixture->universeAddress() + m_channel];
 
     m_valueEdit->setText(QString("%1").arg(value));
     setValue(value);
@@ -483,7 +482,7 @@ void ConsoleChannel::slotValueChange(int value)
  * DMXSource
  *****************************************************************************/
 
-void ConsoleChannel::writeDMX(MasterTimer* timer, QByteArray* universes)
+void ConsoleChannel::writeDMX(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
 
@@ -493,8 +492,10 @@ void ConsoleChannel::writeDMX(MasterTimer* timer, QByteArray* universes)
     m_valueChangedMutex.lock();
     if (m_valueChanged == true)
     {
+        const QLCChannel* qlcch = m_fixture->channel(m_channel);
+        Q_ASSERT(qlcch != NULL);
         quint32 ch = m_fixture->universeAddress() + m_channel;
-        (*universes)[ch] = char(m_value);
+        universes->write(ch, m_value, qlcch->group());
         m_valueChanged = false;
     }
     m_valueChangedMutex.unlock();
@@ -508,8 +509,8 @@ void ConsoleChannel::enable(bool state)
 {
     setChecked(state);
 
-    m_value = _app->outputMap()->value(m_fixture->universeAddress() +
-                                       m_channel);
+    const UniverseArray* unis(_app->outputMap()->peekUniverses());
+    m_value = unis->preGMValues()[m_fixture->universeAddress() + m_channel];
 
     emit valueChanged(m_channel, m_value, isEnabled());
 }

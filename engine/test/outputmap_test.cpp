@@ -23,6 +23,7 @@
 
 #include "outputpluginstub.h"
 #include "outputmap_test.h"
+#include "universearray.h"
 #include "qlcoutplugin.h"
 
 #define protected public
@@ -175,41 +176,30 @@ void OutputMap_Test::claimReleaseDump()
     om.setPatch(2, stub->name(), 2);
     om.setPatch(3, stub->name(), 3);
 
-    QByteArray* unis = om.claimUniverses();
-    std::fill(unis->data() + 0, unis->data() + 512, 'a');
-    std::fill(unis->data() + 512, unis->data() + 1024, 'b');
-    std::fill(unis->data() + 1024, unis->data() + 1536, 'c');
-    std::fill(unis->data() + 1536, unis->data() + 2048, 'd');
+    UniverseArray* unis = om.claimUniverses();
+    for (int i = 0; i < 512; i++)
+        unis->write(i, 'a', QLCChannel::Intensity);
+    for (int i = 512; i < 1024; i++)
+        unis->write(i, 'b', QLCChannel::Intensity);
+    for (int i = 1024; i < 1536; i++)
+        unis->write(i, 'c', QLCChannel::Intensity);
+    for (int i = 1536; i < 2048; i++)
+        unis->write(i, 'd', QLCChannel::Intensity);
     om.releaseUniverses();
 
     om.dumpUniverses();
 
     for (int i = 0; i < 512; i++)
-    {
-        QVERIFY(stub->m_array[i] == 'a');
-        QVERIFY(om.value(i) == 'a');
-    }
+        QCOMPARE(stub->m_array.data()[i], 'a');
 
     for (int i = 512; i < 1024; i++)
-    {
-        QVERIFY(stub->m_array[i] == 'b');
-        QVERIFY(om.value(i) == 'b');
-    }
+        QCOMPARE(stub->m_array.data()[i], 'b');
 
     for (int i = 1024; i < 1536; i++)
-    {
-        QVERIFY(stub->m_array[i] == 'c');
-        QVERIFY(om.value(i) == 'c');
-    }
+        QCOMPARE(stub->m_array.data()[i], 'c');
 
     for (int i = 1536; i < 2048; i++)
-    {
-        QVERIFY(stub->m_array[i] == 'd');
-        QVERIFY(om.value(i) == 'd');
-    }
-
-    for (int i = 2048; i < 2560; i++)
-        QVERIFY(om.value(i) == 0);
+        QCOMPARE(stub->m_array.data()[i], 'd');
 }
 
 void OutputMap_Test::blackout()
@@ -226,11 +216,15 @@ void OutputMap_Test::blackout()
     om.setPatch(2, stub->name(), 2);
     om.setPatch(3, stub->name(), 3);
 
-    QByteArray* unis = om.claimUniverses();
-    std::fill(unis->data() + 0, unis->data() + 512, 'a');
-    std::fill(unis->data() + 512, unis->data() + 1024, 'b');
-    std::fill(unis->data() + 1024, unis->data() + 1536, 'c');
-    std::fill(unis->data() + 1536, unis->data() + 2048, 'd');
+    UniverseArray* unis = om.claimUniverses();
+    for (int i = 0; i < 512; i++)
+        unis->write(i, 'a', QLCChannel::Intensity);
+    for (int i = 512; i < 1024; i++)
+        unis->write(i, 'b', QLCChannel::Intensity);
+    for (int i = 1024; i < 1536; i++)
+        unis->write(i, 'c', QLCChannel::Intensity);
+    for (int i = 1536; i < 2048; i++)
+        unis->write(i, 'd', QLCChannel::Intensity);
     om.releaseUniverses();
     om.dumpUniverses();
 

@@ -37,6 +37,7 @@
 #include "qlctypes.h"
 
 #include "dummyoutplugin.h"
+#include "universearray.h"
 #include "outputpatch.h"
 #include "outputmap.h"
 
@@ -59,7 +60,7 @@ OutputMap::OutputMap(QObject* parent, quint32 universes) : QObject(parent)
     m_blackout = false;
     m_universeChanged = false;
 
-    m_universeArray = new QByteArray(512 * universes, 0);
+    m_universeArray = new UniverseArray(512 * universes);
 
     initPatch();
 }
@@ -173,7 +174,7 @@ bool OutputMap::blackout() const
  * Values
  *****************************************************************************/
 
-QByteArray* OutputMap::claimUniverses()
+UniverseArray* OutputMap::claimUniverses()
 {
     m_universeMutex.lock();
     return m_universeArray;
@@ -190,25 +191,18 @@ void OutputMap::dumpUniverses()
     m_universeMutex.lock();
     if (m_universeChanged == true && m_blackout == false)
     {
+        QByteArray postGM(m_universeArray->postGMValues());
         for (quint32 i = 0; i < m_universes; i++)
-            m_patch[i]->dump(m_universeArray->mid(i * 512, 512));
+            m_patch[i]->dump(postGM.mid(i * 512, 512));
 
         m_universeChanged = false;
     }
     m_universeMutex.unlock();
 }
 
-QByteArray OutputMap::peekUniverses() const
+const UniverseArray* OutputMap::peekUniverses() const
 {
-    return *m_universeArray;
-}
-
-uchar OutputMap::value(quint32 channel) const
-{
-    if (channel < quint32(m_universes * 512))
-        return (*m_universeArray)[channel];
-    else
-        return 0;
+    return m_universeArray;
 }
 
 /*****************************************************************************

@@ -40,6 +40,7 @@ HEADERS += aboutbox.h \
            functionselection.h \
            functionwizard.h \
            generatorarea.h \
+           grandmasterslider.h \
            inputchanneleditor.h \
            inputprofileeditor.h \
            inputmanager.h \
@@ -114,6 +115,7 @@ SOURCES += aboutbox.cpp \
            functionselection.cpp \
            functionwizard.cpp \
            generatorarea.cpp \
+           grandmasterslider.cpp \
            inputchanneleditor.cpp \
            inputprofileeditor.cpp \
            inputmanager.cpp \

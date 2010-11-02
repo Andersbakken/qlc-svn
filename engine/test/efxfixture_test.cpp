@@ -26,6 +26,7 @@
 #include "efxfixture_test.h"
 #include "scene_stub.h"
 
+#include "universearray.h"
 #include "function.h"
 #include "fixture.h"
 #include "doc.h"
@@ -427,17 +428,17 @@ void EFXFixture_Test::startStop()
     s2.setValue(2, 6);
     ef.setStopScene(&s2);
 
-    QByteArray array;
+    UniverseArray array(512 * 4);
 
     ef.start(&array);
-    QVERIFY(array[0] == (char) 1);
-    QVERIFY(array[1] == (char) 2);
-    QVERIFY(array[2] == (char) 3);
+    QVERIFY(array.preGMValues()[0] == (char) 1);
+    QVERIFY(array.preGMValues()[1] == (char) 2);
+    QVERIFY(array.preGMValues()[2] == (char) 3);
 
     ef.stop(&array);
-    QVERIFY(array[0] == (char) 4);
-    QVERIFY(array[1] == (char) 5);
-    QVERIFY(array[2] == (char) 6);
+    QVERIFY(array.preGMValues()[0] == (char) 4);
+    QVERIFY(array.preGMValues()[1] == (char) 5);
+    QVERIFY(array.preGMValues()[2] == (char) 6);
 }
 
 void EFXFixture_Test::setPoint8bit()
@@ -451,10 +452,10 @@ void EFXFixture_Test::setPoint8bit()
     ef.m_panValue = 5.4;
     ef.m_tiltValue = 1.5;
 
-    QByteArray array;
+    UniverseArray array(512 * 4);
     ef.setPoint(&array);
-    QVERIFY(array[0] == (char) 5);
-    QVERIFY(array[1] == (char) 1);
+    QVERIFY(array.preGMValues()[0] == (char) 5);
+    QVERIFY(array.preGMValues()[1] == (char) 1);
 }
 
 void EFXFixture_Test::setPoint16bit()
@@ -470,17 +471,17 @@ void EFXFixture_Test::setPoint16bit()
     ef.m_panValue = 5.4; /* MSB: 5, LSB: 0.4 (102) */
     ef.m_tiltValue = 1.5; /* MSB: 1, LSB: 0.5 (127) */
 
-    QByteArray array;
+    UniverseArray array(512 * 4);
     ef.setPoint(&array);
-    QVERIFY(array[0] == (char) 5);
-    QVERIFY(array[1] == (char) 1);
-    QVERIFY(array[2] == (char) 102); /* 255 * 0.4 */
-    QVERIFY(array[3] == (char) 127); /* 255 * 0.5 */
+    QVERIFY(array.preGMValues()[0] == (char) 5);
+    QVERIFY(array.preGMValues()[1] == (char) 1);
+    QVERIFY(array.preGMValues()[2] == (char) 102); /* 255 * 0.4 */
+    QVERIFY(array.preGMValues()[3] == (char) 127); /* 255 * 0.5 */
 }
 
 void EFXFixture_Test::nextStepLoop()
 {
-    QByteArray array;
+    UniverseArray array(512 * 4);
 
     EFX e(m_doc);
     e.slotBusValueChanged(e.busID(), 50); /* 50 steps */
@@ -491,7 +492,8 @@ void EFXFixture_Test::nextStepLoop()
 
     /* Nothing should happen since isValid() == false */
     ef->nextStep(&array);
-    QVERIFY(array.size() == 0);
+    for (int i = 0; i < 512 * 4; i++)
+        QVERIFY(array.preGMValues()[i] == 0);
 
     /* Initialize the EFXFixture so that it can do math */
     ef->setSerialNumber(0);
@@ -520,7 +522,7 @@ void EFXFixture_Test::nextStepLoop()
 
 void EFXFixture_Test::nextStepSingleShot()
 {
-    QByteArray array;
+    UniverseArray array(512 * 4);
 
     EFX e(m_doc);
     e.slotBusValueChanged(e.busID(), 50); /* 50 steps */
@@ -532,7 +534,8 @@ void EFXFixture_Test::nextStepSingleShot()
 
     /* Nothing should happen since isValid() == false */
     ef->nextStep(&array);
-    QVERIFY(array.size() == 0);
+    for (int i = 0; i < 512 * 4; i++)
+        QVERIFY(array.preGMValues()[i] == 0);
 
     /* Initialize the EFXFixture so that it can do math */
     ef->setSerialNumber(0);

@@ -25,6 +25,7 @@
 #include "mastertimer_stub.h"
 #include "chaser_test.h"
 
+#include "universearray.h"
 #include "function.h"
 #include "fixture.h"
 #define protected public
@@ -629,7 +630,7 @@ void Chaser_Test::writeBusZeroLoopForward()
     s2->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
@@ -732,7 +733,7 @@ void Chaser_Test::writeBusZeroLoopBackward()
     s2->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
@@ -834,7 +835,7 @@ void Chaser_Test::writeBusZeroSingleShotForward()
     s2->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
@@ -911,7 +912,7 @@ void Chaser_Test::writeBusZeroSingleShotBackward()
     s2->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
@@ -992,7 +993,7 @@ void Chaser_Test::writeBusZeroPingPongForward()
     s3->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
@@ -1141,7 +1142,7 @@ void Chaser_Test::writeBusZeroPingPongBackward()
     s3->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);

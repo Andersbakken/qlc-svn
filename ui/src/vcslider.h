@@ -358,7 +358,7 @@ protected:
      *********************************************************************/
 public:
     /** @reimpl */
-    void writeDMX(MasterTimer* timer, QByteArray* universes);
+    void writeDMX(MasterTimer* timer, UniverseArray* universes);
 
     /*********************************************************************
      * Top label

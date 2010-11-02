@@ -376,7 +376,7 @@ void Function::preRun(MasterTimer* timer)
     emit running(m_id);
 }
 
-void Function::postRun(MasterTimer* timer, QByteArray* universes)
+void Function::postRun(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
     Q_UNUSED(universes);

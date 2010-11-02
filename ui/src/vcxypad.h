@@ -105,7 +105,7 @@ public:
     void setCurrentXYPosition(const QPoint& point);
 
     /** @reimp from DMXSource */
-    void writeDMX(MasterTimer* timer, QByteArray* universes);
+    void writeDMX(MasterTimer* timer, UniverseArray* universes);
 
 protected:
     QPixmap m_xyPosPixmap;

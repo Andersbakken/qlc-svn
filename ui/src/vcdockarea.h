@@ -24,6 +24,7 @@
 
 #include <qframe.h>
 
+class GrandMasterSlider;
 class VCDockSlider;
 class QShowEvent;
 class QHideEvent;
@@ -31,6 +32,7 @@ class QHideEvent;
 class VCDockArea : public QFrame
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCDockArea)
 
     /*********************************************************************
      * Initialization
@@ -38,9 +40,6 @@ class VCDockArea : public QFrame
 public:
     VCDockArea(QWidget* parent);
     ~VCDockArea();
-
-private:
-    Q_DISABLE_COPY(VCDockArea)
 
     /*********************************************************************
      * Sliders
@@ -50,6 +49,7 @@ public:
     void refreshProperties();
 
 protected:
+    GrandMasterSlider* m_gm;
     VCDockSlider* m_fade;
     VCDockSlider* m_hold;
 

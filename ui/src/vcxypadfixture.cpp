@@ -29,6 +29,7 @@
 #include "qlcfile.h"
 
 #include "vcxypadfixture.h"
+#include "universearray.h"
 #include "fixture.h"
 #include "app.h"
 #include "doc.h"
@@ -232,7 +233,7 @@ void VCXYPadFixture::disarm()
     m_yMSB = KChannelInvalid;
 }
 
-void VCXYPadFixture::writeDMX(double xmul, double ymul, QByteArray* universes)
+void VCXYPadFixture::writeDMX(double xmul, double ymul, UniverseArray* universes)
 {
     Q_ASSERT(universes != NULL);
 
@@ -247,8 +248,8 @@ void VCXYPadFixture::writeDMX(double xmul, double ymul, QByteArray* universes)
     if (m_yReverse == true)
         yMSB = m_yMax - yMSB;
 
-    (*universes)[m_xMSB] = char(xMSB * UCHAR_MAX);
-    (*universes)[m_yMSB] = char(yMSB * UCHAR_MAX);
+    universes->write(m_xMSB, char(xMSB * UCHAR_MAX), QLCChannel::Pan);
+    universes->write(m_yMSB, char(yMSB * UCHAR_MAX), QLCChannel::Tilt);
 
     if (m_xLSB != KChannelInvalid && m_yLSB != KChannelInvalid)
     {
@@ -256,8 +257,8 @@ void VCXYPadFixture::writeDMX(double xmul, double ymul, QByteArray* universes)
         double xLSB = (xMSB * double(UCHAR_MAX)) - floor(xMSB * double(UCHAR_MAX));
         double yLSB = (yMSB * double(UCHAR_MAX)) - floor(yMSB * double(UCHAR_MAX));
 
-        (*universes)[m_xLSB] = char(xLSB * UCHAR_MAX);
-        (*universes)[m_yLSB] = char(yLSB * UCHAR_MAX);
+        universes->write(m_xLSB, char(xLSB * UCHAR_MAX), QLCChannel::Pan);
+        universes->write(m_yLSB, char(yLSB * UCHAR_MAX), QLCChannel::Tilt);
     }
 }
 

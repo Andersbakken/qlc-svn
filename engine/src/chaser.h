@@ -156,10 +156,10 @@ public:
     void preRun(MasterTimer* timer);
 
     /** @reimpl */
-    void postRun(MasterTimer* timer, QByteArray* universes);
+    void postRun(MasterTimer* timer, UniverseArray* universes);
 
     /** @reimpl */
-    void write(MasterTimer* timer, QByteArray* universes);
+    void write(MasterTimer* timer, UniverseArray* universes);
 
 protected:
     /** Check, whether the chaser has gone a full round. Returns false

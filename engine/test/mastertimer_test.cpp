@@ -21,14 +21,16 @@
 
 #include <QtTest>
 #ifdef WIN32
-#include <windows.h>
-#include <winbase.h>
+#   include <windows.h>
+#   include <winbase.h>
 #endif
 
 #include "mastertimer_test.h"
 #include "outputmap_stub.h"
 #include "dmxsource_stub.h"
 #include "function_stub.h"
+
+#include "universearray.h"
 #include "doc.h"
 
 #define protected public

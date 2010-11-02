@@ -34,6 +34,7 @@
 
 #include "monitorfixture.h"
 #include "monitorlayout.h"
+#include "universearray.h"
 #include "outputmap.h"
 #include "monitor.h"
 #include "apputil.h"
@@ -363,9 +364,9 @@ void Monitor::timerEvent(QTimerEvent* e)
 {
     Q_UNUSED(e);
 
-    QByteArray universes = _app->outputMap()->peekUniverses();
+    const UniverseArray* universes = _app->outputMap()->peekUniverses();
     QList <MonitorFixture*> list = findChildren <MonitorFixture*>();
     QListIterator <MonitorFixture*> it(list);
     while (it.hasNext() == true)
-        it.next()->updateValues(universes);
+        it.next()->updateValues(universes->postGMValues());
 }

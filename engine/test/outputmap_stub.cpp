@@ -20,7 +20,9 @@
 */
 
 #include <QDebug>
+
 #include "outputmap_stub.h"
+#include "universearray.h"
 
 /****************************************************************************
  * OutputMap Stub
@@ -35,12 +37,12 @@ OutputMapStub::~OutputMapStub()
 {
 }
 
-void OutputMapStub::setUniverses(QByteArray* unis)
+void OutputMapStub::setUniverses(UniverseArray* unis)
 {
     m_unis = unis;
 }
 
-QByteArray* OutputMapStub::claimUniverses()
+UniverseArray* OutputMapStub::claimUniverses()
 {
     return m_unis;
 }

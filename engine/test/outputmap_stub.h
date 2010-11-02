@@ -22,7 +22,6 @@
 #ifndef OUTPUTMAP_STUB_H
 #define OUTPUTMAP_STUB_H
 
-#include <QByteArray>
 #include <QObject>
 
 #include "outputmap.h"
@@ -39,11 +38,11 @@ public:
     OutputMapStub(QObject* parent);
     ~OutputMapStub();
 
-    void setUniverses(QByteArray* unis);
-    QByteArray* claimUniverses();
+    void setUniverses(UniverseArray* unis);
+    UniverseArray* claimUniverses();
     void releaseUniverses();
 
-    QByteArray* m_unis;
+    UniverseArray* m_unis;
 };
 
 #endif

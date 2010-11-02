@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <math.h>
 
+#include "universearray.h"
 #include "efxfixture.h"
 #include "function.h"
 #include "scene.h"
@@ -285,7 +286,7 @@ void EFXFixture::reset()
  * Running
  *****************************************************************************/
 
-void EFXFixture::nextStep(QByteArray* universes)
+void EFXFixture::nextStep(UniverseArray* universes)
 {
     /* Bail out without doing anything if this EFX is ready
       (after single-shot), or it has no pan&tilt channels (not valid). */
@@ -361,38 +362,42 @@ void EFXFixture::nextStep(QByteArray* universes)
     }
 }
 
-void EFXFixture::start(QByteArray* universes)
+void EFXFixture::start(UniverseArray* universes)
 {
     if (m_startScene != NULL)
         m_startScene->writeValues(universes, m_fixture);
 }
 
-void EFXFixture::stop(QByteArray* universes)
+void EFXFixture::stop(UniverseArray* universes)
 {
     if (m_stopScene != NULL)
         m_stopScene->writeValues(universes, m_fixture);
 }
 
-void EFXFixture::setPoint(QByteArray* universes)
+void EFXFixture::setPoint(UniverseArray* universes)
 {
     Q_ASSERT(universes != NULL);
 
     /* Write coarse point data to universes */
-    (*universes)[m_msbPanChannel] = static_cast <uchar> (m_panValue);
-    (*universes)[m_msbTiltChannel] = static_cast <uchar> (m_tiltValue);
+    universes->write(m_msbPanChannel, static_cast<char> (m_panValue),
+                     QLCChannel::Pan);
+    universes->write(m_msbTiltChannel, static_cast<char> (m_tiltValue),
+                     QLCChannel::Tilt);
 
     /* Write fine point data to universes if applicable */
     if (m_lsbPanChannel != KChannelInvalid)
     {
         /* Leave only the fraction */
-        (*universes)[m_lsbPanChannel] = static_cast <uchar>
-                                        ((m_panValue - floor(m_panValue)) * double(UCHAR_MAX));
+        char value = static_cast<char> ((m_panValue - floor(m_panValue))
+                                        * double(UCHAR_MAX));
+        universes->write(m_lsbPanChannel, value, QLCChannel::Pan);
     }
 
     if (m_lsbTiltChannel != KChannelInvalid)
     {
         /* Leave only the fraction */
-        (*universes)[m_lsbTiltChannel] = static_cast <uchar>
-                                         ((m_tiltValue - floor(m_tiltValue)) * double(UCHAR_MAX));
+        char value = static_cast<char> ((m_tiltValue - floor(m_tiltValue))
+                                        * double(UCHAR_MAX));
+        universes->write(m_lsbTiltChannel, value, QLCChannel::Tilt);
     }
 }

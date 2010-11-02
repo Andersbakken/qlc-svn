@@ -129,10 +129,10 @@ protected:
     bool isValid();
 
     /* Run the start scene if necessary */
-    void start(QByteArray* universes);
+    void start(UniverseArray* universes);
 
     /* Run the stop scene if necessary */
-    void stop(QByteArray* universes);
+    void stop(UniverseArray* universes);
 
     /** Reset the fixture when the EFX is stopped */
     void reset();
@@ -217,10 +217,10 @@ protected:
      *********************************************************************/
 protected:
     /** Calculate the next step data for this fixture */
-    void nextStep(QByteArray* universes);
+    void nextStep(UniverseArray* universes);
 
     /** Write this EFXFixture's channel data to universes */
-    void setPoint(QByteArray* universes);
+    void setPoint(UniverseArray* universes);
 };
 
 #endif

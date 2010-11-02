@@ -76,7 +76,7 @@ void Function_Stub::preRun(MasterTimer* timer)
     Function::preRun(timer);
 }
 
-void Function_Stub::write(MasterTimer* timer, QByteArray* universes)
+void Function_Stub::write(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
     Q_UNUSED(universes);
@@ -85,7 +85,7 @@ void Function_Stub::write(MasterTimer* timer, QByteArray* universes)
     m_writeCalls++;
 }
 
-void Function_Stub::postRun(MasterTimer* timer, QByteArray* universes)
+void Function_Stub::postRun(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
     Q_UNUSED(universes);

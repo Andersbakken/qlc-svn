@@ -25,6 +25,7 @@
 #include "mastertimer_stub.h"
 #include "collection_test.h"
 
+#include "universearray.h"
 #include "collection.h"
 #include "function.h"
 #include "fixture.h"
@@ -457,7 +458,7 @@ void Collection_Test::write()
     s2->arm();
     c->arm();
 
-    QByteArray uni;
+    UniverseArray uni(1);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     /* Collection starts all of its members immediately when it is started

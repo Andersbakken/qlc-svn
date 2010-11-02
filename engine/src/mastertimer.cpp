@@ -266,7 +266,7 @@ void MasterTimer::timerTick()
 
 void MasterTimer::runFunctions()
 {
-    QByteArray* universes = m_outputMap->claimUniverses();
+    UniverseArray* universes = m_outputMap->claimUniverses();
 
     /* Lock before accessing the running functions list. */
     m_functionListMutex.lock();
@@ -310,7 +310,7 @@ void MasterTimer::runFunctions()
 
 void MasterTimer::runDMXSources()
 {
-    QByteArray* universes = m_outputMap->claimUniverses();
+    UniverseArray* universes = m_outputMap->claimUniverses();
 
     /* Lock before accessing the running functions list. */
     m_dmxSourceListMutex.lock();

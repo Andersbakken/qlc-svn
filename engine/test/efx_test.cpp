@@ -30,6 +30,7 @@
 #include "outputmap_stub.h"
 #include "efx_test.h"
 
+#include "universearray.h"
 #include "function.h"
 #include "fixture.h"
 #include "scene.h"
@@ -2656,7 +2657,7 @@ void EFX_Test::writeStartStopScenes()
 
     Bus::instance()->setValue(0, 50);
 
-    QByteArray unis(512 * 4, 0);
+    UniverseArray unis(512 * 4);
     OutputMapStub* oms = new OutputMapStub(this);
     oms->setUniverses(&unis);
     MasterTimerStub* mts = new MasterTimerStub(this, oms, unis);
@@ -2667,13 +2668,13 @@ void EFX_Test::writeStartStopScenes()
 
     e->write(mts, &unis);
     QVERIFY(e->stopped() == false);
-    QVERIFY(unis[0] == (char) 205); // Start scene: shutter open
-    QVERIFY(unis[512 + 0] == (char) 205); // Start scene: shutter open
+    QVERIFY(unis.preGMValues()[0] == (char) 205); // Start scene: shutter open
+    QVERIFY(unis.preGMValues()[512 + 0] == (char) 205); // Start scene: shutter open
 
     e->stop();
     mts->stopFunction(e); // Runs postRun, that writes stop scene stuff
-    QVERIFY(unis[0] == (char) 0); // Stop scene: shutter closed
-    QVERIFY(unis[512 + 0] == (char) 0); // Stop scene: shutter closed
+    QVERIFY(unis.preGMValues()[0] == (char) 0); // Stop scene: shutter closed
+    QVERIFY(unis.preGMValues()[512 + 0] == (char) 0); // Stop scene: shutter closed
 
     delete doc;
 }

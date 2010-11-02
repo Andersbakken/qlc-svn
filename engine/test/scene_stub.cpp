@@ -21,6 +21,7 @@
 
 #include "doc.h"
 #include "scene_stub.h"
+#include "universearray.h"
 
 /****************************************************************************
  * Scene Stub
@@ -39,7 +40,7 @@ void SceneStub::setValue(quint32 address, uchar value)
     m_values[address] = value;
 }
 
-void SceneStub::writeValues(QByteArray* array, t_fixture_id fxi_id)
+void SceneStub::writeValues(UniverseArray* array, t_fixture_id fxi_id)
 {
     Q_UNUSED(fxi_id);
 
@@ -47,6 +48,6 @@ void SceneStub::writeValues(QByteArray* array, t_fixture_id fxi_id)
     while (it.hasNext() == true)
     {
         it.next();
-        (*array)[it.key()] = it.value();
+        array->write(it.key(), it.value(), QLCChannel::Intensity);
     }
 }

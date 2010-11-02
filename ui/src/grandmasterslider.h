@@ -1,6 +1,6 @@
 /*
-  Q Light Controller - Unit test
-  scene_stub.h
+  Q Light Controller
+  grandmasterslider.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,36 +19,32 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SCENE_STUB_H
-#define SCENE_STUB_H
+#ifndef GRANDMASTERSLIDER_H
+#define GRANDMASTERSLIDER_H
 
-#include <QObject>
-#include <QMap>
+#include <QFrame>
 
-#include "fixture.h"
-#include "scene.h"
+class QSlider;
+class QLabel;
 
-class UniverseArray;
-class Doc;
-
-/****************************************************************************
- * Scene Stub
- ****************************************************************************/
-
-class SceneStub : public Scene
+class GrandMasterSlider : public QFrame
 {
     Q_OBJECT
+    Q_DISABLE_COPY(GrandMasterSlider)
 
 public:
-    SceneStub(Doc* doc);
-    ~SceneStub();
+    GrandMasterSlider(QWidget* parent);
+    virtual ~GrandMasterSlider();
 
-    void setValue(quint32 address, uchar value);
-    void writeValues(UniverseArray* universes,
-                     t_fixture_id fxi_id = Fixture::invalidId());
+    void refreshProperties();
 
-    QMap <quint32,uchar> m_values;
+protected slots:
+    void slotValueChanged(int value);
+
+protected:
+    QLabel* m_valueLabel;
+    QSlider* m_slider;
+    QLabel* m_nameLabel;
 };
 
 #endif
-

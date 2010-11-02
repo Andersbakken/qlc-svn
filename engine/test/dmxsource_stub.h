@@ -25,16 +25,13 @@
 #include <QObject>
 #include "dmxsource.h"
 
-class MasterTimer;
-class QByteArray;
-
 class DMXSource_Stub : public DMXSource
 {
 public:
     DMXSource_Stub();
     ~DMXSource_Stub();
 
-    void writeDMX(MasterTimer* timer, QByteArray* universes);
+    void writeDMX(MasterTimer* timer, UniverseArray* universes);
 
     /** Number of calls to writeDMX() */
     int m_writeCalls;

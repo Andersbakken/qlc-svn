@@ -26,6 +26,7 @@
 
 #include "qlcfile.h"
 
+#include "grandmasterslider.h"
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "vcdockslider.h"
@@ -37,17 +38,23 @@ extern App* _app;
 
 VCDockArea::VCDockArea(QWidget* parent) : QFrame(parent)
 {
-    /* Align widgets vertically in the area, no margins */
-    new QVBoxLayout(this);
+    new QHBoxLayout(this);
     layout()->setMargin(0);
+
+    m_gm = new GrandMasterSlider(this);
+    layout()->addWidget(m_gm);
+
+    QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->setMargin(0);
+    layout()->addItem(vbox);
 
     /* Default fade time slider */
     m_fade = new VCDockSlider(this, Bus::defaultFade());
-    layout()->addWidget(m_fade);
+    vbox->addWidget(m_fade);
 
     /* Default hold time slider */
     m_hold = new VCDockSlider(this, Bus::defaultHold());
-    layout()->addWidget(m_hold);
+    vbox->addWidget(m_hold);
 }
 
 VCDockArea::~VCDockArea()
@@ -65,6 +72,7 @@ void VCDockArea::refreshProperties()
 
     m_fade->refreshProperties();
     m_hold->refreshProperties();
+    m_gm->refreshProperties();
 
     if (VirtualConsole::properties().slidersVisible() == true)
         show();

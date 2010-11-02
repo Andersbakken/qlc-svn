@@ -27,8 +27,9 @@
  * Initialization
  ****************************************************************************/
 
-UniverseArray::UniverseArray(int size) : QByteArray(size, char(0))
+UniverseArray::UniverseArray(int size)
 {
+    m_preGMValues = new QByteArray(size, char(0));
     m_postGMValues = new QByteArray(size, char(0));
     m_gmValueMode = GMReduce;
     m_gmChannelMode = GMIntensity;
@@ -38,7 +39,13 @@ UniverseArray::UniverseArray(int size) : QByteArray(size, char(0))
 
 UniverseArray::~UniverseArray()
 {
+    delete m_preGMValues;
     delete m_postGMValues;
+}
+
+int UniverseArray::size() const
+{
+    return m_preGMValues->size();
 }
 
 /****************************************************************************
@@ -74,7 +81,7 @@ void UniverseArray::setGrandMasterValue(uchar value)
     while (it.hasNext() == true)
     {
         int channel(it.next());
-        char chValue(data()[channel]);
+        char chValue(m_preGMValues->data()[channel]);
         write(channel, chValue, QLCChannel::Intensity);
     }
 }
@@ -89,14 +96,19 @@ double UniverseArray::grandMasterFraction() const
     return m_gmFraction;
 }
 
-void UniverseArray::gmResetChannel(int channel)
+void UniverseArray::gmReset()
 {
-    m_gmChannels.remove(channel);
+    m_gmChannels.clear();
 }
 
-QByteArray UniverseArray::postGMValues() const
+const QByteArray UniverseArray::postGMValues() const
 {
     return *m_postGMValues;
+}
+
+const QByteArray UniverseArray::preGMValues() const
+{
+    return *m_preGMValues;
 }
 
 uchar UniverseArray::grandMasterify(int channel, uchar value, QLCChannel::Group group)
@@ -130,7 +142,7 @@ bool UniverseArray::write(int channel, uchar value, QLCChannel::Group group)
     if (channel >= size())
         return false;
 
-    data()[channel] = char(value);
+    m_preGMValues->data()[channel] = char(value);
 
     value = grandMasterify(channel, value, group);
     m_postGMValues->data()[channel] = char(value);

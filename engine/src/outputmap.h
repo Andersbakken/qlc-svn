@@ -32,12 +32,12 @@
 
 class QDomDocument;
 class QDomElement;
-class QByteArray;
 class QString;
 
 class OutputMap;
 class OutputPatch;
 class QLCOutPlugin;
+class UniverseArray;
 class OutputMapEditor;
 class OutputPatchEditor;
 
@@ -121,7 +121,7 @@ public:
      * Claim access to all universes. This is declared virtual to make
      * unit testing a bit easier.
      */
-    virtual QByteArray* claimUniverses();
+    virtual UniverseArray* claimUniverses();
 
     /**
      * Release access to all universes. This is declared virtual to make
@@ -136,22 +136,16 @@ public:
     void dumpUniverses();
 
     /**
-     * Grab a read-only copy of the current universe array for
-     * monitoring purposes.
-     */
-    QByteArray peekUniverses() const;
-
-    /**
-     * Read the value of a single channel
+     * Get a read-only pointer to OutputMap's UniverseArray. You're not supposed
+     * to write anything to the returned universes.
      *
-     * @param channel The channel to read the value from
-     * @return The value of the channel (0 if channel is out of bounds)
+     * @return Current UniverseArray snapshot
      */
-    uchar value(quint32 channel) const;
+    const UniverseArray* peekUniverses() const;
 
 protected:
     /** The values of all universes */
-    QByteArray* m_universeArray;
+    UniverseArray* m_universeArray;
 
     /** When true, universes are dumped. Otherwise not. */
     bool m_universeChanged;

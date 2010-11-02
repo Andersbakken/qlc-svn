@@ -26,6 +26,7 @@
 #include "qlcfixturedef.h"
 #include "qlcfile.h"
 
+#include "universearray.h"
 #include "mastertimer.h"
 #include "function.h"
 #include "fixture.h"
@@ -358,7 +359,7 @@ void Chaser::preRun(MasterTimer* timer)
     Function::preRun(timer);
 }
 
-void Chaser::postRun(MasterTimer* timer, QByteArray* universes)
+void Chaser::postRun(MasterTimer* timer, UniverseArray* universes)
 {
     /* Only stop a member if the current position is within range. It is
        not in range, when nextStep() moves it deliberately off at each
@@ -369,7 +370,7 @@ void Chaser::postRun(MasterTimer* timer, QByteArray* universes)
     Function::postRun(timer, universes);
 }
 
-void Chaser::write(MasterTimer* timer, QByteArray* universes)
+void Chaser::write(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(universes);
 

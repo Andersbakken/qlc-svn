@@ -38,7 +38,7 @@ class MasterTimerStub : public MasterTimer
 
 public:
     MasterTimerStub(QObject* parent, OutputMap* outputMap,
-                    QByteArray& universes);
+                    UniverseArray& universes);
     ~MasterTimerStub();
 
     void startFunction(Function* function, bool initiatedByOtherFunction);
@@ -49,7 +49,7 @@ public:
     void unregisterDMXSource(DMXSource* source);
     QList <DMXSource*> m_dmxSourceList;
 
-    QByteArray& m_universes;
+    UniverseArray& m_universes;
 };
 
 #endif

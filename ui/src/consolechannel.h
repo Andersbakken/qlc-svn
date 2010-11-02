@@ -120,7 +120,7 @@ protected:
      *********************************************************************/
 public:
     /** @reimp */
-    void writeDMX(MasterTimer* timer, QByteArray* universes);
+    void writeDMX(MasterTimer* timer, UniverseArray* universes);
 
     /*********************************************************************
      * Enable/disable

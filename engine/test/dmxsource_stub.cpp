@@ -19,10 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QByteArray>
 #include <QtTest>
 
 #include "dmxsource_stub.h"
+#include "universearray.h"
 #include "mastertimer.h"
 
 DMXSource_Stub::DMXSource_Stub()
@@ -34,7 +34,7 @@ DMXSource_Stub::~DMXSource_Stub()
 {
 }
 
-void DMXSource_Stub::writeDMX(MasterTimer* timer, QByteArray* universes)
+void DMXSource_Stub::writeDMX(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
     Q_UNUSED(universes);

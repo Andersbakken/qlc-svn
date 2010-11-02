@@ -23,7 +23,7 @@
 #define DMXSOURCE_H
 
 class MasterTimer;
-class QByteArray;
+class UniverseArray;
 
 /**
  * DMXSource should be inherited/implemented by such object that wish to
@@ -41,7 +41,7 @@ public:
      * @param timer The calling MasterTimer instance
      * @param universes Universe buffer to write to
      */
-    virtual void writeDMX(MasterTimer* timer, QByteArray* universes) = 0;
+    virtual void writeDMX(MasterTimer* timer, UniverseArray* universes) = 0;
 };
 
 #endif

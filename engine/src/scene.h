@@ -34,8 +34,6 @@
 #define KXMLQLCSceneValueFixture "Fixture"
 #define KXMLQLCSceneValueChannel "Channel"
 
-class QByteArray;
-
 /*****************************************************************************
  * SceneChannel
  *****************************************************************************/
@@ -75,6 +73,9 @@ public:
 public:
     /** The universe and channel that this object refers to */
     quint32 address;
+
+    /** The channel group that this channel belongs to */
+    QLCChannel::Group group;
 
     /** The value of the channel where a scene started fading from */
     qint32 start;
@@ -255,7 +256,7 @@ public:
     void unFlash(MasterTimer* timer);
 
     /** @reimpl from DMXSource */
-    void writeDMX(MasterTimer* timer, QByteArray* universes);
+    void writeDMX(MasterTimer* timer, UniverseArray* universes);
 
     /*********************************************************************
      * Running
@@ -268,7 +269,7 @@ public:
     void disarm();
 
     /** @reimpl */
-    void write(MasterTimer* timer, QByteArray* universes);
+    void write(MasterTimer* timer, UniverseArray* universes);
 
     /**
      * Write the scene values to OutputMap. If fxi_id is given, writes
@@ -277,7 +278,7 @@ public:
      * The scene must be armed with arm() before calling this function or
      * otherwise nothing will be written.
      */
-    virtual void writeValues(QByteArray* universes,
+    virtual void writeValues(UniverseArray* universes,
                              t_fixture_id fxi_id = Fixture::invalidId());
 
     /**
@@ -287,7 +288,7 @@ public:
      * The scene must be armed with arm() before calling this function or
      * otherwise nothing will be written.
      */
-    virtual void writeZeros(QByteArray* universes,
+    virtual void writeZeros(UniverseArray* universes,
                             t_fixture_id fxi_id = Fixture::invalidId());
 
     /** Get a list of channels that have been armed for running */

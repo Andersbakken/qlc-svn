@@ -27,6 +27,7 @@
 #include "qlcfixturedef.h"
 #include "qlcfile.h"
 
+#include "universearray.h"
 #include "mastertimer.h"
 #include "scene.h"
 #include "doc.h"
@@ -39,6 +40,7 @@
 SceneChannel::SceneChannel()
 {
     address = 0;
+    group = QLCChannel::NoGroup;
     start = 0;
     current = 0;
     target = 0;
@@ -47,6 +49,7 @@ SceneChannel::SceneChannel()
 SceneChannel::SceneChannel(const SceneChannel& sch)
 {
     address = sch.address;
+    group = sch.group;
     start = sch.start;
     current = sch.current;
     target = sch.target;
@@ -393,7 +396,7 @@ void Scene::unFlash(MasterTimer* timer)
     Function::unFlash(timer);
 }
 
-void Scene::writeDMX(MasterTimer* timer, QByteArray* universes)
+void Scene::writeDMX(MasterTimer* timer, UniverseArray* universes)
 {
     Q_ASSERT(timer != NULL);
     Q_ASSERT(universes != NULL);
@@ -432,27 +435,31 @@ void Scene::arm()
         if (fxi == NULL)
         {
             qWarning() << "Channel" << scv.channel << "from an"
-            << "unavailable fixture ID" << scv.fxi
-            << "taking part in scene" << name()
-            << ". Removing the channel.";
+                       << "unavailable fixture ID" << scv.fxi
+                       << "taking part in scene" << name()
+                       << ". Removing the channel.";
             it.remove();
             continue;
         }
 
         if (scv.channel < fxi->channels())
         {
+            const QLCChannel* qlcch = fxi->channel(scv.channel);
+            Q_ASSERT(qlcch != NULL);
+
             SceneChannel channel;
             channel.address = fxi->universeAddress() + scv.channel;
+            channel.group = qlcch->group();
             channel.target = scv.value;
             m_armedChannels.append(channel);
         }
         else
         {
             qWarning() << "Scene " << name() << "channel"
-            << scv.channel
-            << "is out of its fixture" << fxi->name()
-            << "channel count ( <" << fxi->channels()
-            << ") bounds. Removing the channel.";
+                       << scv.channel
+                       << "is out of its fixture" << fxi->name()
+                       << "channel count ( <" << fxi->channels()
+                       << ") bounds. Removing the channel.";
             it.remove();
         }
     }
@@ -465,7 +472,7 @@ void Scene::disarm()
     m_armedChannels.clear();
 }
 
-void Scene::write(MasterTimer* timer, QByteArray* universes)
+void Scene::write(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
     Q_ASSERT(universes != NULL);
@@ -484,10 +491,10 @@ void Scene::write(MasterTimer* timer, QByteArray* universes)
             SceneChannel sch = it.next();
 
             /* Get the starting value from universes. Important
-               to cast to uchar, since QByteArray handles signed
+               to cast to uchar, since UniverseArray handles signed
                char, whereas uchar is unsigned. Without cast,
                this will result in negative values when x > 127 */
-            sch.start = uchar(universes->data()[sch.address]);
+            sch.start = uchar(universes->preGMValues()[sch.address]);
             sch.current = sch.start;
 
             /* Set the changed object back to the list */
@@ -516,12 +523,12 @@ void Scene::write(MasterTimer* timer, QByteArray* universes)
             ready--;
 
             /* Write the target value to the universe */
-            universes->data()[sch.address] = sch.target;
+            universes->write(sch.address, sch.target, sch.group);
         }
         else
         {
             /* Write the next value to the universe buffer */
-            universes->data()[sch.address] = nextValue(&sch);
+            universes->write(sch.address, nextValue(&sch), sch.group);
         }
 
         /* Set the changed object back to the list */
@@ -536,30 +543,30 @@ void Scene::write(MasterTimer* timer, QByteArray* universes)
         stop();
 }
 
-void Scene::writeValues(QByteArray* universes, t_fixture_id fxi_id)
+void Scene::writeValues(UniverseArray* universes, t_fixture_id fxi_id)
 {
     Q_ASSERT(universes != NULL);
 
-    for (int i = 0; i < m_values.count(); i++)
+    for (int i = 0; i < m_values.size(); i++)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
-            quint32 addr = m_armedChannels[i].address;
-            universes->data()[addr] = m_values[i].value;
+            SceneChannel sch = m_armedChannels[i];
+            universes->write(sch.address, m_values[i].value, sch.group);
         }
     }
 }
 
-void Scene::writeZeros(QByteArray* universes, t_fixture_id fxi_id)
+void Scene::writeZeros(UniverseArray* universes, t_fixture_id fxi_id)
 {
     Q_ASSERT(universes != NULL);
 
-    for (int i = 0; i < m_values.count(); i++)
+    for (int i = 0; i < m_values.size(); i++)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
-            quint32 addr = m_armedChannels[i].address;
-            universes->data()[addr] = 0;
+            SceneChannel sch = m_armedChannels[i];
+            universes->write(sch.address, 0, sch.group);
         }
     }
 }
