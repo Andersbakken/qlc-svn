@@ -196,6 +196,9 @@ void AddFixture::fillTree(const QString& selectManufacturer,
         }
     }
 
+    /* Sort the tree A-Z BEFORE appending a generic entry */
+    m_tree->sortItems(0, Qt::AscendingOrder);
+
     /* Create a parent and a child for generic dimmer device */
     parent = new QTreeWidgetItem(m_tree);
     parent->setText(KColumnName, KXMLFixtureGeneric);
