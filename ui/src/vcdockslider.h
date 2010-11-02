@@ -22,15 +22,19 @@
 #ifndef VCDOCKSLIDER_H
 #define VCDOCKSLIDER_H
 
-#include <QWidget>
+#include <QFrame>
 #include <QTime>
 
 #include "qlctypes.h"
-#include "ui_vcdockslider.h"
 
-class VCDockSlider : public QFrame, public Ui_VCDockSlider
+class QToolButton;
+class QSlider;
+class QLabel;
+
+class VCDockSlider : public QFrame
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCDockSlider)
 
     /*********************************************************************
      * Initialization
@@ -39,13 +43,6 @@ public:
     VCDockSlider(QWidget* parent, quint32 bus);
     ~VCDockSlider();
 
-private:
-    Q_DISABLE_COPY(VCDockSlider)
-
-    /*********************************************************************
-     * Properties
-     *********************************************************************/
-public:
     /** Refresh properties from VCProperties */
     void refreshProperties();
 
@@ -53,36 +50,38 @@ public:
      * Bus
      *********************************************************************/
 protected slots:
+    /** Catches bus name changes */
     void slotBusNameChanged(quint32 bus, const QString& name);
+
+    /** Catches bus value changes */
     void slotBusValueChanged(quint32 bus, quint32 value);
 
 protected:
     quint32 m_bus;
 
-    /*********************************************************************
-     * User input slots
-     *********************************************************************/
+    /*************************************************************************
+     * UI Controls
+     *************************************************************************/
 protected slots:
+    /** Catches slider value changes */
     void slotSliderValueChanged(int value);
 
-    /*********************************************************************
-     * Tap button
-     *********************************************************************/
-protected slots:
+    /** Catches tap button clicks */
     void slotTapButtonClicked();
 
 protected:
-    /** Time object to get the elapsed time between tap button clicks */
+    QLabel* m_valueLabel;
+    QSlider* m_slider;
+    QToolButton* m_tapButton;
+
     QTime m_time;
 
-    /*********************************************************************
+    /*************************************************************************
      * External input
-     *********************************************************************/
+     *************************************************************************/
 protected slots:
     /** Slot for external input value change signals */
-    void slotInputValueChanged(quint32 universe,
-                               quint32 channel,
-                               uchar value);
+    void slotInputValueChanged(quint32 universe, quint32 channel, uchar value);
 };
 
 #endif

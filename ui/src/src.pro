@@ -90,7 +90,6 @@ FORMS += aboutbox.ui \
          selectinputchannel.ui \
          vcbuttonproperties.ui \
          vccuelistproperties.ui \
-         vcdockslider.ui \
          vcproperties.ui \
          vcsliderproperties.ui \
          vcxypadfixtureeditor.ui \

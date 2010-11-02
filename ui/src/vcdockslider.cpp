@@ -19,11 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QPushButton>
+#include <QToolButton>
 #include <QSlider>
 #include <QString>
 #include <QLabel>
-#include <QtXml>
 
 #include "qlcfile.h"
 
@@ -44,10 +43,31 @@ extern App* _app;
 
 VCDockSlider::VCDockSlider(QWidget* parent, quint32 bus) : QFrame(parent)
 {
-    Q_ASSERT(bus == Bus::defaultFade() || bus == Bus::defaultHold());
+    setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
-    setupUi(this);
+    new QVBoxLayout(this);
+    layout()->setMargin(0);
+
+    m_valueLabel = new QLabel(this);
+    m_valueLabel->setAlignment(Qt::AlignHCenter);
+    layout()->addWidget(m_valueLabel);
+
+    QHBoxLayout* hbox = new QHBoxLayout;
+    hbox->addSpacing(1);
+    m_slider = new QSlider(this);
     m_slider->setStyle(App::saneStyle());
+    m_slider->setInvertedAppearance(true);
+    connect(m_slider, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSliderValueChanged(int)));
+    m_slider->setPageStep(1);
+    hbox->addWidget(m_slider);
+    hbox->addSpacing(1);
+    layout()->addItem(hbox);
+
+    m_tapButton = new QToolButton(this);
+    layout()->addWidget(m_tapButton);
+    connect(m_tapButton, SIGNAL(clicked()), this, SLOT(slotTapButtonClicked()));
 
     m_bus = bus;
 
@@ -58,20 +78,8 @@ VCDockSlider::VCDockSlider(QWidget* parent, quint32 bus) : QFrame(parent)
             this, SLOT(slotBusValueChanged(quint32, quint32)));
 
     /* External input connection */
-    connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32,
-                                     quint32,
-                                     uchar)),
-            this, SLOT(slotInputValueChanged(quint32,
-                                             quint32,
-                                             uchar)));
-
-    /* Slider connections */
-    connect(m_slider, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSliderValueChanged(int)));
-
-    /* Tap button clicks */
-    connect(m_tapButton, SIGNAL(clicked()),
-            this, SLOT(slotTapButtonClicked()));
+    connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+            this, SLOT(slotInputValueChanged(quint32, quint32, uchar)));
 
     /* Property refresh has effect on bus value, store it now and restore below */
     quint32 busValue = Bus::instance()->value(m_bus);
@@ -127,8 +135,11 @@ void VCDockSlider::slotBusNameChanged(quint32 bus, const QString& name)
     {
         QString str(name);
         if (str.simplified().isEmpty() == true)
-            str.sprintf("Bus %.2d", m_bus + 1);
+            str = tr("Bus %1").arg(m_bus + 1);
+        str = str.replace(" ", "\n");
         m_tapButton->setText(str);
+
+        setToolTip(str + " " + tr("time"));
     }
 }
 
@@ -152,7 +163,7 @@ void VCDockSlider::slotSliderValueChanged(int value)
     Bus::instance()->setValue(m_bus, m_slider->value());
 
     /* Set value to label */
-    num.sprintf("%.2fs", float(value) / float(MasterTimer::frequency()));
+    num.sprintf("%.2f", float(value) / float(MasterTimer::frequency()));
     m_valueLabel->setText(num);
 
     /* Find out this slider's input universe & channel */
@@ -197,9 +208,8 @@ void VCDockSlider::slotTapButtonClicked()
  * External input
  *****************************************************************************/
 
-void VCDockSlider::slotInputValueChanged(quint32 universe,
-        quint32 channel,
-        uchar value)
+void VCDockSlider::slotInputValueChanged(quint32 universe, quint32 channel,
+                                         uchar value)
 {
     quint32 uni;
     quint32 ch;
