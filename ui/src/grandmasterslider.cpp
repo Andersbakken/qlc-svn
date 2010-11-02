@@ -49,6 +49,7 @@ GrandMasterSlider::GrandMasterSlider(QWidget* parent) : QFrame(parent)
     m_slider = new QSlider(this);
     hbox->addWidget(m_slider);
     m_slider->setRange(0, UCHAR_MAX);
+    m_slider->setStyle(App::saneStyle());
     connect(m_slider, SIGNAL(valueChanged(int)),
             this, SLOT(slotValueChanged(int)));
     hbox->addSpacing(1);
