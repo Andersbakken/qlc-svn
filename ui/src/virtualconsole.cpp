@@ -283,6 +283,9 @@ void VirtualConsole::initActions()
                                         tr("Settings"), this);
     connect(m_toolsSettingsAction, SIGNAL(triggered(bool)),
             this, SLOT(slotToolsSettings()));
+    // Prevent this action from ending up to the application menu on OSX
+    // and crashing the app after VC window is closed.
+    m_toolsSettingsAction->setMenuRole(QAction::NoRole);
 
     m_toolsSlidersAction = new QAction(QIcon(":/slider.png"),
                                        tr("Default sliders"), this);
@@ -450,8 +453,8 @@ void VirtualConsole::initMenuBar()
 
     /* Menubar */
 #ifndef __APPLE__
-    menuBar = new QMenuBar(widget);
-    vbox->addWidget(menuBar);
+    menuBar = new QMenuBar(this);
+    //vbox->addWidget(menuBar);
 #else
     menuBar = new QMenuBar(this);
 #endif
