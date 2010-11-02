@@ -690,7 +690,7 @@ QString VCSlider::bottomLabelText()
 
 void VCSlider::setTapButtonText(const QString& text)
 {
-    m_tapButton->setText(text);
+    m_tapButton->setText(QString(text).replace(" ", "\n"));
 }
 
 QString VCSlider::tapButtonText()
@@ -867,7 +867,8 @@ bool VCSlider::loadXML(const QDomElement* root)
 
     /* Set the mode last, after everything else has been set */
     setSliderMode(sliderMode);
-    setCaption(caption);
+    if (sliderMode != Bus)
+        setCaption(caption);
 
     return true;
 }
