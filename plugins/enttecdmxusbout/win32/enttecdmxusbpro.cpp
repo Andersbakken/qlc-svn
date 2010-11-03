@@ -32,6 +32,7 @@ EnttecDMXUSBPro::EnttecDMXUSBPro(QObject* parent,
         : QObject(parent)
 {
     m_name = QString(info.Description);
+    m_serial = QString(info.SerialNumber);
     m_handle = NULL;
     m_id = id;
 
@@ -59,8 +60,7 @@ bool EnttecDMXUSBPro::open()
         {
             if (initializePort() == false)
             {
-                qWarning() << "Unable to initialize port."
-                << "Closing widget.";
+                qWarning() << "Unable to initialize port." << "Closing widget.";
                 close();
                 return false;
             }
@@ -71,8 +71,7 @@ bool EnttecDMXUSBPro::open()
         }
         else
         {
-            qWarning() << "Unable to open" << name()
-            << ". Error:" << status;
+            qWarning() << "Unable to open" << name() << ". Error:" << status;
             return false;
         }
     }
@@ -95,8 +94,7 @@ bool EnttecDMXUSBPro::close()
         }
         else
         {
-            qWarning() << "Unable to close" << name()
-            << ". Error:" << status;
+            qWarning() << "Unable to close" << name() << ". Error:" << status;
             return false;
         }
     }
@@ -116,9 +114,10 @@ bool EnttecDMXUSBPro::isOpen()
 
 bool EnttecDMXUSBPro::initializePort()
 {
+#ifdef WIN32
     FT_STATUS status = FT_OK;
 
-    /* Can't get the serial unless the widget is open */
+    /* Can't initialize unless the widget is open */
     if (isOpen() == false)
     {
         qWarning() << "Unable to initialize because widget is closed";
@@ -163,6 +162,7 @@ bool EnttecDMXUSBPro::initializePort()
 
     /* Clear TX RX buffers */
     FT_Purge(m_handle, FT_PURGE_TX | FT_PURGE_RX);
+#endif // WIN32
 
     return true;
 }
@@ -193,7 +193,7 @@ bool EnttecDMXUSBPro::extractSerial()
     DWORD written = 0;
     DWORD read = 0;
     FT_STATUS status = FT_OK;
-    QString serial("Unknown");
+    bool retval = true;
 
     /* Can't get the serial unless the widget is open */
     if (isOpen() == false)
@@ -203,12 +203,14 @@ bool EnttecDMXUSBPro::extractSerial()
     }
 
     /* Write "Get Widget Serial Number Request" message */
-    status = FT_Write(m_handle, request, sizeof(request), &written);
-    if (status != FT_OK)
+    while (written != sizeof(request) || status != FT_OK)
     {
-        qWarning() << "Unable to write serial request to"
-        << name() << ". Error:" << status;
-        return false;
+        status = FT_Write(m_handle, request, sizeof(request), &written);
+        if (status != FT_OK || written == 0)
+        {
+            qWarning() << "Unable to write serial request to" << name()
+                       << ". Error:" << status;
+        }
     }
 
     /* Read "Get Widget Serial Number Reply" message */
@@ -218,9 +220,8 @@ bool EnttecDMXUSBPro::extractSerial()
         /* Reply message is:
            { 0x7E 0x0A 0x04 0x00 0xNN, 0xNN, 0xNN, 0xNN 0xE7 }
            Where 0xNN represent widget's unique serial number in BCD */
-        if (reply[0] == 0x7e && reply[1] == 0x0a &&
-                reply[2] == 0x04 && reply[3] == 0x00 &&
-                reply[8] == 0xe7)
+        if (reply[0] == 0x7e && reply[1] == 0x0a && reply[2] == 0x04 &&
+            reply[3] == 0x00 && reply[8] == 0xe7)
         {
             m_serial.sprintf("%x%.2x%.2x%.2x",
                              reply[7], reply[6], reply[5], reply[4]);
@@ -228,17 +229,17 @@ bool EnttecDMXUSBPro::extractSerial()
         else
         {
             qWarning() << "Malformed serial reply from" << name();
-            return false;
+            retval = false;
         }
     }
     else
     {
-        qWarning() << "Unable to read serial reply from"
-        << name() << ". Error:" << status;
-        return false;
+        qWarning() << "Unable to read serial reply from" << name()
+                   << ". Error:" << status;
+        retval = false;
     }
 
-    return true;
+    return retval;
 }
 
 /****************************************************************************
@@ -266,12 +267,11 @@ bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
     request.append(0xe7); // Stop byte
 
     /* Write "Output Only Send DMX Packet Request" message */
-    status = FT_Write(m_handle, request.data(), request.size(),
-                      &written);
+    status = FT_Write(m_handle, request.data(), request.size(), &written);
     if (status != FT_OK)
     {
-        qWarning() << "Unable to write DMX request to"
-        << name() << ". Error:" << status;
+        qWarning() << "Unable to write DMX request to" << name()
+                   << ". Error:" << status;
         return false;
     }
     else

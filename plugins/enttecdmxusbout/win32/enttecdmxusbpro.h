@@ -22,8 +22,11 @@
 #ifndef ENTTECDMXUSBPRO_H
 #define ENTTECDMXUSBPRO_H
 
+#ifdef WIN32
+#   include <windows.h>
+#endif
+
 #include <QByteArray>
-#include <windows.h>
 #include <QObject>
 
 #include "enttecdmxusbwidget.h"

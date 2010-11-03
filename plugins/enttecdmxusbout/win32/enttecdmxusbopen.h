@@ -23,8 +23,11 @@
 #ifndef ENTTECDMXUSBOPEN_H
 #define ENTTECDMXUSBOPEN_H
 
+#ifdef WIN32
+#   include <windows.h>
+#endif
+
 #include <QByteArray>
-#include <windows.h>
 #include <QThread>
 #include <QMutex>
 

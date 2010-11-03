@@ -30,13 +30,13 @@
 EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent,
                                    const FT_DEVICE_LIST_INFO_NODE& info,
                                    DWORD id)
-        : QThread(parent),
-        m_handle(0),
-        m_id(id),
-        m_serial(QString(info.SerialNumber)),
-        m_name(QString(info.Description)),
-        m_running(false),
-        m_universe(QByteArray(513, 0))
+    : QThread(parent)
+    , m_handle(0)
+    , m_id(id)
+    , m_serial(QString(info.SerialNumber))
+    , m_name(QString(info.Description))
+    , m_running(false)
+    , m_universe(QByteArray(513, 0))
 {
 }
 
@@ -59,8 +59,7 @@ bool EnttecDMXUSBOpen::open()
         {
             if (initializePort() == false)
             {
-                qWarning() << "Unable to initialize port."
-                << "Closing widget.";
+                qWarning() << "Unable to initialize port." << "Closing widget.";
                 close();
                 return false;
             }
@@ -72,8 +71,7 @@ bool EnttecDMXUSBOpen::open()
         }
         else
         {
-            qWarning() << "Unable to open" << name()
-            << ". Error:" << status;
+            qWarning() << "Unable to open" << name() << ". Error:" << status;
             return false;
         }
     }
@@ -100,8 +98,7 @@ bool EnttecDMXUSBOpen::close()
         }
         else
         {
-            qWarning() << "Unable to close" << name()
-            << ". Error:" << status;
+            qWarning() << "Unable to close" << name() << ". Error:" << status;
             return false;
         }
     }
@@ -223,7 +220,7 @@ void EnttecDMXUSBOpen::run()
         if (isOpen() == false)
         {
             qWarning() << "Writer thread terminated."
-            << "Port closed unexpectedly.";
+                       << "Port closed unexpectedly.";
             m_running = false;
             return;
         }
