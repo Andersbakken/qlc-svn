@@ -45,6 +45,12 @@ protected:
     QLabel* m_valueLabel;
     QSlider* m_slider;
     QLabel* m_nameLabel;
+
+    /*************************************************************************
+     * External input
+     *************************************************************************/
+protected slots:
+    void slotInputValueChanged(quint32 universe, quint32 channel, uchar value);
 };
 
 #endif

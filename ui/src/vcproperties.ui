@@ -155,6 +155,9 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QRadioButton" name="m_gmIntensityRadio">
+            <property name="toolTip">
+             <string>Apply Grand Master only to Intensity channels.</string>
+            </property>
             <property name="text">
              <string>Intensity</string>
             </property>
@@ -162,6 +165,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="m_gmAllChannelsRadio">
+            <property name="toolTip">
+             <string>Apply Grand Master to all channels.</string>
+            </property>
             <property name="text">
              <string>All channels</string>
             </property>
@@ -178,6 +184,9 @@
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QRadioButton" name="m_gmReduceRadio">
+            <property name="toolTip">
+             <string>Make Grand Master reduce levels by a percentage.</string>
+            </property>
             <property name="text">
              <string>Reduce</string>
             </property>
@@ -185,6 +194,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="m_gmLimitRadio">
+            <property name="toolTip">
+             <string>Make Grand Master limit the maximum channel values.</string>
+            </property>
             <property name="text">
              <string>Limit</string>
             </property>
@@ -208,6 +220,9 @@
           </item>
           <item row="0" column="2" colspan="2">
            <widget class="QLineEdit" name="m_gmInputUniverseEdit">
+            <property name="toolTip">
+             <string>Input universe for Grand Master slider.</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -222,6 +237,9 @@
           </item>
           <item row="1" column="2" colspan="2">
            <widget class="QLineEdit" name="m_gmInputChannelEdit">
+            <property name="toolTip">
+             <string>Input channel for Grand Master slider.</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -242,16 +260,25 @@
           </item>
           <item row="2" column="2">
            <widget class="QPushButton" name="m_autoDetectGrandMasterInputButton">
+            <property name="toolTip">
+             <string>When toggled, you can move an external slider/knob to assign it to the Grand Master slider.</string>
+            </property>
             <property name="text">
              <string>Auto Detect</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
            </widget>
           </item>
           <item row="2" column="3">
            <widget class="QPushButton" name="m_chooseGrandMasterInputButton">
+            <property name="toolTip">
+             <string>Choose an external input universe &amp; channel that the Grand Master slider should listen to.</string>
+            </property>
             <property name="text">
              <string>Choose...</string>
             </property>
@@ -335,6 +362,9 @@
           </item>
           <item row="4" column="1" colspan="2">
            <widget class="QLineEdit" name="m_fadeInputUniverseEdit">
+            <property name="toolTip">
+             <string>Input universe for default fade.</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -349,6 +379,9 @@
           </item>
           <item row="5" column="1" colspan="2">
            <widget class="QLineEdit" name="m_fadeInputChannelEdit">
+            <property name="toolTip">
+             <string>Input channel for default fade.</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -468,6 +501,9 @@
           </item>
           <item row="4" column="1" colspan="2">
            <widget class="QLineEdit" name="m_holdInputUniverseEdit">
+            <property name="toolTip">
+             <string>Input universe for default hold.</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -482,6 +518,9 @@
           </item>
           <item row="5" column="1" colspan="2">
            <widget class="QLineEdit" name="m_holdInputChannelEdit">
+            <property name="toolTip">
+             <string>Input channel for default hold.</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>

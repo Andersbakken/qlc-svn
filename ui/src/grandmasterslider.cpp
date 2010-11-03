@@ -29,6 +29,7 @@
 #include "universearray.h"
 #include "vcproperties.h"
 #include "outputmap.h"
+#include "inputmap.h"
 #include "app.h"
 
 extern App* _app;
@@ -65,6 +66,10 @@ GrandMasterSlider::GrandMasterSlider(QWidget* parent) : QFrame(parent)
 
     // Get the current grand master value
     m_slider->setValue(_app->outputMap()->peekUniverses()->gMValue());
+
+    /* External input connection */
+    connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+            this, SLOT(slotInputValueChanged(quint32, quint32, uchar)));
 
     refreshProperties();
 }
@@ -129,3 +134,18 @@ void GrandMasterSlider::slotValueChanged(int value)
 
     m_valueLabel->setText(str);
 }
+
+/*****************************************************************************
+ * External input
+ *****************************************************************************/
+
+void GrandMasterSlider::slotInputValueChanged(quint32 universe, quint32 channel,
+                                              uchar value)
+{
+    if (universe == VirtualConsole::properties().grandMasterInputUniverse() &&
+        channel == VirtualConsole::properties().grandMasterInputChannel())
+    {
+        m_slider->setValue(value);
+    }
+}
+

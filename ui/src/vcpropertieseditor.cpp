@@ -288,9 +288,6 @@ void VCPropertiesEditor::slotAutoDetectGrandMasterInputToggled(bool checked)
 {
     if (checked == true)
     {
-        if (m_autoDetectGrandMasterInputButton->isChecked() == true)
-            m_autoDetectGrandMasterInputButton->toggle();
-
         connect(_app->inputMap(),
                 SIGNAL(inputValueChanged(quint32,quint32,uchar)),
                 this, SLOT(slotGrandMasterInputValueChanged(quint32,quint32)));

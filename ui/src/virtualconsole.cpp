@@ -455,7 +455,7 @@ void VirtualConsole::initMenuBar()
     /* Menubar */
 #ifndef __APPLE__
     menuBar = new QMenuBar(this);
-    //vbox->addWidget(menuBar);
+    vbox->addWidget(menuBar);
 #else
     menuBar = new QMenuBar(this);
 #endif
