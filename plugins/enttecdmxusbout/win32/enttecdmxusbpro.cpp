@@ -36,9 +36,12 @@ EnttecDMXUSBPro::EnttecDMXUSBPro(QObject* parent,
     m_handle = NULL;
     m_id = id;
 
+#ifndef __APPLE__
+    // Apple crashes with this for an unknown reason
     open();
     extractSerial();
     close();
+#endif
 }
 
 EnttecDMXUSBPro::~EnttecDMXUSBPro()
