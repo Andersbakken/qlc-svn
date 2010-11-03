@@ -60,6 +60,16 @@ MasterTimer::~MasterTimer()
     stop();
 }
 
+quint32 MasterTimer::frequency()
+{
+    return s_frequency;
+}
+
+OutputMap* MasterTimer::outputMap() const
+{
+    return m_outputMap;
+}
+
 /*****************************************************************************
  * Functions
  *****************************************************************************/
@@ -79,9 +89,9 @@ void MasterTimer::startFunction(Function* function, bool initiatedByOtherFunctio
 
     m_functionListMutex.lock();
     if (m_functionList.contains(function) == false)
-    {        
+    {
         m_functionList.append(function);
-        function->setInitiatedByOtherFunction(initiatedByOtherFunction);        
+        function->setInitiatedByOtherFunction(initiatedByOtherFunction);
     }
     m_functionListMutex.unlock();
 }
@@ -156,9 +166,8 @@ void MasterTimer::run()
     tod = gettimeofday(finish, NULL);
     if (tod == -1)
     {
-        qWarning() << "Unable to get the time accurately:"
-        << strerror(errno)
-        << "- Stopping MasterTimer";
+        qWarning() << "Unable to get the time accurately:" << strerror(errno)
+                   << "- Stopping MasterTimer";
         m_running = false;
     }
     else
@@ -175,8 +184,7 @@ void MasterTimer::run()
         tod = gettimeofday(current, NULL);
         if (tod == -1)
         {
-            qWarning("Unable to get the current time: %s",
-                     strerror(errno));
+            qWarning("Unable to get the current time: %s", strerror(errno));
             m_running = false;
             break;
         }
@@ -204,8 +212,7 @@ void MasterTimer::run()
             tod = gettimeofday(current, NULL);
             if (tod == -1)
             {
-                qWarning("Unable to get the current time: %s",
-                         strerror(errno));
+                qWarning("Unable to get the current time: %s", strerror(errno));
                 m_running = false;
                 break;
             }

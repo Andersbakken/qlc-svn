@@ -35,46 +35,32 @@ class MasterTimer : public QThread
     Q_OBJECT
     Q_DISABLE_COPY(MasterTimer)
 
-    /*********************************************************************
+    /*************************************************************************
      * Initialization
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
-     * Create a new MasterTimer instance. FC takes care of running
-     * functions and driving internal DMX universe dumping to plugins.
+     * Create a new MasterTimer instance. MasterTimer takes care of running
+     * functions and driving internal DMX universe dumping to output plugins.
      *
      * @param parent The parent that owns this instance
-     * @param outputMap A OutputMap instance used to write function values
+     * @param outputMap An OutputMap instance used to write function values
      */
     MasterTimer(QObject* parent, OutputMap* outputMap);
 
     /** Destroy a MasterTimer instance */
     virtual ~MasterTimer();
 
-    /*********************************************************************
-     * Timer frequency
-     *********************************************************************/
-public:
     /** Get the timer tick frequency in Hertz */
-    static quint32 frequency() {
-        return s_frequency;
-    }
+    static quint32 frequency();
 
-private:
-    static const quint32 s_frequency;
-
-    /*********************************************************************
-     * OutputMap
-     *********************************************************************/
-public:
     /** Get the output map object that MasterTimer uses for DMX output */
-    OutputMap* outputMap() const {
-        return m_outputMap;
-    }
+    OutputMap* outputMap() const;
 
 protected:
     /** An OutputMap instance that routes all values to correct plugins. */
     OutputMap* m_outputMap;
+    static const quint32 s_frequency;
 
     /*********************************************************************
      * Functions
@@ -99,9 +85,9 @@ protected:
     /** Flag for stopping all functions */
     bool m_stopAllFunctions;
 
-    /*********************************************************************
+    /*************************************************************************
      * DMX Sources
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
      * Register a DMXSource for additional DMX data output (sliders and
@@ -127,9 +113,9 @@ protected:
     /** Mutex that guards access to m_functionList */
     QMutex m_dmxSourceListMutex;
 
-    /*********************************************************************
+    /*************************************************************************
      * Main thread
-     *********************************************************************/
+     *************************************************************************/
 public:
     /** Start the timer */
     void start(Priority priority = InheritPriority);
@@ -151,7 +137,7 @@ protected:
     void runDMXSources();
 
 protected:
-    /** Running status, telling, whether the FC has been started or not */
+    /** Running status, telling, whether the MasterTimer has been started */
     bool m_running;
 };
 
