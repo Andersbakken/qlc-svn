@@ -41,10 +41,12 @@
 #include <QList>
 #include <QtXml>
 
+#include "vcpropertieseditor.h"
 #include "addvcbuttonmatrix.h"
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "vcdockslider.h"
+#include "vcsoloframe.h"
 #include "mastertimer.h"
 #include "vcdockarea.h"
 #include "vccuelist.h"
@@ -52,7 +54,6 @@
 #include "vcslider.h"
 #include "vcframe.h"
 #include "vclabel.h"
-#include "vcsoloframe.h"
 #include "vcxypad.h"
 #include "app.h"
 #include "doc.h"

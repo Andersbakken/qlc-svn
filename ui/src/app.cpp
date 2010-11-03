@@ -965,6 +965,7 @@ void App::newDocument()
 {
     initDoc();
     VirtualConsole::resetContents();
+    outputMap()->resetUniverses();
     doc()->resetModified();
 }
 

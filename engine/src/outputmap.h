@@ -143,6 +143,11 @@ public:
      */
     const UniverseArray* peekUniverses() const;
 
+    /**
+     * Reset all universes (useful when starting from scratch)
+     */
+    void resetUniverses();
+
 protected:
     /** The values of all universes */
     UniverseArray* m_universeArray;

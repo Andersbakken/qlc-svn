@@ -25,7 +25,9 @@
 #include <QLabel>
 
 #include "grandmasterslider.h"
+#include "virtualconsole.h"
 #include "universearray.h"
+#include "vcproperties.h"
 #include "outputmap.h"
 #include "app.h"
 
@@ -62,7 +64,7 @@ GrandMasterSlider::GrandMasterSlider(QWidget* parent) : QFrame(parent)
     layout()->addWidget(m_nameLabel);
 
     // Get the current grand master value
-    m_slider->setValue(_app->outputMap()->peekUniverses()->grandMasterValue());
+    m_slider->setValue(_app->outputMap()->peekUniverses()->gMValue());
 
     refreshProperties();
 }
@@ -73,10 +75,9 @@ GrandMasterSlider::~GrandMasterSlider()
 
 void GrandMasterSlider::refreshProperties()
 {
-    const UniverseArray* ua = _app->outputMap()->peekUniverses();
     QString tooltip;
 
-    switch (ua->grandMasterValueMode())
+    switch (VirtualConsole::properties().grandMasterValueMode())
     {
         case UniverseArray::GMLimit:
             tooltip += tr("Limits the maximum value of");
@@ -88,7 +89,7 @@ void GrandMasterSlider::refreshProperties()
 
     tooltip += QString(" ");
 
-    switch (ua->grandMasterChannelMode())
+    switch (VirtualConsole::properties().grandMasterChannelMode())
     {
         case UniverseArray::GMIntensity:
             tooltip += tr("intensity channels");
@@ -99,14 +100,32 @@ void GrandMasterSlider::refreshProperties()
     }
 
     setToolTip(tooltip);
+
+    /* Set properties to UniverseArray */
+    UniverseArray* uni = _app->outputMap()->claimUniverses();
+    uni->setGMChannelMode(VirtualConsole::properties().grandMasterChannelMode());
+    uni->setGMValueMode(VirtualConsole::properties().grandMasterValueMode());
+    _app->outputMap()->releaseUniverses();
 }
 
 void GrandMasterSlider::slotValueChanged(int value)
 {
-    m_valueLabel->setText(QString("%1").arg(value, 3, 10, QChar('0')));
-
     // Write new grand master value to universes
     UniverseArray* uni = _app->outputMap()->claimUniverses();
-    uni->setGrandMasterValue(value);
+    uni->setGMValue(value);
     _app->outputMap()->releaseUniverses();
+
+    // Display value
+    QString str;
+    if (VirtualConsole::properties().grandMasterValueMode() == UniverseArray::GMLimit)
+    {
+        str = QString("%1").arg(value, 3, 10, QChar('0'));
+    }
+    else
+    {
+        int p = floor(((double(value) / double(UCHAR_MAX)) * double(100)) + 0.5);
+        str = QString("%1%").arg(p, 3, 10, QChar('0'));
+    }
+
+    m_valueLabel->setText(str);
 }

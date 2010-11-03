@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>612</width>
-    <height>338</height>
+    <width>402</width>
+    <height>342</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="Layout">
       <attribute name="title">
        <string>Layout</string>
       </attribute>
@@ -27,7 +27,7 @@
        <item row="0" column="0">
         <widget class="QGroupBox" name="m_keyboardGroup">
          <property name="title">
-          <string>Keyboard</string>
+          <string>Keyboard in operate mode</string>
          </property>
          <layout class="QVBoxLayout">
           <item>
@@ -36,7 +36,7 @@
              <string>Make virtual console to take exclusive keyboard control during operate mode</string>
             </property>
             <property name="text">
-             <string>Grab keyboard in operate mode</string>
+             <string>Grab keyboard</string>
             </property>
            </widget>
           </item>
@@ -46,7 +46,7 @@
              <string>Prevent flickering when a keyboard hotkey has been pressed in operate mode</string>
             </property>
             <property name="text">
-             <string>Turn off key repeat in operate mode</string>
+             <string>Turn off key repeat</string>
             </property>
            </widget>
           </item>
@@ -142,11 +142,131 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="GrandMaster">
+      <attribute name="title">
+       <string>Grand Master</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="m_gmChannelsGroup">
+         <property name="title">
+          <string>Channels</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QRadioButton" name="m_gmIntensityRadio">
+            <property name="text">
+             <string>Intensity</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="m_gmAllChannelsRadio">
+            <property name="text">
+             <string>All channels</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="m_gmValuesGroup">
+         <property name="title">
+          <string>Values</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="m_gmReduceRadio">
+            <property name="text">
+             <string>Reduce</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="m_gmLimitRadio">
+            <property name="text">
+             <string>Limit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>External Input</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_gmInputUniverseLabel">
+            <property name="text">
+             <string>Input Universe</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" colspan="2">
+           <widget class="QLineEdit" name="m_gmInputUniverseEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="m_gmInputChannelLabel">
+            <property name="text">
+             <string>Input Channel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" colspan="2">
+           <widget class="QLineEdit" name="m_gmInputChannelEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>165</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="m_autoDetectGrandMasterInputButton">
+            <property name="text">
+             <string>Auto Detect</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QPushButton" name="m_chooseGrandMasterInputButton">
+            <property name="text">
+             <string>Choose...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="DefaultSliders">
       <attribute name="title">
-       <string>Default sliders</string>
+       <string>Default Fade</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QGroupBox" name="m_defaultFadeGroup">
          <property name="title">
@@ -160,7 +280,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" colspan="3">
+          <item row="0" column="1" colspan="2">
            <widget class="QSpinBox" name="m_fadeLowSpin">
             <property name="toolTip">
              <string>Lowest value that can be set to the 'fade' bus with the default sliders</string>
@@ -180,7 +300,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="3">
+          <item row="1" column="1" colspan="2">
            <widget class="QSpinBox" name="m_fadeHighSpin">
             <property name="toolTip">
              <string>Highest value that can be set to the 'fade' bus with the default sliders</string>
@@ -199,65 +319,55 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="4">
+          <item row="2" column="0" colspan="3">
            <widget class="Line" name="line">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Input universe</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="3">
+          <item row="4" column="1" colspan="2">
            <widget class="QLineEdit" name="m_fadeInputUniverseEdit">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Input channel</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1" colspan="3">
+          <item row="5" column="1" colspan="2">
            <widget class="QLineEdit" name="m_fadeInputChannelEdit">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2">
+          <item row="6" column="0">
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>118</width>
+              <width>117</width>
               <height>20</height>
              </size>
             </property>
            </spacer>
           </item>
-          <item row="5" column="3">
-           <widget class="QPushButton" name="m_chooseFadeInputButton">
-            <property name="toolTip">
-             <string>Choose an external input universe &amp; channel that the default fade slider should listen to.</string>
-            </property>
-            <property name="text">
-             <string>Choose...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
+          <item row="6" column="1">
            <widget class="QPushButton" name="m_autoDetectFadeInputButton">
             <property name="toolTip">
              <string>When toggled, you can move an external slider/knob to assign it to the default fade slider.</string>
@@ -270,9 +380,26 @@
             </property>
            </widget>
           </item>
+          <item row="6" column="2">
+           <widget class="QPushButton" name="m_chooseFadeInputButton">
+            <property name="toolTip">
+             <string>Choose an external input universe &amp; channel that the default fade slider should listen to.</string>
+            </property>
+            <property name="text">
+             <string>Choose...</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Default Hold</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QGroupBox" name="m_defaultHoldGroup">
          <property name="title">
@@ -286,7 +413,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" colspan="3">
+          <item row="0" column="1" colspan="2">
            <widget class="QSpinBox" name="m_holdLowSpin">
             <property name="toolTip">
              <string>Lowest value that can be set to the 'hold' bus with the default sliders</string>
@@ -306,7 +433,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="3">
+          <item row="1" column="1" colspan="2">
            <widget class="QSpinBox" name="m_holdHighSpin">
             <property name="toolTip">
              <string>Highest value that can be set to the 'hold' bus with the default sliders</string>
@@ -325,42 +452,42 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="4">
+          <item row="2" column="0" colspan="3">
            <widget class="Line" name="line_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_5">
             <property name="text">
              <string>Input universe</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="3">
+          <item row="4" column="1" colspan="2">
            <widget class="QLineEdit" name="m_holdInputUniverseEdit">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
              <string>Input channel</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1" colspan="3">
+          <item row="5" column="1" colspan="2">
            <widget class="QLineEdit" name="m_holdInputChannelEdit">
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2">
+          <item row="6" column="0">
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -373,17 +500,7 @@
             </property>
            </spacer>
           </item>
-          <item row="5" column="3">
-           <widget class="QPushButton" name="m_chooseHoldInputButton">
-            <property name="toolTip">
-             <string>Choose an external input universe &amp; channel that the default hold slider should listen to.</string>
-            </property>
-            <property name="text">
-             <string>Choose...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
+          <item row="6" column="1">
            <widget class="QPushButton" name="m_autoDetectHoldInputButton">
             <property name="toolTip">
              <string>When toggled, you can move an external slider/knob to assign it to the default hold slider.</string>
@@ -393,6 +510,16 @@
             </property>
             <property name="checkable">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QPushButton" name="m_chooseHoldInputButton">
+            <property name="toolTip">
+             <string>Choose an external input universe &amp; channel that the default hold slider should listen to.</string>
+            </property>
+            <property name="text">
+             <string>Choose...</string>
             </property>
            </widget>
           </item>
@@ -456,8 +583,8 @@
    <slot>slotGrabKeyboardClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>57</x>
-     <y>72</y>
+     <x>79</x>
+     <y>98</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -472,8 +599,8 @@
    <slot>slotKeyRepeatOffClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>42</x>
-     <y>98</y>
+     <x>64</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -488,11 +615,11 @@
    <slot>slotGridClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>471</x>
-     <y>48</y>
+     <x>381</x>
+     <y>83</y>
     </hint>
     <hint type="destinationlabel">
-     <x>498</x>
+     <x>401</x>
      <y>49</y>
     </hint>
    </hints>
@@ -504,11 +631,11 @@
    <slot>slotGridXChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>439</x>
-     <y>74</y>
+     <x>370</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
-     <x>499</x>
+     <x>401</x>
      <y>80</y>
     </hint>
    </hints>
@@ -520,11 +647,11 @@
    <slot>slotGridYChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>447</x>
-     <y>102</y>
+     <x>370</x>
+     <y>134</y>
     </hint>
     <hint type="destinationlabel">
-     <x>497</x>
+     <x>401</x>
      <y>116</y>
     </hint>
    </hints>
@@ -536,8 +663,8 @@
    <slot>slotFadeLimitsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>151</x>
-     <y>81</y>
+     <x>347</x>
+     <y>103</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -552,8 +679,8 @@
    <slot>slotFadeLimitsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>111</y>
+     <x>370</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -562,34 +689,130 @@
    </hints>
   </connection>
   <connection>
-   <sender>m_holdLowSpin</sender>
-   <signal>valueChanged(int)</signal>
+   <sender>m_autoDetectGrandMasterInputButton</sender>
+   <signal>toggled(bool)</signal>
    <receiver>VCPropertiesEditor</receiver>
-   <slot>slotHoldLimitsChanged()</slot>
+   <slot>slotAutoDetectGrandMasterInputToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>388</x>
-     <y>78</y>
+     <x>226</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
-     <x>497</x>
-     <y>75</y>
+     <x>3</x>
+     <y>246</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>m_holdHighSpin</sender>
-   <signal>valueChanged(int)</signal>
+   <sender>m_chooseGrandMasterInputButton</sender>
+   <signal>clicked()</signal>
    <receiver>VCPropertiesEditor</receiver>
-   <slot>slotHoldLimitsChanged()</slot>
+   <slot>slotChooseGrandMasterInputClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>406</x>
-     <y>111</y>
+     <x>327</x>
+     <y>259</y>
     </hint>
     <hint type="destinationlabel">
-     <x>495</x>
-     <y>145</y>
+     <x>3</x>
+     <y>285</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_autoDetectFadeInputButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotAutoDetectFadeInputToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>232</x>
+     <y>246</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>228</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_chooseFadeInputButton</sender>
+   <signal>clicked()</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotChooseFadeInputClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>346</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>275</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_autoDetectHoldInputButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotAutoDetectHoldInputToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>245</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>210</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_chooseHoldInputButton</sender>
+   <signal>clicked()</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotChooseHoldInputClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_gmIntensityRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotGrandMasterIntensityToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>83</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_gmReduceRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotGrandMasterReduceToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>106</y>
     </hint>
    </hints>
   </connection>
@@ -602,5 +825,13 @@
   <slot>slotGridYChanged(int)</slot>
   <slot>slotFadeLimitsChanged()</slot>
   <slot>slotHoldLimitsChanged()</slot>
+  <slot>slotAutoDetectGrandMasterInputToggled(bool)</slot>
+  <slot>slotChooseGrandMasterInputClicked()</slot>
+  <slot>slotAutoDetectFadeInputToggled(bool)</slot>
+  <slot>slotChooseFadeInputClicked()</slot>
+  <slot>slotAutoDetectHoldInputToggled(bool)</slot>
+  <slot>slotChooseHoldInputClicked()</slot>
+  <slot>slotGrandMasterIntensityToggled(bool)</slot>
+  <slot>slotGrandMasterReduceToggled(bool)</slot>
  </slots>
 </ui>

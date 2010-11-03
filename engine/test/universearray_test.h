@@ -30,12 +30,12 @@ class UniverseArray_Test : public QObject
 
 private slots:
     void initial();
-    void grandMasterChannelMode();
-    void grandMasterValueMode();
-    void grandMasterValue();
-    void grandMasterify();
+    void gMChannelMode();
+    void gMValueMode();
+    void gMValue();
+    void applyGM();
     void write();
-    void setGrandMasterValueEfficiency();
+    void setGMValueEfficiency();
     void writeEfficiency();
 };
 

@@ -205,6 +205,13 @@ const UniverseArray* OutputMap::peekUniverses() const
     return m_universeArray;
 }
 
+void OutputMap::resetUniverses()
+{
+    claimUniverses();
+    m_universeArray->reset();
+    releaseUniverses();
+}
+
 /*****************************************************************************
  * Patch
  *****************************************************************************/

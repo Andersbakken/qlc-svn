@@ -61,6 +61,7 @@ HEADERS += aboutbox.h \
            vcframe.h \
            vclabel.h \
            vcproperties.h \
+           vcpropertieseditor.h \
            vcslider.h \
            vcsliderproperties.h \
            vcsoloframe.h \
@@ -136,6 +137,7 @@ SOURCES += aboutbox.cpp \
            vcframe.cpp \
            vclabel.cpp \
            vcproperties.cpp \
+           vcpropertieseditor.cpp \
            vcslider.cpp \
            vcsliderproperties.cpp \
            vcsoloframe.cpp \

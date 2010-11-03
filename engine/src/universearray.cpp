@@ -23,18 +23,24 @@
 #include "universearray.h"
 #include "qlctypes.h"
 
+#define KXMLQLCGMValueModeLimit "Limit"
+#define KXMLQLCGMValueModeReduce "Reduce"
+#define KXMLQLCGMChannelModeAllChannels "All"
+#define KXMLQLCGMChannelModeIntensity "Intensity"
+
 /****************************************************************************
  * Initialization
  ****************************************************************************/
 
 UniverseArray::UniverseArray(int size)
+    : m_size(size)
+    , m_preGMValues(new QByteArray(size, char(0)))
+    , m_postGMValues(new QByteArray(size, char(0)))
 {
-    m_preGMValues = new QByteArray(size, char(0));
-    m_postGMValues = new QByteArray(size, char(0));
-    m_gmValueMode = GMReduce;
-    m_gmChannelMode = GMIntensity;
-    m_gmValue = 255;
-    m_gmFraction = 1.0;
+    m_gMChannelMode = GMIntensity;
+    m_gMValueMode = GMReduce;
+    m_gMValue = 255;
+    m_gMFraction = 1.0;
 }
 
 UniverseArray::~UniverseArray()
@@ -45,60 +51,125 @@ UniverseArray::~UniverseArray()
 
 int UniverseArray::size() const
 {
-    return m_preGMValues->size();
+    return m_size;
+}
+
+void UniverseArray::reset()
+{
+    m_preGMValues->fill(0);
+    m_postGMValues->fill(0);
+    m_gMIntensityChannels.clear();
+    m_gMNonIntensityChannels.clear();
+}
+
+void UniverseArray::reset(int address, int range)
+{
+    for (int i = address; i < address + range && i < size(); i++)
+    {
+        m_preGMValues->data()[i] = 0;
+        m_postGMValues->data()[i] = 0;
+        m_gMIntensityChannels.remove(i);
+        m_gMNonIntensityChannels.remove(i);
+    }
 }
 
 /****************************************************************************
  * Grand Master
  ****************************************************************************/
 
-void UniverseArray::setGrandMasterValueMode(UniverseArray::GrandMasterValueMode mode)
+UniverseArray::GMValueMode UniverseArray::stringToGMValueMode(const QString& str)
 {
-    m_gmValueMode = mode;
+    if (str == KXMLQLCGMValueModeLimit)
+        return UniverseArray::GMLimit;
+    else
+        return UniverseArray::GMReduce;
 }
 
-UniverseArray::GrandMasterValueMode UniverseArray::grandMasterValueMode() const
+QString UniverseArray::gMValueModeToString(UniverseArray::GMValueMode mode)
 {
-    return m_gmValueMode;
+    switch (mode)
+    {
+    case UniverseArray::GMLimit:
+        return KXMLQLCGMValueModeLimit;
+    default:
+    case UniverseArray::GMReduce:
+        return KXMLQLCGMValueModeReduce;
+    }
 }
 
-void UniverseArray::setGrandMasterChannelMode(UniverseArray::GrandMasterChannelMode mode)
+UniverseArray::GMChannelMode UniverseArray::stringToGMChannelMode(const QString& str)
 {
-    m_gmChannelMode = mode;
+    if (str == KXMLQLCGMChannelModeAllChannels)
+        return UniverseArray::GMAllChannels;
+    else
+        return UniverseArray::GMIntensity;
 }
 
-UniverseArray::GrandMasterChannelMode UniverseArray::grandMasterChannelMode() const
+QString UniverseArray::gMChannelModeToString(UniverseArray::GMChannelMode mode)
 {
-    return m_gmChannelMode;
+    switch (mode)
+    {
+    case UniverseArray::GMAllChannels:
+        return KXMLQLCGMChannelModeAllChannels;
+    default:
+    case UniverseArray::GMIntensity:
+        return KXMLQLCGMChannelModeIntensity;
+    }
 }
 
-void UniverseArray::setGrandMasterValue(uchar value)
+void UniverseArray::setGMValueMode(UniverseArray::GMValueMode mode)
 {
-    m_gmValue = value;
-    m_gmFraction = CLAMP(double(value) / double(UCHAR_MAX), 0.0, 1.0);
+    m_gMValueMode = mode;
+}
 
-    QSetIterator <int> it(m_gmChannels);
+UniverseArray::GMValueMode UniverseArray::gMValueMode() const
+{
+    return m_gMValueMode;
+}
+
+void UniverseArray::setGMChannelMode(UniverseArray::GMChannelMode mode)
+{
+    m_gMChannelMode = mode;
+}
+
+UniverseArray::GMChannelMode UniverseArray::gMChannelMode() const
+{
+    return m_gMChannelMode;
+}
+
+void UniverseArray::setGMValue(uchar value)
+{
+    m_gMValue = value;
+    m_gMFraction = CLAMP(double(value) / double(UCHAR_MAX), 0.0, 1.0);
+
+    QSetIterator <int> it(m_gMIntensityChannels);
     while (it.hasNext() == true)
     {
         int channel(it.next());
         char chValue(m_preGMValues->data()[channel]);
         write(channel, chValue, QLCChannel::Intensity);
     }
+
+    if (gMChannelMode() == GMAllChannels)
+    {
+        QSetIterator <int> it(m_gMNonIntensityChannels);
+        while (it.hasNext() == true)
+        {
+            int channel(it.next());
+            char chValue(m_preGMValues->data()[channel]);
+            write(channel, chValue, QLCChannel::NoGroup);
+        }
+    }
 }
 
-uchar UniverseArray::grandMasterValue() const
+uchar UniverseArray::gMValue() const
 {
-    return m_gmValue;
+    return m_gMValue;
 }
 
-double UniverseArray::grandMasterFraction() const
+double UniverseArray::gMFraction() const
 {
-    return m_gmFraction;
-}
-
-void UniverseArray::gmReset()
-{
-    m_gmChannels.clear();
+    return m_gMFraction;
 }
 
 const QByteArray UniverseArray::postGMValues() const
@@ -111,24 +182,30 @@ const QByteArray UniverseArray::preGMValues() const
     return *m_preGMValues;
 }
 
-uchar UniverseArray::grandMasterify(int channel, uchar value, QLCChannel::Group group)
+uchar UniverseArray::applyGM(int channel, uchar value, QLCChannel::Group group)
 {
     if (value == 0)
     {
-        m_gmChannels.remove(channel);
+        if (group == QLCChannel::Intensity)
+            m_gMIntensityChannels.remove(channel);
+        else
+            m_gMNonIntensityChannels.remove(channel);
         return value;
     }
 
-    if ((grandMasterChannelMode() == GMIntensity && group == QLCChannel::Intensity) ||
-        (grandMasterChannelMode() == GMAllChannels))
+    if ((gMChannelMode() == GMIntensity && group == QLCChannel::Intensity) ||
+        (gMChannelMode() == GMAllChannels))
     {
-        if (grandMasterValueMode() == GMLimit)
-            value = MIN(value, grandMasterValue());
+        if (gMValueMode() == GMLimit)
+            value = MIN(value, gMValue());
         else
-            value = char(floor((double(value) * grandMasterFraction()) + 0.5));
-
-        m_gmChannels << channel;
+            value = char(floor((double(value) * gMFraction()) + 0.5));
     }
+
+    if (group == QLCChannel::Intensity)
+        m_gMIntensityChannels << channel;
+    else
+        m_gMNonIntensityChannels << channel;
 
     return value;
 }
@@ -144,7 +221,7 @@ bool UniverseArray::write(int channel, uchar value, QLCChannel::Group group)
 
     m_preGMValues->data()[channel] = char(value);
 
-    value = grandMasterify(channel, value, group);
+    value = applyGM(channel, value, group);
     m_postGMValues->data()[channel] = char(value);
 
     return true;

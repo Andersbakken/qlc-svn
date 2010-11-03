@@ -45,6 +45,7 @@
 
 #include "fixtureconsole.h"
 #include "fixturemanager.h"
+#include "universearray.h"
 #include "outputpatch.h"
 #include "addfixture.h"
 #include "collection.h"
@@ -660,6 +661,16 @@ void FixtureManager::slotRemove()
         Q_ASSERT(item != NULL);
 
         t_fixture_id id = item->text(KColumnID).toInt();
+
+        /** @todo This is REALLY bogus here, since Fixture or Doc should do
+            this. However, FixtureManager is the only place to destroy fixtures,
+            so it's rather safe to reset the fixture's address space here. */
+        Fixture* fxi = _app->doc()->fixture(id);
+        Q_ASSERT(fxi != NULL);
+        UniverseArray* ua = _app->outputMap()->claimUniverses();
+        ua->reset(fxi->address(), fxi->channels());
+        _app->outputMap()->releaseUniverses();
+
         _app->doc()->deleteFixture(id);
     }
 }

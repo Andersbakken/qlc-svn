@@ -19,15 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QCheckBox>
-#include <QSpinBox>
 #include <QtXml>
 
-#include "qlcinputprofile.h"
-#include "qlcinputchannel.h"
 #include "qlcfile.h"
 
-#include "selectinputchannel.h"
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "inputpatch.h"
@@ -55,6 +50,11 @@ VCProperties::VCProperties() : VCWidgetProperties()
 
     m_keyRepeatOff = true;
     m_grabKeyboard = true;
+
+    m_gmChannelMode = UniverseArray::GMIntensity;
+    m_gmValueMode = UniverseArray::GMReduce;
+    m_gmInputUniverse = KInputUniverseInvalid;
+    m_gmInputChannel = KInputChannelInvalid;
 
     m_slidersVisible = true;
 
@@ -94,6 +94,11 @@ VCProperties& VCProperties::operator=(const VCProperties& properties)
 
     m_keyRepeatOff = properties.m_keyRepeatOff;
     m_grabKeyboard = properties.m_grabKeyboard;
+
+    m_gmChannelMode = properties.m_gmChannelMode;
+    m_gmValueMode = properties.m_gmValueMode;
+    m_gmInputUniverse = properties.m_gmInputUniverse;
+    m_gmInputChannel = properties.m_gmInputChannel;
 
     m_slidersVisible = properties.m_slidersVisible;
 
@@ -177,6 +182,7 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 {
     QDomElement prop_root;
     QDomElement vc_root;
+    QDomElement subtag;
     QDomElement tag;
     QDomText text;
     QString str;
@@ -221,24 +227,23 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
     /* Key repeat off */
     if (m_keyRepeatOff == true)
-        tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
-                         KXMLQLCTrue);
+        tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff, KXMLQLCTrue);
     else
-        tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff,
-                         KXMLQLCFalse);
+        tag.setAttribute(KXMLQLCVCPropertiesKeyboardRepeatOff, KXMLQLCFalse);
 
-    /* Fade slider */
+    /***********************
+     * Default fade slider *
+     ***********************/
     tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
     prop_root.appendChild(tag);
-    tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusFade);
+    tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderRole,
+                     KXMLQLCVCPropertiesDefaultSliderRoleFade);
 
-    /* Sliders' visibility state is stored in fade slider */
+    /* Slider visibility */
     if (m_slidersVisible == true)
-        tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
-                         KXMLQLCTrue);
+        tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible, KXMLQLCTrue);
     else
-        tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible,
-                         KXMLQLCFalse);
+        tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderVisible, KXMLQLCFalse);
 
     /* Fade slider limits */
     tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
@@ -248,9 +253,8 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
 
     /* Fade slider external input */
     if (m_fadeInputUniverse != KInputUniverseInvalid &&
-            m_fadeInputChannel != KInputChannelInvalid)
+        m_fadeInputChannel != KInputChannelInvalid)
     {
-        QDomElement subtag;
         subtag = doc->createElement(KXMLQLCVCPropertiesInput);
         tag.appendChild(subtag);
         subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
@@ -259,10 +263,13 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
                             QString("%1").arg(m_fadeInputChannel));
     }
 
-    /* Hold slider */
+    /***********************
+     * Default hold slider *
+     ***********************/
     tag = doc->createElement(KXMLQLCVCPropertiesDefaultSlider);
     prop_root.appendChild(tag);
-    tag.setAttribute(KXMLQLCBusRole, KXMLQLCBusHold);
+    tag.setAttribute(KXMLQLCVCPropertiesDefaultSliderRole,
+                     KXMLQLCVCPropertiesDefaultSliderRoleHold);
 
     /* Hold slider limits */
     tag.setAttribute(KXMLQLCVCPropertiesLowLimit,
@@ -270,17 +277,42 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
     tag.setAttribute(KXMLQLCVCPropertiesHighLimit,
                      QString("%1").arg(m_holdHighLimit));
 
-    /* Fade slider external input */
+    /* Hold slider external input */
     if (m_holdInputUniverse != KInputUniverseInvalid &&
-            m_holdInputChannel != KInputChannelInvalid)
+        m_holdInputChannel != KInputChannelInvalid)
     {
-        QDomElement subtag;
         subtag = doc->createElement(KXMLQLCVCPropertiesInput);
         tag.appendChild(subtag);
         subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
                             QString("%1").arg(m_holdInputUniverse));
         subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
                             QString("%1").arg(m_holdInputChannel));
+    }
+
+    /***********************
+     * Grand Master slider *
+     ***********************/
+    tag = doc->createElement(KXMLQLCVCPropertiesGrandMaster);
+    prop_root.appendChild(tag);
+
+    /* Channel mode */
+    tag.setAttribute(KXMLQLCVCPropertiesGrandMasterChannelMode,
+                     UniverseArray::gMChannelModeToString(m_gmChannelMode));
+
+    /* Value mode */
+    tag.setAttribute(KXMLQLCVCPropertiesGrandMasterValueMode,
+                     UniverseArray::gMValueModeToString(m_gmValueMode));
+
+    /* Grand Master external input */
+    if (m_gmInputUniverse != KInputUniverseInvalid &&
+        m_gmInputChannel != KInputChannelInvalid)
+    {
+        subtag = doc->createElement(KXMLQLCVCPropertiesInput);
+        tag.appendChild(subtag);
+        subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
+                            QString("%1").arg(m_gmInputUniverse));
+        subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
+                            QString("%1").arg(m_gmInputChannel));
     }
 
     /* Save widget properties */
@@ -364,32 +396,39 @@ bool VCProperties::loadProperties(const QDomElement* root)
                 setSlidersVisible(true);
 
             /* External input */
-            subtag = tag.firstChild().toElement();
-            if (subtag.isNull() == false &&
-                    subtag.tagName() == KXMLQLCVCPropertiesInput)
-            {
-                /* Universe */
-                str = subtag.attribute(KXMLQLCVCPropertiesInputUniverse);
-                if (str.isNull() == false)
-                    universe = str.toInt();
-
-                /* Channel */
-                str = subtag.attribute(KXMLQLCVCPropertiesInputChannel);
-                if (str.isNull() == false)
-                    channel = str.toInt();
-            }
+            bool inputOK = loadXMLInput(tag.firstChild().toElement(),
+                                        &universe, &channel);
 
             /* Set the gathered properties to the correct slider */
             if (tag.attribute(KXMLQLCBusRole) == KXMLQLCBusFade)
             {
                 setFadeLimits(low, high);
-                setFadeInputSource(universe, channel);
+                if (inputOK == true)
+                    setFadeInputSource(universe, channel);
             }
             else
             {
                 setHoldLimits(low, high);
-                setHoldInputSource(universe, channel);
+                if (inputOK == true)
+                    setHoldInputSource(universe, channel);
             }
+        }
+        else if (tag.tagName() == KXMLQLCVCPropertiesGrandMaster)
+        {
+            quint32 universe = KInputUniverseInvalid;
+            quint32 channel = KInputChannelInvalid;
+
+            str = tag.attribute(KXMLQLCVCPropertiesGrandMasterChannelMode);
+            m_gmChannelMode = UniverseArray::stringToGMChannelMode(str);
+
+            str = tag.attribute(KXMLQLCVCPropertiesGrandMasterValueMode);
+            m_gmValueMode = UniverseArray::stringToGMValueMode(str);
+
+            /* External input */
+            bool inputOK = loadXMLInput(tag.firstChild().toElement(),
+                                        &universe, &channel);
+            if (inputOK == true)
+                setGrandMasterInputSource(universe, channel);
         }
         else if (tag.tagName() == KXMLQLCWidgetProperties)
         {
@@ -397,8 +436,7 @@ bool VCProperties::loadProperties(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown virtual console property tag:"
-            << tag.tagName();
+            qDebug() << "Unknown virtual console property tag:" << tag.tagName();
         }
 
         /* Next node */
@@ -408,317 +446,35 @@ bool VCProperties::loadProperties(const QDomElement* root)
     return true;
 }
 
-/*****************************************************************************
- * VCPropertiesEditor Initialization
- *****************************************************************************/
-
-VCPropertiesEditor::VCPropertiesEditor(QWidget* parent,
-                                       const VCProperties& properties)
-    : QDialog(parent)
+bool VCProperties::loadXMLInput(const QDomElement& tag, quint32* universe,
+                                quint32* channel)
 {
-    setupUi(this);
-
-    connect(m_autoDetectFadeInputButton, SIGNAL(toggled(bool)),
-            this, SLOT(slotAutoDetectFadeInputToggled(bool)));
-    connect(m_autoDetectHoldInputButton, SIGNAL(toggled(bool)),
-            this, SLOT(slotAutoDetectHoldInputToggled(bool)));
-    connect(m_chooseFadeInputButton, SIGNAL(clicked()),
-            this, SLOT(slotChooseFadeInputClicked()));
-    connect(m_chooseHoldInputButton, SIGNAL(clicked()),
-            this, SLOT(slotChooseHoldInputClicked()));
-
-    m_properties = properties;
-
-    /* Grid */
-    m_gridGroup->setChecked(properties.isGridEnabled());
-    m_gridXSpin->setValue(properties.gridX());
-    m_gridYSpin->setValue(properties.gridY());
-
-    /* Keyboard */
-    m_grabKeyboardCheck->setChecked(properties.isGrabKeyboard());
-    m_keyRepeatOffCheck->setChecked(properties.isKeyRepeatOff());
-
-    /* Slider limits */
-    m_fadeLowSpin->setValue(properties.fadeLowLimit());
-    m_fadeHighSpin->setValue(properties.fadeHighLimit());
-    m_holdLowSpin->setValue(properties.holdLowLimit());
-    m_holdHighSpin->setValue(properties.holdHighLimit());
-
     /* External input */
-    updateFadeInputSource();
-    updateHoldInputSource();
-}
-
-VCPropertiesEditor::~VCPropertiesEditor()
-{
-}
-
-/*****************************************************************************
- * Layout page
- *****************************************************************************/
-
-void VCPropertiesEditor::slotGrabKeyboardClicked()
-{
-    m_properties.setGrabKeyboard(m_grabKeyboardCheck->isChecked());
-}
-
-void VCPropertiesEditor::slotKeyRepeatOffClicked()
-{
-    m_properties.setKeyRepeatOff(m_keyRepeatOffCheck->isChecked());
-}
-
-void VCPropertiesEditor::slotGridClicked()
-{
-    m_properties.setGridEnabled(m_gridGroup->isChecked());
-}
-
-void VCPropertiesEditor::slotGridXChanged(int value)
-{
-    m_properties.setGridX(value);
-}
-
-void VCPropertiesEditor::slotGridYChanged(int value)
-{
-    m_properties.setGridY(value);
-}
-
-/*****************************************************************************
- * Sliders page
- *****************************************************************************/
-
-void VCPropertiesEditor::slotFadeLimitsChanged()
-{
-    m_properties.setFadeLimits(m_fadeLowSpin->value(),
-                               m_fadeHighSpin->value());
-}
-
-void VCPropertiesEditor::slotHoldLimitsChanged()
-{
-    m_properties.setHoldLimits(m_holdLowSpin->value(),
-                               m_holdHighSpin->value());
-}
-
-void VCPropertiesEditor::slotAutoDetectFadeInputToggled(bool checked)
-{
-    if (checked == true)
+    if (tag.isNull() == false && tag.tagName() == KXMLQLCVCPropertiesInput)
     {
-        if (m_autoDetectHoldInputButton->isChecked() == true)
-            m_autoDetectHoldInputButton->toggle();
+        QString str;
 
-        connect(_app->inputMap(),
-                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
-                this, SLOT(slotFadeInputValueChanged(quint32,quint32)));
-    }
-    else
-    {
-        disconnect(_app->inputMap(),
-                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
-                   this, SLOT(slotFadeInputValueChanged(quint32,quint32)));
-    }
-}
-
-void VCPropertiesEditor::slotAutoDetectHoldInputToggled(bool checked)
-{
-    if (checked == true)
-    {
-        if (m_autoDetectFadeInputButton->isChecked() == true)
-            m_autoDetectFadeInputButton->toggle();
-
-        connect(_app->inputMap(),
-                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
-                this, SLOT(slotHoldInputValueChanged(quint32,quint32)));
-    }
-    else
-    {
-        disconnect(_app->inputMap(),
-                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
-                   this, SLOT(slotHoldInputValueChanged(quint32,quint32)));
-    }
-}
-
-void VCPropertiesEditor::slotFadeInputValueChanged(quint32 universe,
-                                                   quint32 channel)
-{
-    m_properties.setFadeInputSource(universe, channel);
-    updateFadeInputSource();
-}
-
-void VCPropertiesEditor::slotHoldInputValueChanged(quint32 universe,
-                                                   quint32 channel)
-{
-    m_properties.setHoldInputSource(universe, channel);
-    updateHoldInputSource();
-}
-
-void VCPropertiesEditor::slotChooseFadeInputClicked()
-{
-    SelectInputChannel sic(this);
-    if (sic.exec() == QDialog::Accepted)
-    {
-        m_properties.setFadeInputSource(sic.universe(), sic.channel());
-        updateFadeInputSource();
-    }
-}
-
-void VCPropertiesEditor::slotChooseHoldInputClicked()
-{
-    SelectInputChannel sic(this);
-    if (sic.exec() == QDialog::Accepted)
-    {
-        m_properties.setHoldInputSource(sic.universe(), sic.channel());
-        updateHoldInputSource();
-    }
-}
-
-void VCPropertiesEditor::doAutoDetectConnections(bool checked)
-{
-    if (checked == true)
-    {
-    }
-    else
-    {
-    }
-}
-
-void VCPropertiesEditor::updateFadeInputSource()
-{
-    QLCInputProfile* profile;
-    InputPatch* patch;
-    QString uniName;
-    QString chName;
-
-    if (m_properties.fadeInputUniverse() == KInputUniverseInvalid ||
-            m_properties.fadeInputChannel() == KInputChannelInvalid)
-    {
-        /* Nothing selected for input universe and/or channel */
-        uniName = KInputNone;
-        chName = KInputNone;
-
-        /* Display the gathered information */
-        m_fadeInputUniverseEdit->setText(uniName);
-        m_fadeInputChannelEdit->setText(chName);
-
-        return;
-    }
-
-    patch = _app->inputMap()->patch(m_properties.fadeInputUniverse());
-    if (patch == NULL || patch->plugin() == NULL)
-    {
-        /* There is no patch for the given universe */
-        uniName = KInputNone;
-        chName = KInputNone;
-
-        /* Display the gathered information */
-        m_fadeInputUniverseEdit->setText(uniName);
-        m_fadeInputChannelEdit->setText(chName);
-
-        return;
-    }
-
-    profile = patch->profile();
-    if (profile == NULL)
-    {
-        /* There is no profile. Display plugin name and channel number.
-           Boring. */
-        uniName = patch->plugin()->name();
-        chName = tr("%1: Unknown")
-                 .arg(m_properties.fadeInputChannel() + 1);
-    }
-    else
-    {
-        QLCInputChannel* ich;
-        QString name;
-
-        /* Display profile name for universe */
-        uniName = QString("%1: %2")
-                  .arg(m_properties.fadeInputUniverse() + 1)
-                  .arg(profile->name());
-
-        /* User can input the channel number by hand, so put something
-           rational to the channel name in those cases as well. */
-        ich = profile->channel(m_properties.fadeInputChannel());
-        if (ich != NULL)
-            name = ich->name();
+        /* Universe */
+        str = tag.attribute(KXMLQLCVCPropertiesInputUniverse);
+        if (str.isNull() == false)
+            *universe = str.toUInt();
         else
-            name = tr("Unknown");
+            *universe = KInputUniverseInvalid;
 
-        /* Display channel name */
-        chName = QString("%1: %2")
-                 .arg(m_properties.fadeInputChannel() + 1).arg(name);
-    }
+        /* Channel */
+        str = tag.attribute(KXMLQLCVCPropertiesInputChannel);
+        if (str.isNull() == false)
+            *channel = str.toUInt();
+        else
+            *channel = KInputChannelInvalid;
 
-    /* Display the gathered information */
-    m_fadeInputUniverseEdit->setText(uniName);
-    m_fadeInputChannelEdit->setText(chName);
-}
-
-void VCPropertiesEditor::updateHoldInputSource()
-{
-    QLCInputProfile* profile;
-    InputPatch* patch;
-    QString uniName;
-    QString chName;
-
-    if (m_properties.holdInputUniverse() == KInputUniverseInvalid ||
-            m_properties.holdInputChannel() == KInputChannelInvalid)
-    {
-        /* Nothing selected for input universe and/or channel */
-        uniName = KInputNone;
-        chName = KInputNone;
-
-        /* Display the gathered information */
-        m_holdInputUniverseEdit->setText(uniName);
-        m_holdInputChannelEdit->setText(chName);
-
-        return;
-    }
-
-    patch = _app->inputMap()->patch(m_properties.holdInputUniverse());
-    if (patch == NULL || patch->plugin() == NULL)
-    {
-        /* There is no patch for the given universe */
-        uniName = KInputNone;
-        chName = KInputNone;
-
-        /* Display the gathered information */
-        m_holdInputUniverseEdit->setText(uniName);
-        m_holdInputChannelEdit->setText(chName);
-
-        return;
-    }
-
-    profile = patch->profile();
-    if (profile == NULL)
-    {
-        /* There is no profile. Display plugin name and channel number.
-           Boring. */
-        uniName = patch->plugin()->name();
-        chName = tr("%1: Unknown")
-                 .arg(m_properties.holdInputChannel() + 1);
+        if (*universe != KInputUniverseInvalid && *channel != KInputChannelInvalid)
+            return true;
+        else
+            return false;
     }
     else
     {
-        QLCInputChannel* ich;
-        QString name;
-
-        /* Display profile name for universe */
-        uniName = QString("%1: %2")
-                  .arg(m_properties.holdInputUniverse() + 1)
-                  .arg(profile->name());
-        /* User can input the channel number by hand, so put something
-           rational to the channel name in those cases as well. */
-        ich = profile->channel(m_properties.holdInputChannel());
-        if (ich != NULL)
-            name = ich->name();
-        else
-            name = tr("Unknown");
-
-        /* Display channel name */
-        chName = QString("%1: %2")
-                 .arg(m_properties.holdInputChannel() + 1).arg(name);
+        return false;
     }
-
-    /* Display the gathered information */
-    m_holdInputUniverseEdit->setText(uniName);
-    m_holdInputChannelEdit->setText(chName);
 }

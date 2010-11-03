@@ -39,37 +39,59 @@ public:
     /** Get the size of the UniverseArray */
     int size() const;
 
+    /**
+     * Unapplies Grand Master to all channels and resets their values to 0.
+     */
+    void reset();
+
+    /**
+     * Unapplies Grand Master to the given address range and resets values to 0.
+     *
+     * @param address Starting address
+     * @param range Number of channels, starting from address, to reset
+     */
+    void reset(int address, int range);
+
+protected:
+    const int m_size;
+
     /************************************************************************
      * Grand Master
      ************************************************************************/
 public:
-    enum GrandMasterValueMode
+    enum GMValueMode
     {
         GMLimit, /** Limit maximum values to current GM value */
         GMReduce /** Reduce channel values by a fraction (0-100%) */
     };
 
-    enum GrandMasterChannelMode
+    enum GMChannelMode
     {
         GMIntensity,  /** GM applied only for Intensity channels */
         GMAllChannels /** GM applied for all channels */
     };
 
+    static GMValueMode stringToGMValueMode(const QString& str);
+    static QString gMValueModeToString(GMValueMode mode);
+
+    static GMChannelMode stringToGMChannelMode(const QString& str);
+    static QString gMChannelModeToString(GMChannelMode mode);
+
     /**
      * Set the way how Grand Master should treat its value. @See enum
-     * GrandMasterValueMode for more info on the modes.
+     * GMValueMode for more info on the modes.
      *
      * @param mode The mode to set
      */
-    void setGrandMasterValueMode(GrandMasterValueMode mode);
+    void setGMValueMode(GMValueMode mode);
 
     /**
      * Get the Grand Master value mode.
-     * @See setGrandMasterValueMode() and enum GrandMasterValueMode.
+     * @See setGMValueMode() and enum GMValueMode.
      *
      * @return Current value mode
      */
-    GrandMasterValueMode grandMasterValueMode() const;
+    GMValueMode gMValueMode() const;
 
     /**
      * Set the way how Grand Master should treat channels. @See enum
@@ -77,43 +99,35 @@ public:
      *
      * @param mode The mode to set
      */
-    void setGrandMasterChannelMode(GrandMasterChannelMode mode);
+    void setGMChannelMode(GMChannelMode mode);
 
     /**
      * Get the Grand Master channel mode.
-     * @See setGrandMasterChannelMode() and enum GrandMasterChannelMode.
+     * @See setGMChannelMode() and enum GMChannelMode.
      *
      * @return Current channel mode
      */
-    GrandMasterChannelMode grandMasterChannelMode() const;
+    GMChannelMode gMChannelMode() const;
 
     /**
      * Set the Grand Master value as a DMX value 0-255. This value is
      * converted to a fraction according to the current mode.
      */
-    void setGrandMasterValue(uchar value);
+    void setGMValue(uchar value);
 
     /**
      * Get the current Grand Master value as a DMX value (0 - 255)
      *
      * @return Current Grand Master value in DMX
      */
-    uchar grandMasterValue() const;
+    uchar gMValue() const;
 
     /**
      * Get the current Grand Master value as a fraction 0.0 - 1.0
      *
      * @return Current Grand Master value as a fraction
      */
-    double grandMasterFraction() const;
-
-    /**
-     * Un-apply Grand Master to all channels. Basically just removes everything
-     * from a cache of Intensity-enabled channels. Useful when a fixture is
-     * replaced by another (whose intensity channels might be elsewhere than
-     * with the previous one).
-     */
-    void gmReset();
+    double gMFraction() const;
 
     /**
      * Get the current post-Grand-Master values (to be written to output HW)
@@ -144,16 +158,17 @@ protected:
      * @param group The channel's channel group
      * @return Value filtered through grand master (if applicable)
      */
-    uchar grandMasterify(int channel, uchar value, QLCChannel::Group group);
+    uchar applyGM(int channel, uchar value, QLCChannel::Group group);
 
 protected:
-    GrandMasterValueMode m_gmValueMode;
-    GrandMasterChannelMode m_gmChannelMode;
-    uchar m_gmValue;
-    double m_gmFraction;
-    QSet <int> m_gmChannels;
-    QByteArray* m_postGMValues;
+    GMValueMode m_gMValueMode;
+    GMChannelMode m_gMChannelMode;
+    uchar m_gMValue;
+    double m_gMFraction;
+    QSet <int> m_gMIntensityChannels;
+    QSet <int> m_gMNonIntensityChannels;
     QByteArray* m_preGMValues;
+    QByteArray* m_postGMValues;
 
     /************************************************************************
      * Writing

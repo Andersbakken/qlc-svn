@@ -24,8 +24,9 @@
 
 #include <QDialog>
 
-#include "ui_vcproperties.h"
 #include "vcwidgetproperties.h"
+#include "ui_vcproperties.h"
+#include "universearray.h"
 #include "qlctypes.h"
 
 class VirtualConsole;
@@ -46,9 +47,16 @@ class VCFrame;
 #define KXMLQLCVCPropertiesKeyboardRepeatOff "RepeatOff"
 
 #define KXMLQLCVCPropertiesDefaultSlider "DefaultSlider"
+#define KXMLQLCVCPropertiesDefaultSliderRole "Role"
+#define KXMLQLCVCPropertiesDefaultSliderRoleFade "Fade"
+#define KXMLQLCVCPropertiesDefaultSliderRoleHold "Hold"
 #define KXMLQLCVCPropertiesDefaultSliderVisible "Visible"
 #define KXMLQLCVCPropertiesLowLimit "Low"
 #define KXMLQLCVCPropertiesHighLimit "High"
+
+#define KXMLQLCVCPropertiesGrandMaster "GrandMaster"
+#define KXMLQLCVCPropertiesGrandMasterChannelMode "ChannelMode"
+#define KXMLQLCVCPropertiesGrandMasterValueMode "ValueMode"
 
 #define KXMLQLCVCPropertiesInput "Input"
 #define KXMLQLCVCPropertiesInputUniverse "Universe"
@@ -147,6 +155,45 @@ protected:
     /** Grab keyboard in operate mode? */
     bool m_grabKeyboard;
 
+    /*************************************************************************
+     * Grand Master
+     *************************************************************************/
+public:
+    UniverseArray::GMChannelMode grandMasterChannelMode() const {
+        return m_gmChannelMode;
+    }
+
+    void setGrandMasterChannelMode(UniverseArray::GMChannelMode mode) {
+        m_gmChannelMode = mode;
+    }
+
+    UniverseArray::GMValueMode grandMasterValueMode() const {
+        return m_gmValueMode;
+    }
+
+    void setGrandMasterValueMode(UniverseArray::GMValueMode mode) {
+        m_gmValueMode = mode;
+    }
+
+    quint32 grandMasterInputUniverse() const {
+        return m_gmInputUniverse;
+    }
+
+    quint32 grandMasterInputChannel() const {
+        return m_gmInputChannel;
+    }
+
+    void setGrandMasterInputSource(quint32 universe, quint32 channel) {
+        m_gmInputUniverse = universe;
+        m_gmInputChannel = channel;
+    }
+
+protected:
+    UniverseArray::GMChannelMode m_gmChannelMode;
+    UniverseArray::GMValueMode m_gmValueMode;
+    quint32 m_gmInputUniverse;
+    quint32 m_gmInputChannel;
+
     /*********************************************************************
      * Default sliders
      *********************************************************************/
@@ -230,70 +277,16 @@ protected:
     quint32 m_holdLowLimit;
     quint32 m_holdHighLimit;
 
-    /*********************************************************************
+    /*************************************************************************
      * Load & Save
-     *********************************************************************/
+     *************************************************************************/
 public:
     bool loadXML(const QDomElement* vc_root);
     bool saveXML(QDomDocument* doc, QDomElement* wksp_root);
 
 protected:
+    bool loadXMLInput(const QDomElement& tag, quint32* universe, quint32* channel);
     bool loadProperties(const QDomElement* root);
-};
-
-/*****************************************************************************
- * Properties dialog
- *****************************************************************************/
-
-class VCPropertiesEditor : public QDialog, public Ui_VCPropertiesEditor
-{
-    Q_OBJECT
-    Q_DISABLE_COPY(VCPropertiesEditor)
-
-    /*********************************************************************
-     * Initialization
-     *********************************************************************/
-public:
-    VCPropertiesEditor(QWidget* parent, const VCProperties& properties);
-    ~VCPropertiesEditor();
-
-    VCProperties properties() const {
-        return m_properties;
-    }
-
-protected:
-    VCProperties m_properties;
-
-    /*********************************************************************
-     * Layout page
-     *********************************************************************/
-protected slots:
-    void slotGrabKeyboardClicked();
-    void slotKeyRepeatOffClicked();
-    void slotGridClicked();
-
-    void slotGridXChanged(int value);
-    void slotGridYChanged(int value);
-
-    /*********************************************************************
-     * Sliders page
-     *********************************************************************/
-protected slots:
-    void slotFadeLimitsChanged();
-    void slotHoldLimitsChanged();
-
-    void slotAutoDetectFadeInputToggled(bool checked);
-    void slotAutoDetectHoldInputToggled(bool checked);
-    void slotFadeInputValueChanged(quint32 universe, quint32 channel);
-    void slotHoldInputValueChanged(quint32 universe, quint32 channel);
-
-    void slotChooseFadeInputClicked();
-    void slotChooseHoldInputClicked();
-
-protected:
-    void doAutoDetectConnections(bool checked);
-    void updateFadeInputSource();
-    void updateHoldInputSource();
 };
 
 #endif
