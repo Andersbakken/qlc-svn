@@ -218,7 +218,7 @@ void InputPatchEditor::fillPluginItem(const QString& pluginName, QTreeWidgetItem
         {
             iitem->setCheckState(KMapColumnName, Qt::Unchecked);
             quint32 uni = _app->inputMap()->mapping(pluginName, i);
-            if (uni != KChannelInvalid)
+            if (uni != KInputUniverseInvalid)
             {
                 /* If a mapping exists for this plugin and
                    output, make it impossible to map it to
