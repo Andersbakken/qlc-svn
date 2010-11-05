@@ -54,6 +54,10 @@ class VCButton : public VCWidget
     Q_OBJECT
 
 public:
+    /** Minimum size for a button */
+    static const QSize minimumSize;
+
+    /** Default size for newly-created buttons */
     static const QSize defaultSize;
 
     /*********************************************************************

@@ -56,6 +56,7 @@
 
 extern App* _app;
 
+const QSize VCButton::minimumSize(QSize(20, 20));
 const QSize VCButton::defaultSize(QSize(50, 50));
 
 /*****************************************************************************
@@ -89,7 +90,7 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
             this, SLOT(slotResetIcon()));
 
     /* Initial size */
-    setMinimumSize(VCButton::defaultSize);
+    setMinimumSize(VCButton::minimumSize);
     resize(VCButton::defaultSize);
 
     setStyle(App::saneStyle());
