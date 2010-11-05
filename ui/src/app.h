@@ -233,7 +233,9 @@ public slots:
     void slotControlVC();
     void slotControlMonitor();
     void slotControlBlackout();
+#ifndef __APPLE__
     void slotControlFullScreen();
+#endif
 
 #ifdef __APPLE__
     void slotWindowMenuAboutToShow();
@@ -265,7 +267,9 @@ protected:
     QAction* m_controlVCAction;
     QAction* m_controlMonitorAction;
     QAction* m_controlBlackoutAction;
+#ifndef __APPLE__
     QAction* m_controlFullScreenAction;
+#endif
 
 #ifdef __APPLE__
     QAction* m_windowMinimizeAction;

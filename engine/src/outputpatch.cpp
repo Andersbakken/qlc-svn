@@ -56,11 +56,11 @@ void OutputPatch::set(QLCOutPlugin* plugin, quint32 output)
     if (m_plugin != NULL)
         m_plugin->close(m_output);
 
+    if (plugin != NULL)
+        plugin->open(output);
+
     m_plugin = plugin;
     m_output = output;
-
-    if (m_plugin != NULL)
-        m_plugin->open(m_output);
 }
 
 QString OutputPatch::pluginName() const
