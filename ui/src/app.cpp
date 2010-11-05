@@ -751,6 +751,13 @@ void App::initActions()
     connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
             this, SLOT(slotControlBlackout()));
 
+    m_controlFullScreenAction = new QAction(QIcon(":/fullscreen.png"),
+                                            tr("Toggle Full Screen"), this);
+    m_controlFullScreenAction->setCheckable(true);
+    m_controlFullScreenAction->setShortcut(QKeySequence("CTRL+F11"));
+    connect(m_controlFullScreenAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotControlFullScreen()));
+
     /* Window actions */
 #ifdef __APPLE__
     m_windowMinimizeAction = new QAction(tr("Minimize"), this);
@@ -828,6 +835,8 @@ void App::initMenuBar()
     m_controlMenu->addAction(m_controlMonitorAction);
     m_controlMenu->addSeparator();
     m_controlMenu->addAction(m_controlBlackoutAction);
+    m_controlMenu->addSeparator();
+    m_controlMenu->addAction(m_controlFullScreenAction);
 
 #ifdef __APPLE__
     /* Window menu */
@@ -1166,6 +1175,14 @@ void App::slotControlVC()
 void App::slotControlMonitor()
 {
     Monitor::create(this);
+}
+
+void App::slotControlFullScreen()
+{
+    if (windowState() & Qt::WindowFullScreen)
+        showNormal();
+    else
+        showFullScreen();
 }
 
 /*****************************************************************************
