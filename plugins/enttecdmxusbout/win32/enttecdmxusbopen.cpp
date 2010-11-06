@@ -3,7 +3,7 @@
   enttecdmxusbopen.cpp
 
   Copyright (C) Heikki Junnila
-		Christopher Staite
+        		Christopher Staite
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -21,7 +21,14 @@
 */
 
 #include <QDebug>
+#include <math.h>
+#include <QTime>
+
 #include "enttecdmxusbopen.h"
+#include "qlctypes.h"
+
+#define DMX_CHANNELS 512
+#define DMX_FREQ 44
 
 /****************************************************************************
  * Initialization
@@ -36,13 +43,17 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent,
     , m_serial(QString(info.SerialNumber))
     , m_name(QString(info.Description))
     , m_running(false)
-    , m_universe(QByteArray(513, 0))
+    , m_universe(NULL)
 {
+    m_universe = (char*) malloc(sizeof(char) * DMX_CHANNELS);
+    for (int i = 0; i < DMX_CHANNELS; i++)
+        m_universe[i] = 0;
 }
 
 EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
 {
     close();
+    free(m_universe);
 }
 
 /****************************************************************************
@@ -59,19 +70,19 @@ bool EnttecDMXUSBOpen::open()
         {
             if (initializePort() == false)
             {
-                qWarning() << "Unable to initialize port." << "Closing widget.";
+                qWarning() << "Unable to initialize" << name() << "- Closing.";
                 close();
                 return false;
             }
 
             if (isRunning() == false)
-                start();
+                start(QThread::TimeCriticalPriority);
 
             return true;
         }
         else
         {
-            qWarning() << "Unable to open" << name() << ". Error:" << status;
+            qWarning() << "Unable to open" << name() << "- Error:" << status;
             return false;
         }
     }
@@ -157,7 +168,8 @@ bool EnttecDMXUSBOpen::initializePort()
     FT_ClrRts(m_handle);
 
     /* Clear TX RX buffers */
-    FT_Purge(m_handle, FT_PURGE_TX | FT_PURGE_RX);
+    FT_Purge(m_handle, FT_PURGE_TX);
+    FT_Purge(m_handle, FT_PURGE_RX);
 
     return true;
 }
@@ -187,9 +199,7 @@ QString EnttecDMXUSBOpen::uniqueName() const
 
 bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 {
-    m_mutex.lock();
-    m_universe = m_universe.replace(1, universe.size(), universe);
-    m_mutex.unlock();
+    memcpy(m_universe, universe.constData(), DMX_CHANNELS);
     return true;
 }
 
@@ -208,22 +218,29 @@ void EnttecDMXUSBOpen::stop()
 
 void EnttecDMXUSBOpen::run()
 {
-    /* Wait for device to settle if the port was opened just recently */
+    ULONG written = 0;
+    FT_STATUS status = FT_OK;
+
+    // Skip some sleep calls if timer is found to behave badly
+    bool badTimer = false;
+
+    // One "official" DMX frame can take (1s/44Hz) = 23ms
+    int frameTime = (int) floor(((double)1000 / (double)44) + (double)0.5);
+
+    // Wait for device to settle in case the device was opened just recently
+    // Also measure, whether timer granularity is OK
+    QTime time;
+    time.start();
     usleep(1000);
+    if (time.elapsed() > 3)
+        badTimer = true;
+    else
+        badTimer = false;
 
     m_running = true;
     while (m_running == true)
     {
-        ULONG written = 0;
-        FT_STATUS status = FT_OK;
-
-        if (isOpen() == false)
-        {
-            qWarning() << "Writer thread terminated."
-                       << "Port closed unexpectedly.";
-            m_running = false;
-            return;
-        }
+        time.restart();
 
         status = FT_SetBreakOn(m_handle);
         if (status != FT_OK)
@@ -232,7 +249,9 @@ void EnttecDMXUSBOpen::run()
             goto framesleep;
         }
 
-        usleep(88);
+        // Don't sleep if timer granularity is too coarse
+        if (badTimer == false)
+            usleep(88);
 
         status = FT_SetBreakOff(m_handle);
         if (status != FT_OK)
@@ -241,12 +260,11 @@ void EnttecDMXUSBOpen::run()
             goto framesleep;
         }
 
-        usleep(8);
+        // Don't sleep if timer granularity is too coarse
+        if (badTimer == false)
+            usleep(8);
 
-        m_mutex.lock();
-        status = FT_Write(m_handle, m_universe.data(),
-                          m_universe.size(), &written);
-        m_mutex.unlock();
+        status = FT_Write(m_handle, m_universe, DMX_CHANNELS, &written);
         if (status != FT_OK)
         {
             qWarning() << "FT_Write universe:" << status;
@@ -254,7 +272,11 @@ void EnttecDMXUSBOpen::run()
         }
 
 framesleep:
-        usleep(22754);
+        // Do a busy sleep if timer granularity is too coarse
+        if (badTimer == true)
+            while (time.elapsed() < frameTime) { /* NOP */ }
+        else
+            while (time.elapsed() < frameTime) { msleep(1); }
     }
 }
 

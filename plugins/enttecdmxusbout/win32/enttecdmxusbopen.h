@@ -3,7 +3,7 @@
   enttecdmxusbopen.h
 
   Copyright (C) Heikki Junnila
-		Christopher Staite
+        		Christopher Staite
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -50,8 +50,7 @@ public:
      * @param info FTDI device information
      * @param id The device's unique ID
      */
-    EnttecDMXUSBOpen(QObject* parent,
-                     const FT_DEVICE_LIST_INFO_NODE& info,
+    EnttecDMXUSBOpen(QObject* parent, const FT_DEVICE_LIST_INFO_NODE& info,
                      DWORD id);
 
     /**
@@ -124,18 +123,6 @@ public:
      */
     QString uniqueName() const;
 
-    /**
-     * Set the serial number for the widget. Open DMX USB doesn't have
-     * API for getting the serial, so it has to be given to the device.
-     *
-     * Serial is used only by users to discern which widget is which.
-     *
-     * @param serial The serial to set
-     */
-    void setSerial(const QString& serial) {
-        m_serial = serial;
-    }
-
 protected:
     QString m_serial;
     QString m_name;
@@ -169,8 +156,7 @@ protected:
 
 protected:
     bool m_running;
-    QByteArray m_universe;
-    QMutex m_mutex;
+    char* m_universe;
 };
 
 #endif

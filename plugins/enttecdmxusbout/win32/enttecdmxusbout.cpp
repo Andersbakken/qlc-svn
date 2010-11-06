@@ -192,6 +192,7 @@ bool EnttecDMXUSBOut::rescanWidgets()
                 /* This is a DMX USB Pro widget */
                 EnttecDMXUSBPro* w;
                 w = new EnttecDMXUSBPro(this, devInfo[i], i);
+                Q_ASSERT(w != NULL);
                 m_widgets.append(w);
             }
             else
@@ -200,7 +201,6 @@ bool EnttecDMXUSBOut::rescanWidgets()
                 EnttecDMXUSBOpen* w;
                 w = new EnttecDMXUSBOpen(this, devInfo[i], i);
                 Q_ASSERT(w != NULL);
-                //w->setSerial(QString("%1").arg(i));
                 m_widgets.append(w);
             }
         }
