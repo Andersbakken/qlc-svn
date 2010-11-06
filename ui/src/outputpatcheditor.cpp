@@ -32,10 +32,12 @@
 #include "outputpatch.h"
 #include "outputmap.h"
 #include "monitor.h"
+#include "apputil.h"
 #include "app.h"
 
 #define KColumnName   0
 #define KColumnOutput 1
+#define SETTINGS_GEOMETRY "outputpatcheditor/geometry"
 
 extern App* _app;
 
@@ -76,10 +78,18 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, quint32 universe,
     m_originalDMXZeroBasedSetting = m_zeroBasedDMXCheckBox->isChecked();
 
     fillTree();
+
+    QVariant var;
+    var = settings.value(SETTINGS_GEOMETRY);
+    if (var.isValid() == true)
+        restoreGeometry(var.toByteArray());
+    AppUtil::ensureWidgetIsVisible(this);
 }
 
 OutputPatchEditor::~OutputPatchEditor()
 {
+    QSettings settings;
+    settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 }
 
 void OutputPatchEditor::reject()
