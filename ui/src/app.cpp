@@ -667,19 +667,19 @@ void App::initActions()
     /* File actions */
     m_fileNewAction = new QAction(QIcon(":/filenew.png"),
                                   tr("&New"), this);
-    m_fileNewAction->setShortcut(QKeySequence("CTRL+N"));
+    m_fileNewAction->setShortcut(QKeySequence(tr("CTRL+N", "File|New")));
     connect(m_fileNewAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFileNew()));
 
     m_fileOpenAction = new QAction(QIcon(":/fileopen.png"),
                                    tr("&Open"), this);
-    m_fileOpenAction->setShortcut(QKeySequence("CTRL+O"));
+    m_fileOpenAction->setShortcut(QKeySequence(tr("CTRL+O", "File|Open")));
     connect(m_fileOpenAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFileOpen()));
 
     m_fileSaveAction = new QAction(QIcon(":/filesave.png"),
                                    tr("&Save"), this);
-    m_fileSaveAction->setShortcut(QKeySequence("CTRL+S"));
+    m_fileSaveAction->setShortcut(QKeySequence(tr("CTRL+S", "File|Save")));
     connect(m_fileSaveAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFileSave()));
 
@@ -696,31 +696,31 @@ void App::initActions()
     /* Manager actions */
     m_fixtureManagerAction = new QAction(QIcon(":/fixture.png"),
                                          tr("&Fixtures"), this);
-    m_fixtureManagerAction->setShortcut(QKeySequence("ALT+X"));
+    m_fixtureManagerAction->setShortcut(QKeySequence(tr("ALT+X", "Manager|Fixtures")));
     connect(m_fixtureManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFixtureManager()));
 
     m_functionManagerAction = new QAction(QIcon(":/function.png"),
                                           tr("&Functions"), this);
-    m_functionManagerAction->setShortcut(QKeySequence("ALT+U"));
+    m_functionManagerAction->setShortcut(QKeySequence(tr("ALT+U", "Manager|Functions")));
     connect(m_functionManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFunctionManager()));
 
     m_busManagerAction = new QAction(QIcon(":/bus.png"),
                                      tr("&Buses"), this);
-    m_busManagerAction->setShortcut(QKeySequence("ALT+B"));
+    m_busManagerAction->setShortcut(QKeySequence(tr("ALT+B", "Manager|Buses")));
     connect(m_busManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotBusManager()));
 
     m_inputManagerAction = new QAction(QIcon(":/input.png"),
                                        tr("&Inputs"), this);
-    m_inputManagerAction->setShortcut(QKeySequence("ALT+I"));
+    m_inputManagerAction->setShortcut(QKeySequence(tr("ALT+I", "Manager|Inputs")));
     connect(m_inputManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotInputManager()));
 
     m_outputManagerAction = new QAction(QIcon(":/output.png"),
                                         tr("&Outputs"), this);
-    m_outputManagerAction->setShortcut(QKeySequence("ALT+O"));
+    m_outputManagerAction->setShortcut(QKeySequence(tr("ALT+O", "Manager|Outputs")));
     connect(m_outputManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotOutputManager()));
 
@@ -728,26 +728,26 @@ void App::initActions()
     m_modeToggleAction = new QAction(QIcon(":/operate.png"),
                                      tr("&Operate"), this);
     m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
-    m_modeToggleAction->setShortcut(QKeySequence("CTRL+TAB"));
+    m_modeToggleAction->setShortcut(QKeySequence(tr("CTRL+TAB", "Control|Toggle operate/design mode")));
     connect(m_modeToggleAction, SIGNAL(triggered(bool)),
             this, SLOT(slotModeToggle()));
 
     m_controlVCAction = new QAction(QIcon(":/virtualconsole.png"),
                                     tr("&Virtual Console"), this);
-    m_controlVCAction->setShortcut(QKeySequence("CTRL+R"));
+    m_controlVCAction->setShortcut(QKeySequence(tr("CTRL+R", "Control|Virtual Console")));
     connect(m_controlVCAction, SIGNAL(triggered(bool)),
             this, SLOT(slotControlVC()));
 
     m_controlMonitorAction = new QAction(QIcon(":/monitor.png"),
                                          tr("&Monitor"), this);
-    m_controlMonitorAction->setShortcut(QKeySequence("CTRL+M"));
+    m_controlMonitorAction->setShortcut(QKeySequence(tr("CTRL+M", "Control|Monitor")));
     connect(m_controlMonitorAction, SIGNAL(triggered(bool)),
             this, SLOT(slotControlMonitor()));
 
     m_controlBlackoutAction = new QAction(QIcon(":/blackout.png"),
                                           tr("Toggle &Blackout"), this);
     m_controlBlackoutAction->setCheckable(true);
-    m_controlBlackoutAction->setShortcut(QKeySequence("CTRL+B"));
+    m_controlBlackoutAction->setShortcut(QKeySequence(tr("CTRL+B", "Control|Toggle Blackout")));
     connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
             this, SLOT(slotControlBlackout()));
 
@@ -756,7 +756,7 @@ void App::initActions()
     m_controlFullScreenAction = new QAction(QIcon(":/fullscreen.png"),
                                             tr("Toggle Full Screen"), this);
     m_controlFullScreenAction->setCheckable(true);
-    m_controlFullScreenAction->setShortcut(QKeySequence("CTRL+F11"));
+    m_controlFullScreenAction->setShortcut(QKeySequence(tr("CTRL+F11", "Control|Toggle Full Screen")));
     connect(m_controlFullScreenAction, SIGNAL(triggered(bool)),
             this, SLOT(slotControlFullScreen()));
 #endif
@@ -764,7 +764,7 @@ void App::initActions()
     /* Window actions */
 #ifdef __APPLE__
     m_windowMinimizeAction = new QAction(tr("Minimize"), this);
-    m_windowMinimizeAction->setShortcut(QKeySequence("CTRL+M"));
+    m_windowMinimizeAction->setShortcut(QKeySequence(tr("CTRL+M", "Apple Window Action|Minimize")));
     connect(m_windowMinimizeAction, SIGNAL(triggered(bool)),
             this, SLOT(slotWindowMinimize()));
 
@@ -776,7 +776,7 @@ void App::initActions()
     /* Help actions */
     m_helpIndexAction = new QAction(QIcon(":/help.png"),
                                     tr("&Index"), this);
-    m_helpIndexAction->setShortcut(QKeySequence("SHIFT+F1"));
+    m_helpIndexAction->setShortcut(QKeySequence(tr("SHIFT+F1", "Help|Index")));
     connect(m_helpIndexAction, SIGNAL(triggered(bool)),
             this, SLOT(slotHelpIndex()));
 
