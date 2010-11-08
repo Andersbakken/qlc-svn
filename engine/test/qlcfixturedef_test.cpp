@@ -320,3 +320,45 @@ void QLCFixtureDef_Test::copy()
     delete fd;
     delete copy;
 }
+
+void QLCFixtureDef_Test::saveLoadXML()
+{
+    const QString path("qlcfixturedef_test_saveXML.qxf");
+
+    QLCFixtureDef* def = new QLCFixtureDef;
+    def->setManufacturer("Foobar");
+    def->setModel("Xyzzy");
+    def->setType("Blinder");
+
+    QLCChannel* ch = new QLCChannel;
+    ch->setName("Whatever");
+    def->addChannel(ch);
+
+    QLCFixtureMode* mode = new QLCFixtureMode(def);
+    mode->setName("Barfoo");
+    def->addMode(mode);
+    mode->insertChannel(ch, 0);
+
+    QVERIFY(def->saveXML(QString("zxcvb:/path/to/nowhere") + path) != QFile::NoError);
+    QCOMPARE(def->saveXML(path), QFile::NoError);
+
+    // Test only QLCFixtureDef's doings and don't go into channel/mode details
+    // since they are tested in their individual unit tests.
+    QLCFixtureDef* def2 = new QLCFixtureDef;
+    QCOMPARE(def2->loadXML(QString()), QFile::OpenError);
+    QCOMPARE(def2->loadXML("/path/beyond/this/universe/foo.qxf"), QFile::ReadError);
+    QCOMPARE(def2->loadXML("readonly.xml"), QFile::ReadError);
+
+    QCOMPARE(def2->loadXML(path), QFile::NoError);
+    QCOMPARE(def2->manufacturer(), def->manufacturer());
+    QCOMPARE(def2->model(), def->model());
+    QCOMPARE(def2->channels().size(), 1);
+    QCOMPARE(def2->channels().at(0)->name(), ch->name());
+    QCOMPARE(def2->modes().size(), 1);
+    QCOMPARE(def2->modes().at(0)->name(), mode->name());
+
+    delete def;
+    delete def2;
+    QFile::remove(path);
+    QVERIFY(QFile::exists(path) == false);
+}

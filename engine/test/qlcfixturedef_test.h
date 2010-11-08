@@ -43,6 +43,7 @@ private slots:
     void mode();
     void modes();
     void copy();
+    void saveLoadXML();
 };
 
 #endif
