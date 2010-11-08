@@ -56,8 +56,6 @@ InputPatch::~InputPatch()
 void InputPatch::set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
                      QLCInputProfile* profile)
 {
-    /* TODO: This closes the plugin line always, regardless of whether
-       the line has been assigned to more than one input universe */
     if (m_plugin != NULL && m_input != KInputInvalid)
         m_plugin->close(m_input);
 
@@ -69,6 +67,11 @@ void InputPatch::set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
     /* Open the assigned plugin input */
     if (m_plugin != NULL && input != KInputInvalid)
         m_plugin->open(m_input);
+}
+
+QLCInPlugin* InputPatch::plugin() const
+{
+    return m_plugin;
 }
 
 QString InputPatch::pluginName() const
@@ -96,6 +99,11 @@ QString InputPatch::inputName() const
         return KInputNone;
 }
 
+QLCInputProfile* InputPatch::profile() const
+{
+    return m_profile;
+}
+
 QString InputPatch::profileName() const
 {
     if (m_profile != NULL)
@@ -103,3 +111,9 @@ QString InputPatch::profileName() const
     else
         return KInputNone;
 }
+
+bool InputPatch::feedbackEnabled() const
+{
+    return m_feedbackEnabled;
+}
+

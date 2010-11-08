@@ -42,41 +42,62 @@ class QDomElement;
 #define KXMLQLCInputPatchInput "Input"
 #define KXMLQLCInputPatch "Patch"
 
+/**
+ * An InputPatch represents one input universe. One input universe can have
+ * exactly one input line from exactly one input plugin (or none at all)
+ * assigned. An additional input profile can be provided, which helps users
+ * in choosing the input channels (seeing logical channel names pertaining to
+ * each individual control in their input devices instead of meaningless channel
+ * numbers). Each universe can also be set to block all outgoing traffic
+ * (=feedback) towards input plugins.
+ */
 class InputPatch : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(InputPatch);
 
-    /********************************************************************
+    /************************************************************************
      * Initialization
-     ********************************************************************/
+     ************************************************************************/
 public:
     InputPatch(QObject* parent);
     virtual ~InputPatch();
 
-    /********************************************************************
+    /************************************************************************
      * Properties
-     ********************************************************************/
+     ************************************************************************/
 public:
+    /**
+     * Assign an input line in a plugin to an InputPatch.
+     *
+     * @param plugin A plugin to assign
+     * @param input An input line within that plugin to assign
+     * @param enableFeedback Enable or disable feedback thru a patch
+     * @param profile An input profile for a patch (NULL for none)
+     */
     void set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
              QLCInputProfile* profile);
 
-    QLCInPlugin* plugin() const {
-        return m_plugin;
-    }
+    /** The plugin instance that has been assigned to a patch */
+    QLCInPlugin* plugin() const;
+
+    /** Friendly name of the plugin assigned to a patch (empty if none) */
     QString pluginName() const;
 
+    /** An input line provided by the assigned plugin */
     quint32 input() const;
+
+    /** Friendly name of the assigned input line */
     QString inputName() const;
 
-    QLCInputProfile* profile() const {
-        return m_profile;
-    }
+    /** Assigned input profile instance */
+    QLCInputProfile* profile() const;
+
+    /** Name of the assigned input profile (empty if none) */
     QString profileName() const;
 
-    bool feedbackEnabled() const {
-        return m_feedbackEnabled;
-    }
+    /** Check if feedback data should be sent back to the plugin */
+    bool feedbackEnabled() const;
 
 protected:
     QLCInPlugin* m_plugin;
