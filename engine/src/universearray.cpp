@@ -119,7 +119,11 @@ QString UniverseArray::gMChannelModeToString(UniverseArray::GMChannelMode mode)
 
 void UniverseArray::setGMValueMode(UniverseArray::GMValueMode mode)
 {
-    m_gMValueMode = mode;
+    if (m_gMValueMode != mode)
+    {
+        m_gMValueMode = mode;
+        setGMValue(gMValue());
+    }
 }
 
 UniverseArray::GMValueMode UniverseArray::gMValueMode() const
@@ -129,7 +133,22 @@ UniverseArray::GMValueMode UniverseArray::gMValueMode() const
 
 void UniverseArray::setGMChannelMode(UniverseArray::GMChannelMode mode)
 {
-    m_gMChannelMode = mode;
+    if (m_gMChannelMode != mode)
+    {
+        m_gMChannelMode = mode;
+        setGMValue(gMValue());
+    }
+
+    if (gMChannelMode() == GMIntensity)
+    {
+        QSetIterator <int> it(m_gMNonIntensityChannels);
+        while (it.hasNext() == true)
+        {
+            int channel(it.next());
+            char chValue(m_preGMValues->data()[channel]);
+            write(channel, chValue, QLCChannel::NoGroup);
+        }
+    }
 }
 
 UniverseArray::GMChannelMode UniverseArray::gMChannelMode() const

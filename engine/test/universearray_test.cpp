@@ -96,6 +96,59 @@ void UniverseArray_Test::gMValue()
     QCOMPARE(ua.gMFraction(), double(1));
 }
 
+void UniverseArray_Test::setGMValue()
+{
+    UniverseArray ua(5);
+
+    ua.write(0, 10, QLCChannel::Intensity);
+    ua.write(1, 20, QLCChannel::Intensity);
+    ua.write(2, 30, QLCChannel::Pan);
+    ua.write(3, 40, QLCChannel::Tilt);
+    ua.write(4, 50, QLCChannel::Intensity);
+
+    ua.setGMValue(63);
+    QCOMPARE(ua.postGMValues().data()[0], char(2));
+    QCOMPARE(ua.postGMValues().data()[1], char(5));
+    QCOMPARE(ua.postGMValues().data()[2], char(30));
+    QCOMPARE(ua.postGMValues().data()[3], char(40));
+    QCOMPARE(ua.postGMValues().data()[4], char(12));
+
+    ua.setGMChannelMode(UniverseArray::GMAllChannels);
+    QCOMPARE(ua.postGMValues().data()[0], char(2));
+    QCOMPARE(ua.postGMValues().data()[1], char(5));
+    QCOMPARE(ua.postGMValues().data()[2], char(7));
+    QCOMPARE(ua.postGMValues().data()[3], char(10));
+    QCOMPARE(ua.postGMValues().data()[4], char(12));
+
+    ua.setGMChannelMode(UniverseArray::GMIntensity);
+    QCOMPARE(ua.postGMValues().data()[0], char(2));
+    QCOMPARE(ua.postGMValues().data()[1], char(5));
+    QCOMPARE(ua.postGMValues().data()[2], char(30));
+    QCOMPARE(ua.postGMValues().data()[3], char(40));
+    QCOMPARE(ua.postGMValues().data()[4], char(12));
+
+    ua.setGMValueMode(UniverseArray::GMLimit);
+    QCOMPARE(ua.postGMValues().data()[0], char(10));
+    QCOMPARE(ua.postGMValues().data()[1], char(20));
+    QCOMPARE(ua.postGMValues().data()[2], char(30));
+    QCOMPARE(ua.postGMValues().data()[3], char(40));
+    QCOMPARE(ua.postGMValues().data()[4], char(50));
+
+    ua.setGMValue(5);
+    QCOMPARE(ua.postGMValues().data()[0], char(5));
+    QCOMPARE(ua.postGMValues().data()[1], char(5));
+    QCOMPARE(ua.postGMValues().data()[2], char(30));
+    QCOMPARE(ua.postGMValues().data()[3], char(40));
+    QCOMPARE(ua.postGMValues().data()[4], char(5));
+
+    ua.setGMChannelMode(UniverseArray::GMAllChannels);
+    QCOMPARE(ua.postGMValues().data()[0], char(5));
+    QCOMPARE(ua.postGMValues().data()[1], char(5));
+    QCOMPARE(ua.postGMValues().data()[2], char(5));
+    QCOMPARE(ua.postGMValues().data()[3], char(5));
+    QCOMPARE(ua.postGMValues().data()[4], char(5));
+}
+
 void UniverseArray_Test::applyGM()
 {
     UniverseArray ua(1);
@@ -194,7 +247,9 @@ void UniverseArray_Test::setGMValueEfficiency()
     /* This applies 50%(127) Grand Master to ALL channels in all universes.
        I'm not really sure what kinds of figures to expect here, since this
        is just one part in the overall processor load. Typically I get ~0.37ms
-       on an Intel Core 2 E6550@2.33GHz, which looks plausible to me..? */
+       on an Intel Core 2 E6550@2.33GHz, which looks plausible to me:
+       DMX frame interval is 1/44Hz =~ 23ms. Applying GM to ALL channels takes
+       less than 1ms so there's a full 22ms to spare after GM. */
     QBENCHMARK
     {
         // This is slower than plain write() because UA has to dig out each
@@ -215,7 +270,9 @@ void UniverseArray_Test::writeEfficiency()
     /* This applies 50%(127) Grand Master to ALL channels in all universes.
        I'm not really sure what kinds of figures to expect here, since this
        is just one part in the overall processor load. Typically I get ~0.15ms
-       on an Intel Core 2 E6550@2.33GHz, which looks plausible to me..? */
+       on an Intel Core 2 E6550@2.33GHz, which looks plausible to me:
+       DMX frame interval is 1/44Hz =~ 23ms. Applying GM to ALL channels takes
+       less than 1ms so there's a full 22ms to spare after GM. */
     QBENCHMARK
     {
         for (i = 0; i < int(512 * KUniverseCount); i++)
