@@ -32,6 +32,7 @@
 #define TESTPLUGINDIR "../inputpluginstub"
 #define OUTPUT_TESTPLUGINDIR "../outputpluginstub"
 #define ENGINEDIR "../src"
+#define PROFILEDIR "../../inputprofiles"
 
 void InputMap_Test::initial()
 {
@@ -411,4 +412,26 @@ void InputMap_Test::slotConfigurationChanged()
     QCOMPARE(spy.size(), 1);
     QCOMPARE(spy.at(0).size(), 1);
     QCOMPARE(spy.at(0).at(0).toString(), QString(stub->name()));
+}
+
+void InputMap_Test::loadInputProfiles()
+{
+    InputMap im(this);
+
+    // No profiles in a nonexistent directory
+    im.loadProfiles("/path/to/a/nonexistent/place/beyond/this/universe");
+    QVERIFY(im.profileNames().isEmpty() == true);
+
+    // No profiles in an existing directory
+    im.loadProfiles(TESTPLUGINDIR);
+    QVERIFY(im.profileNames().isEmpty() == true);
+
+    // Should be able to load profiles
+    im.loadProfiles(PROFILEDIR);
+    QStringList names(im.profileNames());
+    QVERIFY(names.size() > 0);
+
+    // Shouldn't load duplicates
+    im.loadProfiles(PROFILEDIR);
+    QCOMPARE(names, im.profileNames());
 }

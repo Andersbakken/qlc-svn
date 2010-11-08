@@ -353,8 +353,7 @@ void InputMap::loadProfiles(const QString& profilePath)
              QDir::Name, QDir::Files);
     if (dir.exists() == false || dir.isReadable() == false)
     {
-        qWarning() << "Unable to load input profiles from"
-        << profilePath;
+        qWarning() << "Unable to load input profiles from" << profilePath;
         return;
     }
 
@@ -378,8 +377,7 @@ void InputMap::loadProfiles(const QString& profilePath)
         }
         else
         {
-            qWarning() << "Unable to find an input profile from"
-            << path;
+            qWarning() << "Unable to find an input profile from" << path;
         }
     }
 }

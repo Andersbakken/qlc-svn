@@ -42,6 +42,7 @@ private slots:
     void feedBack();
     void slotValueChanged();
     void slotConfigurationChanged();
+    void loadInputProfiles();
 };
 
 #endif
