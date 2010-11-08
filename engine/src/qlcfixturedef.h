@@ -88,33 +88,25 @@ public:
      *********************************************************************/
 public:
     /** Get the fixture's name string (=="manufacturer model") */
-    QString name() {
-        return m_manufacturer + QString(" ") + m_model;
-    }
+    QString name() const;
 
     /** Set the fixture's manufacturer string */
     void setManufacturer(const QString& mfg);
 
     /** Set the fixture's manufacturer string */
-    QString manufacturer() const {
-        return m_manufacturer;
-    }
+    QString manufacturer() const;
 
     /** Set the fixture's model string */
     void setModel(const QString& model);
 
     /** Get the fixture's model string */
-    QString model() const {
-        return m_model;
-    }
+    QString model() const;
 
     /** Set the fixture's type string */
     void setType(const QString& type);
 
     /** Get the fixture's type string */
-    QString type() const {
-        return m_type;
-    }
+    QString type() const;
 
 protected:
     QString m_manufacturer;
@@ -162,9 +154,7 @@ public:
 
     /** Get all modes in this fixture. Changes to the list won't end
         up into the fixture definition. */
-    QList <QLCFixtureMode*> modes() const {
-        return m_modes;
-    }
+    QList <QLCFixtureMode*> modes() const;
 
 protected:
     /** Modes (i.e. ordered collections of channels) */

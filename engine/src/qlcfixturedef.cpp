@@ -91,9 +91,19 @@ QLCFixtureDef& QLCFixtureDef::operator=(const QLCFixtureDef& fixture)
  * General properties
  ****************************************************************************/
 
+QString QLCFixtureDef::name() const
+{
+    return m_manufacturer + QString(" ") + m_model;
+}
+
 void QLCFixtureDef::setManufacturer(const QString& mfg)
 {
     m_manufacturer = mfg;
+}
+
+QString QLCFixtureDef::manufacturer() const
+{
+    return m_manufacturer;
 }
 
 void QLCFixtureDef::setModel(const QString& model)
@@ -101,9 +111,19 @@ void QLCFixtureDef::setModel(const QString& model)
     m_model = model;
 }
 
+QString QLCFixtureDef::model() const
+{
+    return m_model;
+}
+
 void QLCFixtureDef::setType(const QString& type)
 {
     m_type = type;
+}
+
+QString QLCFixtureDef::type() const
+{
+    return m_type;
 }
 
 /****************************************************************************
@@ -211,6 +231,11 @@ const QLCFixtureMode* QLCFixtureDef::mode(const QString& name) const
     }
 
     return NULL;
+}
+
+QList <QLCFixtureMode*> QLCFixtureDef::modes() const
+{
+    return m_modes;
 }
 
 /****************************************************************************
