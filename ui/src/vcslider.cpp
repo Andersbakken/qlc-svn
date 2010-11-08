@@ -574,7 +574,7 @@ void VCSlider::writeDMX(MasterTimer* timer, UniverseArray* universes)
         {
             const QLCChannel* qlcch = fxi->channel(lch.channel);
             if (qlcch == NULL)
-                continue; //! @todo Remove fixtures properly from VCSlider!
+                continue;
 
             quint32 dmx_ch = fxi->channelAddress(lch.channel);
             universes->write(dmx_ch, m_lastWrittenLevelValue, qlcch->group());
