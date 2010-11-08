@@ -139,9 +139,7 @@ protected:
 
     /** Check, whether this EFXFixture is ready (no more events).
         This can happen basically only if SingleShot mode is enabled. */
-    bool isReady() const {
-        return m_ready;
-    }
+    bool isReady() const;
 
 protected:
     /** This fixture's order number in serial propagation mode */
