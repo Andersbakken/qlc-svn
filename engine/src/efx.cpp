@@ -518,6 +518,11 @@ bool EFX::lowerFixture(EFXFixture* ef)
     }
 }
 
+const QList <EFXFixture*> EFX::fixtures() const
+{
+    return m_fixtures;
+}
+
 void EFX::slotFixtureRemoved(t_fixture_id fxi_id)
 {
     /* Remove the destroyed fixture from our list */
@@ -543,6 +548,11 @@ void EFX::setPropagationMode(PropagationMode mode)
 {
     m_propagationMode = mode;
     emit changed(m_id);
+}
+
+EFX::PropagationMode EFX::propagationMode() const
+{
+    return m_propagationMode;
 }
 
 QString EFX::propagationModeToString(PropagationMode mode)

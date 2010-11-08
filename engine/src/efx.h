@@ -388,9 +388,7 @@ public:
     bool lowerFixture(EFXFixture* ef);
 
     /** Get a list of fixtures taking part in this EFX */
-    const QList <EFXFixture*> fixtures() const {
-        return m_fixtures;
-    }
+    const QList <EFXFixture*> fixtures() const;
 
 public slots:
     /** Slot that captures Doc::fixtureRemoved signals */
@@ -414,9 +412,7 @@ public:
     void setPropagationMode(PropagationMode mode);
 
     /** Get the EFX's fixture propagation mode */
-    PropagationMode propagationMode() const {
-        return m_propagationMode;
-    }
+    PropagationMode propagationMode() const;
 
     /** Convert the propagation mode setting to a string */
     static QString propagationModeToString(PropagationMode mode);
