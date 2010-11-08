@@ -22,8 +22,11 @@
 #include <QtTest>
 #include <QtXml>
 
-#include "qlcfixturedefcache_test.h"
+#define protected public
 #include "qlcfixturedefcache.h"
+#undef protected
+
+#include "qlcfixturedefcache_test.h"
 #include "qlcfixturedef.h"
 #include "qlcfile.h"
 
@@ -39,8 +42,18 @@ void QLCFixtureDefCache_Test::cleanup()
     cache.clear();
 }
 
+void QLCFixtureDefCache_Test::duplicates()
+{
+    // Check that duplicates are discarded
+    int num = cache.m_defs.size();
+    cache.load(INTERNAL_FIXTUREDIR);
+    QCOMPARE(cache.m_defs.size(), num);
+}
+
 void QLCFixtureDefCache_Test::add()
 {
+    QVERIFY(cache.addFixtureDef(NULL) == false);
+
     QVERIFY(cache.manufacturers().count() != 0);
     cache.clear();
     QVERIFY(cache.manufacturers().count() == 0);

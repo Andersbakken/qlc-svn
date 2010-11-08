@@ -33,6 +33,7 @@ private slots:
     void init();
     void cleanup();
 
+    void duplicates();
     void add();
     void fixtureDef();
 	void load();
