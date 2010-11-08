@@ -55,7 +55,7 @@ void HIDJsDevice::init()
         m_name = QString("HID Input %1: %2").arg(m_line + 1)
                  .arg(strerror(errno));
         qWarning() << "Unable to get joystick name:"
-        << strerror(errno);
+                   << strerror(errno);
     }
     else
     {
@@ -67,7 +67,7 @@ void HIDJsDevice::init()
     {
         m_axes = 0;
         qWarning() << "Unable to get number of axes:"
-        << strerror(errno);
+                   << strerror(errno);
     }
 
     /* Number of buttons */
@@ -75,7 +75,7 @@ void HIDJsDevice::init()
     {
         m_buttons = 0;
         qWarning() << "Unable to get number of buttons:"
-        << strerror(errno);
+                   << strerror(errno);
     }
 
     close();
@@ -97,12 +97,12 @@ bool HIDJsDevice::open()
         if (result == false)
         {
             qWarning() << "Unable to open" << m_file.fileName()
-            << ":" << m_file.errorString();
+                       << ":" << m_file.errorString();
         }
         else
         {
             qDebug() << "Opened" << m_file.fileName()
-            << "in read only mode";
+                     << "in read only mode";
         }
     }
 
@@ -148,9 +148,7 @@ bool HIDJsDevice::readEvent()
         }
         else if ((ev.type & ~JS_EVENT_INIT) == JS_EVENT_AXIS)
         {
-            /** @todo Use SHRT_MAX & SHRT_MIN */
-            val = SCALE(double(ev.value),
-                        double(-32767), double(32768),
+            val = SCALE(double(ev.value), double(SHRT_MIN), double(SHRT_MAX),
                         double(0), double(UCHAR_MAX));
             ch = quint32(ev.number);
 
@@ -182,9 +180,11 @@ QString HIDJsDevice::infoText()
 {
     QString info;
 
-    info += tr("<P><B>%1</B><BR>").arg(m_name);
-    info += tr("Axes: %1<BR>").arg(m_axes);
-    info += tr("Buttons: %1</P>").arg(m_buttons);
+    info += QString("<B>%1</B><P>").arg(m_name);
+    info += tr("Axes: %1").arg(m_axes);
+    info += QString("<BR/>");
+    info += tr("Buttons: %1").arg(m_buttons);
+    info += QString("</P>");
 
     return info;
 }

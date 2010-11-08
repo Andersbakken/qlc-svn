@@ -182,15 +182,15 @@ void HIDEventDevice::getAbsoluteAxesCapabilities()
         if (r != 0)
         {
             qWarning() << "\t\tUnable to get axes' features:"
-            << strerror(errno);
+                       << strerror(errno);
         }
         else
         {
             qDebug() << "\t\tChannel:" << i
-            << "min:" << feats.minimum
-            << "max:" << feats.maximum
-            << "flatness:" << feats.flat
-            << "fuzz:" << feats.fuzz;
+                     << "min:" << feats.minimum
+                     << "max:" << feats.maximum
+                     << "flatness:" << feats.flat
+                     << "fuzz:" << feats.fuzz;
 
             if (feats.maximum > 0)
                 m_scales[i] = feats;
@@ -215,12 +215,11 @@ bool HIDEventDevice::open()
         if (result == false)
         {
             qWarning() << "Unable to open" << m_file.fileName()
-            << m_file.errorString();
+                       << m_file.errorString();
         }
         else
         {
-            qDebug() << "Opened" << m_file.fileName()
-            << "in read only mode";
+            qDebug() << "Opened" << m_file.fileName() << "in read only mode";
         }
     }
 
@@ -333,8 +332,9 @@ QString HIDEventDevice::infoText()
  * Input data
  *****************************************************************************/
 
-void HIDEventDevice::feedBack(quint32 /*channel*/,
-                              uchar /*value*/)
+void HIDEventDevice::feedBack(quint32 channel, uchar value)
 {
+    Q_UNUSED(channel);
+    Q_UNUSED(value);
 }
 

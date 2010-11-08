@@ -60,46 +60,30 @@ protected:
      * File operations
      *********************************************************************/
 public:
-    /**
-     * Attempt to open the HID device in RW mode and fall back to RO
-     * if that fails.
-     *
-     * @return true if the file was opened RW/RO
-     */
+    /** @reimp */
     bool open();
 
-    /**
-     * Close the HID device
-     */
+    /** @reimp */
     void close();
 
-    /**
-     * Get the full path of this HID device
-     */
+    /** @reimp */
     QString path() const;
 
-    /**
-     * Read one event and emit it
-     */
+    /** @reimp */
     bool readEvent();
 
     /*********************************************************************
      * Device info
      *********************************************************************/
 public:
-    /**
-     * Get HID device information string to be used in plugin manager
-     */
+    /** @reimp */
     QString infoText();
 
     /*********************************************************************
      * Input data
      *********************************************************************/
 public:
-    /**
-     * Send an input value back the HID device to move motorized sliders
-     * and such.
-     */
+    /** @reimp */
     void feedBack(quint32 channel, uchar value);
 };
 

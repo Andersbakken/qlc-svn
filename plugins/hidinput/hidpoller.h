@@ -46,9 +46,6 @@ public:
 public:
     bool addDevice(HIDDevice* device);
     bool removeDevice(HIDDevice* device);
-    int deviceCount() const {
-        return m_devices.count();
-    }
 
 protected:
     QMap <int, HIDDevice*> m_devices;

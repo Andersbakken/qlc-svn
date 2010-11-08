@@ -41,9 +41,9 @@ public:
     HIDDevice(HIDInput* parent, quint32 line, const QString& path);
     virtual ~HIDDevice();
 
-    /*********************************************************************
+    /*************************************************************************
      * File operations
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
      * Attempt to open the HID device in RW mode and fall back to RO
@@ -76,9 +76,9 @@ public:
 protected:
     QFile m_file;
 
-    /*********************************************************************
+    /*************************************************************************
      * Line
-     *********************************************************************/
+     *************************************************************************/
 public:
     quint32 line() const {
         return m_line;
@@ -87,9 +87,9 @@ public:
 protected:
     quint32 m_line;
 
-    /*********************************************************************
+    /*************************************************************************
      * Device info
-     *********************************************************************/
+     *************************************************************************/
 public:
     /**
      * Get HID device information string to be used in plugin manager
@@ -104,9 +104,9 @@ public:
 protected:
     QString m_name;
 
-    /*********************************************************************
+    /*************************************************************************
      * Input data
-     *********************************************************************/
+     *************************************************************************/
 signals:
     /**
      * Signal that is emitted when an input channel's value is changed
@@ -115,8 +115,7 @@ signals:
      * @param channel The channel whose value has changed
      * @param value The changed value
      */
-    void valueChanged(HIDDevice* device, quint32 channel,
-                      uchar value);
+    void valueChanged(HIDDevice* device, quint32 channel, uchar value);
 
 public:
     /**

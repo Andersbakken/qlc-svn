@@ -139,9 +139,9 @@ QString HIDInput::infoText(quint32 input)
     {
         /* Plugin or just an invalid input selected. Display generic
            information. */
-        str += QString("<P>This plugin provides input support for ");
-        str += QString("various Human Interface Devices like ");
-        str += QString("joysticks, mice and keyboards.</P>");
+        str += QString("<P>");
+        str += tr("This plugin provides input support for HID-based joysticks.");
+        str += QString("</P>");
     }
     else
     {
