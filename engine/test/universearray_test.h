@@ -35,6 +35,7 @@ private slots:
     void gMValue();
     void applyGM();
     void write();
+    void reset();
     void setGMValueEfficiency();
     void writeEfficiency();
 };

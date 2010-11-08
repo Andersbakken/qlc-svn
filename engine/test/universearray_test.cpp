@@ -47,6 +47,14 @@ void UniverseArray_Test::gMChannelMode()
 
     ua.setGMChannelMode(UniverseArray::GMIntensity);
     QCOMPARE(ua.gMChannelMode(), UniverseArray::GMIntensity);
+
+    QCOMPARE(UniverseArray::stringToGMChannelMode("All"), UniverseArray::GMAllChannels);
+    QCOMPARE(UniverseArray::stringToGMChannelMode("Intensity"), UniverseArray::GMIntensity);
+    QCOMPARE(UniverseArray::stringToGMChannelMode("foobar"), UniverseArray::GMIntensity);
+
+    QCOMPARE(UniverseArray::gMChannelModeToString(UniverseArray::GMAllChannels), QString("All"));
+    QCOMPARE(UniverseArray::gMChannelModeToString(UniverseArray::GMIntensity), QString("Intensity"));
+    QCOMPARE(UniverseArray::gMChannelModeToString(UniverseArray::GMChannelMode(42)), QString("Intensity"));
 }
 
 void UniverseArray_Test::gMValueMode()
@@ -58,6 +66,14 @@ void UniverseArray_Test::gMValueMode()
 
     ua.setGMValueMode(UniverseArray::GMReduce);
     QCOMPARE(ua.gMValueMode(), UniverseArray::GMReduce);
+
+    QCOMPARE(UniverseArray::stringToGMValueMode("Limit"), UniverseArray::GMLimit);
+    QCOMPARE(UniverseArray::stringToGMValueMode("Reduce"), UniverseArray::GMReduce);
+    QCOMPARE(UniverseArray::stringToGMValueMode("xyzzy"), UniverseArray::GMReduce);
+
+    QCOMPARE(UniverseArray::gMValueModeToString(UniverseArray::GMLimit), QString("Limit"));
+    QCOMPARE(UniverseArray::gMValueModeToString(UniverseArray::GMReduce), QString("Reduce"));
+    QCOMPARE(UniverseArray::gMValueModeToString(UniverseArray::GMValueMode(31337)), QString("Reduce"));
 }
 
 void UniverseArray_Test::gMValue()
@@ -141,6 +157,30 @@ void UniverseArray_Test::write()
     QCOMPARE(ua.postGMValues().data()[9], char(127));
     QCOMPARE(ua.postGMValues().data()[4], char(100));
     QCOMPARE(ua.postGMValues().data()[0], char(127));
+}
+
+void UniverseArray_Test::reset()
+{
+    UniverseArray ua(128);
+    int i;
+
+    for (i = 0; i < 128; i++)
+    {
+        ua.write(i, 200, QLCChannel::Intensity);
+        QCOMPARE(ua.postGMValues().data()[i], char(200));
+    }
+
+    // Reset channels 10-127 (512 shouldn't cause a crash)
+    ua.reset(10, 512);
+    for (i = 0; i < 10; i++)
+        QCOMPARE(ua.postGMValues().data()[i], char(200));
+    for (i = 10; i < 128; i++)
+        QCOMPARE(ua.postGMValues().data()[i], char(0));
+
+    // Reset all
+    ua.reset();
+    for (i = 0; i < 128; i++)
+        QCOMPARE(ua.postGMValues().data()[i], char(0));
 }
 
 void UniverseArray_Test::setGMValueEfficiency()
