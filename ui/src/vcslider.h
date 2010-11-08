@@ -344,6 +344,10 @@ protected:
      */
     uchar levelValue() const;
 
+protected slots:
+    /** Removes all level channels related to removed fixture */
+    void slotFixtureRemoved(t_fixture_id fxi_id);
+
 protected:
     QList <VCSlider::LevelChannel> m_levelChannels;
     uchar m_levelLowLimit;

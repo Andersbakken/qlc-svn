@@ -139,6 +139,11 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
     /* Update the slider according to current mode */
     slotModeChanged(mode());
+
+    /* Listen to fixture removals so that LevelChannels can be removed when
+       they no longer point to an existing fixture->channel */
+    connect(_app->doc(), SIGNAL(fixtureRemoved(t_fixture_id)),
+            this, SLOT(slotFixtureRemoved(t_fixture_id)));
 }
 
 VCSlider::~VCSlider()
@@ -351,8 +356,7 @@ void VCSlider::setSliderMode(SliderMode mode)
 {
     Q_ASSERT(mode >= Bus && mode <= Submaster);
 
-    /* Disconnect these to prevent double callbacks and non-essential
-       signals (with Level & Submaster modes) */
+    /* Disconnect these to prevent double callbacks and non-needes signals */
     disconnect(Bus::instance(), SIGNAL(nameChanged(quint32, const QString&)),
                this, SLOT(slotBusNameChanged(quint32, const QString&)));
     disconnect(Bus::instance(), SIGNAL(valueChanged(quint32, quint32)),
@@ -525,6 +529,17 @@ void VCSlider::setLevelValue(uchar value)
 uchar VCSlider::levelValue() const
 {
     return m_levelValue;
+}
+
+void VCSlider::slotFixtureRemoved(t_fixture_id fxi_id)
+{
+    QMutableListIterator <LevelChannel> it(m_levelChannels);
+    while (it.hasNext() == true)
+    {
+        it.next();
+        if (it.value().fixture == fxi_id)
+            it.remove();
+    }
 }
 
 /*********************************************************************

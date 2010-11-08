@@ -690,18 +690,19 @@ void App::initActions()
 
     m_fileQuitAction = new QAction(QIcon(":/exit.png"),
                                    tr("&Quit"), this);
+    m_fileQuitAction->setShortcut(QKeySequence("CTRL+Q"));
     connect(m_fileQuitAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFileQuit()));
 
     /* Manager actions */
     m_fixtureManagerAction = new QAction(QIcon(":/fixture.png"),
-                                         tr("&Fixtures"), this);
+                                         tr("Fi&xtures"), this);
     m_fixtureManagerAction->setShortcut(QKeySequence(tr("ALT+X", "Manager|Fixtures")));
     connect(m_fixtureManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFixtureManager()));
 
     m_functionManagerAction = new QAction(QIcon(":/function.png"),
-                                          tr("&Functions"), this);
+                                          tr("F&unctions"), this);
     m_functionManagerAction->setShortcut(QKeySequence(tr("ALT+U", "Manager|Functions")));
     connect(m_functionManagerAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFunctionManager()));
