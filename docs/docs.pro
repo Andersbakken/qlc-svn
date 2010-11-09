@@ -9,6 +9,7 @@ docs.files = \
              collectioneditor.html \
              collectioneditor.png \
              concept.html \
+             efxeditor.html \
              functionmanager.html \
              functionmanager.png \
              howto-add-fixtures.html \
