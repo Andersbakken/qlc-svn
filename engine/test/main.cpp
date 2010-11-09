@@ -33,6 +33,7 @@
 #include "qlcchannel_test.h"
 #include "qlcmacros_test.h"
 #include "qlcfile_test.h"
+#include "qlci18n_test.h"
 
 // Engine
 #include "dummyoutplugin_test.h"
@@ -112,6 +113,11 @@ int main(int argc, char** argv)
 
     QLCFile_Test file;
     r = QTest::qExec(&file, argc, argv);
+    if (r != 0)
+        return r;
+
+    QLCi18n_Test i18n;
+    r = QTest::qExec(&i18n, argc, argv);
     if (r != 0)
         return r;
 

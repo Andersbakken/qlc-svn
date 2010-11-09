@@ -28,13 +28,32 @@ class QString;
 class QLCi18n
 {
 public:
+    /** Set the default locale to use when loading translations */
     static void setDefaultLocale(const QString& locale);
+
+    /** Get the default locale used when loading translations */
     static QString defaultLocale();
 
-    static void loadTranslation(const QString& component);
+    /** Set the folder path to load translations from */
+    static void setTranslationFilePath(const QString& path);
+
+    /** Get the folder path where translation are loaded from */
+    static QString translationFilePath();
+
+    /**
+     * Load translation for a component. The translation file that this method
+     * attempts to load takes the following form: "<component>_<locale>.qm". For
+     * example "qlc_fi_FI.qm" will be loaded when locale() == "fi_FI" and
+     * $component == "qlc".
+     *
+     * @param component The name of the component whose translation to load
+     * @return true if translation was loaded successfully, otherwise false
+     */
+    static bool loadTranslation(const QString& component);
 
 private:
     static QString s_defaultLocale;
+    static QString s_translationFilePath;
 };
 
 #endif

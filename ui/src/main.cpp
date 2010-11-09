@@ -154,6 +154,14 @@ int main(int argc, char** argv)
     dir.cdUp();
     dir.cd("plugins");
     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+
+    // Set the default translation file path before parsing args
+    QLCi18n::setTranslationFilePath(QString("%1/../%2")
+                                    .arg(QCoreApplication::applicationDirPath())
+                                    .arg(TRANSLATIONDIR));
+#else
+    // Set the default translation file path before parsing args
+    QLCi18n::setTranslationFilePath(TRANSLATIONDIR);
 #endif
 
     /* Let the world know... */

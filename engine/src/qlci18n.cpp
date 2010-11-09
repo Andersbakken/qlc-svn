@@ -23,11 +23,13 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QString>
+#include <QDebug>
 
 #include "qlcconfig.h"
 #include "qlci18n.h"
 
 QString QLCi18n::s_defaultLocale = QString();
+QString QLCi18n::s_translationFilePath = QString();
 
 void QLCi18n::setDefaultLocale(const QString& locale)
 {
@@ -39,7 +41,17 @@ QString QLCi18n::defaultLocale()
     return s_defaultLocale;
 }
 
-void QLCi18n::loadTranslation(const QString& component)
+void QLCi18n::setTranslationFilePath(const QString& path)
+{
+    s_translationFilePath = path;
+}
+
+QString QLCi18n::translationFilePath()
+{
+    return s_translationFilePath;
+}
+
+bool QLCi18n::loadTranslation(const QString& component)
 {
     QString lc;
 
@@ -49,14 +61,14 @@ void QLCi18n::loadTranslation(const QString& component)
         lc = defaultLocale();
 
     QString file(QString("%1_%2").arg(component).arg(lc));
-
-#ifdef __APPLE__
-    QString path(QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
-                 .arg(TRANSLATIONDIR));
-#else
-    QString path(TRANSLATIONDIR);
-#endif
     QTranslator* translator = new QTranslator(QCoreApplication::instance());
-    if (translator->load(file, path) == true)
+    if (translator->load(file, translationFilePath()) == true)
+    {
         QCoreApplication::installTranslator(translator);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
