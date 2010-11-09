@@ -32,6 +32,7 @@ void DummyOutPlugin_Test::dummyMethods()
     DummyOutPlugin* plugin = new DummyOutPlugin();
     plugin->open(12345);
     plugin->close(54321);
+    QVERIFY(plugin->canConfigure() == false);
     plugin->configure();
     plugin->outputDMX(0, QByteArray(512, UCHAR_MAX));
     plugin->outputDMX(UINT_MAX, QByteArray(512, UCHAR_MAX));
