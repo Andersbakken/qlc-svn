@@ -3,7 +3,12 @@ include(../variables.pri)
 TEMPLATE = subdirs
 
 docs.path = $$INSTALLROOT/$$DOCSDIR/html
-docs.files = concept.html \
+docs.files = \
+             chasereditor.html \
+             chasereditor.png \
+             collectioneditor.html \
+             collectioneditor.png \
+             concept.html \
              functionmanager.html \
              functionmanager.png \
              howto-add-fixtures.html \
@@ -19,13 +24,15 @@ docs.files = concept.html \
 INSTALLS += docs
 
 gfx.path  = $$INSTALLROOT/$$DOCSDIR/gfx
-gfx.files = ../gfx/attach.png \
+gfx.files = \
+            ../gfx/attach.png \
             ../gfx/back.png \
             ../gfx/beam.png \
             ../gfx/blackout.png \
             ../gfx/bus.png \    
             ../gfx/button.png \
             ../gfx/chaser.png \
+            ../gfx/check.png \
             ../gfx/clock.png \
             ../gfx/collection.png \
             ../gfx/color.png \
@@ -38,6 +45,7 @@ gfx.files = ../gfx/attach.png \
             ../gfx/edit_add.png \
             ../gfx/editclear.png \
             ../gfx/editcopy.png \
+            ../gfx/editcopyall.png \
             ../gfx/editcut.png \
             ../gfx/editdelete.png \
             ../gfx/editpaste.png \
@@ -82,6 +90,7 @@ gfx.files = ../gfx/attach.png \
             ../gfx/slider.png \
             ../gfx/speed.png \
             ../gfx/tilt.png \
+            ../gfx/uncheck.png \
             ../gfx/undo.png \
             ../gfx/up.png \
             ../gfx/virtualconsole.png \
