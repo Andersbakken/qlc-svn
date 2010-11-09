@@ -47,6 +47,10 @@ void OutputMap_Test::initial()
     QVERIFY(om.m_universeMutex.tryLock() == true);
     om.m_universeMutex.unlock();
 
+    // Test that peekUniverses() returns valid stuff
+    for (quint32 i = 0; i < 512 * om.universes(); i++)
+        QVERIFY(om.peekUniverses()->preGMValues().data()[i] == 0);
+
     /* Dummy Out should be there... */
     QVERIFY(om.m_plugins.size() == 1);
 
@@ -162,7 +166,7 @@ void OutputMap_Test::setPatch()
     QVERIFY(om.patch(0)->output() == 3);
 }
 
-void OutputMap_Test::claimReleaseDump()
+void OutputMap_Test::claimReleaseDumpReset()
 {
     OutputMap om(this);
 
@@ -200,6 +204,10 @@ void OutputMap_Test::claimReleaseDump()
 
     for (int i = 1536; i < 2048; i++)
         QCOMPARE(stub->m_array.data()[i], 'd');
+
+    om.resetUniverses();
+    for (quint32 i = 0; i < 512 * om.universes(); i++)
+        QVERIFY(om.peekUniverses()->preGMValues().data()[i] == 0);
 }
 
 void OutputMap_Test::blackout()
