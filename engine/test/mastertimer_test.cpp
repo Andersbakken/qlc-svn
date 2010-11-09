@@ -115,6 +115,9 @@ void MasterTimer_Test::startStopFunction()
 
     QVERIFY(mt.runningFunctions() == 0);
 
+    mt.startFunction(NULL, true);
+    QVERIFY(mt.runningFunctions() == 0);
+
     mt.startFunction(&fs, true);
     QVERIFY(mt.runningFunctions() == 1);
     QVERIFY(fs.initiatedByOtherFunction() == true);
