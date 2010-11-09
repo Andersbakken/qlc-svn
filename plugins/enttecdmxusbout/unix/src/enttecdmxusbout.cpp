@@ -206,7 +206,7 @@ bool EnttecDMXUSBOut::rescanWidgets()
     struct ftdi_context ftdi;
     ftdi_init(&ftdi);
     ftdi_usb_find_all(&ftdi, &list, EnttecDMXUSBWidget::VID,
-                      EnttecDMXUSBWidget::PID);
+                                    EnttecDMXUSBWidget::PID);
     while (list != NULL)
     {
         struct usb_device* dev = list->dev;
@@ -221,15 +221,17 @@ bool EnttecDMXUSBOut::rescanWidgets()
                              name, sizeof(name),
                              serial, sizeof(serial));
 
-        if (QString(vendor).toUpper() == QString("ENTTEC"))
+        /* Yes, this is hard-coding... */
+        if (QString(name).toLower().contains("pro") == true ||
+            QString(name).toLower().contains("dmxking") == true)
         {
-            m_widgets.append(new EnttecDMXUSBPro(this, QString(name),
-                                                 QString(serial)));
+            /* This is a DMX USB Pro widget */
+            m_widgets.append(new EnttecDMXUSBPro(this, name, serial));
         }
         else
         {
-            m_widgets.append(new EnttecDMXUSBOpen(this, QString(name),
-                                                  QString(serial)));
+            /* This is an Open DMX USB widget */
+            m_widgets.append(new EnttecDMXUSBOpen(this, name, serial));
         }
 
         list = list->next;

@@ -187,21 +187,16 @@ bool EnttecDMXUSBOut::rescanWidgets()
                used to determine the device type (Pro/Open) */
             QString desc(devInfo[i].Description);
 
-            if (desc.contains("pro", Qt::CaseInsensitive) == true)
+            if (desc.toLower().contains("pro") == true ||
+                desc.toLower().contains("dmxking") == true)
             {
                 /* This is a DMX USB Pro widget */
-                EnttecDMXUSBPro* w;
-                w = new EnttecDMXUSBPro(this, devInfo[i], i);
-                Q_ASSERT(w != NULL);
-                m_widgets.append(w);
+                m_widgets << new EnttecDMXUSBPro(this, devInfo[i], i);
             }
             else
             {
                 /* This is an Open DMX USB widget */
-                EnttecDMXUSBOpen* w;
-                w = new EnttecDMXUSBOpen(this, devInfo[i], i);
-                Q_ASSERT(w != NULL);
-                m_widgets.append(w);
+                m_widgets << new EnttecDMXUSBOpen(this, devInfo[i], i);
             }
         }
     }
