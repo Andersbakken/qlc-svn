@@ -383,7 +383,7 @@ void VirtualConsole::initActions()
 
     /* Font menu actions */
     m_fontAction = new QAction(QIcon(":/fonts.png"),
-                               tr("Font"), this);
+                               tr("Choose..."), this);
     connect(m_fontAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFont()));
 
@@ -945,12 +945,14 @@ void VirtualConsole::slotEditCut()
     /* Make the edit action valid only if there's something to cut */
     if (m_selectedWidgets.count() == 0)
     {
+        //! @todo Must also delete previous items in the clipboard!
         m_editAction = EditNone;
         m_clipboard.clear();
         m_editPasteAction->setEnabled(false);
     }
     else
     {
+        //! @todo Must also delete previous items in the clipboard!
         m_editAction = EditCut;
         m_clipboard = m_selectedWidgets;
         m_editPasteAction->setEnabled(true);
@@ -1233,6 +1235,7 @@ void VirtualConsole::slotFont()
     else
         font = m_selectedWidgets.last()->font();
 
+    //! @todo This crashes on OSX!
     font = QFontDialog::getFont(&ok, font);
     if (ok == true)
     {
