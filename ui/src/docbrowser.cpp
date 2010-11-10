@@ -65,6 +65,7 @@ DocBrowser::DocBrowser(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 
     /* Browser */
     m_browser = new QTextBrowser(this);
+    m_browser->setOpenExternalLinks(true);
     layout()->addWidget(m_browser);
     connect(m_browser, SIGNAL(backwardAvailable(bool)),
             this, SLOT(slotBackwardAvailable(bool)));
