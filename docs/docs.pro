@@ -6,23 +6,19 @@ docs.path = $$INSTALLROOT/$$DOCSDIR/html
 docs.files = \
              addeditfixtures.html \
              chasereditor.html \
-             chasereditor.png \
              collectioneditor.html \
-             collectioneditor.png \
              concept.html \
              efxeditor.html \
              fixturemanager.html \
              functionmanager.html \
-             functionmanager.png \
              howto-add-fixtures.html \
              howto-input-devices.html \
              howto-input-mapping.html \
              howto-output-mapping.html \
              index.html \
              sceneeditor.html \
-             sceneeditorfixture.png \
-             sceneeditorgeneral.png \
-             selectfunction.png \
+             selectfunction.html \
+             selectfixture.html \
              tutorial.html \
              tutorial.png
 INSTALLS += docs
@@ -100,5 +96,5 @@ gfx.files = \
             ../gfx/virtualconsole.png \
             ../gfx/wizard.png \
             ../gfx/xypad.png \
-            ../gfx/xypad-point.png
+            ../gfx/xypad-point.png \
 INSTALLS += gfx
