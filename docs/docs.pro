@@ -4,12 +4,14 @@ TEMPLATE = subdirs
 
 docs.path = $$INSTALLROOT/$$DOCSDIR/html
 docs.files = \
+             addeditfixtures.html \
              chasereditor.html \
              chasereditor.png \
              collectioneditor.html \
              collectioneditor.png \
              concept.html \
              efxeditor.html \
+             fixturemanager.html \
              functionmanager.html \
              functionmanager.png \
              howto-add-fixtures.html \
