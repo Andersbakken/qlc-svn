@@ -135,6 +135,11 @@ bool Collection::removeFunction(t_function_id fid)
     }
 }
 
+QList <t_function_id> Collection::functions() const
+{
+    return m_functions;
+}
+
 void Collection::slotFunctionRemoved(t_function_id fid)
 {
     removeFunction(fid);

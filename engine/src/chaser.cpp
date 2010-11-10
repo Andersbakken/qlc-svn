@@ -176,6 +176,11 @@ bool Chaser::lowerStep(int index)
     }
 }
 
+QList <t_function_id> Chaser::steps() const
+{
+    return m_steps;
+}
+
 void Chaser::slotFunctionRemoved(t_function_id fid)
 {
     m_steps.removeAll(fid);

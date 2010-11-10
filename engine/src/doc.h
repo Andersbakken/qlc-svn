@@ -69,9 +69,7 @@ public:
     };
 
     void setMode(Mode mode);
-    Mode mode() const {
-        return m_mode;
-    }
+    Mode mode() const;
 
 signals:
     void modeChanged(Doc::Mode mode);
@@ -96,9 +94,7 @@ public:
     /**
      * Check, whether Doc has been modified (and is in need of saving)
      */
-    bool isModified() {
-        return m_modified;
-    }
+    bool isModified() const;
 
     /**
      * Set Doc into modified state (i.e. it is in need of saving)
@@ -131,8 +127,7 @@ public:
      * @return true if the fixture was successfully added to doc,
      *         otherwise false.
      */
-    bool addFixture(Fixture* fixture,
-                    t_fixture_id id = Fixture::invalidId());
+    bool addFixture(Fixture* fixture, t_fixture_id id = Fixture::invalidId());
 
     /**
      * Delete the given fixture instance from Doc
@@ -164,9 +159,7 @@ public:
      *
      * @return Number of fixtures
      */
-    int fixtures() const {
-        return m_fixtureAllocation;
-    }
+    int fixtures() const;
 
     /**
      * Get the total power consumption of all fixtures in the current

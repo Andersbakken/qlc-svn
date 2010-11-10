@@ -86,9 +86,7 @@ public:
     /**
      * Get this function's list of member functions
      */
-    QList <t_function_id> functions() const {
-        return m_functions;
-    }
+    QList <t_function_id> functions() const;
 
 public slots:
     /** Catches Doc::functionRemoved() so that destroyed members can be

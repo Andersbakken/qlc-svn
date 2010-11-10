@@ -111,9 +111,7 @@ public:
     bool lowerStep(int index);
 
     /** Get this chaser's list of steps */
-    QList <t_function_id> steps() const {
-        return m_steps;
-    }
+    QList <t_function_id> steps() const;
 
 public slots:
     /**

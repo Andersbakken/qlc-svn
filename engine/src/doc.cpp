@@ -97,6 +97,15 @@ Doc::~Doc()
     m_fixtureAllocation = 0;
 }
 
+/*****************************************************************************
+ * Modified status
+ *****************************************************************************/
+
+bool Doc::isModified() const
+{
+    return m_modified;
+}
+
 void Doc::setModified()
 {
     m_modified = true;
@@ -133,6 +142,11 @@ void Doc::setMode(Doc::Mode mode)
     }
 
     emit modeChanged(m_mode);
+}
+
+Doc::Mode Doc::mode() const
+{
+    return m_mode;
 }
 
 /*************************************************************************
@@ -272,6 +286,11 @@ quint32 Doc::findAddress(quint32 universe, quint32 numChannels) const
     }
 
     return KChannelInvalid;
+}
+
+int Doc::fixtures() const
+{
+    return m_fixtureAllocation;
 }
 
 int Doc::totalPowerConsumption(int& fuzzy) const
