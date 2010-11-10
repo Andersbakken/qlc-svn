@@ -272,6 +272,28 @@ individual functions. Nevertheless users are encouraged to name their functions
 in some systematic way to help identify each of them -- if necessary.
 </P>
 
+<A NAME="GrandMaster" HREF="#GrandMaster"><H3>Grand Master</H3></A>
+
+<P>
+The Grand Master is used as the final master slider before values are written
+to the actual physical DMX hardware. Usually, the Grand Master affects only
+<B>Intensity</B> channels, but can be also changed to have effect on the values
+of <B>all</B> channels.
+</P>
+
+<P>
+The Grand Master has also two <B>Value Modes</B> that control the way <I>how</I>
+the Grand Master affects channel values passing through:
+<UL>
+<LI><B>Reduce:</B> Affected channels' values are reduced by a percentage set with the
+Grand Master slider. For example, Grand Master at 50% will result in all
+affected channels being reduced to 50% of their current values.</LI>
+<LI><B>Limit:</B> Affected channels cannot get larger values than directly set with
+the Grand Master slider. For example, Grand Master at 127 will result in all
+affected channel's maximum values being limited at exactly 127.</LI>
+</UL>
+</P>
+
 <A NAME="InputPlugins" HREF="#InputPlugins"><H3>Input plugins</H3></A>
 
 <P>
