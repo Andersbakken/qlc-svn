@@ -22,6 +22,7 @@ docs.files = \
              sceneeditor.html \
              sceneeditorfixture.png \
              sceneeditorgeneral.png \
+             selectfunction.png \
              tutorial.html \
              tutorial.png
 INSTALLS += docs
