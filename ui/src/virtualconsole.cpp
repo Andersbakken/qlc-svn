@@ -581,7 +581,7 @@ void VirtualConsole::updateCustomMenu()
         m_customMenu = NULL;
     }
 
-    if (m_selectedWidgets.count() > 0)
+    if (m_selectedWidgets.size() > 0)
     {
         /* Change the custom menu to the last selected widget's menu */
         VCWidget* latestWidget = m_selectedWidgets.last();
@@ -942,17 +942,19 @@ void VirtualConsole::slotToolsPanic()
 
 void VirtualConsole::slotEditCut()
 {
+    /* No need to delete widgets in clipboard because they are actually just
+       MOVED to another parent during Paste when m_editAction == EditCut.
+       Cutting the widgets does nothing to them unless Paste is invoked. */
+
     /* Make the edit action valid only if there's something to cut */
-    if (m_selectedWidgets.count() == 0)
+    if (m_selectedWidgets.size() == 0)
     {
-        //! @todo Must also delete previous items in the clipboard!
         m_editAction = EditNone;
         m_clipboard.clear();
         m_editPasteAction->setEnabled(false);
     }
     else
     {
-        //! @todo Must also delete previous items in the clipboard!
         m_editAction = EditCut;
         m_clipboard = m_selectedWidgets;
         m_editPasteAction->setEnabled(true);
@@ -962,7 +964,7 @@ void VirtualConsole::slotEditCut()
 void VirtualConsole::slotEditCopy()
 {
     /* Make the edit action valid only if there's something to copy */
-    if (m_selectedWidgets.count() == 0)
+    if (m_selectedWidgets.size() == 0)
     {
         m_editAction = EditNone;
         m_clipboard.clear();
@@ -978,7 +980,7 @@ void VirtualConsole::slotEditCopy()
 
 void VirtualConsole::slotEditPaste()
 {
-    if (m_clipboard.count() == 0)
+    if (m_clipboard.size() == 0)
     {
         /* Invalidate the edit action if there's nothing to paste */
         m_editAction = EditNone;
@@ -993,7 +995,7 @@ void VirtualConsole::slotEditPaste()
     Q_ASSERT(contents() != NULL);
 
     /* Select the parent that gets the cut clipboard contents */
-    if (m_selectedWidgets.count() == 0)
+    if (m_selectedWidgets.size() == 0)
         parent = contents();
     else
         parent = m_selectedWidgets.last();
