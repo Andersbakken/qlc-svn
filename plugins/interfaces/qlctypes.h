@@ -147,16 +147,6 @@ const quint32 KInputUniverseCount ( 4 );
  *****************************************************************************/
 
 /**
- * Smallest input line number
- */
-const quint32 KInputMin ( 0 );
-
-/**
- * Largest input line number
- */
-const quint32 KInputMax ( UINT_MAX - 1 );
-
-/**
  * Invalid input line number
  */
 const quint32 KInputInvalid ( UINT_MAX );
