@@ -63,6 +63,7 @@ InputPatchEditor::InputPatchEditor(QWidget* parent, quint32 universe,
     Q_ASSERT(inputPatch != NULL);
 
     setupUi(this);
+    m_infoBrowser->setOpenExternalLinks(true);
 
     m_universe = universe;
     setWindowTitle(tr("Mapping properties for input universe %1")

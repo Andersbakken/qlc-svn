@@ -50,6 +50,7 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, quint32 universe,
     QString key;
 
     setupUi(this);
+    m_infoBrowser->setOpenExternalLinks(true);
 
     Q_ASSERT(universe < _app->outputMap()->universes());
     m_universe = universe;
