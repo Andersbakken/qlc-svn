@@ -22,6 +22,7 @@ docs.files = \
              selectfixture.html \
              tutorial.html \
              tutorial.png \
+             vcframe.html \
              vclabel.html \
              vcstylingplacement.html \
              virtualconsole.html
