@@ -344,7 +344,7 @@ void VCPropertiesEditor::updateGrandMasterInputSource()
 bool VCPropertiesEditor::inputSourceNames(quint32 universe, quint32 channel,
                                           QString& uniName, QString& chName) const
 {
-    if (universe == KInputUniverseInvalid || channel == KInputChannelInvalid)
+    if (universe == InputMap::invalidUniverse() || channel == KInputChannelInvalid)
     {
         /* Nothing selected for input universe and/or channel */
         return false;

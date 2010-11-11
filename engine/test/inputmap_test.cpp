@@ -216,50 +216,50 @@ void InputMap_Test::setPatch()
     QVERIFY(im.patch(0)->input() == KInputInvalid);
     QVERIFY(im.patch(0)->profile() == NULL);
     QVERIFY(im.patch(0)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 0) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 0) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(1)->plugin() == NULL);
     QVERIFY(im.patch(1)->input() == KInputInvalid);
     QVERIFY(im.patch(1)->profile() == NULL);
     QVERIFY(im.patch(1)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 1) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 1) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(2)->plugin() == NULL);
     QVERIFY(im.patch(2)->input() == KInputInvalid);
     QVERIFY(im.patch(2)->profile() == NULL);
     QVERIFY(im.patch(2)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 2) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 2) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(3)->plugin() == NULL);
     QVERIFY(im.patch(3)->input() == KInputInvalid);
     QVERIFY(im.patch(3)->profile() == NULL);
     QVERIFY(im.patch(3)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 3) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 3) == InputMap::invalidUniverse());
 
     QVERIFY(im.setPatch(0, "Foobar", 0, false, prof->name()) == true);
     QVERIFY(im.patch(0)->plugin() == NULL);
     QVERIFY(im.patch(0)->input() == KInputInvalid);
     QVERIFY(im.patch(0)->profile() == prof);
     QVERIFY(im.patch(0)->feedbackEnabled() == false);
-    QVERIFY(im.mapping(stub->name(), 0) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 0) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(1)->plugin() == NULL);
     QVERIFY(im.patch(1)->input() == KInputInvalid);
     QVERIFY(im.patch(1)->profile() == NULL);
     QVERIFY(im.patch(1)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 1) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 1) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(2)->plugin() == NULL);
     QVERIFY(im.patch(2)->input() == KInputInvalid);
     QVERIFY(im.patch(2)->profile() == NULL);
     QVERIFY(im.patch(2)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 2) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 2) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(3)->plugin() == NULL);
     QVERIFY(im.patch(3)->input() == KInputInvalid);
     QVERIFY(im.patch(3)->profile() == NULL);
     QVERIFY(im.patch(3)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 3) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 3) == InputMap::invalidUniverse());
 
     QVERIFY(im.setPatch(0, stub->name(), 0, true) == true);
     QVERIFY(im.patch(0)->plugin() == stub);
@@ -272,19 +272,19 @@ void InputMap_Test::setPatch()
     QVERIFY(im.patch(1)->input() == KInputInvalid);
     QVERIFY(im.patch(1)->profile() == NULL);
     QVERIFY(im.patch(1)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 1) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 1) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(2)->plugin() == NULL);
     QVERIFY(im.patch(2)->input() == KInputInvalid);
     QVERIFY(im.patch(2)->profile() == NULL);
     QVERIFY(im.patch(2)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 2) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 2) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(3)->plugin() == NULL);
     QVERIFY(im.patch(3)->input() == KInputInvalid);
     QVERIFY(im.patch(3)->profile() == NULL);
     QVERIFY(im.patch(3)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 3) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 3) == InputMap::invalidUniverse());
 
     QVERIFY(im.setPatch(2, stub->name(), 3, false, prof->name()) == true);
     QVERIFY(im.patch(0)->plugin() == stub);
@@ -297,13 +297,13 @@ void InputMap_Test::setPatch()
     QVERIFY(im.patch(1)->input() == KInputInvalid);
     QVERIFY(im.patch(1)->profile() == NULL);
     QVERIFY(im.patch(1)->feedbackEnabled() == true);
-    QVERIFY(im.mapping(stub->name(), 1) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 1) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(2)->plugin() == stub);
     QVERIFY(im.patch(2)->input() == 3);
     QVERIFY(im.patch(2)->profile() == prof);
     QVERIFY(im.patch(2)->feedbackEnabled() == false);
-    QVERIFY(im.mapping(stub->name(), 2) == KInputUniverseInvalid);
+    QVERIFY(im.mapping(stub->name(), 2) == InputMap::invalidUniverse());
 
     QVERIFY(im.patch(3)->plugin() == NULL);
     QVERIFY(im.patch(3)->input() == KInputInvalid);

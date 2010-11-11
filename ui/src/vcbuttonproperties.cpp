@@ -179,7 +179,7 @@ void VCButtonProperties::updateInputSource()
     QString uniName;
     QString chName;
 
-    if (m_inputUniverse == KInputUniverseInvalid ||
+    if (m_inputUniverse == InputMap::invalidUniverse() ||
             m_inputChannel == KInputChannelInvalid)
     {
         /* Nothing selected for input universe and/or channel */

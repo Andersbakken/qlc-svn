@@ -88,9 +88,14 @@ signals:
     void pluginConfigurationChanged(const QString& pluginName);
 
     /*************************************************************************
-     * Patch
+     * Universes
      *************************************************************************/
 public:
+    /**
+     * Invalid universe number (for comparison etc.)
+     */
+    static quint32 invalidUniverse();
+
     /**
      * Get the number of supported input universes
      */
@@ -106,6 +111,17 @@ public:
      */
     void setEditorUniverse(quint32 uni);
 
+protected:
+    /** Total number of supported input universes */
+    quint32 m_universes;
+
+    /** The universe used to edit functions etc. */
+    quint32 m_editorUniverse;
+
+    /*************************************************************************
+     * Patch
+     *************************************************************************/
+public:
     /**
      * Patch the given universe to go thru the given plugin
      *
@@ -146,12 +162,6 @@ protected:
     /** Vector containing all active input plugins and the internal
         universes that they are associated to. */
     QVector <InputPatch*> m_patch;
-
-    /** Total number of supported input universes */
-    quint32 m_universes;
-
-    /** The universe used to edit functions etc. */
-    quint32 m_editorUniverse;
 
     /*************************************************************************
      * Plugins

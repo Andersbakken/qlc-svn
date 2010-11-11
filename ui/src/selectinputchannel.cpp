@@ -43,7 +43,7 @@ extern App* _app;
 
 SelectInputChannel::SelectInputChannel(QWidget* parent) : QDialog(parent)
 {
-    m_universe = KInputUniverseInvalid;
+    m_universe = InputMap::invalidUniverse();
     m_channel = KInputChannelInvalid;
 
     setupUi(this);
@@ -86,7 +86,7 @@ void SelectInputChannel::fillTree()
     chItem = new QTreeWidgetItem(m_tree);
     chItem->setText(KColumnName, KInputNone);
     chItem->setText(KColumnUniverse, QString("%1")
-                    .arg(KInputUniverseInvalid));
+                    .arg(InputMap::invalidUniverse()));
     chItem->setText(KColumnChannel, QString("%1")
                     .arg(KInputChannelInvalid));
 

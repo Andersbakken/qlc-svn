@@ -142,11 +142,6 @@ const quint32 KOutputInvalid ( UINT_MAX );
  */
 const quint32 KInputUniverseCount ( 4 );
 
-/**
- * Invalid input universe
- */
-const quint32 KInputUniverseInvalid ( UINT_MAX );
-
 /*****************************************************************************
  * Input lines
  *****************************************************************************/

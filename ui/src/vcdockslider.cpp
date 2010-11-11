@@ -179,7 +179,7 @@ void VCDockSlider::slotSliderValueChanged(int value)
     }
 
     /* Send input feedback */
-    if (uni != KInputUniverseInvalid && ch != KInputChannelInvalid)
+    if (uni != InputMap::invalidUniverse() && ch != KInputChannelInvalid)
     {
         if (m_slider->invertedAppearance() == true)
             value = m_slider->maximum() - value;

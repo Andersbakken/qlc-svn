@@ -73,7 +73,7 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
     setAutoFillBackground(true);
     setEnabled(true);
 
-    m_inputUniverse = KInputUniverseInvalid;
+    m_inputUniverse = InputMap::invalidUniverse();
     m_inputChannel = KInputChannelInvalid;
 
     connect(_app->doc(), SIGNAL(modeChanged(Doc::Mode)),
@@ -308,12 +308,12 @@ void VCWidget::editProperties()
 
 void VCWidget::setInputSource(quint32 uni, quint32 ch)
 {
-    if (uni == KInputUniverseInvalid || ch == KInputChannelInvalid)
+    if (uni == InputMap::invalidUniverse() || ch == KInputChannelInvalid)
     {
         /* If either one of the new values is invalid we end up here
            to disconnect from inputmap and setting both of the values
            invalid. */
-        m_inputUniverse = KInputUniverseInvalid;
+        m_inputUniverse = InputMap::invalidUniverse();
         m_inputChannel = KInputChannelInvalid;
 
         /* Even though we might not be connected, it is safe to do a
@@ -326,7 +326,7 @@ void VCWidget::setInputSource(quint32 uni, quint32 ch)
                                                     quint32,
                                                     uchar)));
     }
-    else if (m_inputUniverse == KInputUniverseInvalid ||
+    else if (m_inputUniverse == InputMap::invalidUniverse() ||
              m_inputChannel == KInputChannelInvalid)
     {
         /* Execution comes here only if both of the new values
@@ -531,7 +531,7 @@ bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
     Q_ASSERT(doc != NULL);
     Q_ASSERT(root != NULL);
 
-    if (m_inputUniverse != KInputUniverseInvalid &&
+    if (m_inputUniverse != InputMap::invalidUniverse() &&
             m_inputChannel != KInputChannelInvalid)
     {
         QDomElement tag;

@@ -53,7 +53,7 @@ VCProperties::VCProperties() : VCWidgetProperties()
 
     m_gmChannelMode = UniverseArray::GMIntensity;
     m_gmValueMode = UniverseArray::GMReduce;
-    m_gmInputUniverse = KInputUniverseInvalid;
+    m_gmInputUniverse = InputMap::invalidUniverse();
     m_gmInputChannel = KInputChannelInvalid;
 
     m_slidersVisible = true;
@@ -63,9 +63,9 @@ VCProperties::VCProperties() : VCWidgetProperties()
     m_holdLowLimit = 0;
     m_holdHighLimit = 10;
 
-    m_fadeInputUniverse = KInputUniverseInvalid;
+    m_fadeInputUniverse = InputMap::invalidUniverse();
     m_fadeInputChannel = KInputChannelInvalid;
-    m_holdInputUniverse = KInputUniverseInvalid;
+    m_holdInputUniverse = InputMap::invalidUniverse();
     m_holdInputChannel = KInputChannelInvalid;
 }
 
@@ -252,7 +252,7 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
                      QString("%1").arg(m_fadeHighLimit));
 
     /* Fade slider external input */
-    if (m_fadeInputUniverse != KInputUniverseInvalid &&
+    if (m_fadeInputUniverse != InputMap::invalidUniverse() &&
         m_fadeInputChannel != KInputChannelInvalid)
     {
         subtag = doc->createElement(KXMLQLCVCPropertiesInput);
@@ -278,7 +278,7 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
                      QString("%1").arg(m_holdHighLimit));
 
     /* Hold slider external input */
-    if (m_holdInputUniverse != KInputUniverseInvalid &&
+    if (m_holdInputUniverse != InputMap::invalidUniverse() &&
         m_holdInputChannel != KInputChannelInvalid)
     {
         subtag = doc->createElement(KXMLQLCVCPropertiesInput);
@@ -304,7 +304,7 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
                      UniverseArray::gMValueModeToString(m_gmValueMode));
 
     /* Grand Master external input */
-    if (m_gmInputUniverse != KInputUniverseInvalid &&
+    if (m_gmInputUniverse != InputMap::invalidUniverse() &&
         m_gmInputChannel != KInputChannelInvalid)
     {
         subtag = doc->createElement(KXMLQLCVCPropertiesInput);
@@ -374,7 +374,7 @@ bool VCProperties::loadProperties(const QDomElement* root)
         {
             quint32 low = 0;
             quint32 high = 10;
-            quint32 universe = KInputUniverseInvalid;
+            quint32 universe = InputMap::invalidUniverse();
             quint32 channel = KInputChannelInvalid;
             QDomElement subtag;
 
@@ -415,7 +415,7 @@ bool VCProperties::loadProperties(const QDomElement* root)
         }
         else if (tag.tagName() == KXMLQLCVCPropertiesGrandMaster)
         {
-            quint32 universe = KInputUniverseInvalid;
+            quint32 universe = InputMap::invalidUniverse();
             quint32 channel = KInputChannelInvalid;
 
             str = tag.attribute(KXMLQLCVCPropertiesGrandMasterChannelMode);
@@ -459,7 +459,7 @@ bool VCProperties::loadXMLInput(const QDomElement& tag, quint32* universe,
         if (str.isNull() == false)
             *universe = str.toUInt();
         else
-            *universe = KInputUniverseInvalid;
+            *universe = InputMap::invalidUniverse();
 
         /* Channel */
         str = tag.attribute(KXMLQLCVCPropertiesInputChannel);
@@ -468,7 +468,7 @@ bool VCProperties::loadXMLInput(const QDomElement& tag, quint32* universe,
         else
             *channel = KInputChannelInvalid;
 
-        if (*universe != KInputUniverseInvalid && *channel != KInputChannelInvalid)
+        if (*universe != InputMap::invalidUniverse() && *channel != KInputChannelInvalid)
             return true;
         else
             return false;

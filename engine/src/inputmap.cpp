@@ -81,6 +81,11 @@ InputMap::~InputMap()
  * Universes
  *****************************************************************************/
 
+quint32 InputMap::invalidUniverse()
+{
+    return UINT_MAX;
+}
+
 quint32 InputMap::universes() const
 {
     return m_universes;
@@ -191,7 +196,7 @@ quint32 InputMap::mapping(const QString& pluginName, quint32 input) const
             return uni;
     }
 
-    return KInputUniverseInvalid;
+    return InputMap::invalidUniverse();
 }
 
 /*****************************************************************************
@@ -485,7 +490,7 @@ void InputMap::loadDefaults()
             /* Check that the same plugin & input are not mapped
                to more than one universe at a time. */
             quint32 m = mapping(plugin, input.toInt());
-            if (m == KInputUniverseInvalid || m == i)
+            if (m == InputMap::invalidUniverse() || m == i)
             {
                 setPatch(i, plugin, input.toInt(),
                          feedbackEnabled, profileName);
