@@ -11,6 +11,7 @@ docs.files = \
              efxeditor.html \
              fixturemanager.html \
              functionmanager.html \
+             functionwizard.html \
              howto-add-fixtures.html \
              howto-input-devices.html \
              howto-input-mapping.html \
