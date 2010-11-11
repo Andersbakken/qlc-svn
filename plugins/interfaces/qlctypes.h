@@ -127,21 +127,11 @@ const quint32 KUniverseCount ( 4 );
 /**
  * Invalid channel number
  */
-const quint32 KChannelInvalid ( USHRT_MAX );
+const quint32 KChannelInvalid ( UINT_MAX );
 
 /*****************************************************************************
  * Output lines
  *****************************************************************************/
-
-/**
- * Smallest output line number
- */
-const quint32 KOutputMin ( 0 );
-
-/**
- * Largest output line number
- */
-const quint32 KOutputMax ( UINT_MAX - 1 );
 
 /**
  * Invalid output line number
