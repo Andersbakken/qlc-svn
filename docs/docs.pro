@@ -20,7 +20,10 @@ docs.files = \
              selectfunction.html \
              selectfixture.html \
              tutorial.html \
-             tutorial.png
+             tutorial.png \
+             vclabel.html \
+             vcstylingplacement.html \
+             virtualconsole.html
 INSTALLS += docs
 
 gfx.path  = $$INSTALLROOT/$$DOCSDIR/gfx
@@ -85,6 +88,7 @@ gfx.files = \
             ../gfx/prism.png \
             ../gfx/qlc-fixtureeditor.png \
             ../gfx/qlc.png \
+            ../gfx/resize.png \
             ../gfx/scene.png \
             ../gfx/shutter.png \
             ../gfx/slider.png \
