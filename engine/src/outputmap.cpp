@@ -296,7 +296,7 @@ quint32 OutputMap::mapping(const QString& pluginName, quint32 output) const
             return uni;
     }
 
-    return KChannelInvalid;
+    return KOutputInvalid;
 }
 
 /*****************************************************************************

@@ -40,6 +40,7 @@ private slots:
     void universeNames();
     void configure();
     void slotConfigurationChanged();
+    void mapping();
 };
 
 #endif

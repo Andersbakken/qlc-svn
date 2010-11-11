@@ -381,3 +381,27 @@ void OutputMap_Test::slotConfigurationChanged()
     QCOMPARE(spy.at(0).at(0).toString(), QString(stub->name()));
 }
 
+void OutputMap_Test::mapping()
+{
+    OutputMap om(this);
+
+    QCOMPARE(om.mapping("Dummy Output", 0), quint32(0));
+    QCOMPARE(om.mapping("Dummy Output", 1), quint32(1));
+    QCOMPARE(om.mapping("Dummy Output", 2), quint32(2));
+    QCOMPARE(om.mapping("Dummy Output", 3), quint32(3));
+
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
+
+    QVERIFY(om.setPatch(1, stub->name(), quint32(0)) == true);
+    QCOMPARE(om.mapping("Dummy Output", 0), quint32(0));
+    QCOMPARE(om.mapping("Dummy Output", 1), KOutputInvalid);
+    QCOMPARE(om.mapping("Dummy Output", 2), quint32(2));
+    QCOMPARE(om.mapping("Dummy Output", 3), quint32(3));
+    QCOMPARE(om.mapping(stub->name(), 0), quint32(1));
+    QCOMPARE(om.mapping(stub->name(), 1), KOutputInvalid);
+    QCOMPARE(om.mapping(stub->name(), 2), KOutputInvalid);
+    QCOMPARE(om.mapping(stub->name(), 3), KOutputInvalid);
+}
