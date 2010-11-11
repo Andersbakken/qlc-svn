@@ -146,11 +146,11 @@ public:
     /**
      * Attempt to find the next contiguous free address space for the given
      * number of channels. The address will not span multiple universes.
-     * If a suitable address space cannot be found, KChannelInvalid is
+     * If a suitable address space cannot be found, QLCChannel::invalid() is
      * returned
      *
      * @param numChannels Number of channels in the address space
-     * @return The address or KChannelInvalid if not found
+     * @return The address or QLCChannel::invalid() if not found
      */
     quint32 findAddress(quint32 numChannels) const;
 
@@ -173,12 +173,12 @@ public:
 protected:
     /**
      * Try to find the next free address from the given universe for
-     * the given number of channels. KChannelInvalid is returned if
+     * the given number of channels. QLCChannel::invalid() is returned if
      * an adequate address range cannot be found.
      *
      * @param universe The universe to search from
      * @param numChannels Number of free channels required
-     * @return An address or KChannelInvalid if address space not available
+     * @return An address or QLCChannel::invalid() if address space not available
      */
     quint32 findAddress(quint32 universe, quint32 numChannels) const;
 

@@ -31,7 +31,7 @@
 void QLCInputProfile_Test::manufacturer()
 {
     QLCInputProfile ip;
-    QVERIFY(ip.manufacturer() == QString::null);
+    QVERIFY(ip.manufacturer().isEmpty());
     ip.setManufacturer("Behringer");
     QVERIFY(ip.manufacturer() == "Behringer");
 }
@@ -39,7 +39,7 @@ void QLCInputProfile_Test::manufacturer()
 void QLCInputProfile_Test::model()
 {
     QLCInputProfile ip;
-    QVERIFY(ip.model() == QString::null);
+    QVERIFY(ip.model().isEmpty());
     ip.setModel("BCF2000");
     QVERIFY(ip.model() == "BCF2000");
 }

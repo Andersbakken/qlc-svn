@@ -38,7 +38,7 @@ class QLCFixtureEditor : public QWidget, public Ui_FixtureEditor
 
 public:
     QLCFixtureEditor(QWidget* parent, QLCFixtureDef* fixtureDef,
-                     const QString& fileName = QString::null);
+                     const QString& fileName = QString());
     virtual ~QLCFixtureEditor();
 
 protected:

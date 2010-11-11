@@ -42,7 +42,6 @@ QLCCapability::QLCCapability(const QLCCapability* capability)
 {
     m_min = 0;
     m_max = UCHAR_MAX;
-    m_name = QString::null;
 
     if (capability != NULL)
         *this = *capability;
@@ -171,7 +170,7 @@ bool QLCCapability::loadXML(const QDomElement* root)
 
     /* Get low limit attribute (critical) */
     str = root->attribute(KXMLQLCCapabilityMin);
-    if (str == QString::null)
+    if (str.isEmpty() == true)
     {
         qWarning() << "Capability has no minimum limit.";
         return false;
@@ -183,7 +182,7 @@ bool QLCCapability::loadXML(const QDomElement* root)
 
     /* Get high limit attribute (critical) */
     str = root->attribute(KXMLQLCCapabilityMax);
-    if (str == QString::null)
+    if (str.isEmpty() == true)
     {
         qWarning() << "Capability has no maximum limit.";
         return false;

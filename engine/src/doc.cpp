@@ -243,11 +243,11 @@ quint32 Doc::findAddress(quint32 numChannels) const
     for (quint32 universe = 0; universe < KUniverseCount; universe++)
     {
         quint32 ch = findAddress(universe, numChannels);
-        if (ch != KChannelInvalid)
+        if (ch != QLCChannel::invalid())
             return ch;
     }
 
-    return KChannelInvalid;
+    return QLCChannel::invalid();
 }
 
 quint32 Doc::findAddress(quint32 universe, quint32 numChannels) const
@@ -285,7 +285,7 @@ quint32 Doc::findAddress(quint32 universe, quint32 numChannels) const
             return (ch - freeSpace + 1) | (universe << 9);
     }
 
-    return KChannelInvalid;
+    return QLCChannel::invalid();
 }
 
 int Doc::fixtures() const

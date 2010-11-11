@@ -27,7 +27,7 @@
 
 void QLCPhysical_Test::bulbType()
 {
-    QVERIFY(p.bulbType() == QString::null);
+    QVERIFY(p.bulbType().isEmpty());
     p.setBulbType("BulbType");
     QVERIFY(p.bulbType() == "BulbType");
 }

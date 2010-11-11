@@ -350,8 +350,8 @@ void SceneEditor::slotColorTool()
     green = fxi->channel("green", Qt::CaseInsensitive, QLCChannel::Colour);
     blue = fxi->channel("blue", Qt::CaseInsensitive, QLCChannel::Colour);
 
-    if (cyan != KChannelInvalid && magenta != KChannelInvalid &&
-            yellow != KChannelInvalid)
+    if (cyan != QLCChannel::invalid() && magenta != QLCChannel::invalid() &&
+            yellow != QLCChannel::invalid())
     {
         color.setCmyk(fc->channel(cyan)->sliderValue(),
                       fc->channel(magenta)->sliderValue(),
@@ -369,8 +369,8 @@ void SceneEditor::slotColorTool()
             fc->channel(yellow)->enable(true);
         }
     }
-    else if (red != KChannelInvalid && green != KChannelInvalid &&
-             blue != KChannelInvalid)
+    else if (red != QLCChannel::invalid() && green != QLCChannel::invalid() &&
+             blue != QLCChannel::invalid())
     {
         color.setRgb(fc->channel(red)->sliderValue(),
                      fc->channel(green)->sliderValue(),
@@ -413,13 +413,13 @@ bool SceneEditor::isColorToolAvailable()
     green = fxi->channel("green", Qt::CaseInsensitive, QLCChannel::Colour);
     blue = fxi->channel("blue", Qt::CaseInsensitive, QLCChannel::Colour);
 
-    if (cyan != KChannelInvalid && magenta != KChannelInvalid &&
-            yellow != KChannelInvalid)
+    if (cyan != QLCChannel::invalid() && magenta != QLCChannel::invalid() &&
+            yellow != QLCChannel::invalid())
     {
         return true;
     }
-    else if (red != KChannelInvalid && green != KChannelInvalid &&
-             blue != KChannelInvalid)
+    else if (red != QLCChannel::invalid() && green != QLCChannel::invalid() &&
+             blue != QLCChannel::invalid())
     {
         return true;
     }

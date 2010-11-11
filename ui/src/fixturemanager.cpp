@@ -537,7 +537,7 @@ void FixtureManager::slotAdd()
     QString modname;
 
     /* If an empty name was given use the model instead */
-    if (name.simplified() == QString::null)
+    if (name.simplified().isEmpty())
     {
         if (fixtureDef != NULL)
             name = fixtureDef->model();

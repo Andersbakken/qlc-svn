@@ -58,7 +58,6 @@ Function::Function(Doc* doc) : QObject(doc)
     Q_ASSERT(doc != NULL);
 
     m_id = Function::invalidId();
-    m_name = QString::null;
     m_runOrder = Loop;
     m_direction = Forward;
     m_busID = Bus::defaultFade();

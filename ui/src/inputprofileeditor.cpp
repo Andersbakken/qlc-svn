@@ -288,18 +288,11 @@ edit:
             if (another == NULL || another == channel)
             {
                 if (ice.channel() != KInputChannelInvalid)
-                {
-                    m_profile->remapChannel(channel,
-                                            ice.channel());
-                }
-                if (ice.name() != QString::null)
-                {
+                    m_profile->remapChannel(channel, ice.channel());
+                if (ice.name().isEmpty() == false)
                     channel->setName(ice.name());
-                }
                 if (ice.type() != QLCInputChannel::NoType)
-                {
                     channel->setType(ice.type());
-                }
 
                 updateChannelItem(item, channel);
             }
@@ -332,7 +325,7 @@ edit:
 
                 /* Set only name and type and only if they
                    have been modified. */
-                if (ice.name() != QString::null)
+                if (ice.name().isEmpty() == false)
                     channel->setName(ice.name());
                 if (ice.type() != QLCInputChannel::NoType)
                     channel->setType(ice.type());

@@ -29,8 +29,8 @@
 void QLCFixtureDef_Test::initial()
 {
     QLCFixtureDef* fd = new QLCFixtureDef();
-    QVERIFY(fd->manufacturer() == QString::null);
-    QVERIFY(fd->model() == QString::null);
+    QVERIFY(fd->manufacturer().isEmpty());
+    QVERIFY(fd->model().isEmpty());
     QVERIFY(fd->name() == " ");
     QVERIFY(fd->type() == "Dimmer");
     delete fd;

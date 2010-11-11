@@ -405,14 +405,14 @@ void EFXEditor::slotAddFixtureClicked()
 
         // If a channel with pan group exists, don't disable this fixture
         if (fixture->channel("", Qt::CaseSensitive, QLCChannel::Pan)
-                != Fixture::invalidChannel())
+                != QLCChannel::invalid())
         {
             continue;
         }
 
         // If a channel with tilt group exists, don't disable this fixture
         if (fixture->channel("", Qt::CaseSensitive, QLCChannel::Tilt)
-                != Fixture::invalidChannel())
+                != QLCChannel::invalid())
         {
             continue;
         }

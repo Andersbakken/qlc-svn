@@ -148,7 +148,7 @@ public:
      * Get the name of a bus.
      *
      * @param bus The index of the bus, whose name to get.
-     * @return Bus name or QString::null if the bus does not exist.
+     * @return Bus name or an empty string if the bus does not exist.
      */
     QString name(quint32 bus) const;
 
@@ -157,7 +157,7 @@ public:
      * UI elements.
      *
      * @param The index of the bus, whose name to get.
-     * @return Bus ID and name (e.g. "1: Fade") or QString::null if the
+     * @return Bus ID and name (e.g. "1: Fade") or an empty string if the
      *         given bus does not exist.
      */
     QString idName(quint32 bus) const;

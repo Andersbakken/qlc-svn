@@ -55,7 +55,7 @@ void Fixture_Test::id()
 void Fixture_Test::name()
 {
     Fixture fxi(this);
-    QVERIFY(fxi.name() == QString::null);
+    QVERIFY(fxi.name().isEmpty());
 
     fxi.setName("MyFixture");
     QVERIFY(fxi.name() == "MyFixture");
@@ -119,8 +119,8 @@ void Fixture_Test::address()
     QVERIFY(fxi.channelAddress(2) == 102);
     QVERIFY(fxi.channelAddress(3) == 103);
     QVERIFY(fxi.channelAddress(4) == 104);
-    QVERIFY(fxi.channelAddress(5) == Fixture::invalidChannel());
-    QVERIFY(fxi.channelAddress(20) == Fixture::invalidChannel());
+    QVERIFY(fxi.channelAddress(5) == QLCChannel::invalid());
+    QVERIFY(fxi.channelAddress(20) == QLCChannel::invalid());
 }
 
 void Fixture_Test::lessThan()
@@ -180,7 +180,7 @@ void Fixture_Test::dimmer()
     QVERIFY(fxi.channel(4) == ch);
     QVERIFY(fxi.channel(5) == NULL);
     QVERIFY(fxi.channel(42) == NULL);
-    QVERIFY(fxi.channel(Fixture::invalidChannel()) == NULL);
+    QVERIFY(fxi.channel(QLCChannel::invalid()) == NULL);
 
     QVERIFY(ch->capabilities().count() == 1);
     QVERIFY(ch->capabilities().at(0)->min() == 0);
@@ -189,7 +189,7 @@ void Fixture_Test::dimmer()
 
     /* Although the dimmer fixture HAS a channel with this name, it is
        not returned, because all channels have the same name. */
-    QVERIFY(fxi.channel("Intensity") == Fixture::invalidChannel());
+    QVERIFY(fxi.channel("Intensity") == QLCChannel::invalid());
 }
 
 void Fixture_Test::fixtureDef()
@@ -227,7 +227,7 @@ void Fixture_Test::fixtureDef()
     QVERIFY(fxi.channel(fxi.channels() - 1) != NULL);
     QVERIFY(fxi.channel(fxi.channels()) == NULL);
 
-    QVERIFY(fxi.channel("Pan") != Fixture::invalidChannel());
+    QVERIFY(fxi.channel("Pan") != QLCChannel::invalid());
     const QLCChannel* ch = fxi.channel(fxi.channel("Pan"));
     QVERIFY(ch != NULL);
     QVERIFY(ch->name().toLower() == "pan");
@@ -235,7 +235,7 @@ void Fixture_Test::fixtureDef()
     ch = fxi.channel(fxi.channel("Pan", Qt::CaseInsensitive, QLCChannel::Colour));
     QVERIFY(ch == NULL);
 
-    QVERIFY(fxi.channel("otation") != Fixture::invalidChannel());
+    QVERIFY(fxi.channel("otation") != QLCChannel::invalid());
     ch = fxi.channel(fxi.channel("otati"));
     QVERIFY(ch != NULL);
     QVERIFY(ch->name().toLower() == "gobo rotation");

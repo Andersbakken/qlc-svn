@@ -30,7 +30,7 @@ void QLCCapability_Test::initial()
     QLCCapability cap;
     QVERIFY(cap.min() == 0);
     QVERIFY(cap.max() == UCHAR_MAX);
-    QVERIFY(cap.name() == QString::null);
+    QVERIFY(cap.name().isEmpty());
 }
 
 void QLCCapability_Test::min_data()
@@ -84,7 +84,7 @@ void QLCCapability_Test::middle()
 void QLCCapability_Test::name()
 {
     QLCCapability cap;
-    QVERIFY(cap.name() == QString::null);
+    QVERIFY(cap.name().isEmpty());
 
     cap.setName("Foobar");
     QVERIFY(cap.name() == "Foobar");
@@ -144,7 +144,7 @@ void QLCCapability_Test::copy()
     QLCCapability cap1;
     QVERIFY(cap1.min() == 0);
     QVERIFY(cap1.max() == UCHAR_MAX);
-    QVERIFY(cap1.name() == QString::null);
+    QVERIFY(cap1.name().isEmpty());
 
     cap1.setMin(5);
     cap1.setMax(15);
@@ -191,7 +191,7 @@ void QLCCapability_Test::loadWrongRoot()
 
     QLCCapability cap;
     QVERIFY(cap.loadXML(&root) == false);
-    QVERIFY(cap.name() == QString::null);
+    QVERIFY(cap.name().isEmpty());
     QVERIFY(cap.min() == 0);
     QVERIFY(cap.max() == UCHAR_MAX);
 }
@@ -210,7 +210,7 @@ void QLCCapability_Test::loadNoMin()
 
     QLCCapability cap;
     QVERIFY(cap.loadXML(&root) == false);
-    QVERIFY(cap.name() == QString::null);
+    QVERIFY(cap.name().isEmpty());
     QVERIFY(cap.min() == 0);
     QVERIFY(cap.max() == UCHAR_MAX);
 }
@@ -229,7 +229,7 @@ void QLCCapability_Test::loadNoMax()
 
     QLCCapability cap;
     QVERIFY(cap.loadXML(&root) == false);
-    QVERIFY(cap.name() == QString::null);
+    QVERIFY(cap.name().isEmpty());
     QVERIFY(cap.min() == 0);
     QVERIFY(cap.max() == UCHAR_MAX);
 }
@@ -249,7 +249,7 @@ void QLCCapability_Test::loadMinGreaterThanMax()
 
     QLCCapability cap;
     QVERIFY(cap.loadXML(&root) == false);
-    QVERIFY(cap.name() == QString::null);
+    QVERIFY(cap.name().isEmpty());
     QVERIFY(cap.min() == 0);
     QVERIFY(cap.max() == UCHAR_MAX);
 }

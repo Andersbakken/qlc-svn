@@ -118,7 +118,7 @@ public:
      */
     bool setPatch(quint32 universe, const QString& pluginName,
                   quint32 input, bool enableFeedback,
-                  const QString& profileName = QString::null);
+                  const QString& profileName = QString());
 
     /**
      * Get mapping for an input universe.
@@ -202,7 +202,7 @@ public:
      * @param pluginName Name of the plugin, whose status to get
      * @param input A specific input identifier
      */
-    QString pluginStatus(const QString& pluginName = QString::null,
+    QString pluginStatus(const QString& pluginName = QString(),
                          quint32 input = KInputInvalid);
 
     /**

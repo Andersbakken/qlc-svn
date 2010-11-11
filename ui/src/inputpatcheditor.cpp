@@ -254,7 +254,7 @@ void InputPatchEditor::slotMapCurrentItemChanged(QTreeWidgetItem* item)
 
     if (item == NULL)
     {
-        info = _app->inputMap()->pluginStatus(QString::null, 0);
+        info = _app->inputMap()->pluginStatus(QString(), 0);
         configurable = false;
     }
     else

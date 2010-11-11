@@ -80,10 +80,10 @@ void EFXFixture_Test::initial()
     QVERIFY(ef.m_skipThreshold == 0);
     QVERIFY(ef.m_panValue == 0);
     QVERIFY(ef.m_tiltValue == 0);
-    QVERIFY(ef.m_lsbPanChannel == Fixture::invalidChannel());
-    QVERIFY(ef.m_msbPanChannel == Fixture::invalidChannel());
-    QVERIFY(ef.m_lsbTiltChannel == Fixture::invalidChannel());
-    QVERIFY(ef.m_msbTiltChannel == Fixture::invalidChannel());
+    QVERIFY(ef.m_lsbPanChannel == QLCChannel::invalid());
+    QVERIFY(ef.m_msbPanChannel == QLCChannel::invalid());
+    QVERIFY(ef.m_lsbTiltChannel == QLCChannel::invalid());
+    QVERIFY(ef.m_msbTiltChannel == QLCChannel::invalid());
 }
 
 void EFXFixture_Test::copyFrom()

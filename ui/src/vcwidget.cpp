@@ -62,7 +62,6 @@ VCWidget::VCWidget(QWidget* parent) : QWidget(parent)
 
     setMinimumSize(QSize(20, 20));
 
-    m_backgroundImage = QString::null;
     m_hasCustomBackgroundColor = false;
     m_hasCustomForegroundColor = false;
     m_hasCustomFont = false;
@@ -156,7 +155,7 @@ void VCWidget::setBackgroundColor(const QColor& color)
     QPalette pal = palette();
 
     m_hasCustomBackgroundColor = true;
-    m_backgroundImage = QString::null;
+    m_backgroundImage = QString();
 
     pal.setColor(QPalette::Window, color);
     setPalette(pal);
@@ -169,7 +168,7 @@ void VCWidget::resetBackgroundColor()
     QColor fg;
 
     m_hasCustomBackgroundColor = false;
-    m_backgroundImage = QString::null;
+    m_backgroundImage = QString();
 
     /* Store foreground color */
     if (m_hasCustomForegroundColor == true)
@@ -507,7 +506,7 @@ bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
     /* Background image */
     tag = doc->createElement(KXMLQLCVCWidgetBackgroundImage);
     root.appendChild(tag);
-    if (backgroundImage() != QString::null)
+    if (backgroundImage().isEmpty() == false)
         str = m_backgroundImage;
     else
         str = KXMLQLCVCWidgetBackgroundImageNone;

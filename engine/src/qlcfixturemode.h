@@ -170,10 +170,10 @@ public:
 
     /**
      * Get a channel's index (i.e. the DMX channel number) within a mode.
-     * If the channel is not part of the mode, KChannelInvalid is returned.
+     * If the channel is not part of the mode, QLCChannel::invalid() is returned.
      *
      * @param channel The channel, whose number to get
-     * @return Channel number or KChannelInvalid
+     * @return Channel number or QLCChannel::invalid()
      */
     quint32 channelNumber(QLCChannel* channel) const;
 

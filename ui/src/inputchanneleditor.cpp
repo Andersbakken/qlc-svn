@@ -35,7 +35,6 @@ InputChannelEditor::InputChannelEditor(QWidget* parent,
 {
     m_channel = 0;
     m_type = QLCInputChannel::NoType;
-    m_name = QString::null;
 
     setupUi(this);
 

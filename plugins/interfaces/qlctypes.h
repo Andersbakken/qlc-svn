@@ -124,11 +124,6 @@ const t_function_id KFunctionArraySize ( 4096 );
  */
 const quint32 KUniverseCount ( 4 );
 
-/**
- * Invalid channel number
- */
-const quint32 KChannelInvalid ( UINT_MAX );
-
 /*****************************************************************************
  * Output lines
  *****************************************************************************/

@@ -365,7 +365,7 @@ void QLCFixtureEditor::setCaption()
     QString fileName;
 
     fileName = m_fileName;
-    if (fileName == QString::null)
+    if (fileName.isEmpty())
         fileName = tr("New Fixture");
 
     /* If the document is modified, append an asterisk after the

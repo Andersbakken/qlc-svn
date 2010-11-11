@@ -125,7 +125,7 @@ QString Bus::name(quint32 bus) const
     if (bus < KBusCount)
         return m_buses[bus]->name;
     else
-        return QString::null;
+        return QString();
 }
 
 QString Bus::idName(quint32 bus) const
@@ -140,7 +140,7 @@ QString Bus::idName(quint32 bus) const
     }
     else
     {
-        return QString::null;
+        return QString();
     }
 }
 

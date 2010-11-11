@@ -343,27 +343,22 @@ bool OutputMap::canConfigurePlugin(const QString& pluginName)
 
 QString OutputMap::pluginStatus(const QString& pluginName, quint32 output)
 {
-    QLCOutPlugin* outputPlugin = NULL;
-    QString info;
-
-    if (pluginName != QString::null)
-        outputPlugin = plugin(pluginName);
-
+    QLCOutPlugin* outputPlugin = plugin(pluginName);
     if (outputPlugin != NULL)
     {
-        info = outputPlugin->infoText(output);
+        return outputPlugin->infoText(output);
     }
     else
     {
+        QString info;
         info += QString("<HTML><HEAD></HEAD><BODY>");
         info += QString("<H3>%1</H3>").arg(tr("No plugin selected"));
         info += QString("<P>%1 ").arg(tr("You can download plugins from"));
         info += QString("<A HREF=\"http://www.sourceforge.net/projects/qlc/files\">");
         info += QString("http://www.sourceforge.net/projects/qlc/files</A></P>.");
         info += QString("</BODY></HTML>");
+        return info;
     }
-
-    return info;
 }
 
 bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
@@ -438,7 +433,7 @@ void OutputMap::loadDefaults()
             /* Check that the same plugin & output are not mapped
                to more than one universe at a time. */
             quint32 m = mapping(plugin, output.toInt());
-            if (m == KChannelInvalid || m == i)
+            if (m == QLCChannel::invalid() || m == i)
                 setPatch(i, plugin, output.toInt());
         }
     }

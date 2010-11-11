@@ -59,7 +59,7 @@ void QLCFixtureMode_Test::name()
     /* Verify that a name can be set & get for the mode */
     QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
 
-    QVERIFY(mode->name() == QString::null);
+    QVERIFY(mode->name().isEmpty());
     mode->setName("Normal");
     QVERIFY(mode->name() == "Normal");
 
@@ -70,7 +70,7 @@ void QLCFixtureMode_Test::physical()
 {
     /* Verify that a QLCPhysical can be set & get for the mode */
     QLCFixtureMode* mode = new QLCFixtureMode(m_fixtureDef);
-    QVERIFY(mode->physical().bulbType() == QString::null);
+    QVERIFY(mode->physical().bulbType().isEmpty());
 
     QLCPhysical p;
     p.setBulbType("Foobar");
@@ -242,8 +242,8 @@ void QLCFixtureMode_Test::channelNumber()
     QVERIFY(mode->channelNumber(m_ch4) == 3);
 
     QLCChannel* ch = new QLCChannel();
-    QVERIFY(mode->channelNumber(ch) == KChannelInvalid);
-    QVERIFY(mode->channelNumber(NULL) == KChannelInvalid);
+    QVERIFY(mode->channelNumber(ch) == QLCChannel::invalid());
+    QVERIFY(mode->channelNumber(NULL) == QLCChannel::invalid());
     delete ch;
 
     delete mode;

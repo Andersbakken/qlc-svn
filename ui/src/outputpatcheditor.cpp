@@ -156,7 +156,7 @@ void OutputPatchEditor::fillTree()
             {
                 oitem->setCheckState(KColumnName, Qt::Unchecked);
                 quint32 uni = _app->outputMap()->mapping(pluginName, i);
-                if (uni != KChannelInvalid)
+                if (uni != QLCChannel::invalid())
                 {
                     /* If a mapping exists for this plugin
                        and output, make it impossible to
@@ -202,7 +202,7 @@ void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
     if (item == NULL)
     {
         /* Nothing selected */
-        info = _app->outputMap()->pluginStatus(QString::null, 0);
+        info = _app->outputMap()->pluginStatus(QString(), 0);
         configurable = false;
     }
     else
@@ -281,7 +281,7 @@ void OutputPatchEditor::slotItemChanged(QTreeWidgetItem* item)
     }
     else
     {
-        m_currentPluginName = QString::null;
+        m_currentPluginName = QString();
         m_currentOutput = KOutputInvalid;
     }
 

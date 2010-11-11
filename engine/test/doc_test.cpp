@@ -236,9 +236,9 @@ void Doc_Test::findAddress()
     /* All addresses are available (except for fixtures taking more than
        one complete universe). */
     QVERIFY(doc.findAddress(15) == 0);
-    QVERIFY(doc.findAddress(0) == KChannelInvalid);
+    QVERIFY(doc.findAddress(0) == QLCChannel::invalid());
     QVERIFY(doc.findAddress(512) == 0);
-    QVERIFY(doc.findAddress(513) == KChannelInvalid);
+    QVERIFY(doc.findAddress(513) == QLCChannel::invalid());
 
     Fixture* f1 = new Fixture(&doc);
     f1->setChannels(15);

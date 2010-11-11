@@ -52,10 +52,10 @@ EFXFixture::EFXFixture(EFX* parent)
     m_panValue = 0;
     m_tiltValue = 0;
 
-    m_lsbPanChannel = KChannelInvalid;
-    m_msbPanChannel = KChannelInvalid;
-    m_lsbTiltChannel = KChannelInvalid;
-    m_msbTiltChannel = KChannelInvalid;
+    m_lsbPanChannel = QLCChannel::invalid();
+    m_msbPanChannel = QLCChannel::invalid();
+    m_lsbTiltChannel = QLCChannel::invalid();
+    m_msbTiltChannel = QLCChannel::invalid();
 }
 
 void EFXFixture::copyFrom(const EFXFixture* ef)
@@ -257,8 +257,8 @@ void EFXFixture::updateSkipThreshold()
 
 bool EFXFixture::isValid()
 {
-    if (m_msbPanChannel != KChannelInvalid &&
-            m_msbTiltChannel != KChannelInvalid &&
+    if (m_msbPanChannel != QLCChannel::invalid() &&
+            m_msbTiltChannel != QLCChannel::invalid() &&
             m_fixture != Fixture::invalidId())
     {
         return true;
@@ -390,7 +390,7 @@ void EFXFixture::setPoint(UniverseArray* universes)
                      QLCChannel::Tilt);
 
     /* Write fine point data to universes if applicable */
-    if (m_lsbPanChannel != KChannelInvalid)
+    if (m_lsbPanChannel != QLCChannel::invalid())
     {
         /* Leave only the fraction */
         char value = static_cast<char> ((m_panValue - floor(m_panValue))
@@ -398,7 +398,7 @@ void EFXFixture::setPoint(UniverseArray* universes)
         universes->write(m_lsbPanChannel, value, QLCChannel::Pan);
     }
 
-    if (m_lsbTiltChannel != KChannelInvalid)
+    if (m_lsbTiltChannel != QLCChannel::invalid())
     {
         /* Leave only the fraction */
         char value = static_cast<char> ((m_tiltValue - floor(m_tiltValue))

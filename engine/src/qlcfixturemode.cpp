@@ -207,7 +207,7 @@ QList <QLCChannel*> QLCFixtureMode::channels() const
 quint32 QLCFixtureMode::channelNumber(QLCChannel* channel) const
 {
     if (channel == NULL)
-        return KChannelInvalid;
+        return QLCChannel::invalid();
 
     for (int i = 0; i < m_channels.size(); i++)
     {
@@ -215,7 +215,7 @@ quint32 QLCFixtureMode::channelNumber(QLCChannel* channel) const
             return i;
     }
 
-    return KChannelInvalid;
+    return QLCChannel::invalid();
 }
 
 void QLCFixtureMode::setPhysical(const QLCPhysical& physical)

@@ -32,15 +32,11 @@
 
 QLCFixtureDef::QLCFixtureDef()
 {
-    m_manufacturer = QString::null;
-    m_model = QString::null;
     m_type = QString("Dimmer");
 }
 
 QLCFixtureDef::QLCFixtureDef(const QLCFixtureDef* fixtureDef)
 {
-    m_manufacturer = QString::null;
-    m_model = QString::null;
     m_type = QString("Dimmer");
 
     if (fixtureDef != NULL)

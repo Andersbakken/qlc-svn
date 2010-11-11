@@ -67,7 +67,7 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
     Q_ASSERT(m_fixture != NULL);
 
     // Check that the given channel is valid
-    Q_ASSERT(channel != KChannelInvalid);
+    Q_ASSERT(channel != QLCChannel::invalid());
     Q_ASSERT(channel < m_fixture->channels());
     m_channel = channel;
 

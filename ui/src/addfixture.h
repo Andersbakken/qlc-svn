@@ -146,7 +146,7 @@ protected:
                   const QString& selectModel);
 
     /** Fill all modes of the current fixture to the mode combo */
-    void fillModeCombo(const QString& text = QString::null);
+    void fillModeCombo(const QString& text = QString());
 
     /** Find the next free address space for current fixture selection,
         amount and address gap. Sets the address to address spin. */

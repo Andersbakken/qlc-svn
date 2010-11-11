@@ -30,7 +30,7 @@ void SceneValue_Test::initial()
     SceneValue scv;
     QVERIFY(scv.isValid() == false);
     QVERIFY(scv.fxi == Fixture::invalidId());
-    QVERIFY(scv.channel == KChannelInvalid);
+    QVERIFY(scv.channel == QLCChannel::invalid());
     QVERIFY(scv.value == 0);
 
     SceneValue scv2(31337, 5150, 42);

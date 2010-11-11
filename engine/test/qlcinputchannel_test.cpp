@@ -76,7 +76,7 @@ void QLCInputChannel_Test::stringToType()
 void QLCInputChannel_Test::name()
 {
     QLCInputChannel ch;
-    QVERIFY(ch.name() == QString::null);
+    QVERIFY(ch.name().isEmpty());
     ch.setName("Foobar");
     QVERIFY(ch.name() == "Foobar");
 }

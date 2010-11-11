@@ -34,7 +34,6 @@
 #include "doc.h"
 
 #define KInvalidFixtureID -1
-#define KInvalidFixtureChannel USHRT_MAX
 
 /*****************************************************************************
  * Initialization
@@ -201,7 +200,7 @@ quint32 Fixture::channelAddress(quint32 channel) const
     if (channel < channels())
         return universeAddress() + channel;
     else
-        return invalidChannel();
+        return QLCChannel::invalid();
 }
 
 quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
@@ -214,7 +213,7 @@ quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
            there's really no point in returning 0 or any otherwise
            valid channel number here. Which one of them the user would
            want to get? */
-        return invalidChannel();
+        return QLCChannel::invalid();
     }
     else
     {
@@ -237,13 +236,8 @@ quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
         }
 
         /* Went thru all channels but a match was not found */
-        return invalidChannel();
+        return QLCChannel::invalid();
     }
-}
-
-quint32 Fixture::invalidChannel()
-{
-    return KInvalidFixtureChannel;
 }
 
 void Fixture::createGenericChannel()

@@ -247,7 +247,7 @@ void AddFixture::findAddress()
                             (m_channelsValue + m_gapValue) * m_amountValue);
 
     /* Set the address only if the channel space was really found */
-    if (address != KChannelInvalid)
+    if (address != QLCChannel::invalid())
     {
         m_universeCombo->setCurrentIndex(address >> 9);
 
@@ -394,7 +394,7 @@ void AddFixture::slotSelectionChanged()
 
         /* Clear the name box unless it has been modified by user */
         if (m_nameEdit->isModified() == false)
-            m_nameEdit->setText(QString::null);
+            m_nameEdit->setText(QString());
         m_nameEdit->setEnabled(false);
 
         m_channelsSpin->setValue(0);

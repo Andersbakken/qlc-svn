@@ -2588,10 +2588,10 @@ void EFX_Test::armMissingFixture()
     QVERIFY(e->m_fixtures.at(1)->m_startScene == s1);
     QVERIFY(e->m_fixtures.at(1)->m_stopScene == s2);
     QVERIFY(e->m_fixtures.at(1)->m_serialNumber == 1);
-    QVERIFY(e->m_fixtures.at(1)->m_msbPanChannel == KChannelInvalid);
-    QVERIFY(e->m_fixtures.at(1)->m_msbTiltChannel == KChannelInvalid);
-    QVERIFY(e->m_fixtures.at(1)->m_lsbPanChannel == KChannelInvalid);
-    QVERIFY(e->m_fixtures.at(1)->m_lsbTiltChannel == KChannelInvalid);
+    QVERIFY(e->m_fixtures.at(1)->m_msbPanChannel == QLCChannel::invalid());
+    QVERIFY(e->m_fixtures.at(1)->m_msbTiltChannel == QLCChannel::invalid());
+    QVERIFY(e->m_fixtures.at(1)->m_lsbPanChannel == QLCChannel::invalid());
+    QVERIFY(e->m_fixtures.at(1)->m_lsbTiltChannel == QLCChannel::invalid());
 
     delete doc;
 }

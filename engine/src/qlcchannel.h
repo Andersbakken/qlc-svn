@@ -71,6 +71,11 @@ public:
     /** Assignment operator */
     QLCChannel& operator=(const QLCChannel& lc);
 
+    /**
+     * The invalid channel number (for comparison etc...)
+     */
+    static quint32 invalid();
+
     /*********************************************************************
      * Groups
      *********************************************************************/

@@ -425,15 +425,10 @@ void App::slotDocModified(bool state)
     QString msg = "";
     int fuzzy = 0;
 
-    if (fileName() != QString::null)
-    {
-        caption += QString(" - ")
-                   + QDir::toNativeSeparators(fileName());
-    }
+    if (fileName().isEmpty() == false)
+        caption += QString(" - ") + QDir::toNativeSeparators(fileName());
     else
-    {
         caption += tr(" - New Workspace");
-    }
 
     if (state == true)
         setWindowTitle(caption + QString(" *"));
@@ -1355,7 +1350,7 @@ void App::slotSetBackgroundImage()
 
 void App::slotClearBackgroundImage()
 {
-    setBackgroundImage(QString::null);
+    setBackgroundImage(QString());
 }
 
 /*****************************************************************************

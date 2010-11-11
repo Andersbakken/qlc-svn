@@ -71,7 +71,7 @@ VCButton::VCButton(QWidget* parent) : VCWidget(parent)
     /* No function is initially attached to the button */
     m_function = Function::invalidId();
 
-    setCaption(QString::null);
+    setCaption(QString());
     setOn(false);
     setAction(Toggle);
     setFrameStyle(KVCFrameStyleNone);
@@ -157,7 +157,7 @@ void VCButton::setBackgroundColor(const QColor& color)
     QPalette pal = palette();
 
     m_hasCustomBackgroundColor = true;
-    m_backgroundImage = QString::null;
+    m_backgroundImage = QString();
     pal.setColor(QPalette::Button, color);
     setPalette(pal);
 
@@ -169,7 +169,7 @@ void VCButton::resetBackgroundColor()
     QColor fg;
 
     m_hasCustomBackgroundColor = false;
-    m_backgroundImage = QString::null;
+    m_backgroundImage = QString();
 
     /* Store foreground color */
     if (m_hasCustomForegroundColor == true)
@@ -266,7 +266,7 @@ void VCButton::slotChooseIcon()
 
 void VCButton::slotResetIcon()
 {
-    m_icon = QString::null;
+    m_icon = QString();
     update();
 }
 
@@ -595,7 +595,7 @@ void VCButton::setFunction(t_function_id fid)
     {
         /* No function attachment */
         m_function = Function::invalidId();
-        setToolTip(QString::null);
+        setToolTip(QString());
     }
 }
 
@@ -745,7 +745,7 @@ void VCButton::paintEvent(QPaintEvent* e)
         option.state |= QStyle::State_Enabled;
 
     /* Icon */
-    if (icon() != QString::null)
+    if (icon() != QString())
     {
         option.icon = QIcon(icon());
         option.iconSize = QSize(26, 26);

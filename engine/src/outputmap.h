@@ -199,7 +199,7 @@ public:
 
     /**
      * Check, whether a certain output in a certain plugin has been mapped
-     * to a universe. Returns the mapped universe number or KChannelInvalid
+     * to a universe. Returns the mapped universe number or QLCChannel::invalid()
      * if not mapped.
      *
      * @param pluginName The name of the plugin to check for
@@ -254,7 +254,7 @@ public:
      * @param pluginName Name of the plugin, whose status to get
      * @param output Plugin's output line for getting more specific info
      */
-    QString pluginStatus(const QString& pluginName = QString::null,
+    QString pluginStatus(const QString& pluginName = QString(),
                          quint32 output = KOutputInvalid);
 
     /**

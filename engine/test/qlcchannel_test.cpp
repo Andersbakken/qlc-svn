@@ -50,7 +50,7 @@ void QLCChannel_Test::name()
 {
     /* Verify that a name can be set & get for the channel */
     QLCChannel* channel = new QLCChannel();
-    QVERIFY(channel->name() == QString::null);
+    QVERIFY(channel->name().isEmpty());
 
     channel->setName("Channel");
     QVERIFY(channel->name() == "Channel");
@@ -474,7 +474,7 @@ void QLCChannel_Test::loadWrongRoot()
 
     QLCChannel ch;
     QVERIFY(ch.loadXML(&root) == false);
-    QVERIFY(ch.name() == QString::null);
+    QVERIFY(ch.name().isEmpty());
     QVERIFY(ch.group() == QLCChannel::Intensity);
     QVERIFY(ch.controlByte() == QLCChannel::MSB);
     QVERIFY(ch.capabilities().size() == 0);

@@ -43,14 +43,12 @@
 
 QLCChannel::QLCChannel()
 {
-    m_name = QString::null;
     m_group = Intensity;
     m_controlByte = MSB;
 }
 
 QLCChannel::QLCChannel(const QLCChannel* channel)
 {
-    m_name = QString::null;
     m_group = Intensity;
     m_controlByte = MSB;
 
@@ -84,6 +82,11 @@ QLCChannel& QLCChannel::operator=(const QLCChannel& channel)
     }
 
     return *this;
+}
+
+quint32 QLCChannel::invalid()
+{
+    return UINT_MAX;
 }
 
 /*****************************************************************************

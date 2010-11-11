@@ -52,10 +52,10 @@ VCXYPadFixture::VCXYPadFixture()
     m_yMax = 1;
     m_yReverse = false;
 
-    m_xLSB = KChannelInvalid;
-    m_xMSB = KChannelInvalid;
-    m_yLSB = KChannelInvalid;
-    m_yMSB = KChannelInvalid;
+    m_xLSB = QLCChannel::invalid();
+    m_xMSB = QLCChannel::invalid();
+    m_yLSB = QLCChannel::invalid();
+    m_yMSB = QLCChannel::invalid();
 }
 
 VCXYPadFixture::VCXYPadFixture(const VCXYPadFixture& vc_fxi)
@@ -92,11 +92,11 @@ VCXYPadFixture::VCXYPadFixture(const QVariant& variant)
         *this = VCXYPadFixture();
     }
 
-    m_xMSB = KChannelInvalid;
-    m_xLSB = KChannelInvalid;
+    m_xMSB = QLCChannel::invalid();
+    m_xLSB = QLCChannel::invalid();
 
-    m_yMSB = KChannelInvalid;
-    m_yLSB = KChannelInvalid;
+    m_yMSB = QLCChannel::invalid();
+    m_yLSB = QLCChannel::invalid();
 }
 
 VCXYPadFixture::~VCXYPadFixture()
@@ -160,15 +160,14 @@ void VCXYPadFixture::setFixture(t_fixture_id fxi_id)
 
 QString VCXYPadFixture::name() const
 {
-    static QString null = QString::null;
     if (m_fixture == Fixture::invalidId())
-        return null;
+        return QString();
 
     Fixture* fxi = _app->doc()->fixture(m_fixture);
     if (fxi != NULL)
         return fxi->name();
     else
-        return null;
+        return QString();
 }
 
 void VCXYPadFixture::arm()
@@ -178,10 +177,10 @@ void VCXYPadFixture::arm()
     fxi = _app->doc()->fixture(m_fixture);
     if (fxi == NULL)
     {
-        m_xLSB = KChannelInvalid;
-        m_xMSB = KChannelInvalid;
-        m_yLSB = KChannelInvalid;
-        m_yMSB = KChannelInvalid;
+        m_xLSB = QLCChannel::invalid();
+        m_xMSB = QLCChannel::invalid();
+        m_yLSB = QLCChannel::invalid();
+        m_yMSB = QLCChannel::invalid();
     }
     else
     {
@@ -193,10 +192,10 @@ void VCXYPadFixture::arm()
         mode = fxi->fixtureMode();
         if (mode == NULL)
         {
-            m_xLSB = KChannelInvalid;
-            m_xMSB = KChannelInvalid;
-            m_yLSB = KChannelInvalid;
-            m_yMSB = KChannelInvalid;
+            m_xLSB = QLCChannel::invalid();
+            m_xMSB = QLCChannel::invalid();
+            m_yLSB = QLCChannel::invalid();
+            m_yMSB = QLCChannel::invalid();
 
             return;
         }
@@ -227,17 +226,17 @@ void VCXYPadFixture::arm()
 
 void VCXYPadFixture::disarm()
 {
-    m_xLSB = KChannelInvalid;
-    m_xMSB = KChannelInvalid;
-    m_yLSB = KChannelInvalid;
-    m_yMSB = KChannelInvalid;
+    m_xLSB = QLCChannel::invalid();
+    m_xMSB = QLCChannel::invalid();
+    m_yLSB = QLCChannel::invalid();
+    m_yMSB = QLCChannel::invalid();
 }
 
 void VCXYPadFixture::writeDMX(double xmul, double ymul, UniverseArray* universes)
 {
     Q_ASSERT(universes != NULL);
 
-    if (m_xMSB == KChannelInvalid || m_yMSB == KChannelInvalid)
+    if (m_xMSB == QLCChannel::invalid() || m_yMSB == QLCChannel::invalid())
         return;
 
     double xMSB = ((m_xMax - m_xMin) * xmul) + m_xMin;
@@ -251,7 +250,7 @@ void VCXYPadFixture::writeDMX(double xmul, double ymul, UniverseArray* universes
     universes->write(m_xMSB, char(xMSB * UCHAR_MAX), QLCChannel::Pan);
     universes->write(m_yMSB, char(yMSB * UCHAR_MAX), QLCChannel::Tilt);
 
-    if (m_xLSB != KChannelInvalid && m_yLSB != KChannelInvalid)
+    if (m_xLSB != QLCChannel::invalid() && m_yLSB != QLCChannel::invalid())
     {
         /* Leave only the fraction part from the value */
         double xLSB = (xMSB * double(UCHAR_MAX)) - floor(xMSB * double(UCHAR_MAX));
