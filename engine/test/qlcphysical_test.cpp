@@ -185,10 +185,16 @@ void QLCPhysical_Test::load()
     root.appendChild(focus);
 
     /* Technical */
-    QDomElement technical=  doc.createElement("Technical");
+    QDomElement technical = doc.createElement("Technical");
     technical.setAttribute("PowerConsumption", 250);
     technical.setAttribute("DmxConnector", "5-pin");
     root.appendChild(technical);
+
+    /* Unrecognized tag */
+    QDomElement homer = doc.createElement("HomerSimpson");
+    homer.setAttribute("BeerConsumption", 25000);
+    homer.setAttribute("PreferredBrand", "Duff");
+    root.appendChild(homer);
 
     QVERIFY(p.loadXML(&root) == true);
     QVERIFY(p.bulbType() == "LED");
