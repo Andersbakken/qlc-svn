@@ -41,8 +41,7 @@ private slots:
     void configure();
     void slotConfigurationChanged();
     void mapping();
+    void pluginStatus();
 };
 
 #endif
-
-

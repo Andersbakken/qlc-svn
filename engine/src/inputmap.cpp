@@ -296,12 +296,12 @@ QString InputMap::pluginStatus(const QString& pluginName, quint32 input)
     else
     {
         /* Nothing selected */
-        info += tr("<HTML><HEAD><TITLE>None</TITLE></HEAD><BODY>");
-        info += tr("<H3>No input plugin selected</H3>");
-        info += tr("<P>You can download input plugins from ");
-        info += tr("<A HREF=\"http://www.sf.net/projects/qlc/files\">");
-        info += tr("http://www.sf.net/projects/qlc/files</A>.");
-        info += tr("</BODY></HTML>");
+        info += QString("<HTML><HEAD></HEAD><BODY>");
+        info += QString("<H3>%1</H3>").arg(tr("No plugin selected"));
+        info += QString("<P>%1 ").arg(tr("You can download plugins from"));
+        info += QString("<A HREF=\"http://www.sourceforge.net/projects/qlc/files\">");
+        info += QString("http://www.sourceforge.net/projects/qlc/files</A></P>.");
+        info += QString("</BODY></HTML>");
     }
 
     return info;

@@ -405,3 +405,25 @@ void OutputMap_Test::mapping()
     QCOMPARE(om.mapping(stub->name(), 2), KOutputInvalid);
     QCOMPARE(om.mapping(stub->name(), 3), KOutputInvalid);
 }
+
+void OutputMap_Test::pluginStatus()
+{
+    OutputMap om(this);
+
+    QVERIFY(om.pluginStatus("Foo").contains("No plugin"));
+    QVERIFY(om.pluginStatus("Bar", 0).contains("No plugin"));
+    QVERIFY(om.pluginStatus("Baz", 1).contains("No plugin"));
+    QVERIFY(om.pluginStatus("Xyzzy", 2).contains("No plugin"));
+    QVERIFY(om.pluginStatus("AYBABTU", 3).contains("No plugin"));
+
+    om.loadPlugins(TESTPLUGINDIR);
+    QVERIFY(om.m_plugins.size() > 0);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(stub != NULL);
+
+    om.appendPlugin(stub);
+    QVERIFY(om.pluginStatus(stub->name()) == stub->infoText(KInputInvalid));
+    QVERIFY(om.pluginStatus(stub->name(), 0) == stub->infoText(0));
+    QVERIFY(om.pluginStatus(stub->name(), 1) == stub->infoText(1));
+    QVERIFY(om.pluginStatus(stub->name(), 2) == stub->infoText(2));
+}

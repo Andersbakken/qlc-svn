@@ -88,8 +88,8 @@ QString DummyOutPlugin::infoText(quint32 output)
     str += QString("This plugin does absolutely nothing; you can use ");
     str += QString("it if you don't have DMX output plugins or ");
     str += QString("hardware installed. You can download output plugins from ");
-    str += QString("<A HREF=\"http://www.sf.net/projects/qlc/files\">");
-    str += QString("http://www.sf.net/projects/qlc/files</a>.");
+    str += QString("<A HREF=\"http://www.sourceforge.net/projects/qlc/files\">");
+    str += QString("http://www.sourceforge.net/projects/qlc/files</a>.");
     str += QString("</P>");
     str += QString("<P>");
     str += QString("This plugin has no configurable options.");

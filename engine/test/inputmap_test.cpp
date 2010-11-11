@@ -155,11 +155,11 @@ void InputMap_Test::pluginStatus()
 {
     InputMap im(this);
 
-    QVERIFY(im.pluginStatus("Foo").contains("No input plugin"));
-    QVERIFY(im.pluginStatus("Bar", 0).contains("No input plugin"));
-    QVERIFY(im.pluginStatus("Baz", 1).contains("No input plugin"));
-    QVERIFY(im.pluginStatus("Xyzzy", 2).contains("No input plugin"));
-    QVERIFY(im.pluginStatus("AYBABTU", 3).contains("No input plugin"));
+    QVERIFY(im.pluginStatus("Foo").contains("No plugin"));
+    QVERIFY(im.pluginStatus("Bar", 0).contains("No plugin"));
+    QVERIFY(im.pluginStatus("Baz", 1).contains("No plugin"));
+    QVERIFY(im.pluginStatus("Xyzzy", 2).contains("No plugin"));
+    QVERIFY(im.pluginStatus("AYBABTU", 3).contains("No plugin"));
 
     im.loadPlugins(TESTPLUGINDIR);
     QVERIFY(im.m_plugins.size() > 0);
