@@ -1237,7 +1237,7 @@ void VirtualConsole::slotFont()
     else
         font = m_selectedWidgets.last()->font();
 
-    //! @todo This crashes on OSX!
+    /* This crashes with Qt 4.6.x on OSX. Upgrade to 4.7.x. */
     font = QFontDialog::getFont(&ok, font);
     if (ok == true)
     {
