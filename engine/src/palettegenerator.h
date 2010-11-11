@@ -78,8 +78,8 @@ protected:
 
     /** Find fixture channels that belong to a certain group and have more
         than one capability (i.e. there's something make a palette from) */
-    QList <quint32> findChannels(const Fixture* fixture,
-                                 QLCChannel::Group group) const;
+    static QList <quint32> findChannels(const Fixture* fixture,
+                                        QLCChannel::Group group);
 
     /** Add generated scenes to Doc */
     void addScenesToDoc();

@@ -46,7 +46,8 @@ HEADERS += bus_test.h \
            inputmap_test.h \
            mastertimer_test.h \
            doc_test.h \
-           dummyoutplugin_test.h
+           dummyoutplugin_test.h \
+           palettegenerator_test.h
 
 # Interfaces
 HEADERS += ../../plugins/interfaces/qlcoutplugin.h
@@ -89,7 +90,8 @@ SOURCES += bus_test.cpp \
       inputmap_test.cpp \
       mastertimer_test.cpp \
       doc_test.cpp \
-      dummyoutplugin_test.cpp
+      dummyoutplugin_test.cpp \
+      palettegenerator_test.cpp
 
 # Stubs
 SOURCES += mastertimer_stub.cpp \

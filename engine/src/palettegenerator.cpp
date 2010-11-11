@@ -147,7 +147,7 @@ void PaletteGenerator::createGroupScenes(const Fixture* fxi,
 }
 
 QList <quint32> PaletteGenerator::findChannels(const Fixture* fixture,
-                                               QLCChannel::Group group) const
+                                               QLCChannel::Group group)
 {
     QList <quint32> channels;
 

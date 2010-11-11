@@ -36,6 +36,7 @@
 #include "qlci18n_test.h"
 
 // Engine
+#include "palettegenerator_test.h"
 #include "dummyoutplugin_test.h"
 #include "universearray_test.h"
 #include "scenechannel_test.h"
@@ -211,6 +212,11 @@ int main(int argc, char** argv)
 
     DummyOutPlugin_Test dummy;
     r = QTest::qExec(&dummy, argc, argv);
+    if (r != 0)
+        return r;
+
+    PaletteGenerator_Test palette;
+    r = QTest::qExec(&palette, argc, argv);
     if (r != 0)
         return r;
 
