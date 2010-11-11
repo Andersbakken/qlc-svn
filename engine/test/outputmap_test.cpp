@@ -313,6 +313,8 @@ void OutputMap_Test::pluginOutputs()
     QStringList ls(om.pluginOutputs(stub->name()));
     QVERIFY(ls == stub->outputs());
     QVERIFY(ls != om.m_dummyOut->outputs());
+
+    QVERIFY(om.pluginOutputs("Foobar").isEmpty() == true);
 }
 
 void OutputMap_Test::universeNames()
