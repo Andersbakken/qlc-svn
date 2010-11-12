@@ -26,6 +26,7 @@ docs.files = \
              vcframe.html \
              vclabel.html \
              vcsoloframe.html \
+             vcslidermatrix.html \
              vcstylingplacement.html \
              vcxypad.html \
              virtualconsole.html
