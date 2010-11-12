@@ -5,6 +5,7 @@ TEMPLATE = subdirs
 docs.path = $$INSTALLROOT/$$DOCSDIR/html
 docs.files = \
              addeditfixtures.html \
+             addvcbuttonmatrix.html \
              chasereditor.html \
              collectioneditor.html \
              concept.html \
@@ -22,6 +23,7 @@ docs.files = \
              selectfixture.html \
              tutorial.html \
              tutorial.png \
+             vcbuttonmatrix.html \
              vccuelist.html \
              vcframe.html \
              vclabel.html \
