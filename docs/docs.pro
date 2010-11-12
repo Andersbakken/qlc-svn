@@ -21,8 +21,10 @@ docs.files = \
              sceneeditor.html \
              selectfunction.html \
              selectfixture.html \
+             selectinputchannel.html \
              tutorial.html \
              tutorial.png \
+             vcbutton.html \
              vcbuttonmatrix.html \
              vccuelist.html \
              vcframe.html \
