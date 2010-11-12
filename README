@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Requirements - Linux
 --------------------
-* Qt >= 4.7 development libraries & tools
+* Qt >= 4.6 development libraries & tools
 
 * Enttec DMX USB Output plugin: libftdi-dev, pkg-config
 * HID Input plugin: No additional requirements
@@ -57,7 +57,7 @@ Requirements - Linux
 Requirements - Windows
 ----------------------
 * MinGW environment (ftp://ftp.qt.nokia.com/misc/MinGW-3.4.2.exe)
-* Qt >= 4.7 (http://qt.nokia.com/downloads/windows-cpp)
+* Qt >= 4.6 (http://qt.nokia.com/downloads/windows-cpp)
 
 * Enttec DMX USB Output plugin: No additional requirements
 * HID Input plugin: Not available
@@ -72,7 +72,7 @@ Requirements - Windows
 Requirements - Mac OS X
 -----------------------
 * XCode (http://developer.apple.com/technologies/tools/xcode.html)
-* Qt SDK >= 4.7 (http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x)
+* Qt SDK >= 4.6 (http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x)
 
 * Enttec DMX USB Output plugin: macports, libftdi-dev, pkg-config
 * HID Input plugin: Not available
