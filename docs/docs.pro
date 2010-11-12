@@ -24,6 +24,7 @@ docs.files = \
              tutorial.png \
              vcframe.html \
              vclabel.html \
+             vcsoloframe.html \
              vcstylingplacement.html \
              virtualconsole.html
 INSTALLS += docs
