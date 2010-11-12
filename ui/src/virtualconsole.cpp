@@ -730,7 +730,11 @@ void VirtualConsole::slotAddButtonMatrix()
     int v = abm.verticalCount();
     int sz = abm.buttonSize();
 
-    VCFrame* frame = new VCFrame(parent);
+    VCWidget* frame = NULL;
+    if (abm.frameStyle() == AddVCButtonMatrix::NormalFrame)
+        frame = new VCFrame(parent);
+    else
+        frame = new VCSoloFrame(parent);
     Q_ASSERT(frame != NULL);
 
     // Resize the parent frame to fit the buttons nicely

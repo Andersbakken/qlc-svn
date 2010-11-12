@@ -18,7 +18,10 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include <QSettings>
+#include <QDebug>
+
 #include "addvcbuttonmatrix.h"
 #include "functionselection.h"
 #include "vcbutton.h"
@@ -34,6 +37,7 @@ extern App* _app;
 #define HORIZONTAL_COUNT "addvcbuttonmatrix/horizontalcount"
 #define VERTICAL_COUNT "addvcbuttonmatrix/verticalcount"
 #define BUTTON_SIZE "addvcbuttonmatrix/buttonsize"
+#define FRAME_STYLE "addvcbuttonmatrix/framestyle"
 
 AddVCButtonMatrix::AddVCButtonMatrix(QWidget* parent) : QDialog(parent)
 {
@@ -62,6 +66,12 @@ AddVCButtonMatrix::AddVCButtonMatrix(QWidget* parent) : QDialog(parent)
     else
         m_sizeSpin->setValue(VCButton::defaultSize.width());
     m_buttonSize = m_sizeSpin->value();
+
+    var = settings.value(FRAME_STYLE);
+    if (var.isValid() == true)
+        setFrameStyle(AddVCButtonMatrix::FrameStyle(var.toInt()));
+    else
+        setFrameStyle(AddVCButtonMatrix::NormalFrame);
 
     setAllocationText();
 }
@@ -119,6 +129,15 @@ void AddVCButtonMatrix::slotButtonSizeChanged()
     m_buttonSize = m_sizeSpin->value();
 }
 
+void AddVCButtonMatrix::slotNormalFrameToggled(bool toggled)
+{
+    qDebug() << Q_FUNC_INFO << toggled;
+    if (toggled == true)
+        setFrameStyle(AddVCButtonMatrix::NormalFrame);
+    else
+        setFrameStyle(AddVCButtonMatrix::SoloFrame);
+}
+
 void AddVCButtonMatrix::accept()
 {
     QDialog::accept();
@@ -143,4 +162,20 @@ void AddVCButtonMatrix::setAllocationText()
     QString text("%1 / %2");
     m_allocationEdit->setText(text.arg(m_tree->topLevelItemCount())
                               .arg(horizontalCount() * verticalCount()));
+}
+
+void AddVCButtonMatrix::setFrameStyle(AddVCButtonMatrix::FrameStyle style)
+{
+    switch (style)
+    {
+    default:
+    case NormalFrame:
+        m_frameNormalRadio->setChecked(true);
+        m_frameStyle = NormalFrame;
+        break;
+    case SoloFrame:
+        m_frameSoloRadio->setChecked(true);
+        m_frameStyle = SoloFrame;
+        break;
+    }
 }

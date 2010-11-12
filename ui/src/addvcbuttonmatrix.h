@@ -36,10 +36,15 @@ public:
     ~AddVCButtonMatrix();
 
 public:
+    enum FrameStyle
+    {
+        NormalFrame = 0,
+        SoloFrame
+    };
+
     QList <t_function_id> functions() const {
         return m_functions;
     }
-
     quint32 horizontalCount() const {
         return m_horizontalCount;
     }
@@ -49,6 +54,9 @@ public:
     quint32 buttonSize() const {
         return m_buttonSize;
     }
+    FrameStyle frameStyle() const {
+        return m_frameStyle;
+    }
 
 protected slots:
     void slotAddClicked();
@@ -56,17 +64,20 @@ protected slots:
     void slotHorizontalChanged();
     void slotVerticalChanged();
     void slotButtonSizeChanged();
+    void slotNormalFrameToggled(bool toggled);
     void accept();
 
 private:
     void addFunction(t_function_id fid);
     void setAllocationText();
+    void setFrameStyle(FrameStyle style);
 
 private:
     QList <t_function_id> m_functions;
     quint32 m_horizontalCount;
     quint32 m_verticalCount;
     quint32 m_buttonSize;
+    FrameStyle m_frameStyle;
 };
 
 #endif
