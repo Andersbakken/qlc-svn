@@ -5,8 +5,8 @@
   <Version>3.0.7</Version>
   <Author>Kevin Deldycke</Author>
  </Creator>
- <Manufacturer>Strairville</Manufacturer>
- <Model>PS1500DMX 1500W power strobe</Model>
+ <Manufacturer>Stairville</Manufacturer>
+ <Model>PS 1500 DMX</Model>
  <Type>Strobe</Type>
  <Channel Name="Flash rate" >
   <Group Byte="0" >Speed</Group>
