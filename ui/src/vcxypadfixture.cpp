@@ -277,7 +277,8 @@ QString VCXYPadFixture::xBrief() const
     if (m_xReverse == false)
         return QString("%1 - %2%").arg(m_xMin * 100).arg(m_xMax * 100);
     else
-        return QString("%1 - %2%").arg(m_xMax * 100).arg(m_xMin * 100);
+        return QString("%1: %2 - %3%").arg(QObject::tr("Reversed"))
+                                      .arg(m_xMax * 100).arg(m_xMin * 100);
 }
 
 /****************************************************************************
@@ -296,7 +297,8 @@ QString VCXYPadFixture::yBrief() const
     if (m_yReverse == false)
         return QString("%1 - %2%").arg(m_yMin * 100).arg(m_yMax * 100);
     else
-        return QString("%1 - %2%").arg(m_yMax * 100).arg(m_yMin * 100);
+        return QString("%1: %2 - %3%").arg(QObject::tr("Reversed"))
+                                      .arg(m_yMax * 100).arg(m_yMin * 100);
 }
 
 /****************************************************************************
