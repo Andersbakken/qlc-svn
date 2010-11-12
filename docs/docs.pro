@@ -12,6 +12,7 @@ docs.files = \
              concept.html \
              efxeditor.html \
              fixturemanager.html \
+             fixturemonitor.html \
              functionmanager.html \
              functionwizard.html \
              howto-add-fixtures.html \
