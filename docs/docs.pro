@@ -27,5 +27,6 @@ docs.files = \
              vclabel.html \
              vcsoloframe.html \
              vcstylingplacement.html \
+             vcxypad.html \
              virtualconsole.html
 INSTALLS += docs
