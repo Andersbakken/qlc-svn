@@ -19,12 +19,15 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QGestureEvent>
+#include <QSwipeGesture>
 #include <QApplication>
 #include <QTextBrowser>
 #include <QVBoxLayout>
 #include <QSettings>
 #include <QToolBar>
 #include <QAction>
+#include <QDebug>
 #include <QIcon>
 #include <QUrl>
 
@@ -33,6 +36,42 @@
 #include "apputil.h"
 
 #define SETTINGS_GEOMETRY "documentbrowser/geometry"
+
+QLCTextBrowser::QLCTextBrowser(QWidget* parent)
+    : QTextBrowser(parent)
+{
+    grabGesture(Qt::SwipeGesture);
+}
+
+QLCTextBrowser::~QLCTextBrowser()
+{
+}
+
+bool QLCTextBrowser::event(QEvent* ev)
+{
+    if (ev->type() == QEvent::Gesture)
+    {
+        QGestureEvent* gesture = static_cast<QGestureEvent*> (ev);
+        QSwipeGesture* swipe = qobject_cast<QSwipeGesture*> (
+            gesture->gesture(Qt::SwipeGesture));
+        if (swipe == NULL)
+        {
+            /* NOP */
+        }
+        else if (swipe->horizontalDirection() == QSwipeGesture::Left)
+        {
+            backward();
+            ev->accept();
+        }
+        else if (swipe->horizontalDirection() == QSwipeGesture::Right)
+        {
+            forward();
+            ev->accept();
+        }
+    }
+
+    return QTextBrowser::event(ev);
+}
 
 DocBrowser::DocBrowser(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
@@ -64,7 +103,7 @@ DocBrowser::DocBrowser(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
     m_toolbar->addAction(m_homeAction);
 
     /* Browser */
-    m_browser = new QTextBrowser(this);
+    m_browser = new QLCTextBrowser(this);
     m_browser->setOpenExternalLinks(true);
     layout()->addWidget(m_browser);
     connect(m_browser, SIGNAL(backwardAvailable(bool)),

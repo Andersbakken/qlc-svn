@@ -22,31 +22,39 @@
 #ifndef DOCBROWSER_H
 #define DOCBROWSER_H
 
+#include <QTextBrowser>
 #include <QMainWindow>
 #include "qlctypes.h"
 
-class QTextBrowser;
-class DocBrowser;
 class QToolBar;
 class QAction;
+
+class QLCTextBrowser : public QTextBrowser
+{
+    Q_OBJECT
+public:
+    QLCTextBrowser(QWidget* parent);
+    virtual ~QLCTextBrowser();
+
+protected:
+    bool event(QEvent* ev);
+};
 
 class DocBrowser : public QWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(DocBrowser)
 
 public:
     DocBrowser(QWidget* parent, Qt::WindowFlags f = 0);
     ~DocBrowser();
-
-private:
-    Q_DISABLE_COPY(DocBrowser)
 
 protected slots:
     void slotBackwardAvailable(bool);
     void slotForwardAvailable(bool);
 
 protected:
-    QTextBrowser* m_browser;
+    QLCTextBrowser* m_browser;
     QToolBar* m_toolbar;
 
     QAction* m_backwardAction;
