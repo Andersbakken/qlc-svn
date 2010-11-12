@@ -6,6 +6,7 @@ docs.path = $$INSTALLROOT/$$DOCSDIR/html
 docs.files = \
              addeditfixtures.html \
              addvcbuttonmatrix.html \
+             busmanager.html \
              chasereditor.html \
              collectioneditor.html \
              concept.html \
