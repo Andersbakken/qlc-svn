@@ -18,8 +18,8 @@
  </Channel>
  <Mode Name="Normal" >
   <Physical>
-   <Bulb Lumens="0" Type="XOP 1500W" ColourTemperature="0" />
-   <Dimensions Width="460" Height="140" Weight="6" Depth="200" />
+   <Bulb Lumens="645" Type="XOP 1500W" ColourTemperature="5600" />
+   <Dimensions Width="460" Height="130" Weight="3.5" Depth="210" />
    <Lens DegreesMax="0" Name="Other" DegreesMin="0" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
    <Technical PowerConsumption="3600" DmxConnector="3-pin"/>

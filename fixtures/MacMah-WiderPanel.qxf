@@ -318,6 +318,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Red intensity #1</Channel>
   <Channel Number="1" >Green intensity #1</Channel>
@@ -329,6 +330,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Red intensity #1</Channel>
   <Channel Number="1" >Green intensity #1</Channel>
@@ -343,6 +345,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Red intensity #1</Channel>
   <Channel Number="1" >Green intensity #1</Channel>
@@ -363,6 +366,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Red intensity #1</Channel>
   <Channel Number="1" >Green intensity #1</Channel>
@@ -395,6 +399,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Dimmer effect #1</Channel>
   <Channel Number="1" >Red intensity #1</Channel>
@@ -409,6 +414,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Dimmer effect #1</Channel>
   <Channel Number="1" >Red intensity #1</Channel>
@@ -429,6 +435,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Dimmer effect #1</Channel>
   <Channel Number="1" >Red intensity #1</Channel>
@@ -461,6 +468,7 @@
    <Dimensions Width="820" Height="117" Weight="5" Depth="73" />
    <Lens DegreesMax="25" Name="Other" DegreesMin="25" />
    <Focus PanMax="0" Type="Fixed" TiltMax="0" />
+   <Technical PowerConsumption="70" DmxConnector="3-pin"/>
   </Physical>
   <Channel Number="0" >Dimmer effect #1</Channel>
   <Channel Number="1" >Red intensity #1</Channel>
