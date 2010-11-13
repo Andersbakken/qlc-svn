@@ -7,6 +7,7 @@ docs.files = \
              addeditfixtures.html \
              addvcbuttonmatrix.html \
              busmanager.html \
+             capabilityeditor.html \
              channeleditor.html \
              chasereditor.html \
              collectioneditor.html \
