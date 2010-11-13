@@ -685,7 +685,7 @@ void App::initActions()
 
     m_fileQuitAction = new QAction(QIcon(":/exit.png"),
                                    tr("&Quit"), this);
-    m_fileQuitAction->setShortcut(QKeySequence("CTRL+Q"));
+    m_fileQuitAction->setShortcut(QKeySequence(tr("CTRL+Q", "File|Quit")));
     connect(m_fileQuitAction, SIGNAL(triggered(bool)),
             this, SLOT(slotFileQuit()));
 
