@@ -7,10 +7,13 @@ docs.files = \
              addeditfixtures.html \
              addvcbuttonmatrix.html \
              busmanager.html \
+             channeleditor.html \
              chasereditor.html \
              collectioneditor.html \
              concept.html \
              efxeditor.html \
+             fixturedefinitioneditor.html \
+             fixtureeditor.html \
              fixturemanager.html \
              fixturemonitor.html \
              functionmanager.html \

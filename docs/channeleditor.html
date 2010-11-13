@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Q Light Controller - Channel Editor</TITLE>
+</HEAD>
+<BODY>
+
+<IMG SRC="qrc:/qlc.png">
+
+<H1>Channel Editor</H1>
+<P>
+The Channel Editor is used to edit individual channels and the value ranges of
+each capability (a green colour, a certain gobo, prism rotation, etc..) that a
+fixture channel provides. Refer to your fixture's manual to get a detailed
+list of the fixture's channels and values.
+</P>
+
+<H3>Controls</H3>
+
+<TABLE BORDER="1">
+ <TR>
+  <TD>
+   <B>Name</B>
+  </TD>
+  <TD>
+   The name of the channel
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <B>Group</B>
+  </TD>
+  <TD>
+   The channel group. The group names are usually rather self-explanatory, but
+   here are some tips:
+   <LI><B>Intensity:</B> By default, QLC's <A HREF="concept.html#GrandMaster">Grand Master</A>
+   controls only Intensity channels.</LI>
+   <LI><B>Colour:</B> The Colour Tool in <A HREF="sceneeditor.html">Scene Editor</A>
+   is available if a fixture provides channels for <U>Red, Green and Blue</U>
+   or <U>Cyan, Magenta and Yellow</U> belonging to Colour group.</LI>
+   <LI><B>Pan/Tilt:</B> <A HREF="concept.html#EFX">EFX</A> and
+   <A HREF="vcxypad.html">XY Pad</A> are able to control a fixture only if it
+   has <U>Pan and Tilt</U> channels (8bit or 16bit).</LI>
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <B>Control Byte</B>
+  </TD>
+  <TD>
+   This feature is available only for <U>Pan and Tilt</U> channels. If a fixture
+   has only one pan and one tilt channel, assign them both the <B>Coarse (MSB)</B>
+   control byte. If a fixture has two pan and two tilt channels, assign the
+   <B>Fine (LSB)</B> byte to those pan/tilt channels that provide only subtle
+   (fine 16bit) movement.
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <B>Capability list</B>
+  </TD>
+  <TD>
+   Shows you a list of value ranges for the currently edited channel. If a
+   channel provides only one capability (for example pan or dimmer) the only
+   thing needed in the list is one capability with a range of 0 to 255.
+   For more elaborate capabilities, such as colours or gobos, you should create
+   capability ranges for each of the colours (for example 0-15 white, 16-32 blue...)
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <IMG SRC="qrc:/edit_add.png"/>
+  </TD>
+  <TD>
+   Add a new capability to the channel, using the
+   <A HREF="capabilityeditor.html">Capability Editor</A>.
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <IMG SRC="qrc:/edit_remove.png"/>
+  </TD>
+  <TD>
+   Remove the selected capabilities from the channel.
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <IMG SRC="qrc:/edit.png"/>
+  </TD>
+  <TD>
+   Edit the selected capability, using the
+   <A HREF="capabilityeditor.html">Capability Editor</A>.
+  </TD>
+ </TR>
+ <TR>
+  <TD>
+   <IMG SRC="qrc:/wizard.png"/>
+  </TD>
+  <TD>
+   Create new capabilities quickly with the <A HREF="capabilitywizard.html">
+   Capability Wizard</A>.
+  </TD>
+ </TR>
+</TABLE>
+
+</BODY>
+</HTML>
