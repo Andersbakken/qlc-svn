@@ -8,6 +8,7 @@ docs.files = \
              addvcbuttonmatrix.html \
              busmanager.html \
              capabilityeditor.html \
+             capabilitywizard.html \
              channeleditor.html \
              chasereditor.html \
              collectioneditor.html \
