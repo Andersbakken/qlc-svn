@@ -8,7 +8,7 @@
 <IMG SRC="qrc:/qlc.png">
 
 <H1>Virtual Console Slider</H1>
-<IMG SRC="qrc:/slider.png" VALIGN="absmiddle"/>
+<IMG SRC="qrc:/slider.png" VALIGN="absmiddle">
 <P>
 Sliders are used for two distinct purposes: <A HREF="concept.html#Buses">Bus</A>
 speed setting (<B>Bus</B> slider mode) and <A HREF="concept.html#Fixture">Fixture</A>
@@ -34,7 +34,7 @@ playing song. The bus value is taken from the time between taps.
 <P>
 Sliders can be configured with the properties
 <IMG SRC="qrc:/configure.png" VALIGN="bottom"> button found in the toolbar or
-with the <B>Edit > Properties</B> menu item.
+with the <B>Edit -&gt; Properties</B> menu item.
 </P>
 
 <H3>Configuration - General Tab</H3>
@@ -59,8 +59,10 @@ The General tab holds all of the sliders properties that are shared between
    <B>Value display style</B>
   </TD>
   <TD>
-   <LI>DMX/Time: Display absolute values (time in Bus mode; DMX values in Level mode)</LI>
-   <LI>Percentage: Display percentage values (0-100%) of the slider's maximum value</LI>
+   <UL>
+    <LI>DMX/Time: Display absolute values (time in Bus mode; DMX values in Level mode)</LI>
+    <LI>Percentage: Display percentage values (0-100%) of the slider's maximum value</LI>
+   </UL>
   </TD>
  </TR>
  <TR>
@@ -68,10 +70,12 @@ The General tab holds all of the sliders properties that are shared between
    <B>Slider movement</B>
   </TD>
   <TD>
-   <LI>Normal: Values increase towards the top and decrease towards the bottom.</LI>
-   <LI>Inverted: Flip the slider upside down so that values increase towards
-   the bottom and decrease towards the top; useful in Bus mode when bigger values
-   mean slower speed.</LI>
+   <UL>
+    <LI>Normal: Values increase towards the top and decrease towards the bottom.</LI>
+    <LI>Inverted: Flip the slider upside down so that values increase towards
+    the bottom and decrease towards the top; useful in Bus mode when bigger values
+    mean slower speed.</LI>
+   </UL>
   </TD>
  </TR>
  <TR>
@@ -82,18 +86,19 @@ The General tab holds all of the sliders properties that are shared between
    You can attach an external input channel from an input device (like a slider
    board) to sliders so that you don't always have to use the mouse or touch
    to move sliders.
-   <LI>Input universe: The input universe that you wish to get input data to
-   the slider.</LI>
-   <LI>Input channel: The individual input channel within the selected input
-   universe that you wish to use for controlling the slider.</LI>
-   <LI>Auto Detect: When toggled, you can just move/press a button/slider/knob
-   on your external input hardware and it will be automatically assigned to the
-   slider. The latest combination is shown on the text boxes when QLC receives
-   input data. If you don't see anything in the boxes, your input connection
-   might have a problem that you need to fix first.
-   </LI>
-   <LI>Choose...: Shows the <A HREF="selectinputchannel.html">Select Input Channel</A>
-   dialog that you can use to select an input channel manually.</LI>
+   <UL>
+    <LI>Input universe: The input universe that you wish to get input data to
+    the slider.</LI>
+    <LI>Input channel: The individual input channel within the selected input
+    universe that you wish to use for controlling the slider.</LI>
+    <LI>Auto Detect: When toggled, you can just move/press a button/slider/knob
+    on your external input hardware and it will be automatically assigned to the
+    slider. The latest combination is shown on the text boxes when QLC receives
+    input data. If you don't see anything in the boxes, your input connection
+    might have a problem that you need to fix first.</LI>
+    <LI>Choose...: Shows the <A HREF="selectinputchannel.html">Select Input Channel</A>
+    dialog that you can use to select an input channel manually.</LI>
+   </UL>
   </TD>
  </TR>
 </TABLE>
@@ -112,10 +117,12 @@ actual Bus mode properties.
    <B>Value range</B>
   </TD>
   <TD>
-   <LI>Low limit: The lowest value for the bus controlled by the slider
-   (in seconds)</LI>
-   <LI>High limit: The highest value for the bus controlled by the slider
-   (in seconds)</LI>
+   <UL>
+    <LI>Low limit: The lowest value for the bus controlled by the slider
+    (in seconds)</LI>
+    <LI>High limit: The highest value for the bus controlled by the slider
+    (in seconds)</LI>
+   </UL>
   </TD>
  </TR>
  <TR>
@@ -143,14 +150,15 @@ actual Level mode properties.
    <B>Value Range</B>
   </TD>
   <TD>
-   <LI>Low limit: Set the lowest DMX value that the slider can set</LI>
-   <LI>High limit: Set the highest DMX value that the slider can set</LI>
-   <LI>From capability: You can limit the slider's level value range to a certain
-   capability range within a fixture's channel. When you have any channel value
-   range selected from the fixture list (for example <I>"Dimmer Control 006 - 128"</I>)
-   and you click this button, the <B>low and high limit</B> of this slider are
-   taken automatically from that capability and are set to 6 and 128, respectively.
-   </LI>
+   <UL>
+    <LI>Low limit: Set the lowest DMX value that the slider can set</LI>
+    <LI>High limit: Set the highest DMX value that the slider can set</LI>
+    <LI>From capability: You can limit the slider's level value range to a certain
+    capability range within a fixture's channel. When you have any channel value
+    range selected from the fixture list (for example <I>"Dimmer Control 006 - 128"</I>)
+    and you click this button, the <B>low and high limit</B> of this slider are
+    taken automatically from that capability and are set to 6 and 128, respectively.</LI>
+   </UL>
   </TD>
  </TR>
  <TR>

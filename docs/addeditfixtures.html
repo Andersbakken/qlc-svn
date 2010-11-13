@@ -45,21 +45,23 @@ dynamic by nature.
    <B>Fixture Properties</B>
   </TD>
   <TD>
-   <LI>Name: The friendly name you wish to assign to the fixture</LI>
-   <LI>Mode: The <A HREF="concept.html#FixtureMode">mode</A> you have configured to the fixture</LI>
-   <LI>Universe: The DMX universe where the newly-added fixture(s) are connected to</LI>
-   <LI>Address: The address of the (first) fixture you are adding. If you are
-   adding multiple fixtures, each consecutive fixture will be assigned an 
-   address immediately after the previous fixture's channels, unless address gap
-   (see below) is non-zero.</LI>
-   <LI>Channels: If you have selected the <B>Generic</B> dimmer device, you
-   can define its channel count to this field. Otherwise this field is read-only
-   and it just tells you how many channels the currently selected fixture needs
-   in its currently selected mode.</LI>
-   <LI>Channel list: This field displays a more detailed list of individual
-   channels for the currently selected fixture and its mode. For <B>Generic</B>
-   dimmers, this field remains empty since all dimmer channels are treated as
-   dummy <B>intensity</B> channels.</LI>
+   <UL>
+    <LI>Name: The friendly name you wish to assign to the fixture</LI>
+    <LI>Mode: The <A HREF="concept.html#FixtureMode">mode</A> you have configured to the fixture</LI>
+    <LI>Universe: The DMX universe where the newly-added fixture(s) are connected to</LI>
+    <LI>Address: The address of the (first) fixture you are adding. If you are
+    adding multiple fixtures, each consecutive fixture will be assigned an 
+    address immediately after the previous fixture's channels, unless address gap
+    (see below) is non-zero.</LI>
+    <LI>Channels: If you have selected the <B>Generic</B> dimmer device, you
+    can define its channel count to this field. Otherwise this field is read-only
+    and it just tells you how many channels the currently selected fixture needs
+    in its currently selected mode.</LI>
+    <LI>Channel list: This field displays a more detailed list of individual
+    channels for the currently selected fixture and its mode. For <B>Generic</B>
+    dimmers, this field remains empty since all dimmer channels are treated as
+    dummy <B>intensity</B> channels.</LI>
+   </UL>
   </TD>
  </TR>
  <TR>
@@ -68,12 +70,14 @@ dynamic by nature.
   </TD>
   <TD>
    You can also add more than one fixture at the same time if your setup
-   consists of multiple fixtures that are of the same make & model.
+   consists of multiple fixtures that are of the same make &amp; model.
    These features are disabled when you are editing an existing fixture.
-   <LI>Amount: Number of new fixtures to create. Each newly-added fixture
-   includes also a number after its assigned name when adding more than one
-   fixture at a time.</LI>
-   <LI>Address gap: Leave this many empty channels between each new fixture</LI>
+   <UL>
+    <LI>Amount: Number of new fixtures to create. Each newly-added fixture
+    includes also a number after its assigned name when adding more than one
+    fixture at a time.</LI>
+    <LI>Address gap: Leave this many empty channels between each new fixture</LI>
+   </UL>
   </TD>
  </TR>
 </TABLE>
