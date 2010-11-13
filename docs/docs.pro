@@ -25,6 +25,7 @@ docs.files = \
              howto-input-mapping.html \
              howto-output-mapping.html \
              index.html \
+             modeeditor.html \
              sceneeditor.html \
              selectfunction.html \
              selectfixture.html \
