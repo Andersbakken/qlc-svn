@@ -54,7 +54,8 @@ extern App* _app;
  * Initialization
  ****************************************************************************/
 
-InputProfileEditor::InputProfileEditor(QWidget* parent, QLCInputProfile* profile)
+InputProfileEditor::InputProfileEditor(QWidget* parent,
+                                       QLCInputProfile* profile)
         : QDialog(parent)
 {
     setupUi(this);
@@ -125,7 +126,7 @@ void InputProfileEditor::fillTree()
 }
 
 void InputProfileEditor::updateChannelItem(QTreeWidgetItem* item,
-        QLCInputChannel* ch)
+                                           QLCInputChannel* ch)
 {
     quint32 num;
 
@@ -350,24 +351,16 @@ void InputProfileEditor::slotWizardClicked(bool checked)
                                     "so you will have to do the change manually."));
 
         connect(_app->inputMap(),
-                SIGNAL(inputValueChanged(quint32,
-                                         quint32,
-                                         uchar)),
+                SIGNAL(inputValueChanged(quint32, quint32, uchar)),
                 this,
-                SLOT(slotInputValueChanged(quint32,
-                                           quint32,
-                                           uchar)));
+                SLOT(slotInputValueChanged(quint32, quint32, uchar)));
     }
     else
     {
         disconnect(_app->inputMap(),
-                   SIGNAL(inputValueChanged(quint32,
-                                            quint32,
-                                            uchar)),
+                   SIGNAL(inputValueChanged(quint32, quint32, uchar)),
                    this,
-                   SLOT(slotInputValueChanged(quint32,
-                                              quint32,
-                                              uchar)));
+                   SLOT(slotInputValueChanged(quint32, quint32, uchar)));
     }
 
     m_buttonBox->setEnabled(!checked);
@@ -375,8 +368,8 @@ void InputProfileEditor::slotWizardClicked(bool checked)
 }
 
 void InputProfileEditor::slotInputValueChanged(quint32 universe,
-        quint32 channel,
-        uchar value)
+                                               quint32 channel,
+                                               uchar value)
 {
     Q_UNUSED(universe);
 
@@ -385,7 +378,7 @@ void InputProfileEditor::slotInputValueChanged(quint32 universe,
     QList <QTreeWidgetItem*> list(m_tree->findItems(
                                       QString("%1").arg(channel + 1),
                                       Qt::MatchExactly, KColumnNumber));
-    if (list.count() == 0)
+    if (list.size() == 0)
     {
         /* No channel items found. Create a new channel to the
            profile and display it also in the tree widget */
