@@ -94,6 +94,8 @@ void MasterTimer::startFunction(Function* function, bool initiatedByOtherFunctio
         function->setInitiatedByOtherFunction(initiatedByOtherFunction);
     }
     m_functionListMutex.unlock();
+
+    emit functionListChanged();
 }
 
 void MasterTimer::stopAllFunctions()
@@ -298,6 +300,7 @@ void MasterTimer::runFunctions()
                 m_functionList.removeAt(i);
                 function->postRun(this, universes);
                 m_functionListMutex.unlock();
+                emit functionListChanged();
             }
             else
             {

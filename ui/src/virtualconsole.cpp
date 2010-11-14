@@ -106,6 +106,10 @@ VirtualConsole::VirtualConsole(QWidget* parent, Qt::WindowFlags flags)
     initDockArea();
     initContents();
 
+    connect(_app->masterTimer(), SIGNAL(functionListChanged()),
+            this, SLOT(slotRunningFunctionsChanged()));
+    slotRunningFunctionsChanged();
+
     slotModeChanged(_app->doc()->mode());
 }
 
@@ -659,6 +663,14 @@ void VirtualConsole::updateActions()
             m_editPasteAction->setEnabled(false);
         }
     }
+}
+
+void VirtualConsole::slotRunningFunctionsChanged()
+{
+    if (_app->masterTimer() && _app->masterTimer()->runningFunctions() > 0)
+        m_toolsPanicAction->setEnabled(true);
+    else
+        m_toolsPanicAction->setEnabled(false);
 }
 
 /*****************************************************************************

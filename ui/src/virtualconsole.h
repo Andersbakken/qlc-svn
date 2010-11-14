@@ -61,6 +61,7 @@ class QMenu;
 class VirtualConsole : public QWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VirtualConsole)
 
     /*********************************************************************
      * Initialization
@@ -76,9 +77,6 @@ public:
 
     /** Public destructor */
     ~VirtualConsole();
-
-private:
-    Q_DISABLE_COPY(VirtualConsole)
 
 protected:
     /** Protected constructor to prevent multiple instances */
@@ -171,6 +169,9 @@ protected:
 
     /** Enable or disable actions based on current selection */
     void updateActions();
+
+protected slots:
+    void slotRunningFunctionsChanged();
 
 protected:
     QToolBar* m_toolbar;

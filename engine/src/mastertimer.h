@@ -75,6 +75,10 @@ public:
     /** Stop all functions. Doesn't affect registered DMX sources. */
     void stopAllFunctions();
 
+signals:
+    /** Tells that the list of running functions has changed */
+    void functionListChanged();
+
 protected:
     /** List of currently running functions */
     QList <Function*> m_functionList;
