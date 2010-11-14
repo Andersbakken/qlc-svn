@@ -423,9 +423,12 @@ void InputProfileEditor::slotInputValueChanged(quint32 universe,
             ch = m_profile->channel(channel);
             Q_ASSERT(ch != NULL);
 
-            ch->setType(QLCInputChannel::Slider);
-            ch->setName(tr("Slider %1").arg(channel + 1));
-            updateChannelItem(old, ch);
+            if (ch->type() == QLCInputChannel::Button)
+            {
+                ch->setType(QLCInputChannel::Slider);
+                ch->setName(tr("Slider %1").arg(channel + 1));
+                updateChannelItem(old, ch);
+            }
         }
     }
 }
