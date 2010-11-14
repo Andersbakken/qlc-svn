@@ -2,7 +2,7 @@
 <FixtureDefinition>
  <Creator>
   <Name>Q Light Controller</Name>
-  <Version>3.0.4</Version>
+  <Version>3.0.7</Version>
   <Author>hjunnila</Author>
  </Creator>
  <Manufacturer>American DJ</Manufacturer>
@@ -13,7 +13,7 @@
   <Capability Min="0" Max="255">Pan</Capability>
  </Channel>
  <Channel Name="Pan fine">
-  <Group Byte="0">Pan</Group>
+  <Group Byte="1">Pan</Group>
   <Capability Min="0" Max="255">Pan fine</Capability>
  </Channel>
  <Channel Name="Tilt">
@@ -21,7 +21,7 @@
   <Capability Min="0" Max="255">Tilt</Capability>
  </Channel>
  <Channel Name="Tilt fine">
-  <Group Byte="0">Tilt</Group>
+  <Group Byte="1">Tilt</Group>
   <Capability Min="0" Max="255">Tilt fine</Capability>
  </Channel>
  <Channel Name="Color Wheel">
@@ -208,4 +208,3 @@
   <Channel Number="9">Reset &amp; Internal Programs</Channel>
  </Mode>
 </FixtureDefinition>
-
