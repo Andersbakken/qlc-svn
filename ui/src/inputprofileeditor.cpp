@@ -27,6 +27,7 @@
 #include <QTabWidget>
 #include <QSettings>
 #include <QDialog>
+#include <QTimer>
 #include <QDebug>
 #include <QFile>
 #include <QList>
@@ -54,9 +55,10 @@ extern App* _app;
  * Initialization
  ****************************************************************************/
 
-InputProfileEditor::InputProfileEditor(QWidget* parent,
-                                       QLCInputProfile* profile)
-        : QDialog(parent)
+InputProfileEditor::InputProfileEditor(QWidget* parent, QLCInputProfile* profile)
+    : QDialog(parent)
+    , m_wizardActive(false)
+    , m_latestItem(NULL)
 {
     setupUi(this);
 
@@ -71,6 +73,10 @@ InputProfileEditor::InputProfileEditor(QWidget* parent,
             this, SLOT(slotWizardClicked(bool)));
     connect(m_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, SLOT(slotEditClicked()));
+
+    /* Listen to input data */
+    connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+            this, SLOT(slotInputValueChanged(quint32, quint32, uchar)));
 
     if (profile == NULL)
     {
@@ -97,6 +103,11 @@ InputProfileEditor::InputProfileEditor(QWidget* parent,
 
     /* Fill up the tree with profile's channels */
     fillTree();
+
+    /* Timer that clears the input data icon after a while */
+    m_timer = new QTimer(this);
+    m_timer->setSingleShot(true);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTimerTimeout()));
 
     QSettings settings;
     QVariant var = settings.value(SETTINGS_GEOMETRY);
@@ -349,18 +360,11 @@ void InputProfileEditor::slotWizardClicked(bool checked)
                                     "auto-detection.\n\nNote that the wizard cannot "
                                     "tell the difference between a knob and a slider "
                                     "so you will have to do the change manually."));
-
-        connect(_app->inputMap(),
-                SIGNAL(inputValueChanged(quint32, quint32, uchar)),
-                this,
-                SLOT(slotInputValueChanged(quint32, quint32, uchar)));
+        m_wizardActive = true;
     }
     else
     {
-        disconnect(_app->inputMap(),
-                   SIGNAL(inputValueChanged(quint32, quint32, uchar)),
-                   this,
-                   SLOT(slotInputValueChanged(quint32, quint32, uchar)));
+        m_wizardActive = false;
     }
 
     m_buttonBox->setEnabled(!checked);
@@ -371,66 +375,82 @@ void InputProfileEditor::slotInputValueChanged(quint32 universe,
                                                quint32 channel,
                                                uchar value)
 {
+    QTreeWidgetItem* latestItem = NULL;
+
     Q_UNUSED(universe);
 
     /* Get a list of items that represent the given channel. Basically
        the list should always contain just one item. */
-    QList <QTreeWidgetItem*> list(m_tree->findItems(
-                                      QString("%1").arg(channel + 1),
-                                      Qt::MatchExactly, KColumnNumber));
-    if (list.size() == 0)
+    QList <QTreeWidgetItem*> list;
+    list = m_tree->findItems(QString("%1").arg(channel + 1), Qt::MatchExactly,
+                             KColumnNumber);
+    if (list.size() != 0)
+        latestItem = list.first();
+
+    if (list.size() == 0 && m_wizardActive == true)
     {
         /* No channel items found. Create a new channel to the
            profile and display it also in the tree widget */
-        QTreeWidgetItem* item;
-        QLCInputChannel* ch;
-
-        ch = new QLCInputChannel();
+        QLCInputChannel* ch = new QLCInputChannel();
         ch->setName(tr("Button %1").arg(channel + 1));
         ch->setType(QLCInputChannel::Button);
         m_profile->insertChannel(channel, ch);
 
-        item = new QTreeWidgetItem(m_tree);
-        updateChannelItem(item, ch);
-        m_tree->scrollToItem(item);
+        latestItem = new QTreeWidgetItem(m_tree);
+        updateChannelItem(latestItem, ch);
     }
-    else
+    else if (m_wizardActive == true)
     {
-        QTreeWidgetItem* old;
-        QStringList values;
-
         /* Existing channel & item found. Modify their contents. */
-        old = list.first();
-        values = old->data(KColumnValues, Qt::UserRole).toStringList();
+        latestItem = list.first();
+        QVariant var = latestItem->data(KColumnValues, Qt::UserRole);
+        QStringList values(var.toStringList());
 
-        /* No need to collect any more values, since this channel has
-           been judged to be a slider when count == 3 (see below). */
-        if (values.count() > 3)
-            return;
+        if (values.size() > 3)
+        {
+            /* No need to collect any more values, since this channel has
+               been judged to be a slider when count == 3 (see below). */
+        }
         else if (values.contains(QString("%1").arg(value)) == false)
         {
             values << QString("%1").arg(value);
             values.sort();
-            old->setData(KColumnValues, Qt::UserRole, values);
+            latestItem->setData(KColumnValues, Qt::UserRole, values);
         }
 
         /* Change the channel type only the one time when its value
            count goes over 2. I.e. when a channel can have more than
            two distinct values, it can no longer be a button. */
-        if (values.count() == 3)
+        if (values.size() == 3)
         {
-            QLCInputChannel* ch;
-            ch = m_profile->channel(channel);
+            QLCInputChannel* ch = m_profile->channel(channel);
             Q_ASSERT(ch != NULL);
 
             if (ch->type() == QLCInputChannel::Button)
             {
                 ch->setType(QLCInputChannel::Slider);
                 ch->setName(tr("Slider %1").arg(channel + 1));
-                updateChannelItem(old, ch);
+                updateChannelItem(latestItem, ch);
             }
         }
     }
+
+    if (latestItem != NULL)
+    {
+        if (m_latestItem != NULL)
+            m_latestItem->setIcon(KColumnNumber, QIcon());
+        m_latestItem = latestItem;
+        m_latestItem->setIcon(KColumnNumber, QIcon(":/input.png"));
+        m_tree->scrollToItem(m_latestItem);
+        m_timer->start(250);
+    }
+}
+
+void InputProfileEditor::slotTimerTimeout()
+{
+    if (m_latestItem != NULL)
+        m_latestItem->setIcon(KColumnNumber, QIcon());
+    m_latestItem = NULL;
 }
 
 /****************************************************************************

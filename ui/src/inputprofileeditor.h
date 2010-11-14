@@ -29,48 +29,51 @@
 
 class QLCInputChannel;
 class QLCInputProfile;
+class QTimer;
 
 class InputProfileEditor : public QDialog, public Ui_InputProfileEditor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(InputProfileEditor)
 
-    /********************************************************************
+    /************************************************************************
      * Initialization
-     ********************************************************************/
+     ************************************************************************/
 public:
     InputProfileEditor(QWidget* parent, QLCInputProfile* profile);
     virtual ~InputProfileEditor();
-
-private:
-    Q_DISABLE_COPY(InputProfileEditor)
 
 protected:
     void fillTree();
     void updateChannelItem(QTreeWidgetItem* item, QLCInputChannel* ch);
 
-    /********************************************************************
+    /************************************************************************
      * OK & Cancel
-     ********************************************************************/
+     ************************************************************************/
 public slots:
     void reject();
     void accept();
 
-    /********************************************************************
+    /************************************************************************
      * Editing
-     ********************************************************************/
+     ************************************************************************/
 protected slots:
     void slotAddClicked();
     void slotRemoveClicked();
     void slotEditClicked();
     void slotWizardClicked(bool checked);
 
-    void slotInputValueChanged(quint32 universe,
-                               quint32 channel,
-                               uchar value);
+    void slotInputValueChanged(quint32 universe, quint32 channel, uchar value);
+    void slotTimerTimeout();
 
-    /********************************************************************
+protected:
+    bool m_wizardActive;
+    QTreeWidgetItem* m_latestItem;
+    QTimer* m_timer;
+
+    /************************************************************************
      * Profile
-     ********************************************************************/
+     ************************************************************************/
 public:
     const QLCInputProfile* profile() const;
 
