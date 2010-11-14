@@ -3,9 +3,17 @@ include(../variables.pri)
 TEMPLATE = subdirs
 TARGET = fixtures
 
+fixtures.files += American-DJ-Galaxian-3D.qxf
 fixtures.files += American-DJ-Mega-Bar-LED.qxf
+fixtures.files += American-DJ-Mega-Flash-DMX.qxf
 fixtures.files += American-DJ-Quad-Gem-DMX.qxf
 fixtures.files += American-DJ-Vizi-LED-Spot.qxf
+fixtures.files += Chauvet-200b.qxf
+fixtures.files += Chauvet-DMX-Mega-Strobe-III.qxf
+fixtures.files += Chauvet-Hurricane-1800-Flex.qxf
+fixtures.files += Chauvet-LEDSplash-Jr.qxf
+fixtures.files += Chauvet-Vue-3.1.qxf
+fixtures.files += Chauvet-Vue-6.1.qxf
 fixtures.files += Elation-Color-Spot-150.qxf
 fixtures.files += Elation-Vision-250.qxf
 fixtures.files += Eurolite-DMXSuperstrobe-2700.qxf
