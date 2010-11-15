@@ -23,10 +23,13 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
+
+#include <windows.h>
 #include <stdint.h>
 
-#include "K8062D_DLL.h"
+#include "k8062d_dll.h"
 #include "vellemanout.h"
+
 
 /*****************************************************************************
  * Initialization
@@ -86,10 +89,10 @@ QString VellemanOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("the Velleman k8062 using the DLL supplied ");
-        str += QString("with the product. Please note, use of this ");
-        str += QString("interface is not necessarily recommended.");
+        str += tr("This plugin provides DMX output support for "
+                  "the Velleman K8062D using the DLL supplied "
+                  "with the product. Please note, use of this "
+                  "interface is not necessarily recommended.");
         str += QString("</P>");
     }
     else if (output == 0)

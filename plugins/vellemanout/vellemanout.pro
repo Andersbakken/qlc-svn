@@ -3,12 +3,17 @@ include(../../variables.pri)
 TEMPLATE = lib
 LANGUAGE = C++
 TARGET   = vellemanout
-
-QT -= gui
+CONFIG  += plugin
 
 INCLUDEPATH += ../interfaces
-CONFIG      += plugin
-LIBS        += K8062D.lib
+
+# K8062D is a proprietary interface by Velleman and would therefore taint the
+# 100% FLOSS codebase of QLC if distributed along with QLC sources. Download
+# the package from http://www.box.net/shared/2l0b2tk8e1 and
+# extract its contents under K8062DDIR below to compile this plugin.
+K8062DDIR    = C:/K8062D
+INCLUDEPATH += $$K8062DDIR
+LIBS        += -L$$K8062DDIR -lK8062D
 
 HEADERS += vellemanout.h
 SOURCES += vellemanout.cpp
