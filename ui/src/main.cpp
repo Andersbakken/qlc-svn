@@ -181,10 +181,10 @@ int main(int argc, char** argv)
 
     /* Create and initialize the QLC application object */
     App app;
-    if (QLCArgs::operate == true)
-        app.slotModeOperate();
     if (QLCArgs::workspace.isEmpty() == false)
         app.loadXML(QLCArgs::workspace);
+    if (QLCArgs::operate == true)
+        app.slotModeOperate();
 
     /* Show and execute the application */
     app.show();
