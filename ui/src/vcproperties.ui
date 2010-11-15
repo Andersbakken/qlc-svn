@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>402</width>
+    <width>458</width>
     <height>342</height>
    </rect>
   </property>
@@ -289,7 +289,109 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="DefaultSliders">
+     <widget class="QWidget" name="Blackout">
+      <attribute name="title">
+       <string>Blackout</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>External Input</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <widget class="QLabel" name="m_blackoutInputUniverseLabel">
+            <property name="text">
+             <string>Input Universe</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" colspan="2">
+           <widget class="QLineEdit" name="m_blackoutInputUniverseEdit">
+            <property name="toolTip">
+             <string>Input universe for Blackout.</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="m_blackoutInputChannelLabel">
+            <property name="text">
+             <string>Input Channel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" colspan="2">
+           <widget class="QLineEdit" name="m_blackoutInputChannelEdit">
+            <property name="toolTip">
+             <string>Input channel for Blackout.</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>165</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="m_autoDetectBlackoutInputButton">
+            <property name="toolTip">
+             <string>When toggled, you can move an external slider/knob to assign it to Blackout.</string>
+            </property>
+            <property name="text">
+             <string>Auto Detect</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QPushButton" name="m_chooseBlackoutInputButton">
+            <property name="toolTip">
+             <string>Choose an external input universe &amp; channel that Blackout should listen to.</string>
+            </property>
+            <property name="text">
+             <string>Choose...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>93</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="DefaultFade">
       <attribute name="title">
        <string>Default Fade</string>
       </attribute>
@@ -428,7 +530,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="DefaultHold">
       <attribute name="title">
        <string>Default Hold</string>
       </attribute>
@@ -734,8 +836,8 @@
    <slot>slotAutoDetectGrandMasterInputToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>254</y>
+     <x>326</x>
+     <y>271</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -750,8 +852,8 @@
    <slot>slotChooseGrandMasterInputClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>327</x>
-     <y>259</y>
+     <x>426</x>
+     <y>271</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -766,8 +868,8 @@
    <slot>slotAutoDetectFadeInputToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>232</x>
-     <y>246</y>
+     <x>340</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -782,8 +884,8 @@
    <slot>slotChooseFadeInputClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>346</x>
-     <y>250</y>
+     <x>426</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -798,8 +900,8 @@
    <slot>slotAutoDetectHoldInputToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>236</x>
-     <y>245</y>
+     <x>340</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -814,8 +916,8 @@
    <slot>slotChooseHoldInputClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>342</x>
-     <y>252</y>
+     <x>426</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -855,6 +957,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_autoDetectBlackoutInputButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotAutoDetectBlackoutInputToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>264</x>
+     <y>158</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>54</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_chooseBlackoutInputButton</sender>
+   <signal>clicked()</signal>
+   <receiver>VCPropertiesEditor</receiver>
+   <slot>slotChooseBlackoutInputClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>382</x>
+     <y>157</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>24</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotGrabKeyboardClicked()</slot>
@@ -872,5 +1006,7 @@
   <slot>slotChooseHoldInputClicked()</slot>
   <slot>slotGrandMasterIntensityToggled(bool)</slot>
   <slot>slotGrandMasterReduceToggled(bool)</slot>
+  <slot>slotAutoDetectBlackoutInputToggled(bool)</slot>
+  <slot>slotChooseBlackoutInputClicked()</slot>
  </slots>
 </ui>

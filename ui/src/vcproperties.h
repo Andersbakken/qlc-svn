@@ -58,6 +58,8 @@ class VCFrame;
 #define KXMLQLCVCPropertiesGrandMasterChannelMode "ChannelMode"
 #define KXMLQLCVCPropertiesGrandMasterValueMode "ValueMode"
 
+#define KXMLQLCVCPropertiesBlackout "Blackout"
+
 #define KXMLQLCVCPropertiesInput "Input"
 #define KXMLQLCVCPropertiesInputUniverse "Universe"
 #define KXMLQLCVCPropertiesInputChannel "Channel"
@@ -193,6 +195,27 @@ protected:
     UniverseArray::GMValueMode m_gmValueMode;
     quint32 m_gmInputUniverse;
     quint32 m_gmInputChannel;
+
+    /*************************************************************************
+     * Blackout
+     *************************************************************************/
+public:
+    quint32 blackoutInputUniverse() const {
+        return m_blackoutInputUniverse;
+    }
+
+    quint32 blackoutInputChannel() const {
+        return m_blackoutInputChannel;
+    }
+
+    void setBlackoutInputSource(quint32 universe, quint32 channel) {
+        m_blackoutInputUniverse = universe;
+        m_blackoutInputChannel = channel;
+    }
+
+protected:
+    quint32 m_blackoutInputUniverse;
+    quint32 m_blackoutInputChannel;
 
     /*********************************************************************
      * Default sliders

@@ -324,8 +324,6 @@ void App::slotOutputMapBlackoutChanged(bool state)
     if (state == true)
     {
         m_blackoutIndicator->show();
-        m_controlBlackoutAction->setChecked(true);
-
         connect(m_blackoutIndicatorTimer, SIGNAL(timeout()),
                 this, SLOT(slotFlashBlackoutIndicator()));
         m_blackoutIndicatorTimer->start(500);
@@ -333,8 +331,6 @@ void App::slotOutputMapBlackoutChanged(bool state)
     else
     {
         m_blackoutIndicator->hide();
-        m_controlBlackoutAction->setChecked(false);
-
         m_blackoutIndicatorTimer->stop();
         disconnect(m_blackoutIndicatorTimer, SIGNAL(timeout()),
                    this, SLOT(slotFlashBlackoutIndicator()));
@@ -740,13 +736,6 @@ void App::initActions()
     connect(m_controlMonitorAction, SIGNAL(triggered(bool)),
             this, SLOT(slotControlMonitor()));
 
-    m_controlBlackoutAction = new QAction(QIcon(":/blackout.png"),
-                                          tr("Toggle &Blackout"), this);
-    m_controlBlackoutAction->setCheckable(true);
-    m_controlBlackoutAction->setShortcut(QKeySequence(tr("CTRL+B", "Control|Toggle Blackout")));
-    connect(m_controlBlackoutAction, SIGNAL(triggered(bool)),
-            this, SLOT(slotControlBlackout()));
-
 #ifndef __APPLE__
     // Full screen is rather pointless in Apple
     m_controlFullScreenAction = new QAction(QIcon(":/fullscreen.png"),
@@ -833,8 +822,6 @@ void App::initMenuBar()
     m_controlMenu->addAction(m_controlVCAction);
     m_controlMenu->addAction(m_controlMonitorAction);
     m_controlMenu->addSeparator();
-    m_controlMenu->addAction(m_controlBlackoutAction);
-    m_controlMenu->addSeparator();
 #ifndef __APPLE__
     // Full screen is rather pointless in Apple
     m_controlMenu->addAction(m_controlFullScreenAction);
@@ -884,8 +871,6 @@ void App::initToolBar()
     widget = new QWidget(this);
     widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_toolbar->addWidget(widget);
-
-    m_toolbar->addAction(m_controlBlackoutAction);
     m_toolbar->addAction(m_modeToggleAction);
 }
 
@@ -1158,16 +1143,6 @@ void App::slotInputManager()
 /*****************************************************************************
  * Control action slots
  *****************************************************************************/
-
-void App::slotControlBlackout()
-{
-    Q_ASSERT(m_outputMap != NULL);
-
-    if (m_outputMap->blackout() == true)
-        m_outputMap->setBlackout(false);
-    else
-        m_outputMap->setBlackout(true);
-}
 
 void App::slotControlVC()
 {

@@ -196,6 +196,7 @@ protected:
 
     QAction* m_toolsSettingsAction;
     QAction* m_toolsSlidersAction;
+    QAction* m_toolsBlackoutAction;
     QAction* m_toolsPanicAction;
 
     QAction* m_editCutAction;
@@ -259,7 +260,10 @@ public slots:
 public slots:
     void slotToolsSliders();
     void slotToolsSettings();
+    void slotToolsBlackout();
     void slotToolsPanic();
+
+    void slotBlackoutChanged(bool state);
 
     /*********************************************************************
      * Edit menu callbacks
@@ -362,6 +366,13 @@ signals:
 
     /** Signal telling that the keySequence was released */
     void keyReleased(const QKeySequence& keySequence);
+
+    /*************************************************************************
+     * External input
+     *************************************************************************/
+public slots:
+    /** Listens to external input data */
+    void slotInputValueChanged(quint32 uni, quint32 ch, uchar value);
 
     /*********************************************************************
      * Main application mode

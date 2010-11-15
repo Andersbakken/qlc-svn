@@ -102,6 +102,17 @@ protected:
     void updateGrandMasterInputSource();
 
     /*************************************************************************
+     * Blackout page
+     *************************************************************************/
+protected slots:
+    void slotAutoDetectBlackoutInputToggled(bool checked);
+    void slotBlackoutInputValueChanged(quint32 universe, quint32 channel);
+    void slotChooseBlackoutInputClicked();
+
+protected:
+    void updateBlackoutInputSource();
+
+    /*************************************************************************
      * Input Source helper
      *************************************************************************/
 protected:

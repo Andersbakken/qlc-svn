@@ -56,6 +56,9 @@ VCProperties::VCProperties() : VCWidgetProperties()
     m_gmInputUniverse = InputMap::invalidUniverse();
     m_gmInputChannel = KInputChannelInvalid;
 
+    m_blackoutInputUniverse = InputMap::invalidUniverse();
+    m_blackoutInputChannel = KInputChannelInvalid;
+
     m_slidersVisible = true;
 
     m_fadeLowLimit = 0;
@@ -99,6 +102,9 @@ VCProperties& VCProperties::operator=(const VCProperties& properties)
     m_gmValueMode = properties.m_gmValueMode;
     m_gmInputUniverse = properties.m_gmInputUniverse;
     m_gmInputChannel = properties.m_gmInputChannel;
+
+    m_blackoutInputUniverse = properties.m_blackoutInputUniverse;
+    m_blackoutInputChannel = properties.m_blackoutInputChannel;
 
     m_slidersVisible = properties.m_slidersVisible;
 
@@ -315,6 +321,24 @@ bool VCProperties::saveXML(QDomDocument* doc, QDomElement* wksp_root)
                             QString("%1").arg(m_gmInputChannel));
     }
 
+    /************
+     * Blackout *
+     ************/
+    tag = doc->createElement(KXMLQLCVCPropertiesBlackout);
+    prop_root.appendChild(tag);
+
+    /* Grand Master external input */
+    if (m_blackoutInputUniverse != InputMap::invalidUniverse() &&
+        m_blackoutInputChannel != KInputChannelInvalid)
+    {
+        subtag = doc->createElement(KXMLQLCVCPropertiesInput);
+        tag.appendChild(subtag);
+        subtag.setAttribute(KXMLQLCVCPropertiesInputUniverse,
+                            QString("%1").arg(m_blackoutInputUniverse));
+        subtag.setAttribute(KXMLQLCVCPropertiesInputChannel,
+                            QString("%1").arg(m_blackoutInputChannel));
+    }
+
     /* Save widget properties */
     return VCWidgetProperties::saveXML(doc, &prop_root);
 }
@@ -429,6 +453,16 @@ bool VCProperties::loadProperties(const QDomElement* root)
                                         &universe, &channel);
             if (inputOK == true)
                 setGrandMasterInputSource(universe, channel);
+        }
+        else if (tag.tagName() == KXMLQLCVCPropertiesBlackout)
+        {
+            quint32 universe = InputMap::invalidUniverse();
+            quint32 channel = KInputChannelInvalid;
+            /* External input */
+            bool inputOK = loadXMLInput(tag.firstChild().toElement(),
+                                        &universe, &channel);
+            if (inputOK == true)
+                setBlackoutInputSource(universe, channel);
         }
         else if (tag.tagName() == KXMLQLCWidgetProperties)
         {

@@ -49,7 +49,9 @@
 #include "vcsoloframe.h"
 #include "mastertimer.h"
 #include "vcdockarea.h"
+#include "outputmap.h"
 #include "vccuelist.h"
+#include "inputmap.h"
 #include "vcbutton.h"
 #include "vcslider.h"
 #include "vcframe.h"
@@ -109,6 +111,12 @@ VirtualConsole::VirtualConsole(QWidget* parent, Qt::WindowFlags flags)
     connect(_app->masterTimer(), SIGNAL(functionListChanged()),
             this, SLOT(slotRunningFunctionsChanged()));
     slotRunningFunctionsChanged();
+
+    connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+            this, SLOT(slotInputValueChanged(quint32,quint32,uchar)));
+
+    connect(_app->outputMap(), SIGNAL(blackoutChanged(bool)),
+            this, SLOT(slotBlackoutChanged(bool)));
 
     slotModeChanged(_app->doc()->mode());
 }
@@ -296,6 +304,14 @@ void VirtualConsole::initActions()
                                        tr("Default sliders"), this);
     connect(m_toolsSlidersAction, SIGNAL(triggered(bool)),
             this, SLOT(slotToolsSliders()));
+
+    m_toolsBlackoutAction = new QAction(QIcon(":/blackout.png"),
+                                        tr("Toggle &Blackout"), this);
+    m_toolsBlackoutAction->setCheckable(true);
+    connect(m_toolsBlackoutAction, SIGNAL(triggered(bool)),
+            this, SLOT(slotToolsBlackout()));
+    Q_ASSERT(_app->outputMap());
+    m_toolsBlackoutAction->setChecked(_app->outputMap()->blackout());
 
     m_toolsPanicAction = new QAction(QIcon(":/panic.png"),
                                      tr("Stop ALL functions!"), this);
@@ -498,6 +514,7 @@ void VirtualConsole::initMenuBar()
     m_toolsMenu = new QMenu(menuBar);
     m_toolsMenu->setTitle(tr("&Tools"));
     menuBar->addMenu(m_toolsMenu);
+    m_toolsMenu->addAction(m_toolsBlackoutAction);
     m_toolsMenu->addAction(m_toolsPanicAction);
     m_toolsMenu->addAction(m_toolsSlidersAction);
     m_toolsMenu->addSeparator();
@@ -572,6 +589,7 @@ void VirtualConsole::initMenuBar()
     spacerWidget->setSizePolicy(QSizePolicy::Expanding,
                                 QSizePolicy::Preferred);
     toolBar->addWidget(spacerWidget);
+    toolBar->addAction(m_toolsBlackoutAction);
     toolBar->addAction(m_toolsPanicAction);
 }
 
@@ -946,10 +964,31 @@ void VirtualConsole::slotToolsSliders()
     _app->doc()->setModified();
 }
 
+void VirtualConsole::slotToolsBlackout()
+{
+    qDebug() << Q_FUNC_INFO;
+    Q_ASSERT(_app->outputMap() != NULL);
+    _app->outputMap()->setBlackout(!_app->outputMap()->blackout());
+    if (s_properties.blackoutInputUniverse() != InputMap::invalidUniverse() &&
+        s_properties.blackoutInputChannel() != KInputChannelInvalid)
+    {
+        uchar value = (_app->outputMap()->blackout()) ? 255 : 0;
+        qDebug() << value;
+        _app->inputMap()->feedBack(s_properties.blackoutInputUniverse(),
+                                   s_properties.blackoutInputChannel(),
+                                   value);
+    }
+}
+
 void VirtualConsole::slotToolsPanic()
 {
     Q_ASSERT(_app->masterTimer() != NULL);
     _app->masterTimer()->stopAllFunctions();
+}
+
+void VirtualConsole::slotBlackoutChanged(bool state)
+{
+    m_toolsBlackoutAction->setChecked(state);
 }
 
 /*****************************************************************************
@@ -1456,6 +1495,19 @@ void VirtualConsole::keyReleaseEvent(QKeyEvent* event)
 {
     QKeySequence seq(event->key() | event->modifiers());
     emit keyReleased(seq);
+}
+
+/*****************************************************************************
+ * External input
+ *****************************************************************************/
+
+void VirtualConsole::slotInputValueChanged(quint32 uni, quint32 ch, uchar value)
+{
+    if (uni == s_properties.blackoutInputUniverse() &&
+        ch == s_properties.blackoutInputChannel() && value > 0)
+    {
+        slotToolsBlackout();
+    }
 }
 
 /*****************************************************************************

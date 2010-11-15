@@ -92,6 +92,9 @@ VCPropertiesEditor::VCPropertiesEditor(QWidget* parent,
     }
 
     updateGrandMasterInputSource();
+
+    /* Blackout page*/
+    updateBlackoutInputSource();
 }
 
 VCPropertiesEditor::~VCPropertiesEditor()
@@ -133,7 +136,7 @@ void VCPropertiesEditor::slotGridYChanged(int value)
 }
 
 /*****************************************************************************
- * Sliders page
+ * Fade slider page
  *****************************************************************************/
 
 void VCPropertiesEditor::slotFadeLimitsChanged()
@@ -265,7 +268,7 @@ void VCPropertiesEditor::updateHoldInputSource()
 }
 
 /*****************************************************************************
- * Grand Master
+ * Grand Master page
  *****************************************************************************/
 
 void VCPropertiesEditor::slotGrandMasterIntensityToggled(bool checked)
@@ -334,6 +337,63 @@ void VCPropertiesEditor::updateGrandMasterInputSource()
     {
         m_gmInputUniverseEdit->setText(KInputNone);
         m_gmInputChannelEdit->setText(KInputNone);
+    }
+}
+
+/*****************************************************************************
+ * Blackout page
+ *****************************************************************************/
+
+void VCPropertiesEditor::slotAutoDetectBlackoutInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotBlackoutInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotBlackoutInputValueChanged(quint32,quint32)));
+    }
+}
+
+void VCPropertiesEditor::slotBlackoutInputValueChanged(quint32 universe,
+                                                       quint32 channel)
+{
+    m_properties.setBlackoutInputSource(universe, channel);
+    updateBlackoutInputSource();
+}
+
+void VCPropertiesEditor::slotChooseBlackoutInputClicked()
+{
+    SelectInputChannel sic(this);
+    if (sic.exec() == QDialog::Accepted)
+    {
+        m_properties.setBlackoutInputSource(sic.universe(), sic.channel());
+        updateBlackoutInputSource();
+    }
+}
+
+void VCPropertiesEditor::updateBlackoutInputSource()
+{
+    QString uniName;
+    QString chName;
+
+    if (inputSourceNames(m_properties.blackoutInputUniverse(),
+                         m_properties.blackoutInputChannel(),
+                         uniName, chName) == true)
+    {
+        /* Display the gathered information */
+        m_blackoutInputUniverseEdit->setText(uniName);
+        m_blackoutInputChannelEdit->setText(chName);
+    }
+    else
+    {
+        m_blackoutInputUniverseEdit->setText(KInputNone);
+        m_blackoutInputChannelEdit->setText(KInputNone);
     }
 }
 
