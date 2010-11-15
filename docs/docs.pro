@@ -12,6 +12,7 @@ docs.files = \
              channeleditor.html \
              chasereditor.html \
              collectioneditor.html \
+             commandlineparameters.html \
              concept.html \
              efxeditor.html \
              fixturedefinitioneditor.html \
