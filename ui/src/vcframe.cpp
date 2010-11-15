@@ -61,22 +61,6 @@ VCFrame::~VCFrame()
 
 bool VCFrame::isBottomFrame()
 {
-    /* If this widget has a parent that is NOT a VCFrame, this widget
-       is the bottom frame. */
-    
-    /* This code don't work, as VCSoloFrame inherits from VCFrame:
-    
-    if (parentWidget() != NULL &&
-        QString(parentWidget()->metaObject()->className()) !=
-        QString(VCFrame::staticMetaObject.className()))        
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }*/
-    
     return (parentWidget() != NULL && qobject_cast<VCFrame*>(parentWidget()) == NULL);
 }
 
