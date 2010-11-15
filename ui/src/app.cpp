@@ -720,7 +720,7 @@ void App::initActions()
     m_modeToggleAction = new QAction(QIcon(":/operate.png"),
                                      tr("&Operate"), this);
     m_modeToggleAction->setToolTip(tr("Switch to operate mode"));
-    m_modeToggleAction->setShortcut(QKeySequence(tr("CTRL+TAB", "Control|Toggle operate/design mode")));
+    m_modeToggleAction->setShortcut(QKeySequence(tr("CTRL+F12", "Control|Toggle operate/design mode")));
     connect(m_modeToggleAction, SIGNAL(triggered(bool)),
             this, SLOT(slotModeToggle()));
 
