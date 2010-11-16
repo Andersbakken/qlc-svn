@@ -139,11 +139,11 @@ bool EnttecDMXUSBOpen::initializePort()
         return false;
     }
 
-    /* Set the baud rate. 12 will give us 250Kbits */
-    status = FT_SetDivisor(m_handle, 12);
+    /* Set the baud rate to 250Kbit/s */
+    status = FT_SetBaudRate(m_handle, 250000);
     if (status != FT_OK)
     {
-        qWarning() << "FT_SetDivisor:" << status;
+        qWarning() << "FT_SetBaudRate:" << status;
         return false;
     }
 
@@ -220,6 +220,7 @@ void EnttecDMXUSBOpen::run()
 {
     ULONG written = 0;
     FT_STATUS status = FT_OK;
+    char startCode = 0;
 
     // Skip some sleep calls if timer is found to behave badly
     bool badTimer = false;
@@ -262,7 +263,14 @@ void EnttecDMXUSBOpen::run()
 
         // Don't sleep if timer granularity is too coarse
         if (badTimer == false)
-            usleep(8);
+            usleep(10);
+
+        status = FT_Write(m_handle, &startCode, 1, &written);
+        if (status != FT_OK)
+        {
+            qWarning() << "FT_Write startcode:" << status;
+            goto framesleep;
+        }
 
         status = FT_Write(m_handle, m_universe, DMX_CHANNELS, &written);
         if (status != FT_OK)
@@ -276,7 +284,7 @@ framesleep:
         if (badTimer == true)
             while (time.elapsed() < frameTime) { /* NOP */ }
         else
-            while (time.elapsed() < frameTime) { msleep(1); }
+            while (time.elapsed() < frameTime) { usleep(1000); }
     }
 }
 
