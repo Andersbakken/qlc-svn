@@ -117,12 +117,12 @@ int QLCPhysical::bulbColourTemperature() const
     return m_bulbColourTemperature;
 }
 
-void QLCPhysical::setWeight(int weight)
+void QLCPhysical::setWeight(double weight)
 {
     m_weight = weight;
 }
 
-int QLCPhysical::weight() const
+double QLCPhysical::weight() const
 {
     return m_weight;
 }
@@ -279,7 +279,7 @@ bool QLCPhysical::loadXML(const QDomElement* root)
         }
         else if (tag.tagName() == KXMLQLCPhysicalDimensions)
         {
-            m_weight = tag.attribute(KXMLQLCPhysicalDimensionsWeight).toInt();
+            m_weight = tag.attribute(KXMLQLCPhysicalDimensionsWeight).toDouble();
             m_width = tag.attribute(KXMLQLCPhysicalDimensionsWidth).toInt();
             m_height = tag.attribute(KXMLQLCPhysicalDimensionsHeight).toInt();
             m_depth = tag.attribute(KXMLQLCPhysicalDimensionsDepth).toInt();

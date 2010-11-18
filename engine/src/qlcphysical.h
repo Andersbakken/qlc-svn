@@ -85,8 +85,8 @@ public:
     void setBulbColourTemperature(int temp);
     int bulbColourTemperature() const;
 
-    void setWeight(int weight);
-    int weight() const;
+    void setWeight(double weight);
+    double weight() const;
 
     void setWidth(int width);
     int width() const;
@@ -126,7 +126,7 @@ protected:
     int m_bulbLumens;
     int m_bulbColourTemperature;
 
-    int m_weight;
+    double m_weight;
     int m_width;
     int m_height;
     int m_depth;

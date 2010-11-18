@@ -51,6 +51,8 @@ void QLCPhysical_Test::weight()
     QVERIFY(p.weight() == 0);
     p.setWeight(7);
     QVERIFY(p.weight() == 7);
+    p.setWeight(5.02837);
+    QCOMPARE(p.weight(), 5.02837);
 }
 
 void QLCPhysical_Test::width()
@@ -164,7 +166,7 @@ void QLCPhysical_Test::load()
 
     /* Dimensions */
     QDomElement dim = doc.createElement("Dimensions");
-    dim.setAttribute("Weight", 39);
+    dim.setAttribute("Weight", 39.4);
     dim.setAttribute("Width", 530);
     dim.setAttribute("Height", 320);
     dim.setAttribute("Depth", 260);
@@ -200,7 +202,7 @@ void QLCPhysical_Test::load()
     QVERIFY(p.bulbType() == "LED");
     QVERIFY(p.bulbLumens() == 18000);
     QVERIFY(p.bulbColourTemperature() == 6500);
-    QVERIFY(p.weight() == 39);
+    QCOMPARE(p.weight(), 39.4);
     QVERIFY(p.width() == 530);
     QVERIFY(p.height() == 320);
     QVERIFY(p.depth() == 260);
@@ -230,7 +232,7 @@ void QLCPhysical_Test::loadWrongRoot()
 
     /* Dimensions */
     QDomElement dim = doc.createElement("Dimensions");
-    dim.setAttribute("Weight", 39);
+    dim.setAttribute("Weight", 39.4);
     dim.setAttribute("Width", 530);
     dim.setAttribute("Height", 320);
     dim.setAttribute("Depth", 260);
@@ -285,7 +287,7 @@ void QLCPhysical_Test::save()
             QVERIFY(e.attribute("Width") == "530");
             QVERIFY(e.attribute("Depth") == "260");
             QVERIFY(e.attribute("Height") == "320");
-            QVERIFY(e.attribute("Weight") == "39");
+            QVERIFY(e.attribute("Weight") == "39.4");
         }
         else if (e.tagName() == "Lens")
         {

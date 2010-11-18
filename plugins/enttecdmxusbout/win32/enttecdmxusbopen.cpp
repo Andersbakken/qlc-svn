@@ -237,6 +237,14 @@ void EnttecDMXUSBOpen::run()
         badTimer = true;
     else
         badTimer = false;
+    DWORD ms = 0;
+
+    UCHAR puc = 0;
+    FT_GetBitMode(m_handle, &puc);
+    qDebug() << "bitmode" << QString::number(puc);
+
+    FT_GetModemStatus(m_handle, &ms);
+    qDebug() << "ms" << QString::number(ms);
 
     m_running = true;
     while (m_running == true)
