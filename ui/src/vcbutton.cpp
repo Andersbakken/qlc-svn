@@ -199,6 +199,7 @@ void VCButton::setForegroundColor(const QColor& color)
 
     m_hasCustomForegroundColor = true;
 
+    pal.setColor(QPalette::WindowText, color);
     pal.setColor(QPalette::ButtonText, color);
     setPalette(pal);
 
