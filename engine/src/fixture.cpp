@@ -625,12 +625,19 @@ QString Fixture::status()
         QLCPhysical physical = m_fixtureMode->physical();
         info += title.arg(tr("Physical"));
 
-        QString mm("%1mm");
+        float mmInch = 0.0393700787;
+        float kgLbs = 2.20462262;
+        QString mm("%1mm (%2\")");
+        QString kg("%1kg (%2 lbs)");
         QString W("%1W");
-        info += genInfo.arg(tr("Width")).arg(mm.arg(physical.width()));
-        info += genInfo.arg(tr("Height")).arg(mm.arg(physical.height()));
-        info += genInfo.arg(tr("Depth")).arg(mm.arg(physical.depth()));
-        info += genInfo.arg(tr("Weight")).arg(mm.arg(physical.weight()));
+        info += genInfo.arg(tr("Width")).arg(mm.arg(physical.width()))
+                                        .arg(physical.width() * mmInch, 0, 'g', 4);
+        info += genInfo.arg(tr("Height")).arg(mm.arg(physical.height()))
+                                         .arg(physical.height() * mmInch, 0, 'g', 4);
+        info += genInfo.arg(tr("Depth")).arg(mm.arg(physical.depth()))
+                                        .arg(physical.depth() * mmInch, 0, 'g', 4);
+        info += genInfo.arg(tr("Weight")).arg(kg.arg(physical.weight()))
+                                         .arg(physical.weight() * kgLbs, 0, 'g', 4);
         info += genInfo.arg(tr("Power consumption")).arg(W.arg(physical.powerConsumption()));
         info += genInfo.arg(tr("DMX Connector")).arg(physical.dmxConnector());
 
