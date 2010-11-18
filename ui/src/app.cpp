@@ -559,12 +559,7 @@ void App::slotModeChanged(Doc::Mode mode)
         m_modeIndicator->setToolTip(
             tr("Design mode is active; editing facilities are enabled"));
 
-        QPalette pal = palette();
-        pal.setColor(QPalette::Window,
-                     QApplication::palette().color(QPalette::Window));
-        pal.setColor(QPalette::WindowText,
-                     QApplication::palette().color(QPalette::WindowText));
-        m_modeIndicator->setPalette(pal);
+        m_modeIndicator->setPalette(QApplication::palette());
 
         /* Enable editing features */
         m_fileNewAction->setEnabled(true);
