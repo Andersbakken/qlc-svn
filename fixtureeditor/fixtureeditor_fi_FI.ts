@@ -72,12 +72,12 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/src/aboutbox.cpp" line="34"/>
+        <location filename="../ui/src/aboutbox.cpp" line="36"/>
         <source>and contributors:</source>
         <translation>ja avustajat:</translation>
     </message>
     <message>
-        <location filename="../ui/src/aboutbox.cpp" line="35"/>
+        <location filename="../ui/src/aboutbox.cpp" line="37"/>
         <source>Website: %1</source>
         <translation>Web-osoite: %1</translation>
     </message>
@@ -85,67 +85,107 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>App</name>
     <message>
-        <location filename="app.cpp" line="130"/>
+        <location filename="app.cpp" line="132"/>
         <source>Fixture loading failed</source>
         <translation>Valaisimen lataus epäonnistui</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="131"/>
+        <location filename="app.cpp" line="133"/>
         <source>Unable to load fixture definition: </source>
         <translation>Valaisinmäärittelyä ei löydy: </translation>
     </message>
     <message>
-        <location filename="app.cpp" line="195"/>
+        <location filename="app.cpp" line="197"/>
         <source>&amp;New</source>
         <translation>&amp;Uusi</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="201"/>
+        <location filename="app.cpp" line="198"/>
+        <source>CTRL+N</source>
+        <comment>File|New</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="203"/>
         <source>&amp;Open</source>
         <translation>A&amp;vaa</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="207"/>
+        <location filename="app.cpp" line="204"/>
+        <source>CTRL+O</source>
+        <comment>File|Open</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="209"/>
         <source>&amp;Save</source>
         <translation>&amp;Tallenna</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="212"/>
-        <source>Save &amp;As</source>
-        <translation>Tallenna &amp;Nimellä</translation>
+        <location filename="app.cpp" line="210"/>
+        <source>CTRL+S</source>
+        <comment>File|Save</comment>
+        <translation></translation>
     </message>
     <message>
-        <location filename="app.cpp" line="218"/>
+        <location filename="app.cpp" line="214"/>
+        <source>Save &amp;As...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="215"/>
+        <source>CTRL+SHIFT+S</source>
+        <comment>File|Save As...</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Save &amp;As</source>
+        <translation type="obsolete">Tallenna &amp;Nimellä</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="220"/>
         <source>&amp;Quit</source>
         <translation>&amp;Poistu</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="224"/>
+        <location filename="app.cpp" line="221"/>
+        <source>CTRL+Q</source>
+        <comment>File|Quit</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="227"/>
         <source>Index</source>
         <translation>Hakemisto</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="230"/>
+        <location filename="app.cpp" line="228"/>
+        <source>SHIFT+F1</source>
+        <comment>Help|Index</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="233"/>
         <source>About Fixture Definition Editor...</source>
         <translation>Tietoja Fixture Definition Editor-sovelluksesta...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="235"/>
+        <location filename="app.cpp" line="238"/>
         <source>About Qt...</source>
         <translation>Tietoja Qt:sta...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="255"/>
+        <location filename="app.cpp" line="258"/>
         <source>&amp;File</source>
         <translation>&amp;Tiedosto</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="265"/>
+        <location filename="app.cpp" line="268"/>
         <source>&amp;Help</source>
         <translation>&amp;Apua</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="303"/>
+        <location filename="app.cpp" line="306"/>
         <source>Open a fixture definition</source>
         <translation>Avaa valaisinmäärittely</translation>
     </message>
@@ -221,22 +261,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DocBrowser</name>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="41"/>
+        <location filename="../ui/src/docbrowser.cpp" line="80"/>
         <source>%1 - Document Browser</source>
         <translation>%1 - Dokumenttiselain</translation>
     </message>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="51"/>
+        <location filename="../ui/src/docbrowser.cpp" line="91"/>
         <source>Backward</source>
         <translation>Taaksepäin</translation>
     </message>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="52"/>
+        <location filename="../ui/src/docbrowser.cpp" line="92"/>
         <source>Forward</source>
         <translation>Eteenpäin</translation>
     </message>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="53"/>
+        <location filename="../ui/src/docbrowser.cpp" line="93"/>
         <source>Index</source>
         <translation>Hakemisto</translation>
     </message>
@@ -272,83 +312,79 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>EditChannel</name>
     <message>
-        <location filename="editchannel.ui" line="13"/>
+        <location filename="editchannel.ui" line="14"/>
         <source>Edit Channel</source>
         <translation>Muokkaa kanavaa</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="21"/>
+        <location filename="editchannel.ui" line="22"/>
         <source>Name</source>
         <translation>Nimi</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="35"/>
+        <location filename="editchannel.ui" line="36"/>
         <source>Group</source>
         <translation>Ryhmä</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="47"/>
+        <location filename="editchannel.ui" line="48"/>
         <source>Control Byte</source>
         <translation>Ohjausbitti</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="53"/>
+        <location filename="editchannel.ui" line="54"/>
         <source>Coarse (MSB)</source>
         <translation>Karkea (MSB)</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="60"/>
+        <location filename="editchannel.ui" line="61"/>
         <source>Fine (LSB)</source>
         <translation>Hieno (LSB)</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="70"/>
+        <location filename="editchannel.ui" line="71"/>
         <source>Capabilities</source>
         <translation>Toiminnot</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="89"/>
+        <location filename="editchannel.ui" line="90"/>
         <source>Minimum value</source>
         <translation>Pienin arvo</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="94"/>
+        <location filename="editchannel.ui" line="95"/>
         <source>Maximum value</source>
         <translation>Suurin arvo</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="99"/>
+        <location filename="editchannel.ui" line="100"/>
         <source>Description</source>
         <translation>Kuvaus</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="109"/>
-        <location filename="editchannel.ui" line="126"/>
-        <location filename="editchannel.ui" line="143"/>
-        <location filename="editchannel.ui" line="176"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="editchannel.ui" line="173"/>
+        <location filename="editchannel.ui" line="174"/>
         <source>Capability wizard</source>
         <translation>Toimintovelho</translation>
     </message>
     <message>
-        <location filename="editchannel.cpp" line="194"/>
-        <location filename="editchannel.cpp" line="260"/>
-        <location filename="editchannel.cpp" line="304"/>
+        <location filename="editchannel.cpp" line="195"/>
+        <location filename="editchannel.cpp" line="261"/>
+        <location filename="editchannel.cpp" line="305"/>
         <source>Overlapping values</source>
         <translation>Päällekkäisiä arvoja</translation>
     </message>
     <message>
-        <location filename="editchannel.cpp" line="195"/>
-        <location filename="editchannel.cpp" line="261"/>
+        <location filename="editchannel.cpp" line="196"/>
+        <location filename="editchannel.cpp" line="262"/>
         <source>The capability&apos;s values overlap with another capability!</source>
         <translation>Toiminnon arvot menevät päällekäin toisen toiminnon arvojen kanssa!</translation>
     </message>
     <message>
-        <location filename="editchannel.cpp" line="305"/>
+        <location filename="editchannel.cpp" line="306"/>
         <source>Some capabilities could not be created because of overlapping values.</source>
         <translation>Joitain toimintoja ei pystytty luomaan päällekäisten arvojen vuoksi.</translation>
     </message>
@@ -382,12 +418,8 @@ p, li { white-space: pre-wrap; }
         <translation>Nimi</translation>
     </message>
     <message>
-        <location filename="editmode.ui" line="72"/>
-        <location filename="editmode.ui" line="89"/>
-        <location filename="editmode.ui" line="106"/>
-        <location filename="editmode.ui" line="123"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
         <location filename="editmode.ui" line="156"/>
@@ -601,134 +633,123 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>FixtureEditor</name>
     <message>
-        <location filename="fixtureeditor.ui" line="13"/>
+        <location filename="fixtureeditor.ui" line="14"/>
         <source>Fixture</source>
         <translation>Valaisin</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="23"/>
+        <location filename="fixtureeditor.ui" line="24"/>
         <source>General</source>
         <translation>Yleinen</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="37"/>
+        <location filename="fixtureeditor.ui" line="38"/>
         <source>Manufacturer</source>
         <translation>Valmistaja</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="50"/>
+        <location filename="fixtureeditor.ui" line="51"/>
         <source>The manufacturer name for this fixture (e.g. Martin)</source>
         <translation>Valaisimen valmistajan nimi (esim. Martin)</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="61"/>
+        <location filename="fixtureeditor.ui" line="62"/>
         <source>Model</source>
         <translation>Malli</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="74"/>
+        <location filename="fixtureeditor.ui" line="75"/>
         <source>The model name for this fixture (e.g. MAC250)</source>
         <translation>Valaisimen mallinimike (esim. MAC250)</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="85"/>
+        <location filename="fixtureeditor.ui" line="86"/>
         <source>Type</source>
         <translation>Tyyppi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="98"/>
+        <location filename="fixtureeditor.ui" line="99"/>
         <source>The general type of this fixture</source>
         <translation>Valaisimen yleisluontoinen tyyppi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="181"/>
-        <location filename="fixtureeditor.ui" line="385"/>
+        <location filename="fixtureeditor.ui" line="182"/>
+        <location filename="fixtureeditor.ui" line="386"/>
         <source>Channels</source>
         <translation>Kanavat</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="203"/>
-        <location filename="fixtureeditor.ui" line="380"/>
+        <location filename="fixtureeditor.ui" line="204"/>
+        <location filename="fixtureeditor.ui" line="381"/>
         <source>Name</source>
         <translation>Nimi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="208"/>
+        <location filename="fixtureeditor.ui" line="209"/>
         <source>Group</source>
         <translation>Ryhmä</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="218"/>
+        <location filename="fixtureeditor.ui" line="219"/>
         <source>Add a channel</source>
         <translation>Lisää kanava</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="221"/>
-        <location filename="fixtureeditor.ui" line="241"/>
-        <location filename="fixtureeditor.ui" line="261"/>
-        <location filename="fixtureeditor.ui" line="288"/>
-        <location filename="fixtureeditor.ui" line="308"/>
-        <location filename="fixtureeditor.ui" line="341"/>
-        <location filename="fixtureeditor.ui" line="398"/>
-        <location filename="fixtureeditor.ui" line="418"/>
-        <location filename="fixtureeditor.ui" line="438"/>
-        <location filename="fixtureeditor.ui" line="465"/>
-        <location filename="fixtureeditor.ui" line="498"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="238"/>
+        <location filename="fixtureeditor.ui" line="239"/>
         <source>Remove the selected channel</source>
         <translation>Poista valittu kanava</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="258"/>
+        <location filename="fixtureeditor.ui" line="259"/>
         <source>Edit the selected channel</source>
         <translation>Muokkaa valittua kanavaa</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="285"/>
+        <location filename="fixtureeditor.ui" line="286"/>
         <source>Copy the selected channel to the clipboard</source>
         <translation>Kopioi valittu kanava leikepöydälle</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="305"/>
+        <location filename="fixtureeditor.ui" line="306"/>
         <source>Paste the channel in clipboard to this fixture</source>
         <translation>Liitä leikepöydällä oleva kanava tähän valaisimeen</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="338"/>
+        <location filename="fixtureeditor.ui" line="339"/>
         <source>Open/close all channel items</source>
         <translation>Avaa/sulje kaikki kanavat</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="361"/>
+        <location filename="fixtureeditor.ui" line="362"/>
         <source>Modes</source>
         <translation>Tilat</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="395"/>
+        <location filename="fixtureeditor.ui" line="396"/>
         <source>Add a mode</source>
         <translation>Lisää tila</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="415"/>
+        <location filename="fixtureeditor.ui" line="416"/>
         <source>Remove the selected mode</source>
         <translation>Poista valittu tila</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="435"/>
+        <location filename="fixtureeditor.ui" line="436"/>
         <source>Edit the selected mode</source>
         <translation>Muokkaa valittua tilaa</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="462"/>
+        <location filename="fixtureeditor.ui" line="463"/>
         <source>Create a copy of the selected mode</source>
         <translation>Luo valitusta tilasta kopio</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.ui" line="495"/>
+        <location filename="fixtureeditor.ui" line="496"/>
         <source>Open/close all mode items</source>
         <translation>Avaa/sulje kaikki tilat</translation>
     </message>
@@ -741,6 +762,34 @@ p, li { white-space: pre-wrap; }
         <translation>Sulje</translation>
     </message>
     <message>
+        <location filename="fixtureeditor.cpp" line="189"/>
+        <source>Do you want to save changes to fixture
+&quot;%1&quot;
+before closing?</source>
+        <translation>Haluatko tallentaa muutokset valaisimeen
+&quot;%1&quot;?</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="218"/>
+        <location filename="fixtureeditor.cpp" line="228"/>
+        <source>Missing important information</source>
+        <translation>Tärkeitä tietoja puuttuu</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="219"/>
+        <source>Missing manufacturer name.
+Unable to save fixture.</source>
+        <translation>Valmistajan nimi puuttuu.
+Valaisinta ei voida tallentaa.</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="229"/>
+        <source>Missing fixture model name.
+Unable to save fixture.</source>
+        <translation>Valaisimen malli puuttuu.
+Valaisinta ei voida tallentaa.</translation>
+    </message>
+    <message>
         <location filename="fixtureeditor.cpp" line="258"/>
         <location filename="fixtureeditor.cpp" line="350"/>
         <source>Fixture saving failed</source>
@@ -749,8 +798,11 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="fixtureeditor.cpp" line="259"/>
         <location filename="fixtureeditor.cpp" line="351"/>
-        <source>Unable to save fixture definition: </source>
-        <translation>Valaisinmäärittelyä ei voida tallentaa: </translation>
+        <source>Unable to save fixture definition:
+%1</source>
+        <oldsource>Unable to save fixture definition: </oldsource>
+        <translation>Valaisinmäärittelyä ei voida tallentaa:
+%1</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="277"/>
@@ -758,79 +810,124 @@ p, li { white-space: pre-wrap; }
         <translation>Tallenna valaisinmäärittely</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="621"/>
-        <location filename="fixtureeditor.cpp" line="656"/>
-        <location filename="fixtureeditor.cpp" line="878"/>
+        <location filename="fixtureeditor.cpp" line="369"/>
+        <source>New Fixture</source>
+        <translation>Uusi valaisin</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="440"/>
+        <source>Channel already exists</source>
+        <translation>Kanava on jo olemassa</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="441"/>
+        <source>A channel by the name &quot;%1&quot; already exists!</source>
+        <translation>Kanava nimeltä &quot;%1&quot; on jo olemassa!</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="448"/>
+        <source>Channel has no name</source>
+        <translation>Kanavalla ei ole nimeä</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="449"/>
+        <source>You must give the channel a descriptive name!</source>
+        <translation>Kanavalle täytyy antaa jokin kuvaava nimi!</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="483"/>
+        <source>Are you sure you wish to remove channel: %1</source>
+        <translation>Haluatko varmasti poistaa kanavan: %1</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="619"/>
+        <location filename="fixtureeditor.cpp" line="654"/>
+        <location filename="fixtureeditor.cpp" line="872"/>
         <source>Edit</source>
         <translation>Muokkaa</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="622"/>
-        <location filename="fixtureeditor.cpp" line="658"/>
+        <location filename="fixtureeditor.cpp" line="620"/>
+        <location filename="fixtureeditor.cpp" line="656"/>
         <source>Copy</source>
         <translation>Kopioi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="623"/>
-        <location filename="fixtureeditor.cpp" line="660"/>
+        <location filename="fixtureeditor.cpp" line="621"/>
+        <location filename="fixtureeditor.cpp" line="658"/>
         <source>Paste</source>
         <translation>Liitä</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="624"/>
-        <location filename="fixtureeditor.cpp" line="662"/>
-        <location filename="fixtureeditor.cpp" line="884"/>
+        <location filename="fixtureeditor.cpp" line="622"/>
+        <location filename="fixtureeditor.cpp" line="660"/>
+        <location filename="fixtureeditor.cpp" line="878"/>
         <source>Remove</source>
         <translation>Poista</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="635"/>
+        <location filename="fixtureeditor.cpp" line="633"/>
         <source>Channels</source>
         <translation>Kanavat</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="726"/>
-        <location filename="fixtureeditor.cpp" line="736"/>
+        <location filename="fixtureeditor.cpp" line="723"/>
+        <location filename="fixtureeditor.cpp" line="732"/>
         <source>Unable to add mode</source>
         <translation>Tilaa ei voida lisätä</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="727"/>
+        <location filename="fixtureeditor.cpp" line="724"/>
         <source>Another mode by that name already exists</source>
         <translation>Toinen samanniminen tila on jo olemassa</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="737"/>
+        <location filename="fixtureeditor.cpp" line="733"/>
         <source>You must give a name to the mode</source>
         <translation>Tilalle on annettava nimi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="823"/>
+        <location filename="fixtureeditor.cpp" line="766"/>
+        <source>Remove Mode</source>
+        <translation>Poista tila</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="767"/>
+        <source>Are you sure you wish to remove mode: %1</source>
+        <translation>Haluatko varmasti poistaa tilan: %1</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="818"/>
         <source>Rename new mode</source>
         <translation>Nimeä tila uudelleen</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="824"/>
+        <location filename="fixtureeditor.cpp" line="819"/>
         <source>Give a unique name for the mode</source>
         <translation>Anna tilalle yksilöllinen nimi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="837"/>
+        <location filename="fixtureeditor.cpp" line="821"/>
+        <source>Copy of %1</source>
+        <translation>%1:n kopio</translation>
+    </message>
+    <message>
+        <location filename="fixtureeditor.cpp" line="831"/>
         <source>Invalid name</source>
         <translation>Epäkelpo nimi</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="838"/>
+        <location filename="fixtureeditor.cpp" line="832"/>
         <source>Another mode by that name already exists.</source>
         <translation>Toinen samanniminen tila on jo olemassa.</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="881"/>
+        <location filename="fixtureeditor.cpp" line="875"/>
         <source>Clone</source>
         <translation>Kloonaa</translation>
     </message>
     <message>
-        <location filename="fixtureeditor.cpp" line="889"/>
+        <location filename="fixtureeditor.cpp" line="883"/>
         <source>Modes</source>
         <translation>Tilat</translation>
     </message>

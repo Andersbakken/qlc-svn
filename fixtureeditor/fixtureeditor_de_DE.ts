@@ -72,12 +72,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/src/aboutbox.cpp" line="34"/>
+        <location filename="../ui/src/aboutbox.cpp" line="36"/>
         <source>and contributors:</source>
         <translation>und Mitwirkende:</translation>
     </message>
     <message>
-        <location filename="../ui/src/aboutbox.cpp" line="35"/>
+        <location filename="../ui/src/aboutbox.cpp" line="37"/>
         <source>Website: %1</source>
         <translation>Webseite: %1</translation>
     </message>
@@ -85,104 +85,104 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>App</name>
     <message>
-        <location filename="app.cpp" line="130"/>
+        <location filename="app.cpp" line="132"/>
         <source>Fixture loading failed</source>
         <translation>Laden fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="131"/>
+        <location filename="app.cpp" line="133"/>
         <source>Unable to load fixture definition: </source>
         <translation>Gerätedefinition konnte nicht geladen werden:</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="195"/>
+        <location filename="app.cpp" line="197"/>
         <source>&amp;New</source>
         <translation>&amp;Neu</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="196"/>
+        <location filename="app.cpp" line="198"/>
         <source>CTRL+N</source>
         <comment>File|New</comment>
         <translation>CTRL+N</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="201"/>
+        <location filename="app.cpp" line="203"/>
         <source>&amp;Open</source>
         <translation>&amp;Öffnen</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="202"/>
+        <location filename="app.cpp" line="204"/>
         <source>CTRL+O</source>
         <comment>File|Open</comment>
         <translation>CTRL+O</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="207"/>
+        <location filename="app.cpp" line="209"/>
         <source>&amp;Save</source>
         <translation>&amp;Speichern</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="208"/>
+        <location filename="app.cpp" line="210"/>
         <source>CTRL+S</source>
         <comment>File|Save</comment>
         <translation>CTRL+S</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="212"/>
+        <location filename="app.cpp" line="214"/>
         <source>Save &amp;As...</source>
         <oldsource>Save &amp;As</oldsource>
         <translation>Speichern &amp;unter ...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="213"/>
+        <location filename="app.cpp" line="215"/>
         <source>CTRL+SHIFT+S</source>
         <comment>File|Save As...</comment>
         <translation>CTRL+SHIFT+S</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="218"/>
+        <location filename="app.cpp" line="220"/>
         <source>&amp;Quit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="219"/>
+        <location filename="app.cpp" line="221"/>
         <source>CTRL+Q</source>
         <comment>File|Quit</comment>
         <translation>CTRL+Q</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="225"/>
+        <location filename="app.cpp" line="227"/>
         <source>Index</source>
         <translation>Handbuch</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="226"/>
+        <location filename="app.cpp" line="228"/>
         <source>SHIFT+F1</source>
         <comment>Help|Index</comment>
         <translation>F1</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="231"/>
+        <location filename="app.cpp" line="233"/>
         <source>About Fixture Definition Editor...</source>
         <translation>Über Fixture Defninition Editor...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="236"/>
+        <location filename="app.cpp" line="238"/>
         <source>About Qt...</source>
         <translation>Über Qt...</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="256"/>
+        <location filename="app.cpp" line="258"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="266"/>
+        <location filename="app.cpp" line="268"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="304"/>
+        <location filename="app.cpp" line="306"/>
         <source>Open a fixture definition</source>
         <translation>Eine Gerätedefinition öffnen</translation>
     </message>
@@ -258,22 +258,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DocBrowser</name>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="41"/>
+        <location filename="../ui/src/docbrowser.cpp" line="80"/>
         <source>%1 - Document Browser</source>
         <translation>%1 - Handbuch</translation>
     </message>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="51"/>
+        <location filename="../ui/src/docbrowser.cpp" line="91"/>
         <source>Backward</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="52"/>
+        <location filename="../ui/src/docbrowser.cpp" line="92"/>
         <source>Forward</source>
         <translation>Forwärts</translation>
     </message>
     <message>
-        <location filename="../ui/src/docbrowser.cpp" line="53"/>
+        <location filename="../ui/src/docbrowser.cpp" line="93"/>
         <source>Index</source>
         <translation>Inhaltsverzeichnis</translation>
     </message>
@@ -366,20 +366,20 @@ p, li { white-space: pre-wrap; }
         <translation>Funktions Wizard</translation>
     </message>
     <message>
-        <location filename="editchannel.cpp" line="194"/>
-        <location filename="editchannel.cpp" line="260"/>
-        <location filename="editchannel.cpp" line="304"/>
+        <location filename="editchannel.cpp" line="195"/>
+        <location filename="editchannel.cpp" line="261"/>
+        <location filename="editchannel.cpp" line="305"/>
         <source>Overlapping values</source>
         <translation>Überlappende Werte</translation>
     </message>
     <message>
-        <location filename="editchannel.cpp" line="195"/>
-        <location filename="editchannel.cpp" line="261"/>
+        <location filename="editchannel.cpp" line="196"/>
+        <location filename="editchannel.cpp" line="262"/>
         <source>The capability&apos;s values overlap with another capability!</source>
         <translation>Der Funktionswert überlappt mit einem anderen Funktionswert!</translation>
     </message>
     <message>
-        <location filename="editchannel.cpp" line="305"/>
+        <location filename="editchannel.cpp" line="306"/>
         <source>Some capabilities could not be created because of overlapping values.</source>
         <translation>Einige Funktionen konnte nicht angelegt werden aufgrund von überlappenden Werten.</translation>
     </message>
