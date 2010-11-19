@@ -1,3 +1,51 @@
+qlc (3.1.0) stable; urgency=high
+ * Fixed a crash in Level-mode Virtual Console slider when a fixture was removed
+ * Fixed a crash in fixture definition cache
+ * Fixed disappearing windows problem in dual-head desktop configurations
+ * Fixed a bug in VCButton that made it impossible to leave a function toggled
+   with an external input button.
+ * Fixed single function selection
+ * Fixed Enttec plugin to recognize also DMXKing interfaces
+ * Fixed ticket#43: Midi input plugin profile Auto-discover overwrites a
+   previously saved channel
+ * Fixed ticket#52:X/Y move Pan Fine/Tilt Fine, when Pan/Tilt moving wanted
+ * Fixed ticket#17:Gray the (X) button in the virtual console when useless
+ * Fixed ticket#42: Midi Input Profile Editor showing channel with active data.
+ * Fixed ticket#44:Allow Blackout to be mapped to input controller.
+ * Fixed ticket#57:Can't set white foreground on buttons
+ * French translation
+ * German translation
+ * Spanish translation
+ * Added Grand Master feature to Virtual Console
+ * Added lots of new user help documents
+ * Made Document Browser open external links in the default browser and not itself
+ * Slight usability improvements
+ * Made libqlcengine a shared object
+ * Total power consumption feature added
+ * Auto-detection of external input channels
+ * New fixture defs for Varytec, Chauvet, Stairville, American DJ, JB Systems, Ven$
+ * New virtual console widget: Solo frame
+ * MIDI input supports 256 input channels thru concatenated CC & NOTE events
+ * Added possibility to accept MIDI data on any MIDI channel
+ * Input profile for Korg nanoKONTROL
+ * Input profile for Generic MIDI data
+ * Added a toolbar button for bus assignment to Function Manager.
+ * Plugin interfaces inherit QObject, have new method canConfigure()
+ * Input plugins emit signals directly, without the need of delegate connection
+ * Linux: Plugin directory moved from /usr/share/qlc/plugins to /usr/lib/qt4/plugins/qlc
+ * Linux: udev is updated immediately after plugin installations, when appropriate
+ * Linux: OLA output crash fixed
+ * Linux: Added fullscreen option
+ * OSX: Fixed concurrent events in the MIDI plugin
+ * OSX: Fixed Virtual Console menu in OSX to enable VC configuration
+ * OSX: Fixture Editor raises on top when launched
+ * OSX: OLA output crash fixed
+ * OSX: MIDI plugins use the friendly name of the device instead of the logical name.
+ * Windows: Velleman k8062 plugin added
+ * Windows: Added fullscreen option
+
+ -- Heikki Junnila <hjunnila@users.sf.net>  Tue, 18 Nov 2010 20:09:01 +0200
+
 qlc (3.0.7) stable; urgency=high
   * Fixed crash bugs in MIDI Input, HID Input and Enttec Wing Input plugins
   * Fixed a freezing bug in Enttec DMXUSB output and HIDInput plugins
