@@ -206,7 +206,8 @@ QString EnttecDMXUSBOpen::additionalInfo() const
     QString gran;
 
     info += QString("<P>");
-    info += tr("<B>DMX Frame Frequency:</B> %1").arg(m_frequency);
+    info += tr("<B>%1:</B> %2Hz").arg(tr("DMX Frame Frequency"))
+								 .arg(m_frequency);
     info += QString("<BR>");
     if (m_granularity == Bad)
         gran = QString("<FONT COLOR=\"#aa0000\">%1</FONT>").arg(tr("Bad"));
