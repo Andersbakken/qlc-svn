@@ -156,8 +156,7 @@ bool EnttecDMXUSBOpen::initializePort()
     }
 
     /* Set data characteristics */
-    status = FT_SetDataCharacteristics(m_handle, FT_BITS_8,
-                                       FT_STOP_BITS_2, FT_PARITY_NONE);
+    status = FT_SetDataCharacteristics(m_handle, 8, 2, 0);
     if (status != FT_OK)
     {
         qWarning() << "FT_SetDataCharacteristics:" << status;
