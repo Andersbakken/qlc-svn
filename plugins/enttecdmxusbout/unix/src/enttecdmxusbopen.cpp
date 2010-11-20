@@ -22,9 +22,9 @@
 #include <QDebug>
 #define USE_NANOSLEEP
 #ifdef USE_NANOSLEEP
-#	include <time.h>
+#   include <time.h>
 #else
-#	include <unistd.h>
+#   include <unistd.h>
 #endif
 
 #include "enttecdmxusbopen.h"
@@ -35,11 +35,11 @@
 
 EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent, const QString& name,
                                    const QString& serial)
-        : QThread(parent)
-        , m_name(name)
-        , m_serial(serial)
-        , m_running(false)
-        , m_universe(QByteArray(513, 0))
+    : QThread(parent)
+    , m_name(name)
+    , m_serial(serial)
+    , m_running(false)
+    , m_universe(QByteArray(513, 0))
 {
     bzero(&m_context, sizeof(struct ftdi_context));
     ftdi_init(&m_context);
@@ -70,14 +70,14 @@ bool EnttecDMXUSBOpen::open()
                                serial().toAscii()) < 0)
         {
             qWarning() << "Unable to open" << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << ":" << ftdi_get_error_string(&m_context);
             return false;
         }
 
         if (ftdi_usb_reset(&m_context) < 0)
         {
             qWarning() << "Unable to reset" << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << ":" << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -85,8 +85,8 @@ bool EnttecDMXUSBOpen::open()
         if (ftdi_set_line_property(&m_context, BITS_8, STOP_BIT_2, NONE) < 0)
         {
             qWarning() << "Unable to set 8N2 serial properties to"
-            << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << uniqueName() << ":"
+                       << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -94,17 +94,16 @@ bool EnttecDMXUSBOpen::open()
         if (ftdi_set_baudrate(&m_context, 250000) < 0)
         {
             qWarning() << "Unable to set 250kbps baudrate for"
-            << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << uniqueName() << ":"
+                       << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
 
         if (ftdi_setrts(&m_context, 0) < 0)
         {
-            qWarning() << "Unable to set RTS line to 0 for"
-            << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+            qWarning() << "Unable to set RTS line to 0 for" << uniqueName()
+                       << ":" << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -138,7 +137,7 @@ bool EnttecDMXUSBOpen::close()
         if (ftdi_usb_close(&m_context) < 0)
         {
             qWarning() << "Unable to close" << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << ":" << ftdi_get_error_string(&m_context);
             return false;
         }
         else
@@ -219,7 +218,7 @@ void EnttecDMXUSBOpen::run()
                                     NONE, BREAK_ON) < 0)
         {
             qWarning() << "Unable to set BREAK_ON on" << uniqueName()
-            << ftdi_get_error_string(&m_context);
+                       << ftdi_get_error_string(&m_context);
             goto framesleep;
         }
 
@@ -229,7 +228,7 @@ void EnttecDMXUSBOpen::run()
                                     NONE, BREAK_OFF) < 0)
         {
             qWarning() << "Unable to set BREAK_OFF on" << uniqueName()
-            << ftdi_get_error_string(&m_context);
+                       << ftdi_get_error_string(&m_context);
             goto framesleep;
         }
 
@@ -240,7 +239,7 @@ void EnttecDMXUSBOpen::run()
                             m_universe.size()) < 0)
         {
             qWarning() << "Unable to write DMX data to" << uniqueName()
-            << ftdi_get_error_string(&m_context);
+                       << ftdi_get_error_string(&m_context);
         }
         m_mutex.unlock();
 

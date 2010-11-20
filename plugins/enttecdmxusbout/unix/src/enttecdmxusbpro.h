@@ -32,9 +32,9 @@ class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 {
     Q_OBJECT
 
-    /********************************************************************
+    /************************************************************************
      * Initialization
-     ********************************************************************/
+     ************************************************************************/
 public:
     /**
      * Construct a new DMXUSBPro object with the given parent and
@@ -58,49 +58,27 @@ public:
 protected:
     struct ftdi_context m_context;
 
-    /********************************************************************
+    /************************************************************************
      * Open & close
-     ********************************************************************/
+     ************************************************************************/
 public:
-    /**
-     * Open widget for further operations.
-     *
-     * @return true if widget was opened successfully (or was already open)
-     */
+    /** @reimp */
     bool open();
 
-    /**
-     * Close widget, preventing any further operations
-     *
-     * @param true if widget was closed successfully (or was already closed)
-     */
+    /** @reimp */
     bool close();
 
-    /**
-     * Check, whether widget has been opened
-     *
-     * @return true if widget is open, otherwise false
-     */
+    /** @reimp */
     bool isOpen();
 
     /********************************************************************
      * Serial & name
      ********************************************************************/
 public:
-    /**
-     * Get the device's friendly name, which is not unique, but only
-     * tells the product name (e.g. "DMX USB PRO")
-     *
-     * @return widget's name
-     */
+    /** @reimp */
     QString name() const;
 
-    /**
-     * Get the FTDI chip's serial number as a string. Can be used to
-     * uniquely identify widgets.
-     *
-     * @return widget's serial number in string form
-     */
+    /** @reimp */
     QString serial() const;
 
     /**
@@ -109,11 +87,7 @@ public:
      */
     QString enttecSerial() const;
 
-    /**
-     * Get the widget's unique name
-     *
-     * @return widget's unique name as: "<name> (S/N: <enttecserial>)"
-     */
+    /** @reimp */
     QString uniqueName() const;
 
 protected:
@@ -129,13 +103,7 @@ protected:
      * DMX operations
      ********************************************************************/
 public:
-    /**
-     * Send the given universe-ful of DMX data to widget. The universe must
-     * be at least 25 bytes but no more than 513 bytes long.
-     *
-     * @param universe The DMX universe to send
-     * @return true if the values were sent successfully, otherwise false
-     */
+    /** @reimp */
     bool sendDMX(const QByteArray& universe);
 };
 

@@ -63,14 +63,14 @@ bool EnttecDMXUSBPro::open()
                                serial().toAscii()) < 0)
         {
             qWarning() << "Unable to open" << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << ":" << ftdi_get_error_string(&m_context);
             return false;
         }
 
         if (ftdi_usb_reset(&m_context) < 0)
         {
             qWarning() << "Unable to reset" << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << ":" << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -78,8 +78,8 @@ bool EnttecDMXUSBPro::open()
         if (ftdi_set_line_property(&m_context, BITS_8, STOP_BIT_2, NONE) < 0)
         {
             qWarning() << "Unable to set 8N2 serial properties to"
-            << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << uniqueName() << ":"
+                       << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -87,8 +87,8 @@ bool EnttecDMXUSBPro::open()
         if (ftdi_set_baudrate(&m_context, 250000) < 0)
         {
             qWarning() << "Unable to set 250kbps baudrate for"
-            << uniqueName() << ":"
-            << ":" << ftdi_get_error_string(&m_context);
+                       << uniqueName() << ":"
+                       << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -96,8 +96,8 @@ bool EnttecDMXUSBPro::open()
         if (ftdi_setrts(&m_context, 0) < 0)
         {
             qWarning() << "Unable to set RTS line to 0 for"
-            << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << uniqueName() << ":"
+                       << ftdi_get_error_string(&m_context);
             close();
             return false;
         }
@@ -118,7 +118,7 @@ bool EnttecDMXUSBPro::close()
         if (ftdi_usb_close(&m_context) < 0)
         {
             qWarning() << "Unable to close" << uniqueName()
-            << ":" << ftdi_get_error_string(&m_context);
+                       << ":" << ftdi_get_error_string(&m_context);
             return false;
         }
         else
@@ -176,7 +176,7 @@ bool EnttecDMXUSBPro::extractEnttecSerial()
     if (ftdi_write_data(&m_context, request, sizeof(request)) < 0)
     {
         qWarning() << "Unable to write serial request to" << name()
-        << ":" << ftdi_get_error_string(&m_context);
+                   << ":" << ftdi_get_error_string(&m_context);
         close();
         return false;
     }
@@ -185,7 +185,7 @@ bool EnttecDMXUSBPro::extractEnttecSerial()
     if (ftdi_read_data(&m_context, reply, sizeof(reply)) < 0)
     {
         qWarning() << "Unable to read serial reply from" << name()
-        << ":" << ftdi_get_error_string(&m_context);
+                   << ":" << ftdi_get_error_string(&m_context);
         close();
         return false;
     }
@@ -194,9 +194,8 @@ bool EnttecDMXUSBPro::extractEnttecSerial()
         /* Reply message is:
            { 0x7E 0x0A 0x04 0x00 0xNN, 0xNN, 0xNN, 0xNN 0xE7 }
            Where 0xNN represent widget's unique serial number in BCD */
-        if (reply[0] == 0x7e && reply[1] == 0x0a &&
-                reply[2] == 0x04 && reply[3] == 0x00 &&
-                reply[8] == 0xe7)
+        if (reply[0] == 0x7e && reply[1] == 0x0a && reply[2] == 0x04 &&
+            reply[3] == 0x00 && reply[8] == 0xe7)
         {
             m_enttecSerial.sprintf("%x%.2x%.2x%.2x",
                                    reply[7], reply[6], reply[5], reply[4]);
@@ -235,7 +234,7 @@ bool EnttecDMXUSBPro::sendDMX(const QByteArray& universe)
                         request.size()) < 0)
     {
         qWarning() << "Unable to write DMX request to" << uniqueName()
-        << ":" << ftdi_get_error_string(&m_context);
+                   << ":" << ftdi_get_error_string(&m_context);
         return false;
     }
     else
