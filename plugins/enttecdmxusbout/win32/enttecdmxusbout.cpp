@@ -115,6 +115,9 @@ QString EnttecDMXUSBOut::infoText(quint32 output)
         str += QString("<P>");
         str += QString("Device is operating correctly.");
         str += QString("</P>");
+        QString add = m_widgets[output]->additionalInfo();
+        if (add.isEmpty() == false)
+            str += add;
     }
 
     str += QString("</BODY>");

@@ -67,25 +67,13 @@ protected:
      * Open & close
      ********************************************************************/
 public:
-    /**
-     * Open widget for further operations, such as serial() and sendDMX()
-     *
-     * @return true if widget was opened successfully (or was already open)
-     */
+    /** @reimp */
     bool open();
 
-    /**
-     * Close widget, preventing any further operations
-     *
-     * @param true if widget was closed successfully (or was already closed)
-     */
+    /** @reimp */
     bool close();
 
-    /**
-     * Check, whether widget has been opened
-     *
-     * @return true if widget is open, otherwise false
-     */
+    /** @reimp */
     bool isOpen();
 
     /**
@@ -99,29 +87,17 @@ public:
      * Serial & name
      ********************************************************************/
 public:
-    /**
-     * Get the widget serial number as a string. The same serial should be
-     * printed on the actual physical device. Can be used to uniquely
-     * identify widgets.
-     *
-     * @return widget's serial number in string form
-     */
+    /** @reimp */
     QString serial() const;
 
-    /**
-     * Get the device's friendly name, which is not unique, but only
-     * tells the product name (e.g. "Open DMX USB")
-     *
-     * @return widget's name
-     */
+    /** @reimp */
     QString name() const;
 
-    /**
-     * Get the widget's unique name
-     *
-     * @return widget's unique name as: "<name> (S/N: <serial>)"
-     */
+    /** @reimp */
     QString uniqueName() const;
+
+    /** @reimp */
+    QString additionalInfo() const;
 
 protected:
     QString m_serial;
@@ -131,32 +107,26 @@ protected:
      * DMX operations
      ********************************************************************/
 public:
-    /**
-     * Send the given universe-ful of DMX data to widget. The universe must
-     * be at least 25 bytes but no more than 513 bytes long.
-     *
-     * @param universe The DMX universe to send
-     * @return true if the values were sent successfully, otherwise false
-     */
+    /** @reimp */
     bool sendDMX(const QByteArray& universe);
 
     /********************************************************************
      * Thread
      ********************************************************************/
 protected:
-    /**
-     * Stop the writer thread
-     */
+    enum TimerGranularity { Unknown, Good, Bad };
+
+    /** Stop the writer thread */
     void stop();
 
-    /**
-     * DMX writer thread
-     */
+    /** DMX writer thread worker method */
     void run();
 
 protected:
     bool m_running;
     char* m_universe;
+    double m_frequency;
+    TimerGranularity m_granularity;
 };
 
 #endif

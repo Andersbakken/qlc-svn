@@ -20,6 +20,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
+#include <QSettings>
 #include <QDebug>
 #include <math.h>
 #include <QTime>
@@ -28,7 +29,7 @@
 #include "qlctypes.h"
 
 #define DMX_CHANNELS 512
-#define DMX_FREQ 44
+#define SETTINGS_FREQUENCY "enttecdmxusbopen/frequency"
 
 /****************************************************************************
  * Initialization
@@ -44,10 +45,17 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(QObject* parent,
     , m_name(QString(info.Description))
     , m_running(false)
     , m_universe(NULL)
+    , m_frequency(30)
+    , m_granularity(Unknown)
 {
     m_universe = (char*) malloc(sizeof(char) * DMX_CHANNELS);
     for (int i = 0; i < DMX_CHANNELS; i++)
         m_universe[i] = 0;
+
+    QSettings settings;
+    QVariant var = settings.value(SETTINGS_FREQUENCY);
+    if (var.isValid() == true)
+        m_frequency = var.toDouble();
 }
 
 EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
@@ -193,13 +201,33 @@ QString EnttecDMXUSBOpen::uniqueName() const
     return QString("%1 (S/N: %2)").arg(name()).arg(serial());
 }
 
+QString EnttecDMXUSBOpen::additionalInfo() const
+{
+    QString info;
+    QString gran;
+
+    info += QString("<P>");
+    info += tr("<B>DMX Frame Frequency:</B> %1").arg(m_frequency);
+    info += QString("<BR>");
+    if (m_granularity == Bad)
+        gran = QString("<FONT COLOR=\"#aa0000\">%1</FONT>").arg(tr("Bad"));
+    else if (m_granularity == Good)
+        gran = QString("<FONT COLOR=\"#00aa00\">%1</FONT>").arg(tr("Good"));
+    else
+        gran = tr("Patch this widget to a universe to find out.");
+    info += tr("<B>System Timer Granularity:</B> %1").arg(gran);
+    info += QString("</P>");
+
+    return info;
+}
+
 /****************************************************************************
  * DMX Operations
  ****************************************************************************/
 
 bool EnttecDMXUSBOpen::sendDMX(const QByteArray& universe)
 {
-    memcpy(m_universe, universe.constData(), DMX_CHANNELS);
+    memcpy(m_universe, universe.constData(), MIN(DMX_CHANNELS, universe.size()));
     return true;
 }
 
@@ -222,11 +250,8 @@ void EnttecDMXUSBOpen::run()
     FT_STATUS status = FT_OK;
     char startCode = 0;
 
-    // Skip some sleep calls if timer is found to behave badly
-    bool badTimer = false;
-
     // One "official" DMX frame can take (1s/44Hz) = 23ms
-    int frameTime = (int) floor(((double)1000 / (double)44) + (double)0.5);
+    int frameTime = (int) floor(((double)1000 / m_frequency) + (double)0.5);
 
     // Wait for device to settle in case the device was opened just recently
     // Also measure, whether timer granularity is OK
@@ -234,17 +259,9 @@ void EnttecDMXUSBOpen::run()
     time.start();
     usleep(1000);
     if (time.elapsed() > 3)
-        badTimer = true;
+        m_granularity = Bad;
     else
-        badTimer = false;
-    DWORD ms = 0;
-
-    UCHAR puc = 0;
-    FT_GetBitMode(m_handle, &puc);
-    qDebug() << "bitmode" << QString::number(puc);
-
-    FT_GetModemStatus(m_handle, &ms);
-    qDebug() << "ms" << QString::number(ms);
+        m_granularity = Good;
 
     m_running = true;
     while (m_running == true)
@@ -259,8 +276,8 @@ void EnttecDMXUSBOpen::run()
         }
 
         // Don't sleep if timer granularity is too coarse
-        if (badTimer == false)
-            usleep(88);
+        if (m_granularity == Good)
+            usleep(100);
 
         status = FT_SetBreakOff(m_handle);
         if (status != FT_OK)
@@ -270,8 +287,8 @@ void EnttecDMXUSBOpen::run()
         }
 
         // Don't sleep if timer granularity is too coarse
-        if (badTimer == false)
-            usleep(10);
+        if (m_granularity == Good)
+            usleep(8);
 
         status = FT_Write(m_handle, &startCode, 1, &written);
         if (status != FT_OK)
@@ -289,10 +306,10 @@ void EnttecDMXUSBOpen::run()
 
 framesleep:
         // Do a busy sleep if timer granularity is too coarse
-        if (badTimer == true)
-            while (time.elapsed() < frameTime) { /* NOP */ }
-        else
+        if (m_granularity == Good)
             while (time.elapsed() < frameTime) { usleep(1000); }
+        else
+            while (time.elapsed() < frameTime) { /* NOP */ }
     }
 }
 

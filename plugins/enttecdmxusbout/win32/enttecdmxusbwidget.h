@@ -84,6 +84,11 @@ public:
      */
     virtual QString uniqueName() const = 0;
 
+    /**
+     * Get any additional information pertaining to the device (can be empty)
+     */
+    virtual QString additionalInfo() const { return QString(); }
+
     /********************************************************************
      * DMX operations
      ********************************************************************/
