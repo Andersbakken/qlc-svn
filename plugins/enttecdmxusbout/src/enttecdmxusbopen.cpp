@@ -95,7 +95,7 @@ QString EnttecDMXUSBOpen::additionalInfo() const
         gran = QString("<FONT COLOR=\"#00aa00\">%1</FONT>").arg(tr("Good"));
     else
         gran = tr("Patch this widget to a universe to find out.");
-    info += tr("<B>%1:</B> %2").arg(tr("System Timer Granularity")).arg(gran);
+    info += QString("<B>%1:</B> %2").arg(tr("System Timer Accuracy")).arg(gran);
     info += QString("</P>");
 
     return info;
