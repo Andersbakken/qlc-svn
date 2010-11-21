@@ -20,13 +20,10 @@ win32 {
     FTD2XXDIR    = C:/CDM20802
     LIBS        += -L$$FTD2XXDIR/i386 -lftd2xx
     INCLUDEPATH += $$FTD2XXDIR
+    DEFINES     += FTD2XX
 } else {
-    # Unix target for Linux & OSX.
-    # OSX: You need to create symlinks for libftd2xx.dylib and libftd2xx.0.dylib pointing
-    # to the actual library: sudo ln -s libftd2xx.0.1.7.dylib libftd2xx.dylib
-    FTD2XXDIR    = /usr/local
-    LIBS        += -L$$FTD2XXDIR/lib -lftd2xx
-    INCLUDEPATH += $$FTD2XXDIR/include
+    CONFIG      += link_pkgconfig
+    PKGCONFIG   += libftdi libusb
 }
 
 HEADERS += enttecdmxusbwidget.h \
@@ -41,12 +38,9 @@ SOURCES += enttecdmxusbwidget.cpp \
            enttecdmxusbopen.cpp
 
 win32 {
-    DEFINES += FTD2XX
     SOURCES += qlcftdi-ftd2xx.cpp
 } else {
-    CONFIG    += link_pkgconfig
-    PKGCONFIG += libftdi libusb
-    SOURCES   += qlcftdi-libftdi.cpp
+    SOURCES += qlcftdi-libftdi.cpp
 }
 
 HEADERS += ../../interfaces/qlcoutplugin.h

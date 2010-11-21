@@ -30,7 +30,6 @@
 #include <QObject>
 
 #include "enttecdmxusbwidget.h"
-#include "ftd2xx.h"
 
 class EnttecDMXUSBPro : public QObject, public EnttecDMXUSBWidget
 {
