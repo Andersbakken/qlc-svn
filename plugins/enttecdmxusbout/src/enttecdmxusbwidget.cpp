@@ -35,7 +35,7 @@ EnttecDMXUSBWidget::~EnttecDMXUSBWidget()
 }
 
 /****************************************************************************
- * Open & Close  
+ * Open & Close
  ****************************************************************************/
 
 bool EnttecDMXUSBWidget::open()
@@ -81,7 +81,7 @@ bool EnttecDMXUSBWidget::isOpen()
  * Name & Serial
  ****************************************************************************/
 
-QString EnttecDMXUSBWidget::name() const 
+QString EnttecDMXUSBWidget::name() const
 {
     return m_ftdi->name();
 }
@@ -94,4 +94,4 @@ QString EnttecDMXUSBWidget::serial() const
 QString EnttecDMXUSBWidget::uniqueName() const
 {
     return QString("%1 (S/N: %2)").arg(name()).arg(serial());
-}   
+}
