@@ -44,6 +44,16 @@ win32 {
     SOURCES += qlcftdi-libftdi.cpp
 }
 
+unix:!macx {
+    QT      += dbus
+    DEFINES += DBUS_ENABLED
+
+    # Rules to make ENTTEC devices readable & writable by normal users
+    udev.path  = /etc/udev/rules.d
+    udev.files = z65-enttec-dmxusb.rules
+    INSTALLS  += udev
+}
+
 PRO_FILE      = src.pro
 TRANSLATIONS += enttec_fi_FI.ts
 TRANSLATIONS += enttec_de_DE.ts
