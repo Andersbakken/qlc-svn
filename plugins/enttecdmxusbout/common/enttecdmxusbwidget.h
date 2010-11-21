@@ -22,21 +22,25 @@
 #ifndef ENTTECDMXUSBWIDGET_H
 #define ENTTECDMXUSBWIDGET_H
 
+#include "qlcftdi.h"
+
 /**
  * This is the base interface class for ENTTEC USB DMX [Pro|Open] widgets.
  */
 class EnttecDMXUSBWidget
 {
 public:
-    static const int VID = 0x0403;
-    static const int PID = 0x6001;
-    enum Type { Pro, Open, Other };
+    EnttecDMXUSBWidget(const QString& serial, const QString& name, quint32 id = 0);
+    virtual ~EnttecDMXUSBWidget();
 
-    /** Remove this and suffer the oh-so-lovely crashing consequences! */
-    virtual ~EnttecDMXUSBWidget() { /* NOP */ }
+    /** Widget types */
+    enum Type { Pro, Open, Other };
 
     /** Get the type of the widget */
     virtual Type type() const = 0;
+
+protected:
+    QLCFTDI* m_ftdi;
 
     /********************************************************************
      * Open & close
@@ -47,49 +51,46 @@ public:
      *
      * @return true if widget was opened successfully (or was already open)
      */
-    virtual bool open() = 0;
+    virtual bool open();
 
     /**
      * Close widget, preventing any further operations
      *
      * @param true if widget was closed successfully (or was already closed)
      */
-    virtual bool close() = 0;
+    virtual bool close();
 
     /**
      * Check, whether widget has been opened
      *
      * @return true if widget is open, otherwise false
      */
-    virtual bool isOpen() = 0;
+    virtual bool isOpen();
 
     /********************************************************************
      * Serial & name
      ********************************************************************/
 public:
     /**
-     * Get the widget serial number as a string. The same serial should be
-     * printed on the actual physical device. Can be used to uniquely
-     * identify widgets.
+     * Get the widget's USB serial number as a string.
      *
      * @return widget's serial number in string form
      */
-    virtual QString serial() const = 0;
+    virtual QString serial() const;
 
     /**
-     * Get the device's friendly name, which is not unique, but only
-     * tells the product name (e.g. "DMX USB PRO")
+     * Get the device's friendly name.
      *
      * @return widget's name
      */
-    virtual QString name() const = 0;
+    virtual QString name() const;
 
     /**
      * Get the widget's unique name
      *
      * @return widget's unique name as: "<name> (S/N: <serial>)"
      */
-    virtual QString uniqueName() const = 0;
+    virtual QString uniqueName() const;
 
     /**
      * Get any additional information pertaining to the device (can be empty)
