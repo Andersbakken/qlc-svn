@@ -86,8 +86,8 @@ QString EnttecDMXUSBOpen::additionalInfo() const
     QString gran;
 
     info += QString("<P>");
-    info += tr("<B>%1:</B> %2Hz").arg(tr("DMX Frame Frequency"))
-								 .arg(m_frequency);
+    info += QString("<B>%1:</B> %2Hz").arg(tr("DMX Frame Frequency"))
+                                      .arg(m_frequency);
     info += QString("<BR>");
     if (m_granularity == Bad)
         gran = QString("<FONT COLOR=\"#aa0000\">%1</FONT>").arg(tr("Bad"));
@@ -95,7 +95,7 @@ QString EnttecDMXUSBOpen::additionalInfo() const
         gran = QString("<FONT COLOR=\"#00aa00\">%1</FONT>").arg(tr("Good"));
     else
         gran = tr("Patch this widget to a universe to find out.");
-    info += tr("<B>System Timer Granularity:</B> %1").arg(gran);
+    info += tr("<B>%1:</B> %2").arg(tr("System Timer Granularity")).arg(gran);
     info += QString("</P>");
 
     return info;
