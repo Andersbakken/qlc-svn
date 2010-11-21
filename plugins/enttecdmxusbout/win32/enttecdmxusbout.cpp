@@ -154,58 +154,14 @@ bool EnttecDMXUSBOut::canConfigure()
 }
 
 /****************************************************************************
- * Devices (ENTTEC calls them "widgets" and so shall we)
+ * Enttec Widgets
  ****************************************************************************/
 
 bool EnttecDMXUSBOut::rescanWidgets()
 {
-    FT_DEVICE_LIST_INFO_NODE* devInfo = NULL;
-    FT_STATUS status = FT_OK;
-    DWORD num = 0;
-
     while (m_widgets.isEmpty() == false)
         delete m_widgets.takeFirst();
-
-    /* Find out the number of FTDI devices present */
-    status = FT_CreateDeviceInfoList(&num);
-    if (status != FT_OK)
-    {
-        qWarning() << "CreateDeviceInfoList failed:" << status;
-        return false;
-    }
-    else if (num <= 0)
-    {
-        return true;
-    }
-
-    // Allocate storage for list based on numDevices
-    devInfo = new FT_DEVICE_LIST_INFO_NODE[num];
-
-    // Get the device information list
-    if (FT_GetDeviceInfoList(devInfo, &num) == FT_OK)
-    {
-        for (DWORD i = 0; i < num; i++)
-        {
-            /* Get the device description field so that it can be
-               used to determine the device type (Pro/Open) */
-            QString desc(devInfo[i].Description);
-
-            if (desc.toLower().contains("pro") == true ||
-                desc.toLower().contains("dmxking") == true)
-            {
-                /* This is a DMX USB Pro widget */
-                m_widgets << new EnttecDMXUSBPro(this, devInfo[i], i);
-            }
-            else
-            {
-                /* This is an Open DMX USB widget */
-                m_widgets << new EnttecDMXUSBOpen(this, devInfo[i], i);
-            }
-        }
-    }
-
-    delete [] devInfo;
-
+    m_widgets = QLCFTDI::widgets();
     return true;
 }
 

@@ -31,13 +31,24 @@ win32 {
 }
 
 HEADERS += ../common/enttecdmxusbwidget.h \
+           ../common/qlcftdi.h \
            enttecdmxusbout.h \
            enttecdmxusbpro.h \
            enttecdmxusbopen.h
-       
-SOURCES += enttecdmxusbout.cpp \
+
+SOURCES += ../common/enttecdmxusbwidget.cpp \
+           enttecdmxusbout.cpp \
            enttecdmxusbpro.cpp \
            enttecdmxusbopen.cpp
+
+unix {
+    DEFINES     += FTD2XX
+    SOURCES += ../common/qlcftdi-ftd2xx.cpp
+} else {
+    CONFIG    += link_pkgconfig
+    PKGCONFIG += libftdi libusb
+    SOURCES += ../common/qlcftdi-libftdi.cpp
+}
 
 HEADERS += ../../interfaces/qlcoutplugin.h
 
