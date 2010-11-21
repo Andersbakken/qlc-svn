@@ -7,7 +7,6 @@ TARGET   = enttecdmxusbout
 CONFIG      += plugin
 QT          += gui core
 INCLUDEPATH += ../../interfaces
-INCLUDEPATH += ../common
 
 # FTD2XX is a proprietary interface by FTDI Ltd. and would therefore taint the
 # 100% FLOSS codebase of QLC if distributed along with QLC sources. Download
@@ -30,24 +29,24 @@ win32 {
     INCLUDEPATH += $$FTD2XXDIR/include
 }
 
-HEADERS += ../common/enttecdmxusbwidget.h \
-           ../common/qlcftdi.h \
+HEADERS += enttecdmxusbwidget.h \
+           qlcftdi.h \
            enttecdmxusbout.h \
            enttecdmxusbpro.h \
            enttecdmxusbopen.h
 
-SOURCES += ../common/enttecdmxusbwidget.cpp \
+SOURCES += enttecdmxusbwidget.cpp \
            enttecdmxusbout.cpp \
            enttecdmxusbpro.cpp \
            enttecdmxusbopen.cpp
 
-unix {
-    DEFINES     += FTD2XX
-    SOURCES += ../common/qlcftdi-ftd2xx.cpp
+win32 {
+    DEFINES += FTD2XX
+    SOURCES += qlcftdi-ftd2xx.cpp
 } else {
     CONFIG    += link_pkgconfig
     PKGCONFIG += libftdi libusb
-    SOURCES += ../common/qlcftdi-libftdi.cpp
+    SOURCES   += qlcftdi-libftdi.cpp
 }
 
 HEADERS += ../../interfaces/qlcoutplugin.h
