@@ -49,7 +49,7 @@
     <message>
         <location filename="enttecdmxusbout.cpp" line="105"/>
         <source>and compatible devices.</source>
-        <translation>und kompatibel Geräte</translation>
+        <translation>und kompatibel Geräte.</translation>
     </message>
     <message>
         <location filename="enttecdmxusbout.cpp" line="112"/>
