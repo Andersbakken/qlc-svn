@@ -44,51 +44,6 @@ fi
 popd
 
 #############################################################################
-# Enttec DMXUSB Plugin test
-#############################################################################
-
-pushd .
-cd plugins/enttecdmxusbout/unix/test/plugin
-DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbout
-RESULT=$?
-if [ $RESULT != 0 ]; then
-	echo "Enttec DMXUSB Out unit test failed ($RESULT). Please fix before commit."
-	exit $RESULT
-fi
-popd
-
-#############################################################################
-# Enttec DMXUSB Pro test
-#############################################################################
-
-pushd .
-cd plugins/enttecdmxusbout/unix/test/pro
-DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbpro
-RESULT=$?
-if [ $RESULT != 0 ]; then
-	echo "Enttec DMXUSB Pro unit test failed ($RESULT). Please fix before commit."
-	exit $RESULT
-fi
-popd
-
-#############################################################################
-# Enttec DMXUSB Open test
-#############################################################################
-
-pushd .
-cd plugins/enttecdmxusbout/unix/test/open
-DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbopen
-RESULT=$?
-if [ $RESULT != 0 ]; then
-	echo "Enttec DMXUSB Open unit test failed ($RESULT). Please fix before commit."
-	exit $RESULT
-fi
-popd
-
-#############################################################################
 # MIDI Input tests
 #############################################################################
 

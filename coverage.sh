@@ -43,67 +43,6 @@ lcov -a coverage/enginebase.info -a coverage/enginetest.info \
      -o coverage/enginemerge.info
 
 #############################################################################
-# Enttec DMXUSB
-#############################################################################
-
-##############
-# The plugin #
-##############
-
-# Prepare for measurement
-lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusboutbase.info
-
-# Run the unit test
-pushd .
-cd plugins/enttecdmxusbout/unix/test/plugin
-DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbout
-popd
-
-# Measure coverage and combine results from before and after the unit test
-lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbouttest.info
-lcov -a coverage/dmxusboutbase.info -a coverage/dmxusbouttest.info \
-     -o coverage/dmxusboutmerge.info
-
-###############
-# DMXUSB Open #
-###############
-
-# Prepare for measurement
-lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbopenbase.info
-
-# Run the unit test
-pushd .
-cd plugins/enttecdmxusbout/unix/test/open
-DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbopen
-popd
-
-# Measure coverage and combine results from before and after the unit test
-lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbopentest.info
-lcov -a coverage/dmxusbopenbase.info -a coverage/dmxusbopentest.info \
-     -o coverage/dmxusbopenmerge.info
-
-##############
-# DMXUSB Pro #
-##############
-
-# Prepare for measurement
-lcov -d plugins/enttecdmxusbout/unix/src -c -i -o coverage/dmxusbprobase.info
-
-# Run the unit test
-pushd .
-cd plugins/enttecdmxusbout/unix/test/pro
-DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:../../src \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../src ./test_dmxusbpro
-popd
-
-# Measure coverage and combine results from before and after the unit test
-lcov -d plugins/enttecdmxusbout/unix/src -c -o coverage/dmxusbprotest.info
-lcov -a coverage/dmxusbprobase.info -a coverage/dmxusbprotest.info \
-     -o coverage/dmxusbpromerge.info
-
-#############################################################################
 # Enttec Wing
 #############################################################################
 
@@ -151,8 +90,6 @@ lcov -a coverage/midiinputcommonbase.info -a coverage/midiinputcommontest.info \
 
 lcov -a coverage/enginemerge.info \
      -a coverage/ewingmerge.info \
-     -a coverage/dmxusbopenmerge.info \
-     -a coverage/dmxusbpromerge.info \
      -a coverage/midiinputcommonmerge.info \
      -o coverage/coverage.info
 
