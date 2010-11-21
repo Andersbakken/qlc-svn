@@ -220,7 +220,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="100"/>
         <source>Number of buttons per horizontal row</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der Schalter pro horizontaler Reihe</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="113"/>
@@ -230,7 +230,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="120"/>
         <source>Created buttons&apos; size</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Grösse der erstellen Schalter</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="123"/>
@@ -245,7 +245,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="143"/>
         <source>Number of buttons per vertical column</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der Schalter pro verikaler Spalte</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="153"/>
@@ -261,27 +261,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="173"/>
         <source>Frame</source>
-        <translation type="unfinished">Rahmen</translation>
+        <translation>Rahmen</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="179"/>
         <source>Place the buttons inside a normal frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Platziert die Schalter in einen normalen Rahmen</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="182"/>
         <source>Normal</source>
-        <translation type="unfinished">Normal</translation>
+        <translation>Normal</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="189"/>
         <source>Place the buttons inside a frame that ensures that only one of them is pressed at a time</source>
-        <translation type="unfinished"></translation>
+        <translation>Platziert die Schalter in einem Rahmen, der dafür sorgt, dass jeweils nur einer von diesen aktiv ist</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="192"/>
         <source>Solo</source>
-        <translation type="unfinished"></translation>
+        <translation>Solo</translation>
     </message>
 </context>
 <context>
@@ -449,45 +449,9 @@ Willst du die wirklich stoppen und in den Entwicklungsmodus wechseln?</translati
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="679"/>
-        <source>CTRL+Q</source>
-        <comment>File|Quit</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="685"/>
-        <source>Fi&amp;xtures</source>
-        <oldsource>&amp;Fixtures</oldsource>
-        <translation type="unfinished">Geräte</translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="686"/>
-        <source>ALT+X</source>
-        <comment>Manager|Fixtures</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="691"/>
-        <source>F&amp;unctions</source>
-        <oldsource>&amp;Functions</oldsource>
-        <translation type="unfinished">Funktionen</translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="692"/>
-        <source>ALT+U</source>
-        <comment>Manager|Functions</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="app.cpp" line="697"/>
         <source>&amp;Buses</source>
         <translation>&amp;Busse</translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="698"/>
-        <source>ALT+B</source>
-        <comment>Manager|Buses</comment>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="app.cpp" line="703"/>
@@ -495,21 +459,9 @@ Willst du die wirklich stoppen und in den Entwicklungsmodus wechseln?</translati
         <translation>&amp;Eingänge</translation>
     </message>
     <message>
-        <location filename="app.cpp" line="704"/>
-        <source>ALT+I</source>
-        <comment>Manager|Inputs</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="app.cpp" line="709"/>
         <source>&amp;Outputs</source>
         <translation>Ausgänge</translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="710"/>
-        <source>ALT+O</source>
-        <comment>Manager|Outputs</comment>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="app.cpp" line="716"/>
@@ -520,12 +472,58 @@ Willst du die wirklich stoppen und in den Entwicklungsmodus wechseln?</translati
         <location filename="app.cpp" line="718"/>
         <source>CTRL+F12</source>
         <comment>Control|Toggle operate/design mode</comment>
-        <translation type="unfinished"></translation>
+        <translation>CTRL+F12</translation>
     </message>
     <message>
         <location filename="app.cpp" line="723"/>
         <source>&amp;Virtual Console</source>
         <translation>&amp;Virtuelle Konsole</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="679"/>
+        <source>CTRL+Q</source>
+        <comment>File|Quit</comment>
+        <translation>CTRL+Q</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="685"/>
+        <source>Fi&amp;xtures</source>
+        <translation>Geräte</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="686"/>
+        <source>ALT+X</source>
+        <comment>Manager|Fixtures</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="691"/>
+        <source>F&amp;unctions</source>
+        <translation>F&amp;unktionen</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="692"/>
+        <source>ALT+U</source>
+        <comment>Manager|Functions</comment>
+        <translation>ALT+U</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="698"/>
+        <source>ALT+B</source>
+        <comment>Manager|Buses</comment>
+        <translation>ALT+B</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="704"/>
+        <source>ALT+I</source>
+        <comment>Manager|Inputs</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="710"/>
+        <source>ALT+O</source>
+        <comment>Manager|Outputs</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="app.cpp" line="724"/>
@@ -534,30 +532,26 @@ Willst du die wirklich stoppen und in den Entwicklungsmodus wechseln?</translati
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="app.cpp" line="730"/>
-        <source>CTRL+M</source>
-        <comment>Control|Monitor</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="737"/>
-        <source>Toggle Full Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="app.cpp" line="739"/>
-        <source>CTRL+F11</source>
-        <comment>Control|Toggle Full Screen</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="app.cpp" line="729"/>
         <source>&amp;Monitor</source>
         <translation>&amp;Monitor</translation>
     </message>
     <message>
-        <source>Toggle &amp;Blackout</source>
-        <translation type="obsolete">&amp;Blackout umschalten</translation>
+        <location filename="app.cpp" line="730"/>
+        <source>CTRL+M</source>
+        <comment>Control|Monitor</comment>
+        <translation>CTRL+M</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="737"/>
+        <source>Toggle Full Screen</source>
+        <translation>Vollbildmodus umschalten</translation>
+    </message>
+    <message>
+        <location filename="app.cpp" line="739"/>
+        <source>CTRL+F11</source>
+        <comment>Control|Toggle Full Screen</comment>
+        <translation>CTRL+F11</translation>
     </message>
     <message>
         <location filename="app.cpp" line="746"/>
@@ -568,7 +562,7 @@ Willst du die wirklich stoppen und in den Entwicklungsmodus wechseln?</translati
         <location filename="app.cpp" line="747"/>
         <source>CTRL+M</source>
         <comment>Apple Window Action|Minimize</comment>
-        <translation type="unfinished"></translation>
+        <translation>CTRL+M</translation>
     </message>
     <message>
         <location filename="app.cpp" line="751"/>
@@ -821,7 +815,7 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="chasereditor.ui" line="74"/>
         <source>Add step(s) to the current position</source>
-        <translation type="unfinished"></translation>
+        <translation>Schritte zur aktuellen Position hinzufügen</translation>
     </message>
     <message>
         <location filename="chasereditor.ui" line="94"/>
@@ -1249,12 +1243,12 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="efxeditor.ui" line="673"/>
         <source>De-initialize the fixture with the given scene values when the EFX stops</source>
-        <translation type="unfinished"></translation>
+        <translation>Geräte mit den in der Szene gesetzten Werte deinitialisieren wenn der Effekt stoppt</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="676"/>
         <source>De-initialize fixtures</source>
-        <translation type="unfinished"></translation>
+        <translation>Geräte deinitialisiere</translation>
     </message>
     <message>
         <location filename="efxeditor.cpp" line="365"/>
@@ -1705,22 +1699,22 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="grandmasterslider.cpp" line="88"/>
         <source>Limits the maximum value of</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitiert den maximalen Wert von</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="91"/>
         <source>Reduces the current value of</source>
-        <translation type="unfinished"></translation>
+        <translation>Reduziert den aktuellen Wert von</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="100"/>
         <source>intensity channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Intensitätskanäle</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="103"/>
         <source>all channels</source>
-        <translation type="unfinished"></translation>
+        <translation>alle Kanäle</translation>
     </message>
 </context>
 <context>
@@ -2156,10 +2150,6 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <source>Mapping properties for output universe %1</source>
         <translation>Zuweisungseigenschaften für Ausgabeuniversum %1</translation>
     </message>
-    <message>
-        <source>No information</source>
-        <translation type="obsolete">Keine Informationen</translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -2177,7 +2167,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <location filename="vcxypadfixture.cpp" line="280"/>
         <location filename="vcxypadfixture.cpp" line="300"/>
         <source>Reversed</source>
-        <translation type="unfinished"></translation>
+        <translation>Umgekehrt</translation>
     </message>
 </context>
 <context>
@@ -2313,13 +2303,6 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     </message>
 </context>
 <context>
-    <name>TextbookClass</name>
-    <message>
-        <source>Scenes</source>
-        <translation type="obsolete">Szenen</translation>
-    </message>
-</context>
-<context>
     <name>VCButton</name>
     <message>
         <location filename="vcbutton.cpp" line="80"/>
@@ -2390,10 +2373,6 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <translation>Funktion des Schalters zurücknehmen</translation>
     </message>
     <message>
-        <source>Keyboard hotkey</source>
-        <translation type="obsolete">Tastatur Hotkey</translation>
-    </message>
-    <message>
         <location filename="vcbuttonproperties.ui" line="100"/>
         <source>Key combination</source>
         <translation>Tastenkombination</translation>
@@ -2456,7 +2435,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcbuttonproperties.ui" line="231"/>
         <source>Auto Detect</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatische Erkennung</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="250"/>
@@ -2499,7 +2478,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vccuelist.cpp" line="67"/>
         <source>Cue list</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="vccuelist.cpp" line="231"/>
@@ -2583,18 +2562,14 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
 <context>
     <name>VCDockSlider</name>
     <message>
-        <source>0.00s</source>
-        <translation type="obsolete">0.00s</translation>
-    </message>
-    <message>
         <location filename="vcdockslider.cpp" line="138"/>
         <source>Bus %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Bus %1</translation>
     </message>
     <message>
         <location filename="vcdockslider.cpp" line="142"/>
         <source>time</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit</translation>
     </message>
 </context>
 <context>
@@ -2626,26 +2601,14 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <translation>Layout</translation>
     </message>
     <message>
-        <source>Keyboard</source>
-        <translation type="obsolete">Tastatur</translation>
-    </message>
-    <message>
         <location filename="vcproperties.ui" line="36"/>
         <source>Make virtual console to take exclusive keyboard control during operate mode</source>
         <translation>Virtuelle Konsole erhält exklusive Kontrolle über die Tastatur im Betriebsmodus</translation>
     </message>
     <message>
-        <source>Grab keyboard in operate mode</source>
-        <translation type="obsolete">Tastatur im Betriebsmodus einfangen</translation>
-    </message>
-    <message>
         <location filename="vcproperties.ui" line="46"/>
         <source>Prevent flickering when a keyboard hotkey has been pressed in operate mode</source>
         <translation>Verhinder flickern wenn eine Tastaturtaste im Betriebsmodus gehalten wird.</translation>
-    </message>
-    <message>
-        <source>Turn off key repeat in operate mode</source>
-        <translation type="obsolete">Tastenwiederholung im Betriebsmodus abschalten</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="59"/>
@@ -2682,10 +2645,6 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <location filename="vcproperties.ui" line="101"/>
         <source>Widget grid layout Y resolution</source>
         <translation>Y-Auflösung des Layoutgitters</translation>
-    </message>
-    <message>
-        <source>Default sliders</source>
-        <translation type="obsolete">Standardschieberegler</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="402"/>
@@ -2745,17 +2704,17 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="30"/>
         <source>Keyboard in operate mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastatur im Betriebsmodus</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="39"/>
         <source>Grab keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastatur einfangen</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="49"/>
         <source>Turn off key repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastenwiederholung abschalten</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="147"/>
@@ -2765,7 +2724,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="153"/>
         <source>Channels</source>
-        <translation type="unfinished">Kanäle</translation>
+        <translation>Kanäle</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="159"/>
@@ -2775,7 +2734,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="162"/>
         <source>Intensity</source>
-        <translation type="unfinished">Intensität</translation>
+        <translation>Intensität</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="169"/>
@@ -2785,12 +2744,12 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="172"/>
         <source>All channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle Kanäle</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="182"/>
         <source>Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Werte</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="188"/>
@@ -2800,7 +2759,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="191"/>
         <source>Reduce</source>
-        <translation type="unfinished"></translation>
+        <translation>Reduzieren</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="198"/>
@@ -2810,13 +2769,19 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="201"/>
         <source>Limit</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitieren</translation>
+    </message>
+    <message>
+        <location filename="vcproperties.ui" line="211"/>
+        <location filename="vcproperties.ui" line="300"/>
+        <source>External Input</source>
+        <translation>Externer Eingang</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="217"/>
         <location filename="vcproperties.ui" line="306"/>
         <source>Input Universe</source>
-        <translation type="unfinished">Eingangsuniversum</translation>
+        <translation>Eingangsuniversum</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="224"/>
@@ -2827,7 +2792,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <location filename="vcproperties.ui" line="234"/>
         <location filename="vcproperties.ui" line="323"/>
         <source>Input Channel</source>
-        <translation type="unfinished">Eingangskanal</translation>
+        <translation>Eingangskanal</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="241"/>
@@ -2845,7 +2810,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
         <location filename="vcproperties.ui" line="511"/>
         <location filename="vcproperties.ui" line="650"/>
         <source>Auto Detect</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatische Erkennung</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="280"/>
@@ -2855,17 +2820,17 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="294"/>
         <source>Blackout</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="313"/>
         <source>Input universe for Blackout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangsuniversum für den Blackout</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="330"/>
         <source>Input channel for Blackout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangskanal für den Blackout</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="353"/>
@@ -2875,7 +2840,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="369"/>
         <source>Choose an external input universe &amp; channel that Blackout should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wähle ein externes Universum &amp; einen Kanal auf den der Blackout hören soll</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="396"/>
@@ -3059,7 +3024,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcsliderproperties.ui" line="175"/>
         <source>Auto Detect</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatische Erkennung</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="202"/>
@@ -3384,7 +3349,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="virtualconsole.cpp" line="272"/>
         <source>Solo frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Solorahmen</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="277"/>
@@ -3462,11 +3427,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="virtualconsole.cpp" line="406"/>
         <source>Choose...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="obsolete">Schriftart</translation>
+        <translation>Auswählen ...</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="423"/>
@@ -3546,17 +3507,17 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="virtualconsole.cpp" line="1115"/>
         <source>Do you wish to delete the selected widgets?</source>
-        <translation type="unfinished"></translation>
+        <translation>Das ausgewählte Element löschen?</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="1116"/>
         <source>Delete widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Element löschen</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="1159"/>
         <source>Rename widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Element umbenennen</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="1159"/>
