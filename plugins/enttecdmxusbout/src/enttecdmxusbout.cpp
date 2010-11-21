@@ -93,15 +93,15 @@ QString EnttecDMXUSBOut::infoText(quint32 output)
         {
             str += QString("<B>%1</B>").arg(tr("No devices available."));
             str += QString("<P>");
-            str += tr("Make sure that you have your hardware firmly plugged in. \
-                       NOTE: FTDI VCP interface is not supported by this plugin.");
+            str += tr("Make sure that you have your hardware firmly plugged in. "
+                      "NOTE: FTDI VCP interface is not supported by this plugin.");
             str += QString("</P>");
         }
 
         str += QString("<P>");
         str += tr("This plugin provides DMX output support for");
-        str += QString(" DMXKing USB DMX512-A, Enttec DMX USB Pro, Enttec Open DMX USB, \
-                        FTDI USB COM485 Plus1 ");
+        str += QString(" DMXKing USB DMX512-A, Enttec DMX USB Pro, "
+                       "Enttec Open DMX USB, FTDI USB COM485 Plus1 ");
         str += tr("and compatible devices.");
         str += QString("</P>");
     }

@@ -26,6 +26,7 @@ win32 {
     PKGCONFIG   += libftdi libusb
 }
 
+HEADERS += ../../interfaces/qlcoutplugin.h
 HEADERS += enttecdmxusbwidget.h \
            qlcftdi.h \
            enttecdmxusbout.h \
@@ -43,7 +44,12 @@ win32 {
     SOURCES += qlcftdi-libftdi.cpp
 }
 
-HEADERS += ../../interfaces/qlcoutplugin.h
+PRO_FILE      = src.pro
+TRANSLATIONS += enttec_fi_FI.ts
+TRANSLATIONS += enttec_de_DE.ts
+TRANSLATIONS += enttec_fr_FR.ts
+TRANSLATIONS += enttec_es_ES.ts
+include(../../../../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
