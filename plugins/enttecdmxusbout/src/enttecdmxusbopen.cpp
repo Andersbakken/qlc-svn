@@ -53,6 +53,7 @@ EnttecDMXUSBOpen::EnttecDMXUSBOpen(const QString& serial, const QString& name,
 
 EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
 {
+    stop();
 }
 
 EnttecDMXUSBWidget::Type EnttecDMXUSBOpen::type() const
@@ -74,6 +75,12 @@ bool EnttecDMXUSBOpen::open()
 
     start(QThread::TimeCriticalPriority);
     return true;
+}
+
+bool EnttecDMXUSBOpen::close()
+{
+    stop();
+    return EnttecDMXUSBWidget::close();
 }
 
 /****************************************************************************
