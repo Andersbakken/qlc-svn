@@ -19,6 +19,10 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,$
 */
 
+#ifdef DBUS_ENABLED
+#   include <QDBusConnection>
+#endif
+
 #include <QStringList>
 #include <QMessageBox>
 #include <QDebug>
@@ -40,6 +44,20 @@ EnttecDMXUSBOut::~EnttecDMXUSBOut()
 
 void EnttecDMXUSBOut::init()
 {
+#ifdef DBUS_ENABLED
+    /* Listen to device additions and removals thru DBus system bus */
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/org/freedesktop/Hal/Manager"),
+                                         QString("org.freedesktop.Hal.Manager"),
+                                         QString("DeviceAdded"),
+                                         this, SLOT(slotDeviceAdded(const QString&)));
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/org/freedesktop/Hal/Manager"),
+                                         QString("org.freedesktop.Hal.Manager"),
+                                         QString("DeviceRemoved"),
+                                         this, SLOT(slotDeviceRemoved(const QString&)));
+#endif
+
     /* Search for new widgets */
     rescanWidgets();
 }
@@ -48,6 +66,24 @@ QString EnttecDMXUSBOut::name()
 {
     return QString("Enttec DMX USB Output");
 }
+
+#ifdef DBUS_ENABLED
+void EnttecDMXUSBOut::slotDeviceAdded(const QString& name)
+{
+    QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
+    re.setPatternSyntax(QRegExp::Wildcard);
+    if (name.contains(re) == true)
+        rescanWidgets();
+}
+
+void EnttecDMXUSBOut::slotDeviceRemoved(const QString& name)
+{
+    QRegExp re("/org/freedesktop/Hal/devices/usb_device_403_*_*_if*_serial_usb_*");
+    re.setPatternSyntax(QRegExp::Wildcard);
+    if (name.contains(re) == true)
+        rescanWidgets();
+}
+#endif
 
 /****************************************************************************
  * Outputs
@@ -138,10 +174,7 @@ void EnttecDMXUSBOut::configure()
                                   tr("Do you wish to re-scan your hardware?"),
                                   QMessageBox::Yes, QMessageBox::No);
     if (r == QMessageBox::Yes)
-    {
         rescanWidgets();
-        emit configurationChanged();
-    }
 }
 
 bool EnttecDMXUSBOut::canConfigure()
@@ -158,6 +191,7 @@ bool EnttecDMXUSBOut::rescanWidgets()
     while (m_widgets.isEmpty() == false)
         delete m_widgets.takeFirst();
     m_widgets = QLCFTDI::widgets();
+    emit configurationChanged();
     return true;
 }
 

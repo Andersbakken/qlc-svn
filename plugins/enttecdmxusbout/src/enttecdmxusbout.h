@@ -41,6 +41,15 @@ public:
     /** @reimp */
     void init();
 
+#ifdef DBUS_ENABLED
+protected slots:
+    /** Called when a USB device has been plugged in */
+    void slotDeviceAdded(const QString& name);
+
+    /** Called when a USB device has been plugged out */
+    void slotDeviceRemoved(const QString& name);
+#endif
+
     /** @reimp */
     QString name();
 
