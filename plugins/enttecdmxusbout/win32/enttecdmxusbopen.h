@@ -53,10 +53,11 @@ public:
     EnttecDMXUSBOpen(QObject* parent, const FT_DEVICE_LIST_INFO_NODE& info,
                      DWORD id);
 
-    /**
-     * Destructor
-     */
+    /** Destructor */
     virtual ~EnttecDMXUSBOpen();
+
+    /** @reimp */
+    EnttecDMXUSBWidget::Type type() const;
 
 protected:
     /** FTDI device information */

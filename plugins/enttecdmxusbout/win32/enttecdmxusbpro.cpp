@@ -49,6 +49,11 @@ EnttecDMXUSBPro::~EnttecDMXUSBPro()
     close();
 }
 
+EnttecDMXUSBWidget::Type EnttecDMXUSBPro::type() const
+{
+    return EnttecDMXUSBWidget::Pro;
+}
+
 /****************************************************************************
  * Open & Close
  ****************************************************************************/

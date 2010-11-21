@@ -51,10 +51,11 @@ public:
     EnttecDMXUSBPro(QObject* parent, const FT_DEVICE_LIST_INFO_NODE& info,
                     DWORD id);
 
-    /**
-     * Destructor
-     */
+    /** Destructor */
     virtual ~EnttecDMXUSBPro();
+
+    /** @reimp */
+    EnttecDMXUSBWidget::Type type() const;
 
 protected:
     DWORD m_id;

@@ -23,22 +23,17 @@
 #define ENTTECDMXUSBWIDGET_H
 
 /**
- * This is the base interface class for ENTTEC USB DMX (Pro|Open) widgets.
+ * This is the base interface class for ENTTEC USB DMX [Pro|Open] widgets.
  */
 class EnttecDMXUSBWidget
 {
 public:
     static const int VID = 0x0403;
     static const int PID = 0x6001;
-
-    enum Type {
-        Pro = 0,
-        Open = 1,
-        Other = 2
-    };
+    enum Type { Pro, Open, Other };
 
     /** Remove this and suffer the oh-so-lovely crashing consequences! */
-    virtual ~EnttecDMXUSBWidget() {}
+    virtual ~EnttecDMXUSBWidget() { /* NOP */ }
 
     /** Get the type of the widget */
     virtual Type type() const = 0;
@@ -95,6 +90,11 @@ public:
      * @return widget's unique name as: "<name> (S/N: <serial>)"
      */
     virtual QString uniqueName() const = 0;
+
+    /**
+     * Get any additional information pertaining to the device (can be empty)
+     */
+    virtual QString additionalInfo() const { return QString(); }
 
     /********************************************************************
      * DMX operations

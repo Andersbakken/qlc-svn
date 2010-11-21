@@ -7,6 +7,7 @@ TARGET   = enttecdmxusbout
 CONFIG      += plugin
 QT          += gui core
 INCLUDEPATH += ../../interfaces
+INCLUDEPATH += ../common
 
 # FTD2XX is a proprietary interface by FTDI Ltd. and would therefore taint the
 # 100% FLOSS codebase of QLC if distributed along with QLC sources. Download
@@ -21,14 +22,16 @@ win32 {
     LIBS        += -L$$FTD2XXDIR/i386 -lftd2xx
     INCLUDEPATH += $$FTD2XXDIR
 } else {
-    # Unix target for Linux & OSX
+    # Unix target for Linux & OSX.
+    # OSX: You need to create symlinks for libftd2xx.dylib and libftd2xx.0.dylib pointing
+    # to the actual library: sudo ln -s libftd2xx.0.1.7.dylib libftd2xx.dylib
     FTD2XXDIR    = /usr/local
     LIBS        += -L$$FTD2XXDIR/lib -lftd2xx
     INCLUDEPATH += $$FTD2XXDIR/include
 }
 
-HEADERS += enttecdmxusbout.h \
-           enttecdmxusbwidget.h \
+HEADERS += ../common/enttecdmxusbwidget.h \
+           enttecdmxusbout.h \
            enttecdmxusbpro.h \
            enttecdmxusbopen.h
        

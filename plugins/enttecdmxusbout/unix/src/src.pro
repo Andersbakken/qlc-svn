@@ -6,6 +6,7 @@ LANGUAGE = C++
 TARGET   = enttecdmxusbout
 
 INCLUDEPATH += ../../../interfaces
+INCLUDEPATH += ../../common
 
 CONFIG += plugin
 CONFIG(coverage) {
@@ -16,7 +17,7 @@ CONFIG(coverage) {
     PKGCONFIG += libftdi libusb
 }
 
-HEADERS += enttecdmxusbwidget.h \
+HEADERS += ../../common/enttecdmxusbwidget.h \
            enttecdmxusbout.h \
            enttecdmxusbpro.h \
            enttecdmxusbopen.h

@@ -6,6 +6,7 @@ TARGET   = test_dmxusbout
 
 QT             += core xml gui testlib
 INCLUDEPATH    += ../../src
+INCLUDEPATH    += ../../../common
 INCLUDEPATH    += ../ftdimock
 INCLUDEPATH    += ../../../../interfaces
 QMAKE_CXXFLAGS += $$system(pkg-config --cflags libftdi)

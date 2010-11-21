@@ -64,6 +64,11 @@ EnttecDMXUSBOpen::~EnttecDMXUSBOpen()
     free(m_universe);
 }
 
+EnttecDMXUSBWidget::Type EnttecDMXUSBOpen::type() const
+{
+    return EnttecDMXUSBWidget::Open;
+}
+
 /****************************************************************************
  * Open & Close
  ****************************************************************************/
