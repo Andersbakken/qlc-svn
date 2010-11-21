@@ -91,29 +91,25 @@ QString EnttecDMXUSBOut::infoText(quint32 output)
         str += QString("<H3>%1</H3>").arg(name());
         if (m_widgets.size() == 0)
         {
+            str += QString("<B>%1</B>").arg(tr("No devices available."));
             str += QString("<P>");
-            str += QString("<B>No devices available</B>. ");
-            str += QString("Make sure you have your Enttec hardware ");
-            str += QString("plugged in and the <I>D2XX</I> ");
-            str += QString("drivers installed from <a href=\"http://www.ftdichip.com/Drivers/D2XX.htm\">");
-            str += QString("http://www.ftdichip.com/Drivers/D2XX.htm</a>. ");
-            str += QString("Note that the VCP interface used by Enttec DMX USB Pro ");
-            str += QString("is not supported by this plugin.");
+            str += tr("Make sure that you have your hardware firmly plugged in. \
+                       NOTE: FTDI VCP interface is not supported by this plugin.");
             str += QString("</P>");
         }
 
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("ENTTEC DMX USB Pro and Open DMX USB, using the ");
-        str += QString("proprietary D2XX interface. See <a href=\"http://www.enttec.com\">");
-        str += QString("http://www.enttec.com</a> for more information.");
+        str += tr("This plugin provides DMX output support for");
+        str += QString(" DMXKing USB DMX512-A, Enttec DMX USB Pro, Enttec Open DMX USB, \
+                        FTDI USB COM485 Plus1 ");
+        str += tr("and compatible devices.");
         str += QString("</P>");
     }
     else if (output < quint32(m_widgets.size()))
     {
         str += QString("<H3>%1</H3>").arg(outputs()[output]);
         str += QString("<P>");
-        str += QString("Device is operating correctly.");
+        str += tr("Device is operating correctly.");
         str += QString("</P>");
         QString add = m_widgets[output]->additionalInfo();
         if (add.isEmpty() == false)
