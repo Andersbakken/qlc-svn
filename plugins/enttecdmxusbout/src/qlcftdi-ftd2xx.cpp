@@ -36,7 +36,8 @@ QLCFTDI::QLCFTDI(const QString& serial, const QString& name, quint32 id)
 
 QLCFTDI::~QLCFTDI()
 {
-    close();
+    if (isOpen() == true)
+        close();
 }
 
 QList <EnttecDMXUSBWidget*> QLCFTDI::widgets()
