@@ -1092,7 +1092,7 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="efxeditor.ui" line="350"/>
         <source>X offset</source>
-        <translation type="unfinished"></translation>
+        <translation>X-Offset</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="357"/>
@@ -1102,7 +1102,7 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="efxeditor.ui" line="370"/>
         <source>Y offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Y-Offset</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="377"/>
@@ -1694,7 +1694,7 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="grandmasterslider.cpp" line="64"/>
         <source>Grand&lt;BR&gt;Master</source>
-        <translation type="unfinished"></translation>
+        <translation>Haupt-&lt;br&gt;regler</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="88"/>
@@ -1954,7 +1954,7 @@ Changes will be lost if you don&apos;t save them.</source>
     <message>
         <location filename="inputprofileeditor.ui" line="177"/>
         <source>Automatically add channels to the list when you wiggle the device&apos;s controls</source>
-        <translation type="unfinished"></translation>
+        <translation>Kanäle automatisch hinzufügen wenn die externen Bedienelemente betätigt werden</translation>
     </message>
     <message>
         <location filename="inputprofileeditor.cpp" line="91"/>
@@ -2415,12 +2415,12 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcbuttonproperties.ui" line="189"/>
         <source>The particular input channel within the input universe that sends data to this widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Der bestimmte Eingangskanal im Eingangsuniversum der Daten zu diesem Widget sendet</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="218"/>
         <source>Choose an external input universe &amp; channel that this button should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wähle ein externes Universum &amp; einen Kanal auf den dieser Schalter hören soll</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="221"/>
@@ -2430,7 +2430,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcbuttonproperties.ui" line="228"/>
         <source>When toggled, you can click an external button to assign it to this virtual console button.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn betätigt kann ein externer Schalter betätigt werden um diesen dem virtuellen Konsolenschalter zuzuweisen</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="231"/>
@@ -2478,7 +2478,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vccuelist.cpp" line="67"/>
         <source>Cue list</source>
-        <translation></translation>
+        <translation>Cue-Liste</translation>
     </message>
     <message>
         <location filename="vccuelist.cpp" line="231"/>
@@ -2491,22 +2491,22 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vccuelistproperties.ui" line="13"/>
         <source>Cue list properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Cue-Listeneigenschaften</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="21"/>
         <source>Cue list name</source>
-        <translation type="unfinished"></translation>
+        <translation>Cue-Listenname</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="28"/>
         <source>The name of the cue list widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Name der Cue-Liste</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="39"/>
         <source>List of scenes that can be activated with this cue list</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste von Szenen, die mit dieser Cue-Liste aktiviert werden können</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="61"/>
@@ -2521,12 +2521,12 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vccuelistproperties.ui" line="76"/>
         <source>Add scene(s) to the cue list</source>
-        <translation type="unfinished"></translation>
+        <translation>Szenen zu der Cue-Liste hinzufügen</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="96"/>
         <source>Remove selected scene(s) from the cue list</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgewählte Szenen von der Cue-Liste entfernen</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="116"/>
@@ -2541,17 +2541,17 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vccuelistproperties.ui" line="173"/>
         <source>Next cue key combination</source>
-        <translation type="unfinished"></translation>
+        <translation>Nächster Cue Tastenkombination</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="179"/>
         <source>The key combination used to step to the next cue</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Tastenkombination um zur nächsten Cue zu springen</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="189"/>
         <source>Bind a key combination to skip to the next cue</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine Tastenkombination zuweisen um zur nächsten Cue zu springen</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="209"/>
@@ -2719,7 +2719,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="147"/>
         <source>Grand Master</source>
-        <translation type="unfinished"></translation>
+        <translation>Hauptregler</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="153"/>
@@ -2729,7 +2729,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="159"/>
         <source>Apply Grand Master only to Intensity channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>Den Hauptregler nur auf Intensitätskanäle anwenden</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="162"/>
@@ -2739,7 +2739,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="169"/>
         <source>Apply Grand Master to all channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>Den Hauptregler auf alle Kanäle anwenden</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="172"/>
@@ -2754,7 +2754,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="188"/>
         <source>Make Grand Master reduce levels by a percentage.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Hauptregler reduziert die Werte prozentualisch</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="191"/>
@@ -2764,7 +2764,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="198"/>
         <source>Make Grand Master limit the maximum channel values.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Hauptregler limitiert die Maximalen Werte der Kanäle</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="201"/>
@@ -2786,7 +2786,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="224"/>
         <source>Input universe for Grand Master slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangsuniversum für den Hauptregler</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="234"/>
@@ -2797,12 +2797,12 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="241"/>
         <source>Input channel for Grand Master slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingangskanal für den Hauptregler</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="264"/>
         <source>When toggled, you can move an external slider/knob to assign it to the Grand Master slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn betätigt kann ein externer Regler/Schalter betätigt werden um diesen dem Hauptregler zuzuweisen</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="267"/>
@@ -2815,12 +2815,12 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="280"/>
         <source>Choose an external input universe &amp; channel that the Grand Master slider should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wähle ein externes Universum &amp; einen Kanal auf den dieser Hauptregler hören soll</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="294"/>
         <source>Blackout</source>
-        <translation></translation>
+        <translation>Blackout</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="313"/>
@@ -2835,7 +2835,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcproperties.ui" line="353"/>
         <source>When toggled, you can move an external slider/knob to assign it to Blackout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn betätigt kann ein externer Regler/Schalter betätigt werden um diesen dem Blackout zuzuweisen</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="369"/>
@@ -3003,13 +3003,13 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcsliderproperties.ui" line="139"/>
         <source>The particular input channel within the input universe that sends data to this widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Der bestimmte Eingangskanal im Eingangsuniversum der Daten zu diesem Widget sendet</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="162"/>
         <source>Choose an external input universe &amp; channel that this widget should listen to</source>
         <oldsource>Choose the external input universe &amp; channel that this widget should listen to</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>Wähle ein externes Universum &amp; einen Kanal auf den dieser Schieberegler hören soll</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="165"/>
@@ -3019,7 +3019,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcsliderproperties.ui" line="172"/>
         <source>When toggled, you can move an external slider/knob to assign it to this virtual console slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn betätigt kann ein externer Regler/Schalter betätigt werden um diesen dem virtuellen Konsolenregler zuzuweisen</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="175"/>
@@ -3096,7 +3096,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="vcsliderproperties.ui" line="376"/>
         <source>Set value range from the selected capability</source>
-        <translation type="unfinished"></translation>
+        <translation>Den Wertebereich von der ausgewählten Fähigkeit setzen</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="379"/>
@@ -3339,7 +3339,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="virtualconsole.cpp" line="262"/>
         <source>Cue list</source>
-        <translation type="unfinished"></translation>
+        <translation>Cue-Liste</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="267"/>
@@ -3369,7 +3369,7 @@ Note that the wizard cannot tell the difference between a knob and a slider so y
     <message>
         <location filename="virtualconsole.cpp" line="309"/>
         <source>Toggle &amp;Blackout</source>
-        <translation type="unfinished">&amp;Blackout umschalten</translation>
+        <translation>&amp;Blackout umschalten</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="317"/>
