@@ -31,6 +31,19 @@
 QString QLCi18n::s_defaultLocale = QString();
 QString QLCi18n::s_translationFilePath = QString();
 
+void QLCi18n::init()
+{
+#ifdef __APPLE__
+    // Set the default translation file path before parsing args
+    QLCi18n::setTranslationFilePath(QString("%1/../%2")
+                                    .arg(QCoreApplication::applicationDirPath())
+                                    .arg(TRANSLATIONDIR));
+#else
+    // Set the default translation file path before parsing args
+    QLCi18n::setTranslationFilePath(TRANSLATIONDIR);
+#endif
+}
+
 void QLCi18n::setDefaultLocale(const QString& locale)
 {
     s_defaultLocale = locale;

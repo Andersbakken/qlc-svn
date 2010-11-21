@@ -28,6 +28,9 @@ class QString;
 class QLCi18n
 {
 public:
+    /** Initialize QLCi18n */
+    static void init();
+
     /** Set the default locale to use when loading translations */
     static void setDefaultLocale(const QString& locale);
 
