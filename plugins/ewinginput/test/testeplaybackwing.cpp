@@ -92,9 +92,12 @@ void TestEPlaybackWing::name()
 
 void TestEPlaybackWing::infoText()
 {
-    QString str = QString("<B>%1</B><BR>").arg(m_ewing->name());
+    QString str = QString("<B>%1</B>").arg(m_ewing->name());
+    str += QString("<P>");
     str += tr("Firmware version %1").arg(PLB_FIRMWARE);
-    str += tr("<P>Device is operating correctly</P>");
+    str += QString("<BR>");
+    str += tr("Device is operating correctly.");
+    str += QString("</P>");
     QCOMPARE(m_ewing->infoText(), str);
 }
 

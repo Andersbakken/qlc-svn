@@ -100,18 +100,22 @@ QString EWingInput::infoText(quint32 input)
     {
         /* Plugin or just an invalid input selected. Display generic
            information. */
-        str += QString("<P>This plugin provides input support for ");
-        str += QString("ENTTEC Playback and Shortcut Wings.</P>");
+        str += QString("<P>");
+        str += tr("This plugin provides input support for Enttec Playback "
+                  "and Enttec Shortcut Wings.");
+        str += QString("</P>");
 
         if (m_socket->state() != QAbstractSocket::BoundState)
         {
-            str += QString("<P>Unable to bind to UDP port %1</P>")
-                   .arg(EWing::UDPPort);
+            str += QString("<P>");
+            str += tr("Unable to bind to UDP port %1").arg(EWing::UDPPort);
+            str += QString("</P>");
         }
         else
         {
-            str += QString("<P>Listening to UDP port %1</P>")
-                   .arg(EWing::UDPPort);
+            str += QString("<P>");
+            str += tr("Listening to UDP port %1").arg(EWing::UDPPort);
+            str += QString("</P>");
         }
     }
     else
@@ -121,8 +125,6 @@ QString EWingInput::infoText(quint32 input)
         EWing* dev = device(input);
         if (dev != NULL)
             str += dev->infoText();
-        else
-            str += tr("<P>%1: Device not found.</P>").arg(input+1);
     }
 
     str += QString("</BODY>");

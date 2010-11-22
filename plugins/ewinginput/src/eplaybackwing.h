@@ -56,33 +56,14 @@ public:
      */
     ~EPlaybackWing();
 
-    /********************************************************************
-     * Data
-     ********************************************************************/
-public:
-    /**
-     * Return the name of the wing.
-     *
-     * @return The name of the device in the form "Playback at <address>"
-     */
+    /** @reimp */
     QString name() const;
-
-    /**
-     * Return an info string describing the device's state.
-     *
-     * @return Information string.
-     */
-    QString infoText() const;
 
     /********************************************************************
      * Input data
      ********************************************************************/
 public:
-    /**
-     * Parse input data and generate signals for each changed value.
-     *
-     * @param data The data packet to parse
-     */
+    /** @reimp */
     void parseData(const QByteArray& data);
 
 protected:

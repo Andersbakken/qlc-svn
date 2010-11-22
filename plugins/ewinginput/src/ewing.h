@@ -141,7 +141,7 @@ public:
      *
      * @return Information string.
      */
-    virtual QString infoText() const = 0;
+    virtual QString infoText() const;
 
     /**
      * Get the wing's firmware version.

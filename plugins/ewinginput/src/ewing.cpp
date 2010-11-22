@@ -80,6 +80,20 @@ bool EWing::isOutputData(const QByteArray& data)
     return (header == EWING_HEADER_OUTPUT);
 }
 
+QString EWing::infoText() const
+{
+    QString str;
+
+    str  = QString("<B>%1</B>").arg(name());
+    str += QString("<P>");
+    str += tr("Firmware version %1").arg(int(m_firmware));
+    str += QString("<BR>");
+    str += tr("Device is operating correctly.");
+    str += QString("</P>");
+
+    return str;
+}
+
 /****************************************************************************
  * Wing data
  ****************************************************************************/

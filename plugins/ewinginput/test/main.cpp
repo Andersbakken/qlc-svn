@@ -7,13 +7,22 @@
 int main(int argc, char** argv)
 {
     QApplication qapp(argc, argv);
+    int r;
 
     TestEPlaybackWing test1;
-    QTest::qExec(&test1, argc, argv);
+    r = QTest::qExec(&test1, argc, argv);
+    if (r != 0)
+        return r;
 
     TestEShortcutWing test2;
-    QTest::qExec(&test2, argc, argv);
+    r = QTest::qExec(&test2, argc, argv);
+    if (r != 0)
+        return r;
 
     TestEProgramWing test3;
-    QTest::qExec(&test3, argc, argv);
+    r = QTest::qExec(&test3, argc, argv);
+    if (r != 0)
+        return r;
+
+    return 0;
 }

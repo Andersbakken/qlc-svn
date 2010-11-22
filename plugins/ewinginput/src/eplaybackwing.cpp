@@ -162,17 +162,6 @@ QString EPlaybackWing::name() const
     return name;
 }
 
-QString EPlaybackWing::infoText() const
-{
-    QString str;
-
-    str  = QString("<B>%1</B><BR>").arg(name());
-    str += tr("Firmware version %1").arg(int(m_firmware));
-    str += tr("<P>Device is operating correctly</P>");
-
-    return str;
-}
-
 /****************************************************************************
  * Input data
  ****************************************************************************/
@@ -188,7 +177,7 @@ void EPlaybackWing::parseData(const QByteArray& data)
     if (data.size() < size)
     {
         qWarning() << Q_FUNC_INFO << "Expected at least" << size
-        << "bytes for buttons but got only" << data.size();
+                   << "bytes for buttons but got only" << data.size();
         return;
     }
 
