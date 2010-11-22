@@ -29,7 +29,7 @@ SOURCES += ../common/src/midiinputevent.cpp \
 
 HEADERS += ../../interfaces/qlcinplugin.h
 
-PRO_FILE = win32.pro
+PRO_FILE = macx.pro
 TRANSLATIONS += MIDI_Input_fi_FI.ts
 include(../../../i18n.pri)
 
