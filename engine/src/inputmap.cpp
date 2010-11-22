@@ -234,7 +234,7 @@ void InputMap::loadPlugins(const QString& path)
                 qDebug() << "Input plugin" << p->name() << "from" << fileName;
                 p->init();
                 appendPlugin(p);
-                QLCi18n::loadTranslation(p->name());
+                QLCi18n::loadTranslation(p->name().replace(" ", "_"));
             }
             else
             {
