@@ -83,9 +83,8 @@ bool MIDIDevice::extractName()
     s = MIDIObjectGetStringProperty(m_entity, kMIDIPropertyModel, &str);
     if (s != 0)
     {
-        qWarning() << "Unable to get manufacturer for MIDI entity:"
-        << s;
-        m_name = QString("Unknown %1").arg(m_uid);
+        qWarning() << "Unable to get manufacturer for MIDI entity:" << s;
+        m_name = tr("Unknown %1").arg(m_uid);
     }
     else
     {
@@ -99,7 +98,7 @@ bool MIDIDevice::extractName()
         }
         else
         {
-            m_name = QString("Unknown %1").arg(m_uid);
+            m_name = tr("Unknown %1").arg(m_uid);
         }
 
         free(buf);
@@ -207,8 +206,7 @@ bool MIDIDevice::open()
                             MidiInProc, 0, &m_inPort);
     if (s != 0)
     {
-        qWarning() << "Unable to make an input port for" << name()
-        << ":" << s;
+        qWarning() << "Unable to make an input port for" << name() << ":" << s;
         m_inPort = 0;
         m_isOK = false;
         return false;
@@ -220,7 +218,7 @@ bool MIDIDevice::open()
     if (s != 0)
     {
         qWarning() << "Unable to connect input port to source for"
-        << name() << ":" << s;
+                   << name() << ":" << s;
 
         s = MIDIPortDispose(m_inPort);
         if (s != 0)
@@ -243,7 +241,7 @@ bool MIDIDevice::open()
         if (s != 0)
         {
             qWarning() << "Unable to make an output port for"
-            << name() << ":" << s;
+                       << name() << ":" << s;
             m_outPort = 0;
             m_destination = 0;
         }
@@ -267,15 +265,13 @@ void MIDIDevice::close()
         s = MIDIPortDisconnectSource(m_inPort, m_source);
         if (s != 0)
         {
-            qWarning() << "Unable to disconnect input port for"
-            << name();
+            qWarning() << "Unable to disconnect input port for" << name();
         }
 
         s = MIDIPortDispose(m_inPort);
         if (s != 0)
         {
-            qWarning() << "Unable to dispose of input port for"
-            << name();
+            qWarning() << "Unable to dispose of input port for" << name();
         }
         else
         {
@@ -289,8 +285,7 @@ void MIDIDevice::close()
         s = MIDIPortDispose(m_outPort);
         if (s != 0)
         {
-            qWarning() << "Unable to dispose of output port for"
-            << name();
+            qWarning() << "Unable to dispose of output port for" << name();
         }
         else
         {
