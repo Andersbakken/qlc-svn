@@ -28,6 +28,10 @@ SOURCES += olaout.cpp \
 
 HEADERS += ../interfaces/qlcoutplugin.h
 
+PRO_FILE = olaout.pro
+TRANSLATIONS += OLA_Output_fi_FI.ts
+include(../../i18n.pri)
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 macx {

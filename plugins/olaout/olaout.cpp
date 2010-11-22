@@ -191,18 +191,14 @@ QString OLAOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("the Open Lighting Architecture (OLA). See ");
-        str += QString("<a href=\"http://code.google.com/p/linux-lighting/\">");
-        str += QString("http://code.google.com/p/linux-lighting/</a> for more ");
-        str += QString("information.");
+        str += tr("This plugin provides DMX output support for the Open Lighting Architecture (OLA).");
         str += QString("</P>");
     }
     else
     {
         str += QString("<H3>%1</H3>").arg(outputs()[output]);
         str += QString("<P>");
-        str += QString("This is the output for OLA universe %1").arg(output + 1);
+        str += tr("This is the output for OLA universe %1").arg(output + 1);
         str += QString("</P>");
     }
 
