@@ -68,15 +68,9 @@ QString PeperoniDevice::infoText() const
     str += QString("<H3>%1</H3>").arg(m_name);
     str += QString("<P>");
     if (m_deviceOK == true)
-    {
-        str += QString("Device is working correctly.");
-    }
+        str += tr("Device is working correctly.");
     else
-    {
-        str += QString("Device is NOT working correctly. ");
-        str += QString("Please open the configuration dialog and ");
-        str += QString("click the <B>Refresh</B> button.");
-    }
+        str += tr("Device might not work correctly.");
     str += QString("</P>");
 
     return str;
@@ -98,7 +92,7 @@ void PeperoniDevice::extractName()
     if (m_handle == NULL)
     {
         /* Opening the device failed */
-        m_name = QString("Nothing");
+        m_name = tr("Nothing");
         m_deviceOK = false;
     }
     else
@@ -115,7 +109,7 @@ void PeperoniDevice::extractName()
         else if (m_usbdmx->is_usbdmx21(m_handle) == TRUE)
             m_name = QString("USBDMX21");
         else
-            m_name = QString("Unknown");
+            m_name = tr("Unknown");
 
         m_deviceOK = true;
     }
@@ -150,8 +144,7 @@ void PeperoniDevice::open()
     }
     else
     {
-        qWarning() << QString("Unable to open Peperoni %1")
-        .arg(m_output + 1);
+        qWarning() << QString("Unable to open Peperoni %1").arg(m_output + 1);
     }
 }
 

@@ -116,24 +116,14 @@ QString PeperoniOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("The shared library usbdmx.dll could not be ");
-        str += QString("found or is too old to be used with QLC. ");
-        str += QString("You can request a driver package from ");
-        str += QString("<address>www.peperoni-light.de</address> ");
-        str += QString("for your Peperoni lighting products.");
+        str += tr("The shared library usbdmx.dll could not be found or is too old to be used with QLC.");
         str += QString("</P>");
     }
     else if (output == KOutputInvalid)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("devices manufactured by Peperoni Light: ");
-        str += QString("Rodin 1, Rodin 2, Rodin T, X-Switch and ");
-        str += QString("USBDMX21. See ");
-        str += QString("<a href=\"http://www.peperoni-light.de\">");
-        str += QString("http://www.peperoni-light.de</a> for more ");
-        str += QString("information. ");
+        str += tr("This plugin provides DMX output support for Peperoni DMX devices.");
         str += QString("</P>");
     }
     else if (output < quint32(m_devices.size()))
