@@ -148,11 +148,8 @@ QString HIDInput::infoText(quint32 input)
         /* A specific input line selected. Display its information if
            available. */
         HIDDevice* dev = device(input);
-
         if (dev != NULL)
             str += dev->infoText();
-        else
-            str += tr("<P>%1: Device not found.</P>").arg(input+1);
     }
 
     str += QString("</BODY>");

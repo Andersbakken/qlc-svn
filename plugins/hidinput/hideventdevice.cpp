@@ -320,7 +320,7 @@ QString HIDEventDevice::infoText()
 
     /* Channels */
     info += QString("<TD ALIGN=\"CENTER\">");
-    info += QString("N/A");
+    info += tr("N/A");
     info += QString("</TD>");
 
     info += QString("</TR>");

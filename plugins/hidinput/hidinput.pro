@@ -7,9 +7,6 @@ TARGET   = hidinput
 INCLUDEPATH += ../interfaces
 CONFIG      += plugin
 
-target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
-INSTALLS   += target
-
 # Input
 HEADERS += configurehidinput.h \
            hiddevice.h \
@@ -26,3 +23,10 @@ SOURCES += configurehidinput.cpp \
            hidinput.cpp \
            hidjsdevice.cpp \
            hidpoller.cpp
+
+PRO_FILE = hidinput.pro
+TRANSLATIONS += HID_Input_fi_FI.ts
+include(../../i18n.pri)
+
+target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
+INSTALLS   += target
