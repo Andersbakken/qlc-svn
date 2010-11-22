@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>595</width>
-    <height>465</height>
+    <height>567</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,7 +72,7 @@
             <string notr="true">...</string>
            </property>
            <property name="icon">
-            <iconset resource="fixtureeditor.qrc">
+            <iconset resource="../ui/src/main.qrc">
              <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
            </property>
            <property name="iconSize">
@@ -89,7 +89,7 @@
             <string notr="true">...</string>
            </property>
            <property name="icon">
-            <iconset resource="fixtureeditor.qrc">
+            <iconset resource="../ui/src/main.qrc">
              <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
            </property>
            <property name="iconSize">
@@ -106,7 +106,7 @@
             <string notr="true">...</string>
            </property>
            <property name="icon">
-            <iconset resource="fixtureeditor.qrc">
+            <iconset resource="../ui/src/main.qrc">
              <normaloff>:/up.png</normaloff>:/up.png</iconset>
            </property>
            <property name="iconSize">
@@ -123,7 +123,7 @@
             <string notr="true">...</string>
            </property>
            <property name="icon">
-            <iconset resource="fixtureeditor.qrc">
+            <iconset resource="../ui/src/main.qrc">
              <normaloff>:/down.png</normaloff>:/down.png</iconset>
            </property>
            <property name="iconSize">
@@ -482,15 +482,12 @@
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="m_weightSpin">
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
+             <widget class="QDoubleSpinBox" name="m_weightSpin">
               <property name="suffix">
                <string>kg</string>
               </property>
               <property name="maximum">
-               <number>999</number>
+               <double>999.990000000000009</double>
               </property>
              </widget>
             </item>
@@ -830,7 +827,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="fixtureeditor.qrc"/>
+  <include location="../ui/src/main.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -840,8 +837,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>401</y>
+     <x>266</x>
+     <y>557</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -856,8 +853,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>325</x>
-     <y>401</y>
+     <x>334</x>
+     <y>557</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
