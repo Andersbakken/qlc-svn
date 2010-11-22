@@ -10,17 +10,6 @@ DEPENDPATH  += ../common/src
 CONFIG      += plugin link_pkgconfig
 PKGCONFIG   += alsa
 
-###############################################################################
-# Installation
-###############################################################################
-
-target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
-INSTALLS   += target
-
-###############################################################################
-# Sources
-###############################################################################
-
 FORMS += ../common/src/configuremidiinput.ui \
          ../common/src/configuremidiline.ui
 
@@ -39,3 +28,11 @@ SOURCES += ../common/src/configuremidiinput.cpp \
            mididevice.cpp \
            midiinput.cpp \
            midipoller.cpp
+
+PRO_FILE = alsa.pro
+TRANSLATIONS += MIDI_Input_fi_FI.ts
+include(../../../i18n.pri)
+
+target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
+INSTALLS   += target
+

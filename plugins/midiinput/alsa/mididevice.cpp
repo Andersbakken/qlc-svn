@@ -111,7 +111,7 @@ QString MIDIDevice::infoText()
     {
         info += QString("<B>%1</B>").arg(name());
         info += QString("<P>");
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
         info += QString("</P>");
         info += QString("<P>");
         info += QString("<B>%1:</B> ").arg(tr("MIDI Channel"));
@@ -123,7 +123,7 @@ QString MIDIDevice::infoText()
     }
     else
     {
-        info += tr("<B>Unknown device</B>");
+        info += QString("<B>%1</B>").arg(tr("Unknown device"));
         info += QString("<P>");
         info += tr("ALSA sequencer interface is not available.");
         info += QString("</P>");
