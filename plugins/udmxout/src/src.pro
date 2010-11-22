@@ -35,7 +35,7 @@ target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target
 
 # UDEV rule to make uDMX USB device readable & writable for users in Linux
-unix {
+unix:!macx {
     udev.path  = /etc/udev/rules.d
     udev.files = z65-anyma-udmx.rules
     INSTALLS  += udev
