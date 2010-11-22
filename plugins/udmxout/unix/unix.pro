@@ -17,6 +17,10 @@ SOURCES += udmxdevice.cpp \
 
 HEADERS += ../../interfaces/qlcoutplugin.h
 
+PRO_FILE = unix.pro
+TRANSLATIONS += uDMX_Output_fi_FI.ts
+include(../../../i18n.pri)
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 macx:include(../../../macx/nametool.pri)

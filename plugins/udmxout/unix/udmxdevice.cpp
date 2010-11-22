@@ -119,14 +119,14 @@ QString UDMXDevice::infoText() const
     {
         info += QString("<B>%1</B>").arg(name());
         info += QString("<P>");
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
         info += QString("</P>");
     }
     else
     {
-        info += QString("<B>Unknown device</B>");
+        info += QString("<B>%1</B>").arg(tr("Unknown device"));
         info += QString("<P>");
-        info += QString("Cannot connect to USB device.");
+        info += tr("Cannot connect to USB device.");
         info += QString("</P>");
     }
 
@@ -179,8 +179,5 @@ void UDMXDevice::outputDMX(const QByteArray& universe)
                             universe.size(),        /* Size of values */
                             500);                   /* Timeout 0.5s */
     if (r < 0)
-    {
-        qWarning() << "uDMX: unable to write universe:"
-        << usb_strerror();
-    }
+        qWarning() << "uDMX: unable to write universe:" << usb_strerror();
 }

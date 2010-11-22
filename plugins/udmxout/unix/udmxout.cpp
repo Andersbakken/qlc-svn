@@ -95,10 +95,7 @@ QString UDMXOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("uDMX devices. See ");
-        str += QString("<a href=\"http://www.anyma.ch/research/udmx\">");
-        str += QString("http://www.anyma.ch</a> for more information.");
+        str += tr("This plugin provides DMX output support for Anyma uDMX devices.");
         str += QString("</P>");
     }
     else if (output < quint32(m_devices.size()))
