@@ -10,6 +10,10 @@ CONFIG      += plugin
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target
 
+PRO_FILE = dmx4linuxout.pro
+TRANSLATIONS += DMX4Linux_Output_fi_FI.ts
+include(../../i18n.pri)
+
 HEADERS += dmx4linuxout.h
 SOURCES += dmx4linuxout.cpp
 HEADERS += ../interfaces/qlcoutplugin.h

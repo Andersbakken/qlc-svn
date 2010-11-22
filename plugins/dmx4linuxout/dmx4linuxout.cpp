@@ -94,10 +94,8 @@ QString DMX4LinuxOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("devices supported by the DMX4Linux driver ");
-        str += QString("suite. See <a href=\"http://llg.cubic.org\">");
-        str += QString("http://llg.cubic.org</a> for more information");
+        str += tr("This plugin provides DMX output for devices supported by "
+                  "the DMX4Linux driver suite.");
         str += QString("</P>");
     }
     else if (output == 0)
