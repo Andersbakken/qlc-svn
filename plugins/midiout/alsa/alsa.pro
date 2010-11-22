@@ -10,9 +10,6 @@ DEPENDPATH  += ../common
 CONFIG      += plugin link_pkgconfig
 PKGCONFIG   += alsa
 
-target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS   += target
-
 FORMS += ../common/configuremididevice.ui \
          ../common/configuremidiout.ui
 
@@ -27,3 +24,10 @@ SOURCES += ../common/configuremididevice.cpp \
            midiout.cpp
 
 HEADERS += ../../interfaces/qlcoutplugin.h
+
+PRO_FILE = alsa.pro
+TRANSLATIONS += MIDI_Output_fi_FI.ts
+include(../../../i18n.pri)
+
+target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS   += target

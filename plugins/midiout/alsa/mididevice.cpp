@@ -127,20 +127,21 @@ QString MIDIDevice::infoText()
     {
         info += QString("<B>%1</B>").arg(name());
         info += QString("<P>");
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
         info += QString("</P>");
-        info += QString("<P>");
-        info += QString("<B>MIDI Channel: </B>%1<BR>")
-                .arg(m_midiChannel + 1);
-        info += QString("<B>Mode: </B>%1")
-                .arg(modeToString(m_mode));
+        info += QString("<P><B>");
+        info += tr("MIDI Channel: %1").arg(m_midiChannel + 1);
+        info += QString("</B><BR><B>");
+        info += tr("Mode: %1").arg(modeToString(m_mode));
+        info += QString("</B>");
         info += QString("</P>");
     }
     else
     {
-        info += QString("<B>Unknown device</B>");
-        info += QString("<P>");
-        info += QString("ALSA sequencer interface is not available.");
+        info += QString("<P><B>");
+        info += tr("Unknown device");
+        info += QString("</B>");
+        info += tr("ALSA sequencer interface is not available.");
         info += QString("</P>");
     }
 
@@ -169,7 +170,7 @@ void MIDIDevice::extractName()
     if (r == 0)
         m_name = QString(snd_seq_port_info_get_name(portInfo));
     else
-        m_name = QString("ERROR");
+        m_name = tr("Unknown");
 }
 
 /*****************************************************************************
