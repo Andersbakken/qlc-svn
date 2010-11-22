@@ -87,11 +87,7 @@ QString PeperoniOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support for ");
-        str += QString("Peperoni DMX devices. See ");
-        str += QString("<a href=\"http://www.peperoni-light.de\">");
-        str += QString("http://www.peperoni-light.de</a> for more ");
-        str += QString("information.");
+        str += tr("This plugin provides DMX output support for Peperoni DMX devices.");
         str += QString("</P>");
     }
     else if (output < quint32(m_devices.size()))

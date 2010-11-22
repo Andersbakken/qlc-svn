@@ -156,16 +156,18 @@ QString PeperoniDevice::infoText() const
     {
         info += QString("<B>%1</B>").arg(name());
         info += QString("<P>");
-        info += QString("Device is working correctly.<BR>");
-        info += QString("<I>Firmware version: %1</I>")
-                .arg(m_firmwareVersion, 4, 16, QChar('0'));
+        info += tr("Device is working correctly.");
+        info += QString("<BR/>");
+        info += tr("Firmware version: %1").arg(m_firmwareVersion, 4, 16, QChar('0'));
         info += QString("</P>");
     }
     else
     {
-        info += QString("<B>Unknown device</B>");
+        info += QString("<B>");
+        info += tr("Unknown device");
+        info += QString("</B>");
         info += QString("<P>");
-        info += QString("Cannot connect to USB device.");
+        info += tr("Cannot connect to USB device.");
         info += QString("</P>");
     }
 
@@ -191,15 +193,13 @@ void PeperoniDevice::open()
         int r = usb_claim_interface(m_handle, PEPERONI_IFACE_EP0);
         if (r < 0)
         {
-            qWarning() << "PeperoniDevice:"
-            << "Unable to claim interface EP0!";
+            qWarning() << "PeperoniDevice:" << "Unable to claim interface EP0!";
         }
 
         r = usb_clear_halt(m_handle, PEPERONI_BULK_OUT_ENDPOINT);
         if (r < 0)
         {
-            qWarning() << "PeperoniDevice:"
-            << "Unable to reset endpoint";
+            qWarning() << "PeperoniDevice:" << "Unable to reset endpoint";
         }
     }
 }
@@ -213,7 +213,7 @@ void PeperoniDevice::close()
         if (r < 0)
         {
             qWarning() << "PeperoniDevice:"
-            << "Unable to release interface EP0!";
+                       << "Unable to release interface EP0!";
         }
 
         usb_close(m_handle);
@@ -283,6 +283,6 @@ void PeperoniDevice::outputDMX(const QByteArray& universe)
     if (r < 0)
     {
         qWarning() << name() << "is unable to write DMX universe:"
-        << usb_strerror();
+                   << usb_strerror();
     }
 }
