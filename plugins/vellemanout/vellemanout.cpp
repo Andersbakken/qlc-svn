@@ -89,10 +89,8 @@ QString VellemanOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += tr("This plugin provides DMX output support for "
-                  "the Velleman K8062D using the DLL supplied "
-                  "with the product. Please note, use of this "
-                  "interface is not necessarily recommended.");
+        str += tr("This plugin provides DMX output support for the Velleman "
+                  "K8062D using the DLL supplied with the product.");
         str += QString("</P>");
     }
     else if (output == 0)
