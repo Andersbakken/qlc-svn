@@ -35,6 +35,7 @@
 #include "qlcoutplugin.h"
 #include "qlcconfig.h"
 #include "qlctypes.h"
+#include "qlci18n.h"
 
 #include "dummyoutplugin.h"
 #include "universearray.h"
@@ -112,6 +113,7 @@ void OutputMap::loadPlugins(const QString& path)
                 qDebug() << "Output plugin" << p->name() << "from" << fileName;
                 p->init();
                 appendPlugin(p);
+                QLCi18n::loadTranslation(p->name());
             }
             else
             {

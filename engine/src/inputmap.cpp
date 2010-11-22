@@ -35,6 +35,7 @@
 #include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
+#include "qlci18n.h"
 
 #include "inputpatch.h"
 #include "inputmap.h"
@@ -233,6 +234,7 @@ void InputMap::loadPlugins(const QString& path)
                 qDebug() << "Input plugin" << p->name() << "from" << fileName;
                 p->init();
                 appendPlugin(p);
+                QLCi18n::loadTranslation(p->name());
             }
             else
             {
