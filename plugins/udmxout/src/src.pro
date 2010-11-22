@@ -6,8 +6,8 @@ TARGET   = udmxout
 
 CONFIG      += plugin
 INCLUDEPATH += ../../interfaces
-CONFIG      += link_pkgconfig
-PKGCONFIG   += libusb
+unix:CONFIG      += link_pkgconfig
+unix:PKGCONFIG   += libusb
 
 HEADERS += udmxdevice.h \
            udmxout.h
@@ -15,9 +15,14 @@ HEADERS += udmxdevice.h \
 SOURCES += udmxdevice.cpp \
            udmxout.cpp
 
+win32 {
+    HEADERS += libusb_dyn.h
+    SOURCES += libusb_dyn.c
+}
+
 HEADERS += ../../interfaces/qlcoutplugin.h
 
-PRO_FILE = unix.pro
+PRO_FILE = src.pro
 TRANSLATIONS += uDMX_Output_fi_FI.ts
 include(../../../i18n.pri)
 
@@ -30,6 +35,8 @@ target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target
 
 # UDEV rule to make uDMX USB device readable & writable for users in Linux
-udev.path  = /etc/udev/rules.d
-udev.files = z65-anyma-udmx.rules
-INSTALLS  += udev
+unix {
+    udev.path  = /etc/udev/rules.d
+    udev.files = z65-anyma-udmx.rules
+    INSTALLS  += udev
+}
