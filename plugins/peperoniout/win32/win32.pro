@@ -23,6 +23,7 @@ HEADERS += ../../interfaces/qlcoutplugin.h
 
 PRO_FILE = win32.pro
 TRANSLATIONS += Peperoni_Output_fi_FI.ts
+TRANSLATIONS += Peperoni_Output_de_DE.ts
 include(../../../i18n.pri)
 
 # Installation
