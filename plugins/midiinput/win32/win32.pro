@@ -31,6 +31,7 @@ HEADERS += ../../interfaces/qlcinplugin.h
 
 PRO_FILE = win32.pro
 TRANSLATIONS += MIDI_Input_fi_FI.ts
+TRANSLATIONS += MIDI_Input_de_DE.ts
 include(../../../i18n.pri)
 
 target.path = $$INSTALLROOT/$$INPUTPLUGINDIR

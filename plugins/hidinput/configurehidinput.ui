@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>ConfigureHIDInput</class>
- <widget class="QDialog" name="ConfigureHIDInput" >
-  <property name="geometry" >
+ <widget class="QDialog" name="ConfigureHIDInput">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,51 +10,51 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Configure HID Input Plugin</string>
   </property>
-  <layout class="QVBoxLayout" >
+  <layout class="QVBoxLayout">
    <item>
-    <widget class="QTreeWidget" name="m_list" >
-     <property name="alternatingRowColors" >
+    <widget class="QTreeWidget" name="m_list">
+     <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
-     <property name="rootIsDecorated" >
+     <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
-     <property name="itemsExpandable" >
+     <property name="itemsExpandable">
       <bool>false</bool>
      </property>
-     <property name="allColumnsShowFocus" >
+     <property name="allColumnsShowFocus">
       <bool>true</bool>
      </property>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>Input Line</string>
       </property>
      </column>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>Name</string>
       </property>
      </column>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <widget class="QPushButton" name="m_refreshButton" >
-       <property name="text" >
+      <widget class="QPushButton" name="m_refreshButton">
+       <property name="text">
         <string>Refresh</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>121</width>
          <height>20</height>
@@ -62,16 +63,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="m_okButton" >
-       <property name="text" >
-        <string>OK</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="m_cancelButton" >
-       <property name="text" >
-        <string>Cancel</string>
+      <widget class="QDialogButtonBox" name="m_buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
        </property>
       </widget>
      </item>
@@ -82,34 +76,34 @@
  <resources/>
  <connections>
   <connection>
-   <sender>m_okButton</sender>
-   <signal>clicked()</signal>
+   <sender>m_buttonBox</sender>
+   <signal>accepted()</signal>
    <receiver>ConfigureHIDInput</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
-     <x>296</x>
-     <y>282</y>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>274</y>
     </hint>
-    <hint type="destinationlabel" >
-     <x>237</x>
-     <y>277</y>
+    <hint type="destinationlabel">
+     <x>225</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>m_cancelButton</sender>
-   <signal>clicked()</signal>
+   <sender>m_buttonBox</sender>
+   <signal>rejected()</signal>
    <receiver>ConfigureHIDInput</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
-     <x>385</x>
-     <y>270</y>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>274</y>
     </hint>
-    <hint type="destinationlabel" >
-     <x>358</x>
-     <y>296</y>
+    <hint type="destinationlabel">
+     <x>225</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>

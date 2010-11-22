@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fi_FI">
+<TS version="2.0" language="de_DE">
 <context>
     <name>ConfigureHIDInput</name>
     <message>
         <location filename="configurehidinput.ui" line="14"/>
         <source>Configure HID Input Plugin</source>
-        <translation>Muokkaa HID Input-liitännäisen asetuksia</translation>
+        <translation>HID-Eingangsplugin Konfiguration</translation>
     </message>
     <message>
         <location filename="configurehidinput.ui" line="33"/>
         <source>Input Line</source>
-        <translation>Sisääntulo</translation>
+        <translation>Eingangslinie</translation>
     </message>
     <message>
         <location filename="configurehidinput.ui" line="38"/>
         <source>Name</source>
-        <translation>Nimi</translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="configurehidinput.ui" line="48"/>
         <source>Refresh</source>
-        <translation>Päivitä</translation>
+        <translation>Aktualisieren</translation>
     </message>
 </context>
 <context>
@@ -29,7 +29,7 @@
     <message>
         <location filename="hideventdevice.cpp" line="323"/>
         <source>N/A</source>
-        <translation>Ei saatavilla</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -37,7 +37,7 @@
     <message>
         <location filename="hidinput.cpp" line="143"/>
         <source>This plugin provides input support for HID-based joysticks.</source>
-        <translation>Tämä liitännäinen tukee HID-pohjaisia joystick-ohjaimia.</translation>
+        <translation>Dieses Plugin bietet Eingangsunterstützung für HID-basiernde Joysticks.</translation>
     </message>
 </context>
 <context>
@@ -45,12 +45,12 @@
     <message>
         <location filename="hidjsdevice.cpp" line="184"/>
         <source>Axes: %1</source>
-        <translation>Akseleita: %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="hidjsdevice.cpp" line="186"/>
         <source>Buttons: %1</source>
-        <translation>Nappeja: %1</translation>
+        <translation>Schalter: %1</translation>
     </message>
 </context>
 </TS>

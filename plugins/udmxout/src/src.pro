@@ -24,6 +24,7 @@ HEADERS += ../../interfaces/qlcoutplugin.h
 
 PRO_FILE = src.pro
 TRANSLATIONS += uDMX_Output_fi_FI.ts
+TRANSLATIONS += uDMX_Output_de_DE.ts
 include(../../../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that

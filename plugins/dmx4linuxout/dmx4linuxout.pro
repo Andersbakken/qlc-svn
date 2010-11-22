@@ -12,6 +12,7 @@ INSTALLS   += target
 
 PRO_FILE = dmx4linuxout.pro
 TRANSLATIONS += DMX4Linux_Output_fi_FI.ts
+TRANSLATIONS += DMX4Linux_Output_de_DE.ts
 include(../../i18n.pri)
 
 HEADERS += dmx4linuxout.h

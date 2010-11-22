@@ -26,6 +26,7 @@ SOURCES += configurehidinput.cpp \
 
 PRO_FILE = hidinput.pro
 TRANSLATIONS += HID_Input_fi_FI.ts
+TRANSLATIONS += HID_Input_de_DE.ts
 include(../../i18n.pri)
 
 target.path = $$INSTALLROOT/$$INPUTPLUGINDIR

@@ -27,6 +27,7 @@ HEADERS += ../../interfaces/qlcoutplugin.h
 
 PRO_FILE = alsa.pro
 TRANSLATIONS += MIDI_Output_fi_FI.ts
+TRANSLATIONS += MIDI_Output_de_DE.ts
 include(../../../i18n.pri)
 
 target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
