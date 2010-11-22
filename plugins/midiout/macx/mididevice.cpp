@@ -77,24 +77,18 @@ bool MIDIDevice::extractName()
     s = MIDIObjectGetStringProperty(m_entity, kMIDIPropertyModel, &str);
     if (s != 0)
     {
-        qWarning() << "Unable to get manufacturer for MIDI entity:"
-        << s;
-        m_name = QString("Unknown %1").arg(m_uid);
+        qWarning() << "Unable to get manufacturer for MIDI entity:" << s;
+        m_name = tr("Unknown %1").arg(m_uid);
     }
     else
     {
         /* Convert the name into a QString. */
         CFIndex size = CFStringGetLength(str) + 1;
         char* buf = (char*) malloc(size);
-        if (CFStringGetCString(str, buf, size,
-                               kCFStringEncodingISOLatin1))
-        {
+        if (CFStringGetCString(str, buf, size, kCFStringEncodingISOLatin1))
             m_name = QString(buf);
-        }
         else
-        {
-            m_name = QString("Unknown %1").arg(m_uid);
-        }
+            m_name = tr("Unknown %1").arg(m_uid);
 
         free(buf);
         CFRelease(str);
@@ -156,20 +150,21 @@ QString MIDIDevice::infoText() const
     {
         info += QString("<B>%1</B>").arg(name());
         info += QString("<P>");
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
         info += QString("</P>");
-        info += QString("<P>");
-        info += QString("<B>MIDI Channel: </B>%1<BR>")
-                .arg(m_midiChannel + 1);
-        info += QString("<B>Mode: </B>%1")
-                .arg(modeToString(m_mode));
-        info += QString("</P>");
+        info += QString("<P><B>");
+        info += tr("MIDI Channel: %1").arg(m_midiChannel + 1);
+        info += QString("</B><BR><B>");
+        info += tr("Mode: %1").arg(modeToString(m_mode));
+        info += QString("</B></P>");
     }
     else
     {
-        info += QString("<B>Unknown device</B>");
+        info += QString("<B>");
+        info += tr("Unknown device");
+        info += QString("</B>");
         info += QString("<P>");
-        info += QString("MIDI interface is not available.");
+        info += tr("MIDI interface is not available.");
         info += QString("</P>");
     }
 
@@ -226,8 +221,7 @@ bool MIDIDevice::open()
                                  &m_outPort);
         if (s != 0)
         {
-            qWarning() << "Unable to make an output port for"
-            << name() << ":" << s;
+            qWarning() << "Unable to make an output port for" << name() << s;
             m_outPort = 0;
             m_destination = 0;
         }
@@ -257,8 +251,7 @@ void MIDIDevice::close()
         s = MIDIPortDispose(m_outPort);
         if (s != 0)
         {
-            qWarning() << "Unable to dispose of output port for"
-            << name();
+            qWarning() << "Unable to dispose of output port for" << name();
         }
         else
         {
