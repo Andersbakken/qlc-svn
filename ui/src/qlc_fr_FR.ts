@@ -16,7 +16,7 @@
     <message>
         <location filename="aboutbox.ui" line="116"/>
         <source>This application is licensed under the terms of GNU GPL version 2.</source>
-        <translation>Cette application est sous licence GNU GPL version 2</translation>
+        <translation>Cette application est sous licence GNU GPL version 2.</translation>
     </message>
     <message>
         <location filename="aboutbox.ui" line="126"/>
@@ -187,7 +187,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="14"/>
         <source>Add Button Matrix</source>
-        <translation>Ajouter une matrice de bouton</translation>
+        <translation>Ajouter une matrice de boutons</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="21"/>
@@ -217,12 +217,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="93"/>
         <source>Horizontal button count</source>
-        <translation>Boutton de comptage horizontal</translation>
+        <translation>Nombre horizontal de boutons</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="100"/>
         <source>Number of buttons per horizontal row</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de boutons par rangée</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="113"/>
@@ -232,7 +232,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="120"/>
         <source>Created buttons&apos; size</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille des boutons à créer</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="123"/>
@@ -242,12 +242,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="136"/>
         <source>Vertical button count</source>
-        <translation>Bouton de comptage vertical</translation>
+        <translation>Nombre verticaux de boutons</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="143"/>
         <source>Number of buttons per vertical column</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de boutons par colonne</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="153"/>
@@ -262,27 +262,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="addvcbuttonmatrix.ui" line="173"/>
         <source>Frame</source>
-        <translation type="unfinished">Frame</translation>
+        <translation>Type de Matrice</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="179"/>
         <source>Place the buttons inside a normal frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Le bouton est dans une matrice standard</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="182"/>
         <source>Normal</source>
-        <translation type="unfinished">Normal</translation>
+        <translation>Normal</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="189"/>
         <source>Place the buttons inside a frame that ensures that only one of them is pressed at a time</source>
-        <translation type="unfinished"></translation>
+        <translation>Le bouton est dans une matrice dont un seul bouton peut être enclenché à la fois</translation>
     </message>
     <message>
         <location filename="addvcbuttonmatrix.ui" line="192"/>
         <source>Solo</source>
-        <translation type="unfinished"></translation>
+        <translation>Solo</translation>
     </message>
 </context>
 <context>
@@ -329,8 +329,8 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="448"/>
         <source>Space left for %n fixtures. Currently consuming %1 watts total.</source>
         <translation>
+            <numerusform>Espace laissé pour %n projecteur. Consommation totale actuelle %1 W.</numerusform>
             <numerusform>Espace laissé pour %n projecteurs. Consommation totale actuelle %1 W.</numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message>
@@ -343,8 +343,8 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="455"/>
         <source>Space left for %n functions</source>
         <translation>
+            <numerusform>Espace laissé pour %n fonction</numerusform>
             <numerusform>Espace laissé pour %n fonctions</numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message>
@@ -378,7 +378,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="560"/>
         <location filename="app.cpp" line="631"/>
         <source>Design mode is active; editing facilities are enabled</source>
-        <translation>Le mode Design est activé; les fonctions d&apos;édition sont enclanchées</translation>
+        <translation>Le mode Design est activé; les fonctions d&apos;édition sont enclenchées</translation>
     </message>
     <message>
         <location filename="app.cpp" line="574"/>
@@ -416,7 +416,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="656"/>
         <source>CTRL+N</source>
         <comment>File|New</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="661"/>
@@ -427,7 +427,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="662"/>
         <source>CTRL+O</source>
         <comment>File|Open</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="667"/>
@@ -438,12 +438,12 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="668"/>
         <source>CTRL+S</source>
         <comment>File|Save</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="673"/>
         <source>Save &amp;As...</source>
-        <translation>Enregistrer sous</translation>
+        <translation>Enregistrer sous (&amp;A) ...</translation>
     </message>
     <message>
         <location filename="app.cpp" line="678"/>
@@ -496,76 +496,76 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="679"/>
         <source>CTRL+Q</source>
         <comment>File|Quit</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="685"/>
         <source>Fi&amp;xtures</source>
-        <translation type="unfinished"></translation>
+        <translation>Projecteurs (&amp;x)</translation>
     </message>
     <message>
         <location filename="app.cpp" line="686"/>
         <source>ALT+X</source>
         <comment>Manager|Fixtures</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="691"/>
         <source>F&amp;unctions</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonctions (&amp;u)</translation>
     </message>
     <message>
         <location filename="app.cpp" line="692"/>
         <source>ALT+U</source>
         <comment>Manager|Functions</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="698"/>
         <source>ALT+B</source>
         <comment>Manager|Buses</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="704"/>
         <source>ALT+I</source>
         <comment>Manager|Inputs</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="710"/>
         <source>ALT+O</source>
         <comment>Manager|Outputs</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="718"/>
         <source>CTRL+F12</source>
         <comment>Control|Toggle operate/design mode</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="724"/>
         <source>CTRL+R</source>
         <comment>Control|Virtual Console</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="730"/>
         <source>CTRL+M</source>
         <comment>Control|Monitor</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="737"/>
         <source>Toggle Full Screen</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="739"/>
         <source>CTRL+F11</source>
         <comment>Control|Toggle Full Screen</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="746"/>
@@ -576,12 +576,12 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="747"/>
         <source>CTRL+M</source>
         <comment>Apple Window Action|Minimize</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="751"/>
         <source>Bring All to Front</source>
-        <translation>Amener tout à l&apos;avant</translation>
+        <translation>Amener tout au premier plan</translation>
     </message>
     <message>
         <location filename="app.cpp" line="758"/>
@@ -592,7 +592,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
         <location filename="app.cpp" line="759"/>
         <source>SHIFT+F1</source>
         <comment>Help|Index</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="764"/>
@@ -663,7 +663,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
     <message>
         <location filename="app.cpp" line="901"/>
         <source>Operation was aborted</source>
-        <translation>L&apos;opération a été avortée</translation>
+        <translation>L&apos;opération a été abandonnée</translation>
     </message>
     <message>
         <location filename="app.cpp" line="904"/>
@@ -687,7 +687,7 @@ Voulez-vous vraiement les arrêter et basculer vers le Mode Design?</translation
 Changes will be lost if you don&apos;t save them.</source>
         <translatorcomment>Tiens tiens...perspicace!</translatorcomment>
         <translation>Voulez-vous sauvegarder l&apos;espace de travail actuel?
-Les changements seront perdus si vous ne les sauvez pas.</translation>
+Les changements seront perdus si vous ne les sauvegardez pas.</translation>
     </message>
     <message>
         <location filename="app.cpp" line="925"/>
@@ -698,7 +698,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
         <location filename="app.cpp" line="972"/>
         <location filename="app.cpp" line="993"/>
         <source>Open Workspace</source>
-        <translation>Espace de travail ouver</translation>
+        <translation>Ouvrir un espace de travail</translation>
     </message>
     <message>
         <location filename="app.cpp" line="999"/>
@@ -726,7 +726,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="app.cpp" line="1267"/>
         <source>Set background image...</source>
-        <translation>Définir une image d&apos;arrière plan</translation>
+        <translation>Définir une image d&apos;arrière plan...</translation>
     </message>
     <message>
         <location filename="app.cpp" line="1270"/>
@@ -764,7 +764,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="assignhotkey.cpp" line="40"/>
         <source>Hit the key combination that you wish to assign. You may hit either a single key or a combination using CTRL, ALT, and SHIFT.</source>
-        <translation>Appuyer sur la combinaison de touches que vous voulez assigner. Vous pouvez frapper plus d&apos;une touche ou une combinaison utilisant CTRL, ALT et SHIFT.</translation>
+        <translation>Appuyer sur la combinaison de touches que vous voulez assigner. Vous pouvez frapper une simple touche ou une combinaison utilisant CTRL, ALT et SHIFT.</translation>
     </message>
 </context>
 <context>
@@ -773,7 +773,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
         <location filename="busmanager.cpp" line="62"/>
         <location filename="busmanager.cpp" line="117"/>
         <source>Bus Manager</source>
-        <translation>Commande pour un bus</translation>
+        <translation>Gestionnaire de Bus</translation>
     </message>
     <message>
         <location filename="busmanager.cpp" line="63"/>
@@ -1062,7 +1062,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="189"/>
         <source>The pattern propagates to each fixture in a sequential order</source>
-        <translation>Le pattern se transmet à chaque projecteur dans un ordre séquentiel</translation>
+        <translation>Le motif se transmet à chaque projecteur dans un ordre séquentiel</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="192"/>
@@ -1077,7 +1077,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="208"/>
         <source>Bus that controls the speed of the pattern</source>
-        <translation>Le bus qui contrôle la vitesse du pattern</translation>
+        <translation>Le bus qui contrôle la vitesse du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="232"/>
@@ -1087,12 +1087,12 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="272"/>
         <source>Pattern</source>
-        <translation>Pattern</translation>
+        <translation>Motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="278"/>
         <source>Pattern for moving the mirror/head</source>
-        <translation>Pattern pour bouger le miroir/la tête</translation>
+        <translation>Motif pour bouger le miroir/la tête</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="304"/>
@@ -1107,7 +1107,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="317"/>
         <source>Value width of the pattern</source>
-        <translation>Valeur de la largeur du pattern</translation>
+        <translation>Valeur de la largeur du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="330"/>
@@ -1117,7 +1117,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="337"/>
         <source>Value height of the pattern</source>
-        <translation>Valeur de la hauteur du pattern</translation>
+        <translation>Valeur de la hauteur du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="350"/>
@@ -1127,7 +1127,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="357"/>
         <source>Pattern&apos;s center point on the X axis</source>
-        <translation>Point central du pattern sur l&apos;axe des X</translation>
+        <translation>Point central du motif sur l&apos;axe des X</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="370"/>
@@ -1137,7 +1137,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="377"/>
         <source>Pattern&apos;s center point on the Y axis</source>
-        <translation>Point central du pattern sur l&apos;axe des Y</translation>
+        <translation>Point central du motif sur l&apos;axe des Y</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="390"/>
@@ -1147,7 +1147,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="397"/>
         <source>Rotation of the pattern&apos;s starting point</source>
-        <translation>Rotation du point de départ du pattern</translation>
+        <translation>Rotation du point de départ du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="423"/>
@@ -1157,7 +1157,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="433"/>
         <source>Lissajous pattern&apos;s X frequency</source>
-        <translation>Fréquence du pattern Lissajous de X</translation>
+        <translation>Fréquence Lissajous de X du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="449"/>
@@ -1167,7 +1167,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="459"/>
         <source>Lissajous pattern&apos;s Y frequency</source>
-        <translation>Fréquence du pattern Lissajous de X</translation>
+        <translation>Fréquence Lissajous de Y du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="475"/>
@@ -1177,7 +1177,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="485"/>
         <source>Lissajous pattern&apos;s X phase</source>
-        <translation>Pattern Lissajou de la phase de X</translation>
+        <translation>Phase Lissajous de X du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="501"/>
@@ -1187,7 +1187,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="511"/>
         <source>Lissajous pattern&apos;s Y phase</source>
-        <translation>Pattern Lissajou de la phase de X</translation>
+        <translation>Phase Lissajous de Y du motif</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="527"/>
@@ -1197,7 +1197,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="533"/>
         <source>Run the pattern forwards</source>
-        <translation>Jouer le pattern en avant</translation>
+        <translation>Jouer le motif en avant</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="536"/>
@@ -1207,7 +1207,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="546"/>
         <source>Run the pattern backwards</source>
-        <translation>Jouer le pattern en arrière</translation>
+        <translation>Jouer le motif en arrière</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="549"/>
@@ -1222,7 +1222,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="578"/>
         <source>Run through over and over again</source>
-        <translation>Répéter encore et encore par-dessus</translation>
+        <translation>Répéter indéfiniment</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="581"/>
@@ -1232,7 +1232,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="efxeditor.ui" line="591"/>
         <source>Run through once and stop</source>
-        <translation>Répéter une fois et arrêter</translation>
+        <translation>Lire une seule fois</translation>
     </message>
     <message>
         <location filename="efxeditor.ui" line="594"/>
@@ -1498,7 +1498,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="functionmanager.cpp" line="223"/>
         <source>Select &amp;all</source>
-        <translation>Tout sélectionner</translation>
+        <translation>Tout sélectionner (&amp;A)</translation>
     </message>
     <message>
         <location filename="functionmanager.cpp" line="237"/>
@@ -1547,7 +1547,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="functionselection.ui" line="13"/>
         <source>Select Function</source>
-        <translation>Sélectionner une fonction</translation>
+        <translation>Sélection de fonction</translation>
     </message>
     <message>
         <location filename="functionselection.ui" line="35"/>
@@ -1722,27 +1722,27 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="grandmasterslider.cpp" line="64"/>
         <source>Grand&lt;BR&gt;Master</source>
-        <translation type="unfinished"></translation>
+        <translation>Grand&lt;BR&gt;Master</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="88"/>
         <source>Limits the maximum value of</source>
-        <translation type="unfinished"></translation>
+        <translation>Limite la valeur maximum de</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="91"/>
         <source>Reduces the current value of</source>
-        <translation type="unfinished"></translation>
+        <translation>Réduit la valeur actuelle de</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="100"/>
         <source>intensity channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Circuits d&apos;intensité</translation>
     </message>
     <message>
         <location filename="grandmasterslider.cpp" line="103"/>
         <source>all channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Tous les circuits</translation>
     </message>
 </context>
 <context>
@@ -1936,7 +1936,7 @@ Les changements seront perdus si vous ne les sauvez pas.</translation>
     <message>
         <location filename="inputprofileeditor.ui" line="36"/>
         <source>The name of the company that made the device</source>
-        <translation>Le nom de la companie qui a fabriqué le truc...</translation>
+        <translation>Le nom de la companie qui a fabriqué la machine</translation>
     </message>
     <message>
         <location filename="inputprofileeditor.ui" line="46"/>
@@ -2213,7 +2213,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
         <location filename="vcxypadfixture.cpp" line="280"/>
         <location filename="vcxypadfixture.cpp" line="300"/>
         <source>Reversed</source>
-        <translation type="unfinished"></translation>
+        <translation>Inversé</translation>
     </message>
 </context>
 <context>
@@ -2260,12 +2260,12 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="sceneeditor.ui" line="123"/>
         <source>Enable all fixtures&apos; channels</source>
-        <translation>Enclancher tous les canaux des projecteurs</translation>
+        <translation>Activer tous les canaux des projecteurs</translation>
     </message>
     <message>
         <location filename="sceneeditor.ui" line="126"/>
         <source>Enable all</source>
-        <translation>Tout enclencher</translation>
+        <translation>Tout activer</translation>
     </message>
     <message>
         <location filename="sceneeditor.ui" line="133"/>
@@ -2285,12 +2285,12 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="sceneeditor.cpp" line="83"/>
         <source>Enable all channels in current fixture</source>
-        <translation>Activerer tous les canaux pour le projecteur sélectionné</translation>
+        <translation>Activer tous les canaux pour le projecteur sélectionné</translation>
     </message>
     <message>
         <location filename="sceneeditor.cpp" line="85"/>
         <source>Disable all channels in current fixture</source>
-        <translation>Dès-enclencher tous les canaux dans le projecteur actuel</translation>
+        <translation>Désactiver tous les canaux dans le projecteur actuel</translation>
     </message>
     <message>
         <location filename="sceneeditor.cpp" line="87"/>
@@ -2433,17 +2433,17 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcbuttonproperties.ui" line="100"/>
         <source>Key combination</source>
-        <translation>Combinaison de touches</translation>
+        <translation>Raccourci clavier</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="106"/>
         <source>Keyboard combination that toggles this button</source>
-        <translation>Combinaison de touches qui déclenche ce bouton</translation>
+        <translation>Raccourci clavier qui déclenche ce bouton</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="116"/>
         <source>Set a key combination for this button</source>
-        <translation>Instaurez une combinaison de touches pour ce bouton</translation>
+        <translation>Specifier un raccourci clavier pour ce bouton</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="136"/>
@@ -2478,7 +2478,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcbuttonproperties.ui" line="218"/>
         <source>Choose an external input universe &amp; channel that this button should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir un univers d&apos;etrée externe et un canal que ce bouton doit écouter.</translation>
     </message>
     <message>
         <source>Choose the external input universe &amp; channel that this widget should listen to</source>
@@ -2492,17 +2492,17 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcbuttonproperties.ui" line="228"/>
         <source>When toggled, you can click an external button to assign it to this virtual console button.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bougez un fader externe afin de l&apos;assigner à ce fader de la console virtuelle.</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="231"/>
         <source>Auto Detect</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto-détection</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="250"/>
         <source>On button press...</source>
-        <translation>Pressez sur le bouton...</translation>
+        <translation>Fonctionnement du bouton...</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="256"/>
@@ -2512,7 +2512,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcbuttonproperties.ui" line="259"/>
         <source>Toggle function on/off</source>
-        <translation>Fonction de bascule on/off</translation>
+        <translation>Bascule on/off</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.ui" line="269"/>
@@ -2522,7 +2522,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcbuttonproperties.ui" line="272"/>
         <source>Flash function (only for scenes)</source>
-        <translation>Fonction flash (seulement pou les scènes)</translation>
+        <translation>Flash (seulement pour les scènes)</translation>
     </message>
     <message>
         <location filename="vcbuttonproperties.cpp" line="206"/>
@@ -2607,7 +2607,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vccuelistproperties.ui" line="173"/>
         <source>Next cue key combination</source>
-        <translation>Prochaine combinaison de touches pour le séquentiel</translation>
+        <translation>Raccourci clavier pour GO</translation>
     </message>
     <message>
         <location filename="vccuelistproperties.ui" line="179"/>
@@ -2622,7 +2622,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vccuelistproperties.ui" line="209"/>
         <source>Clear the key binding</source>
-        <translation>Nettoyer la liaison de touches</translation>
+        <translation>Effacer le raccourci</translation>
     </message>
 </context>
 <context>
@@ -2634,12 +2634,12 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcdockslider.cpp" line="138"/>
         <source>Bus %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="vcdockslider.cpp" line="142"/>
         <source>time</source>
-        <translation type="unfinished"></translation>
+        <translation>temps</translation>
     </message>
 </context>
 <context>
@@ -2686,7 +2686,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="46"/>
         <source>Prevent flickering when a keyboard hotkey has been pressed in operate mode</source>
-        <translation>Prévenir le scintillement quand une combinaison de touches a été préssée en mode d&apos;exploitation</translation>
+        <translation>Empêcher le scintillement quand une &quot;hotkey&quot; est pressée en mode d&apos;exploitation</translation>
     </message>
     <message>
         <source>Turn off key repeat in operate mode</source>
@@ -2710,7 +2710,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="78"/>
         <source>Widget grid layout X resolution</source>
-        <translation>Widget de disposition en grille de la résolution de X</translation>
+        <translation>Résolution X de la grille</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="81"/>
@@ -2726,7 +2726,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="101"/>
         <source>Widget grid layout Y resolution</source>
-        <translation>Widget de disposition en grille de la résolution de Y</translation>
+        <translation>Résolution Y de la grille</translation>
     </message>
     <message>
         <source>Default sliders</source>
@@ -2735,7 +2735,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="402"/>
         <source>Default fade slider</source>
-        <translation>Fader par défaut</translation>
+        <translation>Fader de fondu par défaut</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="408"/>
@@ -2790,99 +2790,99 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="30"/>
         <source>Keyboard in operate mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Clavier en mode Exploitation</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="39"/>
         <source>Grab keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Utiliser le clavier</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="49"/>
         <source>Turn off key repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Désactiver la répétition de touches</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="147"/>
         <source>Grand Master</source>
-        <translation type="unfinished"></translation>
+        <translation>Grand Master</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="153"/>
         <source>Channels</source>
-        <translation type="unfinished">Canaux</translation>
+        <translation>Canaux</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="159"/>
         <source>Apply Grand Master only to Intensity channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le Grand Master n&apos;agit que sur les canaux d&apos;intensité.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="162"/>
         <source>Intensity</source>
-        <translation type="unfinished">Intensité</translation>
+        <translation>Intensité</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="169"/>
         <source>Apply Grand Master to all channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le Grand Master agit sur tous les canaux.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="172"/>
         <source>All channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Tous cancaux</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="182"/>
         <source>Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Valeurs</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="188"/>
         <source>Make Grand Master reduce levels by a percentage.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le Grand Master agit par une réduction proportionnelle de niveaux.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="191"/>
         <source>Reduce</source>
-        <translation type="unfinished"></translation>
+        <translation>Réduction proportionnelle</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="198"/>
         <source>Make Grand Master limit the maximum channel values.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le Grand Master agit par limite de valeur maximum.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="201"/>
         <source>Limit</source>
-        <translation type="unfinished"></translation>
+        <translation>Valeur limite</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="217"/>
         <location filename="vcproperties.ui" line="306"/>
         <source>Input Universe</source>
-        <translation type="unfinished">Univers d&apos;entrée</translation>
+        <translation>Univers d&apos;entrée</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="224"/>
         <source>Input universe for Grand Master slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Univers d&apos;entrée du Grand Master.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="234"/>
         <location filename="vcproperties.ui" line="323"/>
         <source>Input Channel</source>
-        <translation type="unfinished">Canal d&apos;entrée</translation>
+        <translation>Canal d&apos;entrée</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="241"/>
         <source>Input channel for Grand Master slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal d&apos;entrée du Grand Master.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="264"/>
         <source>When toggled, you can move an external slider/knob to assign it to the Grand Master slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bougez un fader externe afin de l&apos;assigner en Grand Master.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="267"/>
@@ -2890,72 +2890,72 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
         <location filename="vcproperties.ui" line="511"/>
         <location filename="vcproperties.ui" line="650"/>
         <source>Auto Detect</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto-détection</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="280"/>
         <source>Choose an external input universe &amp; channel that the Grand Master slider should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir l&apos;univers d&apos;entrée externe &amp; le canal que le Grand Master devra écouter.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="294"/>
         <source>Blackout</source>
-        <translation type="unfinished">Blackout</translation>
+        <translation>Blackout</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="313"/>
         <source>Input universe for Blackout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Univers d&apos;entrée pour Blackout.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="330"/>
         <source>Input channel for Blackout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal d&apos;entrée pour Blackout.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="353"/>
         <source>When toggled, you can move an external slider/knob to assign it to Blackout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bougez un fader externe afin de l&apos;assigner en Blackout.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="369"/>
         <source>Choose an external input universe &amp; channel that Blackout should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir un univers d&apos;etrée externe et un canal que le Blackout devra écouter.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="396"/>
         <source>Default Fade</source>
-        <translation type="unfinished"></translation>
+        <translation>Fader de fondu</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="468"/>
         <source>Input universe for default fade.</source>
-        <translation type="unfinished"></translation>
+        <translation>Univers d&apos;entrée pour le fader de Fondu.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="485"/>
         <source>Input channel for default fade.</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal d&apos;entrée pour le fader de Fondu.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="508"/>
         <source>When toggled, you can move an external slider/knob to assign it to the default fade slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bougez un fader externe afin de l&apos;assigner en fader de Fondu.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="521"/>
         <source>Choose an external input universe &amp; channel that the default fade slider should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir l&apos;univers d&apos;entrée externe &amp; le canal que le fader de Fondu devra écouter.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="535"/>
         <source>Default Hold</source>
-        <translation type="unfinished"></translation>
+        <translation>Fader de Tenue</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="541"/>
         <source>Default hold slider</source>
-        <translation>Curseur de blocage par défaut</translation>
+        <translation>Fader de Tenue par défaut</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="554"/>
@@ -2970,22 +2970,22 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcproperties.ui" line="607"/>
         <source>Input universe for default hold.</source>
-        <translation type="unfinished"></translation>
+        <translation>Univers d&apos;entrée pour le fader de Tenue.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="624"/>
         <source>Input channel for default hold.</source>
-        <translation type="unfinished"></translation>
+        <translation>Canal d&apos;entrée pour le fader de Tenue.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="647"/>
         <source>When toggled, you can move an external slider/knob to assign it to the default hold slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bougez un fader externe afin de l&apos;assigner en fader de Tenue.</translation>
     </message>
     <message>
         <location filename="vcproperties.ui" line="660"/>
         <source>Choose an external input universe &amp; channel that the default hold slider should listen to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir l&apos;univers d&apos;entrée externe &amp; le canal que le fader de Tenue devra écouter.</translation>
     </message>
     <message>
         <location filename="vcpropertieseditor.cpp" line="426"/>
@@ -3089,7 +3089,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
         <location filename="vcsliderproperties.ui" line="162"/>
         <source>Choose an external input universe &amp; channel that this widget should listen to</source>
         <oldsource>Choose the external input universe &amp; channel that this widget should listen to</oldsource>
-        <translation type="unfinished">Choisir l&apos;univers d&apos;entrée externe &amp; le canal que ce widget devra écouter</translation>
+        <translation>Choisir l&apos;univers d&apos;entrée externe &amp; le canal que ce widget devra écouter</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="165"/>
@@ -3099,12 +3099,12 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcsliderproperties.ui" line="172"/>
         <source>When toggled, you can move an external slider/knob to assign it to this virtual console slider.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bougez un fader externe afin de l&apos;assigner à ce fader de la console virtuelle.</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="175"/>
         <source>Auto Detect</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto-détection</translation>
     </message>
     <message>
         <location filename="vcsliderproperties.ui" line="202"/>
@@ -3164,7 +3164,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="vcsliderproperties.ui" line="330"/>
         <source>Lowest DMX value that can be set with this slider</source>
-        <translation type="unfinished"></translation>
+        <translation>Valeur DMX la plus basse qui peut être donnée avec ce curseur</translation>
     </message>
     <message>
         <source>Lowest DMX value that can be se with this slider</source>
@@ -3436,7 +3436,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="virtualconsole.cpp" line="272"/>
         <source>Solo frame</source>
-        <translation type="unfinished"></translation>
+        <translation>Matrice de solos</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="277"/>
@@ -3456,7 +3456,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="virtualconsole.cpp" line="309"/>
         <source>Toggle &amp;Blackout</source>
-        <translation type="unfinished">Basculer vers le &amp;blackout</translation>
+        <translation>Basculer vers le &amp;blackout</translation>
     </message>
     <message>
         <location filename="virtualconsole.cpp" line="317"/>
@@ -3514,7 +3514,7 @@ Notez que cette l&apos;assistant ne peut pas faire la différence entre un poten
     <message>
         <location filename="virtualconsole.cpp" line="406"/>
         <source>Choose...</source>
-        <translation type="unfinished">Choisissez...</translation>
+        <translation>Choisissez...</translation>
     </message>
     <message>
         <source>Font</source>

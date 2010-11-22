@@ -92,7 +92,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="app.cpp" line="133"/>
         <source>Unable to load fixture definition: </source>
-        <translation>Echec du chargement des spécifications du projecteur :</translation>
+        <translation>Impossible de charger les spécifications du projecteur :</translation>
     </message>
     <message>
         <location filename="app.cpp" line="197"/>
@@ -103,7 +103,7 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="198"/>
         <source>CTRL+N</source>
         <comment>File|New</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="203"/>
@@ -114,7 +114,7 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="204"/>
         <source>CTRL+O</source>
         <comment>File|Open</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="209"/>
@@ -125,18 +125,18 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="210"/>
         <source>CTRL+S</source>
         <comment>File|Save</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="214"/>
         <source>Save &amp;As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer sous (&amp;A)...</translation>
     </message>
     <message>
         <location filename="app.cpp" line="215"/>
         <source>CTRL+SHIFT+S</source>
         <comment>File|Save As...</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Save &amp;As</source>
@@ -151,7 +151,7 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="221"/>
         <source>CTRL+Q</source>
         <comment>File|Quit</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="227"/>
@@ -162,7 +162,7 @@ p, li { white-space: pre-wrap; }
         <location filename="app.cpp" line="228"/>
         <source>SHIFT+F1</source>
         <comment>Help|Index</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="app.cpp" line="233"/>
@@ -182,7 +182,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="app.cpp" line="268"/>
         <source>&amp;Help</source>
-        <translation>Aide</translation>
+        <translation>Aide (&amp;H)</translation>
     </message>
     <message>
         <location filename="app.cpp" line="306"/>
@@ -263,7 +263,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/src/docbrowser.cpp" line="80"/>
         <source>%1 - Document Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - Explorateur de documents</translation>
     </message>
     <message>
         <location filename="../ui/src/docbrowser.cpp" line="91"/>
@@ -758,31 +758,31 @@ p, li { white-space: pre-wrap; }
         <source>Do you want to save changes to fixture
 &quot;%1&quot;
 before closing?</source>
-        <translation type="unfinished"></translation>
+        <translation>Voulez vous enregistrer les modifications du projecteur %1 avant de fermer ?</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="218"/>
         <location filename="fixtureeditor.cpp" line="228"/>
         <source>Missing important information</source>
-        <translation type="unfinished"></translation>
+        <translation>Information importante manquante</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="219"/>
         <source>Missing manufacturer name.
 Unable to save fixture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;enregistrer : pas de nom de fabricant.</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="229"/>
         <source>Missing fixture model name.
 Unable to save fixture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;enregistrer : pas de nom de modèle de projecteur.</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="258"/>
         <location filename="fixtureeditor.cpp" line="350"/>
         <source>Fixture saving failed</source>
-        <translation>Erreur d&apos;Enregistrment</translation>
+        <translation>Erreur d&apos;enregistrment</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="259"/>
@@ -790,7 +790,7 @@ Unable to save fixture.</source>
         <source>Unable to save fixture definition:
 %1</source>
         <oldsource>Unable to save fixture definition: </oldsource>
-        <translation type="unfinished">Sauvegarde impossible : </translation>
+        <translation>Impossible d&apos;enregistrer : %1</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="277"/>
@@ -800,32 +800,32 @@ Unable to save fixture.</source>
     <message>
         <location filename="fixtureeditor.cpp" line="369"/>
         <source>New Fixture</source>
-        <translation type="unfinished"></translation>
+        <translation>Nouveau projecteur</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="440"/>
         <source>Channel already exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce canal existe déjà</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="441"/>
         <source>A channel by the name &quot;%1&quot; already exists!</source>
-        <translation type="unfinished"></translation>
+        <translation>Un canal nommé &quot;%1&quot; existe déjà !</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="448"/>
         <source>Channel has no name</source>
-        <translation type="unfinished"></translation>
+        <translation>Le canal n&apos;a pas de nom</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="449"/>
         <source>You must give the channel a descriptive name!</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous devez donner au canal un nom explicite !</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="483"/>
         <source>Are you sure you wish to remove channel: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Etes-vous certain de vouloir supprimer le canal : %1</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="619"/>
@@ -877,12 +877,12 @@ Unable to save fixture.</source>
     <message>
         <location filename="fixtureeditor.cpp" line="766"/>
         <source>Remove Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Mode Suppression</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="767"/>
         <source>Are you sure you wish to remove mode: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Etes-vous certain de vouloir supprimer le mode : %1</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="818"/>
@@ -892,12 +892,12 @@ Unable to save fixture.</source>
     <message>
         <location filename="fixtureeditor.cpp" line="819"/>
         <source>Give a unique name for the mode</source>
-        <translation>Donnez un nom unique à=au mode</translation>
+        <translation>Donnez un nom unique au mode</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="821"/>
         <source>Copy of %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Copie de %1</translation>
     </message>
     <message>
         <location filename="fixtureeditor.cpp" line="831"/>
@@ -917,7 +917,7 @@ Unable to save fixture.</source>
     <message>
         <location filename="fixtureeditor.cpp" line="883"/>
         <source>Modes</source>
-        <translation></translation>
+        <translation>Modes</translation>
     </message>
 </context>
 </TS>
