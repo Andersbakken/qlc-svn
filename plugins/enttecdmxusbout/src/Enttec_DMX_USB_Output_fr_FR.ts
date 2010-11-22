@@ -4,27 +4,27 @@
 <context>
     <name>EnttecDMXUSBOpen</name>
     <message>
-        <location filename="enttecdmxusbopen.cpp" line="89"/>
+        <location filename="enttecdmxusbopen.cpp" line="96"/>
         <source>DMX Frame Frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbopen.cpp" line="93"/>
+        <location filename="enttecdmxusbopen.cpp" line="100"/>
         <source>Bad</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbopen.cpp" line="95"/>
+        <location filename="enttecdmxusbopen.cpp" line="102"/>
         <source>Good</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbopen.cpp" line="97"/>
+        <location filename="enttecdmxusbopen.cpp" line="104"/>
         <source>Patch this widget to a universe to find out.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbopen.cpp" line="98"/>
+        <location filename="enttecdmxusbopen.cpp" line="105"/>
         <source>System Timer Accuracy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -32,32 +32,32 @@
 <context>
     <name>EnttecDMXUSBOut</name>
     <message>
-        <location filename="enttecdmxusbout.cpp" line="94"/>
+        <location filename="enttecdmxusbout.cpp" line="130"/>
         <source>No devices available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbout.cpp" line="96"/>
+        <location filename="enttecdmxusbout.cpp" line="132"/>
         <source>Make sure that you have your hardware firmly plugged in. NOTE: FTDI VCP interface is not supported by this plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbout.cpp" line="102"/>
+        <location filename="enttecdmxusbout.cpp" line="138"/>
         <source>This plugin provides DMX output support for</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbout.cpp" line="105"/>
+        <location filename="enttecdmxusbout.cpp" line="141"/>
         <source>and compatible devices.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbout.cpp" line="112"/>
+        <location filename="enttecdmxusbout.cpp" line="148"/>
         <source>Device is operating correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="enttecdmxusbout.cpp" line="138"/>
+        <location filename="enttecdmxusbout.cpp" line="174"/>
         <source>Do you wish to re-scan your hardware?</source>
         <translation type="unfinished"></translation>
     </message>

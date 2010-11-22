@@ -55,11 +55,11 @@ unix:!macx {
 }
 
 PRO_FILE      = src.pro
-TRANSLATIONS += enttec_fi_FI.ts
-TRANSLATIONS += enttec_de_DE.ts
-TRANSLATIONS += enttec_fr_FR.ts
-TRANSLATIONS += enttec_es_ES.ts
-include(../../../../i18n.pri)
+TRANSLATIONS += Enttec_DMX_USB_Output_de_DE.ts
+TRANSLATIONS += Enttec_DMX_USB_Output_es_ES.ts
+TRANSLATIONS += Enttec_DMX_USB_Output_fi_FI.ts
+TRANSLATIONS += Enttec_DMX_USB_Output_fr_FR.ts
+include(../../../i18n.pri)
 
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
