@@ -10,17 +10,6 @@ INCLUDEPATH += ../../interfaces
 DEPENDPATH  += ../common/src
 LIBS        += -lwinmm
 
-###############################################################################
-# Installation
-###############################################################################
-
-target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
-INSTALLS   += target
-
-###############################################################################
-# Sources
-###############################################################################
-
 FORMS += ../common/src/configuremidiinput.ui \
          ../common/src/configuremidiline.ui
 
@@ -39,3 +28,10 @@ SOURCES += ../common/src/configuremidiinput.cpp \
            midiinput.cpp
 
 HEADERS += ../../interfaces/qlcinplugin.h
+
+PRO_FILE = win32.pro
+TRANSLATIONS += MIDI_Input_fi_FI.ts
+include(../../../i18n.pri)
+
+target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
+INSTALLS   += target

@@ -110,25 +110,14 @@ QString MIDIInput::infoText(quint32 input)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides input support for ");
-        str += QString("various MIDI devices.");
+        str += tr("This plugin provides input support for various MIDI devices.");
         str += QString("</P>");
     }
     else
     {
         MIDIDevice* dev = device(input);
         if (dev != NULL)
-        {
             str += device(input)->infoText();
-        }
-        else
-        {
-            str += QString("<P><I>");
-            str += QString("Unable to find device. Please go to ");
-            str += QString("the configuration dialog and click ");
-            str += QString("the refresh button.");
-            str += QString("</I></P>");
-        }
     }
 
     str += QString("</BODY>");
