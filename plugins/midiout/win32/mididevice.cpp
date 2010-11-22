@@ -106,35 +106,35 @@ bool MIDIDevice::open()
     if (res == MMSYSERR_ALLOCATED)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Resource is already allocated.");
+                 << QString("Resource is already allocated.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_BADDEVICEID)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Bad device ID.");
+                 << QString("Bad device ID.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_INVALFLAG)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Invalid flags.");
+                 << QString("Invalid flags.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_INVALPARAM)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Invalid parameters.");
+                 << QString("Invalid parameters.");
         m_handle = NULL;
         result = false;
     }
     else if (res == MMSYSERR_NOMEM)
     {
         qDebug() << QString("Unable to open %1:").arg(m_name)
-        << QString("Out of memory.");
+                 << QString("Out of memory.");
         result = false;
     }
     else
@@ -154,24 +154,12 @@ void MIDIDevice::close()
 
     res = midiOutClose(m_handle);
     if (res == MIDIERR_STILLPLAYING)
-    {
-        qDebug() << QString("Unable to close %1: Buffer not empty")
-        .arg(m_name);
-    }
+        qDebug() << QString("Unable to close %1: Buffer not empty").arg(m_name);
     else if (res == MMSYSERR_INVALHANDLE)
-    {
-        qDebug() << QString("Unable to close %1: Invalid handle")
-        .arg(m_name);
-    }
+        qDebug() << QString("Unable to close %1: Invalid handle").arg(m_name);
     else if (res == MMSYSERR_NOMEM)
-    {
-        qDebug() << QString("Unable t close %1: Out of memory")
-        .arg(m_name);
-    }
-    else
-    {
-        m_handle = NULL;
-    }
+        qDebug() << QString("Unable t close %1: Out of memory").arg(m_name);
+    m_handle = NULL;
 }
 
 /*****************************************************************************
@@ -185,14 +173,18 @@ QString MIDIDevice::infoText()
     info += QString("<B>%1</B>").arg(name());
     info += QString("<P>");
     if (m_isOK == true)
-        info += QString("Device is working correctly.");
+        info += tr("Device is working correctly.");
     else
-        info += QString("<B>MIDI Output not available.</B>");
+        info += tr("Device might not work correctly.");
     info += QString("</P>");
+
     info += QString("<P>");
-    info += QString("<B>MIDI Channel: </B>%1<BR>").arg(m_midiChannel + 1);
-    info += QString("<B>Mode: </B>%1").arg(modeToString(m_mode));
-    info += QString("</P>");
+    info += QString("<B>");
+    info += tr("MIDI Channel: %1").arg(m_midiChannel + 1);
+    info += QString("</B><BR>");
+    info += QString("<B>");
+    info += tr("Mode: %1").arg(modeToString(m_mode));
+    info += QString("</B></P>");
 
     return info;
 }
@@ -207,25 +199,23 @@ void MIDIDevice::extractName()
     MMRESULT res;
     MIDIOUTCAPS caps;
 
+    m_name = tr("Unknown");
+
     res = midiOutGetDevCaps(m_id, &caps, sizeof(MIDIOUTCAPS));
     if (res == MMSYSERR_BADDEVICEID)
     {
-        m_name = QString("Bad device ID");
         qDebug() << "MIDI OUT" << m_id + 1 << "has bad device ID";
     }
     else if (res == MMSYSERR_INVALPARAM)
     {
-        m_name = QString("Invalid parameters");
         qDebug() << "Invalid params for MIDI OUT device" << m_id + 1;
     }
     else if (res == MMSYSERR_NODRIVER)
     {
-        m_name = QString("No driver installed");
         qDebug() << "MIDI OUT device" << m_id + 1 << "has no driver";
     }
     else if (res == MMSYSERR_NOMEM)
     {
-        m_name = QString("Out of memory");
         qDebug() << "Out of memory while opening MIDI OUT" << m_id + 1;
     }
     else

@@ -97,25 +97,14 @@ QString MIDIOut::infoText(quint32 output)
     {
         str += QString("<H3>%1</H3>").arg(name());
         str += QString("<P>");
-        str += QString("This plugin provides DMX output support ");
-        str += QString("through various MIDI devices.");
+        str += tr("This plugin provides DMX output support for various MIDI devices.");
         str += QString("</P>");
     }
     else
     {
         MIDIDevice* dev = device(output);
         if (dev != NULL)
-        {
             str += device(output)->infoText();
-        }
-        else
-        {
-            str += QString("<P><I>");
-            str += QString("Unable to find device. Please go to ");
-            str += QString("the configuration dialog and click ");
-            str += QString("the refresh button.");
-            str += QString("</I></P>");
-        }
     }
 
     str += QString("</BODY>");

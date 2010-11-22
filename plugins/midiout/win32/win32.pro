@@ -10,9 +10,6 @@ DEPENDPATH  += ../common
 CONFIG      += plugin
 LIBS        += -lwinmm
 
-target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
-INSTALLS   += target
-
 FORMS += ../common/configuremididevice.ui \
          ../common/configuremidiout.ui
 
@@ -28,3 +25,10 @@ HEADERS += ../common/configuremididevice.h \
            midiout.h
 
 HEADERS += ../../interfaces/qlcoutplugin.h
+
+PRO_FILE = win32.pro
+TRANSLATIONS += MIDI_Output_fi_FI.ts
+include(../../../i18n.pri)
+
+target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
+INSTALLS   += target
