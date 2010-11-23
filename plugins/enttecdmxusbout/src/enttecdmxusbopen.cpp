@@ -29,6 +29,8 @@
 #include "qlctypes.h"
 #include "qlcftdi.h"
 
+#define DMX_MAB 16
+#define DMX_BREAK 110
 #define DMX_CHANNELS 512
 #define SETTINGS_FREQUENCY "enttecdmxusbopen/frequency"
 
@@ -152,13 +154,13 @@ void EnttecDMXUSBOpen::run()
             goto framesleep;
 
         if (m_granularity == Good)
-            usleep(100);
+            usleep(DMX_BREAK);
 
         if (m_ftdi->setBreak(false) == false)
             goto framesleep;
 
         if (m_granularity == Good)
-            usleep(8);
+            usleep(DMX_MAB);
 
         if (m_ftdi->write(m_universe) == false)
             goto framesleep;
