@@ -34,6 +34,7 @@ class OutputMap;
 class OutputPatchEditor : public QDialog, public Ui_OutputPatchEditor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(OutputPatchEditor)
 
     /********************************************************************
      * Initialization
@@ -46,10 +47,8 @@ public:
 public slots:
     void reject();
 
-private:
-    Q_DISABLE_COPY(OutputPatchEditor)
-
 protected:
+    QTreeWidgetItem* currentlyMappedItem() const;
     void fillTree();
     void updateOutputInfo();
     void storeDMXZeroBasedSetting(bool set);
@@ -58,6 +57,7 @@ protected slots:
     void slotCurrentItemChanged(QTreeWidgetItem* item);
     void slotItemChanged(QTreeWidgetItem* item);
     void slotConfigureClicked();
+    void slotReconnectClicked();
     void slotZeroBasedDMXClicked();
 
 protected:

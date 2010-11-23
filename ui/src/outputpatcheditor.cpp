@@ -64,13 +64,16 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, quint32 universe,
     m_currentOutput = patch->output();
 
     /* Selection changes */
-    connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,
-                           QTreeWidgetItem*)),
+    connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(slotCurrentItemChanged(QTreeWidgetItem*)));
 
     /* Configure button */
     connect(m_configureButton, SIGNAL(clicked()),
             this, SLOT(slotConfigureClicked()));
+
+    /* Reconnect button */
+    connect(m_reconnectButton, SIGNAL(clicked()),
+            this, SLOT(slotReconnectClicked()));
 
     /* Zero-based DMX setting */
     connect(m_zeroBasedDMXCheckBox, SIGNAL(clicked()),
@@ -80,8 +83,7 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, quint32 universe,
 
     fillTree();
 
-    QVariant var;
-    var = settings.value(SETTINGS_GEOMETRY);
+    QVariant var = settings.value(SETTINGS_GEOMETRY);
     if (var.isValid() == true)
         restoreGeometry(var.toByteArray());
     AppUtil::ensureWidgetIsVisible(this);
@@ -104,6 +106,23 @@ void OutputPatchEditor::reject()
     QDialog::reject();
 }
 
+QTreeWidgetItem* OutputPatchEditor::currentlyMappedItem() const
+{
+    for (int i = 0; i < m_tree->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* pluginItem = m_tree->topLevelItem(i);
+        Q_ASSERT(pluginItem != NULL);
+
+        if (pluginItem->text(KColumnName) == m_currentPluginName)
+        {
+            QTreeWidgetItem* outputItem = pluginItem->child(m_currentOutput);
+            return outputItem;
+        }
+    }
+
+    return NULL;
+}
+
 void OutputPatchEditor::fillTree()
 {
     QTreeWidgetItem* selectItem = NULL;
@@ -123,29 +142,24 @@ void OutputPatchEditor::fillTree()
     while (pit.hasNext() == true)
     {
         i = 0;
-
         pluginName = pit.next();
         pitem = new QTreeWidgetItem(m_tree);
         pitem->setText(KColumnName, pluginName);
-        pitem->setText(KColumnOutput, QString("%1")
-                       .arg(KOutputInvalid));
+        pitem->setText(KColumnOutput, QString("%1").arg(KOutputInvalid));
 
         /* Go thru available outputs provided by each plugin and put
            them as their parent plugin's leaf nodes. */
-        QStringListIterator oit(
-            _app->outputMap()->pluginOutputs(pluginName));
+        QStringListIterator oit(_app->outputMap()->pluginOutputs(pluginName));
         while (oit.hasNext() == true)
         {
             oitem = new QTreeWidgetItem(pitem);
             oitem->setText(KColumnName, oit.next());
             oitem->setText(KColumnOutput, QString("%1").arg(i));
-            oitem->setFlags(oitem->flags() |
-                            Qt::ItemIsUserCheckable);
+            oitem->setFlags(oitem->flags() | Qt::ItemIsUserCheckable);
 
             /* Select the currently mapped plugin output and
                expand its parent node */
-            if (m_currentPluginName == pluginName &&
-                    m_currentOutput == i)
+            if (m_currentPluginName == pluginName && m_currentOutput == i)
             {
                 oitem->setCheckState(KColumnName, Qt::Checked);
                 pitem->setExpanded(true);
@@ -161,12 +175,10 @@ void OutputPatchEditor::fillTree()
                     /* If a mapping exists for this plugin
                        and output, make it impossible to
                        map it to another universe. */
-                    oitem->setFlags(oitem->flags()
-                                    & (!Qt::ItemIsEnabled));
-                    oitem->setText(KColumnName,
-                                   oitem->text(KColumnName) +
+                    oitem->setFlags(oitem->flags() & (!Qt::ItemIsEnabled));
+                    oitem->setText(KColumnName, oitem->text(KColumnName) +
                                    QString(" (Mapped to universe %1)")
-                                   .arg(uni + 1));
+                                        .arg(uni + 1));
                 }
             }
 
@@ -179,8 +191,7 @@ void OutputPatchEditor::fillTree()
         {
             oitem = new QTreeWidgetItem(pitem);
             oitem->setText(KColumnName, KOutputNone);
-            oitem->setText(KColumnOutput,
-                           QString("%1").arg(KOutputInvalid));
+            oitem->setText(KColumnOutput, QString("%1").arg(KOutputInvalid));
             oitem->setFlags(oitem->flags() & ~Qt::ItemIsEnabled);
             oitem->setFlags(oitem->flags() & ~Qt::ItemIsSelectable);
             oitem->setCheckState(KColumnName, Qt::Unchecked);
@@ -254,8 +265,7 @@ void OutputPatchEditor::slotItemChanged(QTreeWidgetItem* item)
             if (*it != item && (*it)->childCount() == 0)
             {
                 /* Set all the rest of the nodes unchecked */
-                (*it)->setCheckState(KColumnName,
-                                     Qt::Unchecked);
+                (*it)->setCheckState(KColumnName, Qt::Unchecked);
             }
 
             /* Next one */
@@ -287,8 +297,7 @@ void OutputPatchEditor::slotItemChanged(QTreeWidgetItem* item)
 
     /* Apply the patch immediately so that input data can be used in the
        input profile editor */
-    _app->outputMap()->setPatch(m_universe, m_currentPluginName,
-                                m_currentOutput);
+    _app->outputMap()->setPatch(m_universe, m_currentPluginName, m_currentOutput);
 }
 
 
@@ -313,6 +322,21 @@ void OutputPatchEditor::slotConfigureClicked()
     fillTree();
 }
 
+void OutputPatchEditor::slotReconnectClicked()
+{
+    OutputPatch* outputPatch = _app->outputMap()->patch(m_universe);
+    if (outputPatch != NULL)
+        outputPatch->set(outputPatch->plugin(), outputPatch->output());
+
+    QTreeWidgetItem* outputItem = currentlyMappedItem();
+    if (outputItem != NULL)
+    {
+        if (outputItem->parent() != NULL)
+            outputItem->parent()->setExpanded(true);
+        m_tree->setCurrentItem(outputItem);
+    }
+}
+
 void OutputPatchEditor::slotZeroBasedDMXClicked()
 {
     storeDMXZeroBasedSetting(m_zeroBasedDMXCheckBox->isChecked());
@@ -332,4 +356,3 @@ void OutputPatchEditor::storeDMXZeroBasedSetting(bool set)
     if (Monitor::instance() != NULL)
         Monitor::instance()->updateFixtureLabelStyles();
 }
-

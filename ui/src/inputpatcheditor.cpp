@@ -128,6 +128,23 @@ void InputPatchEditor::accept()
  * Mapping page
  ****************************************************************************/
 
+QTreeWidgetItem* InputPatchEditor::currentlyMappedItem() const
+{
+    for (int i = 0; i < m_mapTree->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* pluginItem = m_mapTree->topLevelItem(i);
+        Q_ASSERT(pluginItem != NULL);
+
+        if (pluginItem->text(KMapColumnName) == m_originalPluginName)
+        {
+            QTreeWidgetItem* inputItem = pluginItem->child(m_originalInput);
+            return inputItem;
+        }
+    }
+
+    return NULL;
+}
+
 void InputPatchEditor::setupMappingPage()
 {
     /* Fill the map tree with available plugins */
@@ -141,6 +158,10 @@ void InputPatchEditor::setupMappingPage()
     /* Configure button */
     connect(m_configureButton, SIGNAL(clicked()),
             this, SLOT(slotConfigureInputClicked()));
+
+    /* Reconnect button */
+    connect(m_reconnectButton, SIGNAL(clicked()),
+            this, SLOT(slotReconnectClicked()));
 
     /* Prevent the editor uni radio button from being unchecked manually */
     QButtonGroup* group = new QButtonGroup(this);
@@ -363,6 +384,22 @@ void InputPatchEditor::slotConfigureInputClicked()
 
     /* Refill the mapping tree in case configuration changed something */
     fillMappingTree();
+}
+
+void InputPatchEditor::slotReconnectClicked()
+{
+    InputPatch* inputPatch = _app->inputMap()->patch(m_universe);
+    if (inputPatch != NULL)
+        inputPatch->set(inputPatch->plugin(), inputPatch->input(),
+                        inputPatch->feedbackEnabled(), inputPatch->profile());
+
+    QTreeWidgetItem* inputItem = currentlyMappedItem();
+    if (inputItem != NULL)
+    {
+        if (inputItem->parent() != NULL)
+            inputItem->parent()->setExpanded(true);
+        m_mapTree->setCurrentItem(inputItem);
+    }
 }
 
 void InputPatchEditor::slotFeedbackToggled(bool enable)

@@ -37,17 +37,14 @@ class InputMap;
 class InputPatchEditor : public QDialog, public Ui_InputPatchEditor
 {
     Q_OBJECT
-
-    /********************************************************************
-     * Initialization
-     ********************************************************************/
-public:
-    InputPatchEditor(QWidget* parent, quint32 universe,
-                     const InputPatch* patch);
-    ~InputPatchEditor();
-
-private:
     Q_DISABLE_COPY(InputPatchEditor)
+
+    /************************************************************************
+     * Initialization
+     ************************************************************************/
+public:
+    InputPatchEditor(QWidget* parent, quint32 universe, const InputPatch* patch);
+    ~InputPatchEditor();
 
 protected slots:
     void reject();
@@ -69,10 +66,11 @@ protected:
     bool m_originalFeedbackEnabled;
     bool m_currentFeedbackEnabled;
 
-    /********************************************************************
+    /************************************************************************
      * Mapping page
-     ********************************************************************/
+     ************************************************************************/
 protected:
+    QTreeWidgetItem* currentlyMappedItem() const;
     void setupMappingPage();
     void fillMappingTree();
     void fillPluginItem(const QString& pluginName, QTreeWidgetItem* item);
@@ -82,12 +80,13 @@ protected slots:
     void slotMapCurrentItemChanged(QTreeWidgetItem* item);
     void slotMapItemChanged(QTreeWidgetItem* item);
     void slotConfigureInputClicked();
+    void slotReconnectClicked();
     void slotFeedbackToggled(bool enable);
     void slotPluginConfigurationChanged(const QString& pluginName);
 
-    /********************************************************************
+    /************************************************************************
      * Profile page
-     ********************************************************************/
+     ************************************************************************/
 protected:
     void setupProfilePage();
     void fillProfileTree();
