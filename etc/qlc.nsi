@@ -50,6 +50,7 @@ Section
 	File libgcc_s_dw2-1.dll
 	File qlc.exe
 	File qlc-fixtureeditor.exe
+    File qlcengine.dll
 	File QtCore4.dll
 	File QtGui4.dll
 	File QtXml4.dll
@@ -83,6 +84,7 @@ Section "Uninstall"
 	Delete $INSTDIR\uninstall.exe
 	Delete $INSTDIR\qlc.exe
 	Delete $INSTDIR\qlc-fixtureeditor.exe
+    Delete $INSTDIR\qlcengine.dll
 	Delete $INSTDIR\mingwm10.dll
 	Delete $INSTDIR\libgcc_s_dw2-1.dll
 	Delete $INSTDIR\QtCore4.dll
