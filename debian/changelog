@@ -1,4 +1,5 @@
 qlc (3.1.0) stable; urgency=high
+ * Fixed Enttec Open DMX USB connectivity problems on some systems
  * Fixed a crash in Level-mode Virtual Console slider when a fixture was removed
  * Fixed a crash in fixture definition cache
  * Fixed disappearing windows problem in dual-head desktop configurations
@@ -23,7 +24,7 @@ qlc (3.1.0) stable; urgency=high
  * Made libqlcengine a shared object
  * Total power consumption feature added
  * Auto-detection of external input channels
- * New fixture defs for Varytec, Chauvet, Stairville, American DJ, JB Systems, Ven$
+ * New fixture defs for Varytec, Chauvet, Stairville, American DJ, JB Systems, Venue, Robe
  * New virtual console widget: Solo frame
  * MIDI input supports 256 input channels thru concatenated CC & NOTE events
  * Added possibility to accept MIDI data on any MIDI channel
@@ -44,7 +45,7 @@ qlc (3.1.0) stable; urgency=high
  * Windows: Velleman k8062 plugin added
  * Windows: Added fullscreen option
 
- -- Heikki Junnila <hjunnila@users.sf.net>  Tue, 18 Nov 2010 20:09:01 +0200
+ -- Heikki Junnila <hjunnila@users.sf.net>  Tue, 23 Nov 2010 13:31:053 +0200
 
 qlc (3.0.7) stable; urgency=high
   * Fixed crash bugs in MIDI Input, HID Input and Enttec Wing Input plugins
