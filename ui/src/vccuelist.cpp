@@ -77,6 +77,8 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
     connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
             this, SLOT(slotFunctionRemoved(t_function_id)));
 
+    setNextInputSource(InputMap::invalidUniverse(), KInputChannelInvalid);
+    setPreviousInputSource(InputMap::invalidUniverse(), KInputChannelInvalid);
     m_nextLatestValue = 0;
     m_previousLatestValue = 0;
 }
