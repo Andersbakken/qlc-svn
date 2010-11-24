@@ -272,9 +272,14 @@ public:
 protected:
     bool loadXMLAppearance(const QDomElement* appearance_root);
     bool loadXMLInput(const QDomElement* root);
+    /** Load input source from $root to $uni and $ch */
+    bool loadXMLInput(const QDomElement& root, quint32* uni, quint32* ch) const;
 
     bool saveXMLAppearance(QDomDocument* doc, QDomElement* widget_root);
     bool saveXMLInput(QDomDocument* doc, QDomElement* root);
+    /** Save input source from $uni and $ch to $root */
+    bool saveXMLInput(QDomDocument* doc, QDomElement* root,
+                      quint32 uni, quint32 ch) const;
 
     /**
      * Write this widget's geometry and visibility to an XML document.

@@ -37,6 +37,8 @@ class Function;
 #define KXMLQLCVCCueList "CueList"
 #define KXMLQLCVCCueListFunction "Function"
 #define KXMLQLCVCCueListKey "Key"
+#define KXMLQLCVCCueListNext "Next"
+#define KXMLQLCVCCueListPrevious "Previous"
 
 #define KVCCueListColumnNumber 0
 #define KVCCueListColumnName   1
@@ -45,6 +47,7 @@ class Function;
 class VCCueList : public VCWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCCueList)
 
     friend class VCCueListProperties;
 
@@ -57,11 +60,6 @@ public:
 
     /** Destructor */
     ~VCCueList();
-
-private:
-    /** Prevent copying thru operator= or copy constructor since QObject's
-        parental properties get confused when copied. */
-    Q_DISABLE_COPY(VCCueList)
 
     /*********************************************************************
      * Clipboard
@@ -91,6 +89,9 @@ protected slots:
     /** Skip to the next cue */
     void slotNextCue();
 
+    /** Skip to the previous cue */
+    void slotPreviousCue();
+
     /** Slot to catch function stopped signals */
     void slotFunctionStopped(t_function_id fid);
 
@@ -103,19 +104,63 @@ protected:
     Function* m_current;
 
     /*********************************************************************
-     * Key sequence handler
+     * Key sequences
      *********************************************************************/
 public:
-    void setKeySequence(const QKeySequence& keySequence);
-    QKeySequence keySequence() const {
-        return m_keySequence;
+    /** Keyboard key combination for skipping to the next cue */
+    void setNextKeySequence(const QKeySequence& keySequence);
+    QKeySequence nextKeySequence() const {
+        return m_nextKeySequence;
+    }
+
+    /** Keyboard key combination for skipping to the previous cue */
+    void setPreviousKeySequence(const QKeySequence& keySequence);
+    QKeySequence previousKeySequence() const {
+        return m_previousKeySequence;
     }
 
 protected slots:
     void slotKeyPressed(const QKeySequence& keySequence);
 
 protected:
-    QKeySequence m_keySequence;
+    QKeySequence m_nextKeySequence;
+    QKeySequence m_previousKeySequence;
+
+    /*********************************************************************
+     * External Input
+     *********************************************************************/
+public:
+    /** Input universe/channel for skipping to the next cue */
+    void setNextInputSource(quint32 universe, quint32 channel);
+    quint32 nextInputUniverse() const {
+        return m_nextInputUniverse;
+    }
+    quint32 nextInputChannel() const {
+        return m_nextInputChannel;
+    }
+
+
+    /** Input universe/channel for skipping to the previous cue */
+    void setPreviousInputSource(quint32 universe, quint32 channel);
+    quint32 previousInputUniverse() const {
+        return m_previousInputUniverse;
+    }
+    quint32 previousInputChannel() const {
+        return m_previousInputChannel;
+    }
+
+protected slots:
+    void slotNextInputValueChanged(quint32 universe, quint32 channel, uchar value);
+    void slotPreviousInputValueChanged(quint32 universe, quint32 channel, uchar value);
+
+private:
+    quint32 m_nextInputUniverse;
+    quint32 m_nextInputChannel;
+    quint32 m_nextLatestValue;
+
+    quint32 m_previousInputUniverse;
+    quint32 m_previousInputChannel;
+    quint32 m_previousLatestValue;
 
     /*********************************************************************
      * Caption
@@ -145,10 +190,6 @@ public:
     static bool loader(const QDomElement* root, QWidget* parent);
     bool loadXML(const QDomElement* root);
     bool saveXML(QDomDocument* doc, QDomElement* vc_root);
-
-protected:
-    /** Load a legacy KeyBind node */
-    bool loadKeyBind(const QDomElement* key_root);
 };
 
 #endif

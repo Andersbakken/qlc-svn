@@ -34,8 +34,11 @@
 #include "mastertimer.h"
 #include "vccuelist.h"
 #include "function.h"
+#include "inputmap.h"
 #include "app.h"
 #include "doc.h"
+
+#define HYSTERESIS 3 // Hysteresis for next/previous external input
 
 extern App* _app;
 
@@ -73,6 +76,9 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 
     connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
             this, SLOT(slotFunctionRemoved(t_function_id)));
+
+    m_nextLatestValue = 0;
+    m_previousLatestValue = 0;
 }
 
 VCCueList::~VCCueList()
@@ -103,7 +109,7 @@ bool VCCueList::copyFrom(VCWidget* widget)
     if (cuelist == NULL)
         return false;
 
-    /* Copy function list contents */
+    /* Function list contents */
     m_list->clear();
     for (int i = 0; i < cuelist->m_list->topLevelItemCount(); i++)
     {
@@ -111,10 +117,15 @@ bool VCCueList::copyFrom(VCWidget* widget)
         append(item->text(KVCCueListColumnID).toInt());
     }
 
-    /* Copy key sequence */
-    setKeySequence(cuelist->keySequence());
+    /* Key sequence */
+    setNextKeySequence(cuelist->nextKeySequence());
+    setPreviousKeySequence(cuelist->previousKeySequence());
 
-    /* Copy common stuff */
+    /* Input source */
+    setNextInputSource(cuelist->nextInputUniverse(), cuelist->nextInputChannel());
+    setPreviousInputSource(cuelist->previousInputUniverse(), cuelist->previousInputChannel());
+
+    /* Common stuff */
     return VCWidget::copyFrom(widget);
 }
 
@@ -162,12 +173,34 @@ void VCCueList::slotNextCue()
 
     if (m_list->currentItem() == NULL)
     {
+        int count = m_list->topLevelItemCount();
+        if (count == 0)
+            return;
         m_list->setCurrentItem(m_list->topLevelItem(0));
     }
     else
     {
-        m_list->setCurrentItem(
-            m_list->itemBelow(m_list->currentItem()));
+        m_list->setCurrentItem(m_list->itemBelow(m_list->currentItem()));
+    }
+
+    slotItemActivated(m_list->currentItem());
+}
+
+void VCCueList::slotPreviousCue()
+{
+    if (mode() != Doc::Operate)
+        return;
+
+    if (m_list->currentItem() == NULL)
+    {
+        int count = m_list->topLevelItemCount();
+        if (count == 0)
+            return;
+        m_list->setCurrentItem(m_list->topLevelItem(count - 1));
+    }
+    else
+    {
+        m_list->setCurrentItem(m_list->itemAbove(m_list->currentItem()));
     }
 
     slotItemActivated(m_list->currentItem());
@@ -200,23 +233,104 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
     connect(m_current, SIGNAL(stopped(t_function_id)),
             this, SLOT(slotFunctionStopped(t_function_id)));
 
-    // TODO: not sure how a cuelist should behave in a solopanel...
+    //! @todo not sure how a cuelist should behave in a solopanel...
     _app->masterTimer()->startFunction(m_current, true);
 }
 
 /*****************************************************************************
- * Key sequence handler
+ * Key Sequences
  *****************************************************************************/
 
-void VCCueList::setKeySequence(const QKeySequence& keySequence)
+void VCCueList::setNextKeySequence(const QKeySequence& keySequence)
 {
-    m_keySequence = QKeySequence(keySequence);
+    m_nextKeySequence = QKeySequence(keySequence);
+}
+
+void VCCueList::setPreviousKeySequence(const QKeySequence& keySequence)
+{
+    m_previousKeySequence = QKeySequence(keySequence);
 }
 
 void VCCueList::slotKeyPressed(const QKeySequence& keySequence)
 {
-    if (m_keySequence == keySequence)
+    if (m_nextKeySequence == keySequence)
         slotNextCue();
+    else if (m_previousKeySequence == keySequence)
+        slotPreviousCue();
+}
+
+/*****************************************************************************
+ * External Input
+ *****************************************************************************/
+
+void VCCueList::setNextInputSource(quint32 uni, quint32 ch)
+{
+    disconnect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+               this, SLOT(slotNextInputValueChanged(quint32, quint32, uchar)));
+    m_nextInputUniverse = uni;
+    m_nextInputChannel = ch;
+    if (uni != InputMap::invalidUniverse() && ch != KInputChannelInvalid)
+        connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+                this, SLOT(slotNextInputValueChanged(quint32, quint32, uchar)));
+}
+
+void VCCueList::setPreviousInputSource(quint32 uni, quint32 ch)
+{
+    disconnect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+               this, SLOT(slotPreviousInputValueChanged(quint32, quint32, uchar)));
+    m_previousInputUniverse = uni;
+    m_previousInputChannel = ch;
+    if (uni != InputMap::invalidUniverse() && ch != KInputChannelInvalid)
+        connect(_app->inputMap(), SIGNAL(inputValueChanged(quint32, quint32, uchar)),
+                this, SLOT(slotPreviousInputValueChanged(quint32, quint32, uchar)));
+}
+
+void VCCueList::slotNextInputValueChanged(quint32 universe, quint32 channel,
+                                          uchar value)
+{
+    if (universe == m_nextInputUniverse && channel == m_nextInputChannel)
+    {
+        // Use hysteresis for values, in case the cue list is being controlled
+        // by a slider. The value has to go to zero before the next non-zero
+        // value is accepted as input. And the non-zero values have to visit
+        // above $HYSTERESIS before a zero is accepted again.
+        if (m_nextLatestValue == 0 && value > 0)
+        {
+            slotNextCue();
+            m_nextLatestValue = value;
+        }
+        else if (m_nextLatestValue > HYSTERESIS && value == 0)
+        {
+            m_nextLatestValue = 0;
+        }
+
+        if (value > HYSTERESIS)
+            m_nextLatestValue = value;
+    }
+}
+
+void VCCueList::slotPreviousInputValueChanged(quint32 universe, quint32 channel,
+                                              uchar value)
+{
+    if (universe == m_previousInputUniverse && channel == m_previousInputChannel)
+    {
+        // Use hysteresis for values, in case the cue list is being controlled
+        // by a slider. The value has to go to zero before the next non-zero
+        // value is accepted as input. And the non-zero values have to visit
+        // above $HYSTERESIS before a zero is accepted again.
+        if (m_previousLatestValue == 0 && value > 0)
+        {
+            slotPreviousCue();
+            m_previousLatestValue = value;
+        }
+        else if (m_previousLatestValue > HYSTERESIS && value == 0)
+        {
+            m_previousLatestValue = 0;
+        }
+
+        if (value > HYSTERESIS)
+            m_previousLatestValue = value;
+    }
 }
 
 /*****************************************************************************
@@ -322,17 +436,63 @@ bool VCCueList::loadXML(const QDomElement* root)
         {
             loadXMLAppearance(&tag);
         }
-        else if (tag.tagName() == KXMLQLCVCCueListKey)
+        else if (tag.tagName() == KXMLQLCVCCueListNext)
         {
-            setKeySequence(QKeySequence(tag.text()));
+            QDomNode subNode = tag.firstChild();
+            while (subNode.isNull() == false)
+            {
+                QDomElement subTag = subNode.toElement();
+                if (subTag.tagName() == KXMLQLCVCWidgetInput)
+                {
+                    quint32 uni = 0;
+                    quint32 ch = 0;
+                    if (loadXMLInput(subTag, &uni, &ch) == true)
+                        setNextInputSource(uni, ch);
+                }
+                else if (subTag.tagName() == KXMLQLCVCCueListKey)
+                {
+                    m_nextKeySequence = QKeySequence(subTag.text());
+                }
+                else
+                {
+                    qWarning() << "Unknown CueList Next tag" << subTag.tagName();
+                }
+
+                subNode = subNode.nextSibling();
+            }
+        }
+        else if (tag.tagName() == KXMLQLCVCCueListPrevious)
+        {
+            QDomNode subNode = tag.firstChild();
+            while (subNode.isNull() == false)
+            {
+                QDomElement subTag = subNode.toElement();
+                if (subTag.tagName() == KXMLQLCVCWidgetInput)
+                {
+                    quint32 uni = 0;
+                    quint32 ch = 0;
+                    if (loadXMLInput(subTag, &uni, &ch) == true)
+                        setPreviousInputSource(uni, ch);
+                }
+                else if (subTag.tagName() == KXMLQLCVCCueListKey)
+                {
+                    m_previousKeySequence = QKeySequence(subTag.text());
+                }
+                else
+                {
+                    qWarning() << "Unknown CueList Previous tag" << subTag.tagName();
+                }
+
+                subNode = subNode.nextSibling();
+            }
+        }
+        else if (tag.tagName() == KXMLQLCVCCueListKey) /* Legacy */
+        {
+            setNextKeySequence(QKeySequence(tag.text()));
         }
         else if (tag.tagName() == KXMLQLCVCCueListFunction)
         {
             append(tag.text().toInt());
-        }
-        else if (tag.tagName() == "KeyBind") /* Legacy */
-        {
-            loadKeyBind(&tag);
         }
         else
         {
@@ -349,6 +509,7 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
 {
     QDomElement root;
     QDomElement tag;
+    QDomElement subtag;
     QDomText text;
     QString str;
 
@@ -375,55 +536,29 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
         ++it;
     }
 
-    /* Key sequence */
-    if (m_keySequence.isEmpty() == false)
-    {
-        tag = doc->createElement(KXMLQLCVCCueListKey);
-        root.appendChild(tag);
-        text = doc->createTextNode(m_keySequence.toString());
-        tag.appendChild(text);
-    }
+    /* Next cue */
+    tag = doc->createElement(KXMLQLCVCCueListNext);
+    root.appendChild(tag);
+    subtag = doc->createElement(KXMLQLCVCCueListKey);
+    tag.appendChild(subtag);
+    text = doc->createTextNode(m_nextKeySequence.toString());
+    subtag.appendChild(text);
+    saveXMLInput(doc, &tag, nextInputUniverse(), nextInputChannel());
+
+    /* Previous cue */
+    tag = doc->createElement(KXMLQLCVCCueListPrevious);
+    root.appendChild(tag);
+    subtag = doc->createElement(KXMLQLCVCCueListKey);
+    tag.appendChild(subtag);
+    text = doc->createTextNode(m_previousKeySequence.toString());
+    subtag.appendChild(text);
+    saveXMLInput(doc, &tag, previousInputUniverse(), previousInputChannel());
 
     /* Window state */
     saveXMLWindowState(doc, &root);
 
     /* Appearance */
     saveXMLAppearance(doc, &root);
-
-    return true;
-}
-
-bool VCCueList::loadKeyBind(const QDomElement* key_root)
-{
-    QDomElement tag;
-    QDomNode node;
-
-    if (key_root->tagName() != "KeyBind")
-    {
-        qWarning() << "Not a key bind node!";
-        return false;
-    }
-
-    node = key_root->firstChild();
-    while (node.isNull() == false)
-    {
-        tag = node.toElement();
-        if (tag.tagName() == "Key")
-        {
-            int mod = tag.attribute("Modifier").toInt();
-            int key = tag.text().toUInt();
-
-            if (key < Qt::Key_unknown)
-                setKeySequence(QKeySequence(key | mod));
-        }
-        else
-        {
-            qWarning() << "Unknown key binding tag:"
-            << tag.tagName();
-        }
-
-        node = node.nextSibling();
-    }
 
     return true;
 }

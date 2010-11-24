@@ -444,20 +444,31 @@ bool VCWidget::loadXMLInput(const QDomElement* root)
 {
     Q_ASSERT(root != NULL);
 
-    if (root->tagName() != KXMLQLCVCWidgetInput)
+    quint32 uni = 0;
+    quint32 ch = 0;
+    if (loadXMLInput(*root, &uni, &ch) == true)
+    {
+        setInputSource(uni, ch);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool VCWidget::loadXMLInput(const QDomElement& root,
+                            quint32* uni, quint32* ch) const
+{
+    if (root.tagName() != KXMLQLCVCWidgetInput)
     {
         qDebug() << "Input node not found!";
         return false;
     }
     else
     {
-        quint32 uni;
-        quint32 ch;
-
-        uni = root->attribute(KXMLQLCVCWidgetInputUniverse).toInt();
-        ch = root->attribute(KXMLQLCVCWidgetInputChannel).toInt();
-
-        setInputSource(uni, ch);
+        *uni = root.attribute(KXMLQLCVCWidgetInputUniverse).toInt();
+        *ch = root.attribute(KXMLQLCVCWidgetInputChannel).toInt();
     }
 
     return true;
@@ -528,21 +539,24 @@ bool VCWidget::saveXMLAppearance(QDomDocument* doc, QDomElement* frame_root)
 
 bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root)
 {
+    return saveXMLInput(doc, root, inputUniverse(), inputChannel());
+}
+
+bool VCWidget::saveXMLInput(QDomDocument* doc, QDomElement* root,
+                            quint32 uni, quint32 ch) const
+{
     Q_ASSERT(doc != NULL);
     Q_ASSERT(root != NULL);
 
-    if (m_inputUniverse != InputMap::invalidUniverse() &&
-            m_inputChannel != KInputChannelInvalid)
+    if (uni != InputMap::invalidUniverse() && ch != KInputChannelInvalid)
     {
         QDomElement tag;
         QDomText text;
 
         tag = doc->createElement(KXMLQLCVCWidgetInput);
         root->appendChild(tag);
-        tag.setAttribute(KXMLQLCVCWidgetInputUniverse,
-                         QString("%1").arg(inputUniverse()));
-        tag.setAttribute(KXMLQLCVCWidgetInputChannel,
-                         QString("%1").arg(inputChannel()));
+        tag.setAttribute(KXMLQLCVCWidgetInputUniverse, QString("%1").arg(uni));
+        tag.setAttribute(KXMLQLCVCWidgetInputChannel, QString("%1").arg(ch));
     }
 
     return true;

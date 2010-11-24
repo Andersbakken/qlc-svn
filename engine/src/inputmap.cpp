@@ -31,6 +31,7 @@
 #include <QCoreApplication>
 #endif
 
+#include "qlcinputchannel.h"
 #include "qlcinplugin.h"
 #include "qlcconfig.h"
 #include "qlctypes.h"
@@ -443,6 +444,53 @@ bool InputMap::removeProfile(const QString& name)
     }
 
     return false;
+}
+
+bool InputMap::inputSourceNames(quint32 universe, quint32 channel,
+                                QString& uniName, QString& chName) const
+{
+    if (universe == InputMap::invalidUniverse() ||
+        channel == KInputChannelInvalid)
+    {
+        /* Nothing given for input universe and/or channel */
+        return false;
+    }
+
+    InputPatch* pat = this->patch(universe);
+    if (pat == NULL || pat->plugin() == NULL)
+    {
+        /* There is no patch for the given universe */
+        return false;
+    }
+
+    QLCInputProfile* profile = pat->profile();
+    if (profile == NULL)
+    {
+        /* There is no profile. Display plugin name and channel number. */
+        uniName = tr("%1: %2").arg(universe + 1).arg(pat->plugin()->name());
+        chName = tr("%1: Unknown").arg(channel + 1);
+    }
+    else
+    {
+        QLCInputChannel* ich;
+        QString name;
+
+        /* Display profile name for universe */
+        uniName = QString("%1: %2").arg(universe + 1).arg(profile->name());
+
+        /* User can input the channel number by hand, so put something
+           rational to the channel name in those cases as well. */
+        ich = profile->channel(channel);
+        if (ich != NULL)
+            name = ich->name();
+        else
+            name = tr("Unknown");
+
+        /* Display channel name */
+        chName = QString("%1: %2").arg(channel + 1).arg(name);
+    }
+
+    return true;
 }
 
 /*****************************************************************************

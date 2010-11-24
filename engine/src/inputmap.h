@@ -256,6 +256,19 @@ public:
     /** Remove an existing profile by its name and delete it */
     bool removeProfile(const QString& name);
 
+    /**
+     * Get input source names for the given input universe and channel.
+     *
+     * @param universe (IN) The input universe, whose name to get
+     * @param channel (IN) The channel in the given universe, whose name to get
+     * @param uniName (OUT) The name of the universe, if available
+     * @param chName (OUT) The name of the channel, if available
+     *
+     * @return true if uniName & chName contain something, otherwise false
+     */
+    bool inputSourceNames(quint32 universe, quint32 channel,
+                          QString& uniName, QString& chName) const;
+
 protected:
     /** List that contains all available profiles */
     QList <QLCInputProfile*> m_profiles;

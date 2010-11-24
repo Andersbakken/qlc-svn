@@ -24,9 +24,11 @@
 #include <QHeaderView>
 
 #include "vccuelistproperties.h"
+#include "selectinputchannel.h"
 #include "functionselection.h"
 #include "assignhotkey.h"
 #include "vccuelist.h"
+#include "inputmap.h"
 #include "app.h"
 #include "doc.h"
 
@@ -39,6 +41,10 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
     m_cueList = cueList;
 
     setupUi(this);
+
+    /************************************************************************
+     * Cues page
+     ************************************************************************/
 
     /* Name */
     m_nameEdit->setText(cueList->caption());
@@ -53,10 +59,6 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
             this, SLOT(slotRaiseClicked()));
     connect(m_lowerButton, SIGNAL(clicked()),
             this, SLOT(slotLowerClicked()));
-    connect(m_attachButton, SIGNAL(clicked()),
-            this, SLOT(slotAttachClicked()));
-    connect(m_detachButton, SIGNAL(clicked()),
-            this, SLOT(slotDetachClicked()));
 
     /* Put all cues into the tree widget */
     QTreeWidgetItemIterator it(m_cueList->m_list);
@@ -74,14 +76,92 @@ VCCueListProperties::VCCueListProperties(QWidget* parent, VCCueList* cueList)
 
     m_list->header()->setResizeMode(QHeaderView::ResizeToContents);
 
-    /* Key bind */
-    m_keySequence = QKeySequence(cueList->keySequence());
-    m_keyEdit->setText(m_keySequence.toString());
+    /************************************************************************
+     * Next Cue page
+     ************************************************************************/
+
+    /* Connections */
+    connect(m_nextAttachButton, SIGNAL(clicked()),
+            this, SLOT(slotNextAttachClicked()));
+    connect(m_nextDetachButton, SIGNAL(clicked()),
+            this, SLOT(slotNextDetachClicked()));
+    connect(m_nextAutoDetectInputButton, SIGNAL(toggled(bool)),
+            this, SLOT(slotNextAutoDetectInputToggled(bool)));
+    connect(m_nextChooseInputButton, SIGNAL(clicked()),
+            this, SLOT(slotNextChooseInputClicked()));
+
+    /* Key binding */
+    m_nextKeySequence = QKeySequence(cueList->nextKeySequence());
+    m_nextKeyEdit->setText(m_nextKeySequence.toString());
+
+    /* External input */
+    m_nextInputUniverse = cueList->nextInputUniverse();
+    m_nextInputChannel = cueList->nextInputChannel();
+    updateNextInputSource();
+
+    /************************************************************************
+     * Previous Cue page
+     ************************************************************************/
+
+    /* Connections */
+    connect(m_previousAttachButton, SIGNAL(clicked()),
+            this, SLOT(slotPreviousAttachClicked()));
+    connect(m_previousDetachButton, SIGNAL(clicked()),
+            this, SLOT(slotPreviousDetachClicked()));
+    connect(m_previousAutoDetectInputButton, SIGNAL(toggled(bool)),
+            this, SLOT(slotPreviousAutoDetectInputToggled(bool)));
+    connect(m_previousChooseInputButton, SIGNAL(clicked()),
+            this, SLOT(slotPreviousChooseInputClicked()));
+
+    /* Key binding */
+    m_previousKeySequence = QKeySequence(cueList->previousKeySequence());
+    m_previousKeyEdit->setText(m_previousKeySequence.toString());
+
+    /* External input */
+    m_previousInputUniverse = cueList->previousInputUniverse();
+    m_previousInputChannel = cueList->previousInputChannel();
+    updatePreviousInputSource();
 }
 
 VCCueListProperties::~VCCueListProperties()
 {
 }
+
+void VCCueListProperties::accept()
+{
+    /* Replace existing list of cues */
+    m_cueList->clear();
+
+    QTreeWidgetItemIterator it(m_list);
+    while (*it != NULL)
+    {
+        m_cueList->append((*it)->text(KVCCueListColumnID).toInt());
+        ++it;
+    }
+
+    /* Key sequences */
+    m_cueList->setNextKeySequence(m_nextKeySequence);
+    m_cueList->setPreviousKeySequence(m_previousKeySequence);
+
+    /* Input sources */
+    m_cueList->setNextInputSource(m_nextInputUniverse, m_nextInputChannel);
+    m_cueList->setPreviousInputSource(m_previousInputUniverse, m_previousInputChannel);
+
+    QDialog::accept();
+}
+
+void VCCueListProperties::slotTabChanged()
+{
+    // Disengage both auto-detect buttons
+    if (m_nextAutoDetectInputButton->isChecked() == true)
+        m_nextAutoDetectInputButton->toggle();
+    if (m_previousAutoDetectInputButton->isChecked() == true)
+        m_previousAutoDetectInputButton->toggle();
+}
+
+/****************************************************************************
+ * Cues
+ ****************************************************************************/
 
 void VCCueListProperties::slotAddClicked()
 {
@@ -181,36 +261,153 @@ void VCCueListProperties::slotLowerClicked()
                                      QString("%1").arg(index + 1));
 }
 
-void VCCueListProperties::slotAttachClicked()
+/****************************************************************************
+ * Next Cue
+ ****************************************************************************/
+
+void VCCueListProperties::slotNextAttachClicked()
 {
-    AssignHotKey ahk(this, m_keySequence);
+    AssignHotKey ahk(this, m_nextKeySequence);
     if (ahk.exec() == QDialog::Accepted)
     {
-        m_keySequence = QKeySequence(ahk.keySequence());
-        m_keyEdit->setText(m_keySequence.toString());
+        m_nextKeySequence = QKeySequence(ahk.keySequence());
+        m_nextKeyEdit->setText(m_nextKeySequence.toString());
     }
 }
 
-void VCCueListProperties::slotDetachClicked()
+void VCCueListProperties::slotNextDetachClicked()
 {
-    m_keySequence = QKeySequence();
-    m_keyEdit->setText(m_keySequence.toString());
+    m_nextKeySequence = QKeySequence();
+    m_nextKeyEdit->setText(m_nextKeySequence.toString());
 }
 
-void VCCueListProperties::accept()
+void VCCueListProperties::slotNextChooseInputClicked()
 {
-    /* Replace existing list of cues */
-    m_cueList->clear();
-
-    QTreeWidgetItemIterator it(m_list);
-    while (*it != NULL)
+    SelectInputChannel sic(this);
+    if (sic.exec() == QDialog::Accepted)
     {
-        m_cueList->append((*it)->text(KVCCueListColumnID).toInt());
-        ++it;
+        m_nextInputUniverse = sic.universe();
+        m_nextInputChannel = sic.channel();
+        updateNextInputSource();
     }
+}
 
-    /* Key sequence */
-    m_cueList->setKeySequence(m_keySequence);
+void VCCueListProperties::slotNextAutoDetectInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotNextInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotNextInputValueChanged(quint32,quint32)));
+    }
+}
 
-    QDialog::accept();
+void VCCueListProperties::slotNextInputValueChanged(quint32 uni, quint32 ch)
+{
+    m_nextInputUniverse = uni;
+    m_nextInputChannel = ch;
+    updateNextInputSource();
+}
+
+void VCCueListProperties::updateNextInputSource()
+{
+    QString uniName;
+    QString chName;
+
+    if (_app->inputMap()->inputSourceNames(m_nextInputUniverse,
+                                           m_nextInputChannel,
+                                           uniName, chName) == true)
+    {
+        /* Display the gathered information */
+        m_nextInputUniverseEdit->setText(uniName);
+        m_nextInputChannelEdit->setText(chName);
+    }
+    else
+    {
+        m_nextInputUniverseEdit->setText(KInputNone);
+        m_nextInputChannelEdit->setText(KInputNone);
+    }
+}
+
+/****************************************************************************
+ * Previous Cue
+ ****************************************************************************/
+
+void VCCueListProperties::slotPreviousAttachClicked()
+{
+    AssignHotKey ahk(this, m_previousKeySequence);
+    if (ahk.exec() == QDialog::Accepted)
+    {
+        m_previousKeySequence = QKeySequence(ahk.keySequence());
+        m_previousKeyEdit->setText(m_previousKeySequence.toString());
+    }
+}
+
+void VCCueListProperties::slotPreviousDetachClicked()
+{
+    m_previousKeySequence = QKeySequence();
+    m_previousKeyEdit->setText(m_previousKeySequence.toString());
+}
+
+void VCCueListProperties::slotPreviousChooseInputClicked()
+{
+    SelectInputChannel sic(this);
+    if (sic.exec() == QDialog::Accepted)
+    {
+        m_previousInputUniverse = sic.universe();
+        m_previousInputChannel = sic.channel();
+        updatePreviousInputSource();
+    }
+}
+
+void VCCueListProperties::slotPreviousAutoDetectInputToggled(bool checked)
+{
+    if (checked == true)
+    {
+        if (m_nextAutoDetectInputButton->isChecked() == true)
+            m_nextAutoDetectInputButton->toggle();
+
+        connect(_app->inputMap(),
+                SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                this, SLOT(slotPreviousInputValueChanged(quint32,quint32)));
+    }
+    else
+    {
+        disconnect(_app->inputMap(),
+                   SIGNAL(inputValueChanged(quint32,quint32,uchar)),
+                   this, SLOT(slotPreviousInputValueChanged(quint32,quint32)));
+    }
+}
+
+void VCCueListProperties::slotPreviousInputValueChanged(quint32 uni, quint32 ch)
+{
+    m_previousInputUniverse = uni;
+    m_previousInputChannel = ch;
+    updatePreviousInputSource();
+}
+
+void VCCueListProperties::updatePreviousInputSource()
+{
+    QString uniName;
+    QString chName;
+
+    if (_app->inputMap()->inputSourceNames(m_previousInputUniverse,
+                                           m_previousInputChannel,
+                                           uniName, chName) == true)
+    {
+        /* Display the gathered information */
+        m_previousInputUniverseEdit->setText(uniName);
+        m_previousInputChannelEdit->setText(chName);
+    }
+    else
+    {
+        m_previousInputUniverseEdit->setText(KInputNone);
+        m_previousInputChannelEdit->setText(KInputNone);
+    }
 }

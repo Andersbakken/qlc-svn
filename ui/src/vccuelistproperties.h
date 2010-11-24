@@ -32,26 +32,66 @@ class VCCueList;
 class VCCueListProperties : public QDialog, public Ui_VCCueListProperties
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCCueListProperties)
 
+    /************************************************************************
+     * Initialization
+     ************************************************************************/
 public:
     VCCueListProperties(QWidget* parent, VCCueList* cueList);
     ~VCCueListProperties();
 
-private:
-    Q_DISABLE_COPY(VCCueListProperties)
+public slots:
+    void accept();
+    void slotTabChanged();
 
+protected:
+    VCCueList* m_cueList;
+
+    /************************************************************************
+     * Cues
+     ************************************************************************/
 protected slots:
     void slotAddClicked();
     void slotRemoveClicked();
     void slotRaiseClicked();
     void slotLowerClicked();
-    void slotAttachClicked();
-    void slotDetachClicked();
-    void accept();
+
+    /************************************************************************
+     * Next Cue
+     ************************************************************************/
+protected slots:
+    void slotNextAttachClicked();
+    void slotNextDetachClicked();
+    void slotNextChooseInputClicked();
+    void slotNextAutoDetectInputToggled(bool state);
+    void slotNextInputValueChanged(quint32 uni, quint32 ch);
 
 protected:
-    VCCueList* m_cueList;
-    QKeySequence m_keySequence;
+    void updateNextInputSource();
+
+protected:
+    QKeySequence m_nextKeySequence;
+    quint32 m_nextInputUniverse;
+    quint32 m_nextInputChannel;
+
+    /************************************************************************
+     * Previous Cue
+     ************************************************************************/
+protected slots:
+    void slotPreviousAttachClicked();
+    void slotPreviousDetachClicked();
+    void slotPreviousChooseInputClicked();
+    void slotPreviousAutoDetectInputToggled(bool state);
+    void slotPreviousInputValueChanged(quint32 uni, quint32 ch);
+
+protected:
+    void updatePreviousInputSource();
+
+protected:
+    QKeySequence m_previousKeySequence;
+    quint32 m_previousInputUniverse;
+    quint32 m_previousInputChannel;
 };
 
 #endif
