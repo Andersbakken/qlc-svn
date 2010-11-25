@@ -515,28 +515,19 @@ QDir InputMap::userProfileDirectory()
     // If the current user is root, return the system profile dir.
     // Otherwise return the user's home dir.
     if (geteuid() == 0)
-    {
         dir = QDir(INPUTPROFILEDIR);
-    }
     else
-    {
-        QString path = QString("%1/%2").arg(getenv("HOME"))
-                                       .arg(USERINPUTPROFILEDIR);
-        dir = QDir(path);
-    }
+        dir.setPath(QString("%1/%2").arg(getenv("HOME")).arg(USERINPUTPROFILEDIR));
 #elif __APPLE__
     /* User's input profile directory on OSX */
-    QString path = QString("%1/%2").arg(getenv("HOME"))
-                                   .arg(USERINPUTPROFILEDIR);
-    dir = QDir(path);
+    dir.setPath(QString("%1/%2").arg(getenv("HOME")).arg(USERINPUTPROFILEDIR));
 #else
     /* User's input profile directory on Windows */
     LPTSTR home = (LPTSTR) malloc(256 * sizeof(TCHAR));
     GetEnvironmentVariable(TEXT("UserProfile"), home, 256);
-    QString path = QString("%1/%2")
+    dir.setPath(QString("%1/%2")
                     .arg(QString::fromUtf16(reinterpret_cast<ushort*> (home)))
-                    .arg(USERINPUTPROFILEDIR);
-    dir = QDir(path);
+                    .arg(USERINPUTPROFILEDIR));
     free(home);
 #endif
 
