@@ -367,20 +367,14 @@ void App::initInputMap()
     Q_ASSERT(m_inputMap != NULL);
 
     /* Load input plugins */
-    QString path;
-#ifdef __APPLE__
-    path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
-                              .arg(INPUTPLUGINDIR);
-#else
-    path = QString(INPUTPLUGINDIR);
-#endif
-    m_inputMap->loadPlugins(path);
+    m_inputMap->loadPlugins(InputMap::systemPluginDirectory());
 
     /* Load user profiles first; They override system profiles, since
        duplicates from system profiles are ignored. */
     m_inputMap->loadProfiles(InputMap::userProfileDirectory());
     m_inputMap->loadProfiles(InputMap::systemProfileDirectory());
 
+    /* Load settings */
     m_inputMap->loadDefaults();
 }
 

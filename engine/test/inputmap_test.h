@@ -45,6 +45,7 @@ private slots:
     void loadInputProfiles();
     void inputSourceNames();
     void profileDirectories();
+    void pluginDirectories();
 };
 
 #endif

@@ -28,6 +28,10 @@
 #include <QtXml>
 #include <QDir>
 
+#ifdef WIN32
+#   include <windows.h>
+#endif
+
 #include "qlcinputchannel.h"
 #include "qlcinplugin.h"
 #include "qlcconfig.h"
@@ -37,15 +41,6 @@
 
 #include "inputpatch.h"
 #include "inputmap.h"
-
-#ifdef WIN32
-#   include <windows.h>
-#   define PLUGINEXT ".dll"
-#elif __APPLE__
-#   define PLUGINEXT ".dylib"
-#else
-#   define PLUGINEXT ".so"
-#endif
 
 /*****************************************************************************
  * Initialization
@@ -203,17 +198,11 @@ quint32 InputMap::mapping(const QString& pluginName, quint32 input) const
  * Plugins
  *****************************************************************************/
 
-void InputMap::loadPlugins(const QString& path)
+void InputMap::loadPlugins(const QDir& dir)
 {
-    /* Find plugins from input plugin dir, sort by name, get regular files */
-    QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
-
     /* Check that we can access the directory */
     if (dir.exists() == false || dir.isReadable() == false)
-    {
-        qWarning() << "Unable to load input plugins from" << path;
         return;
-    }
 
     /* Loop thru all files in the directory */
     QStringListIterator it(dir.entryList());
@@ -346,6 +335,22 @@ QLCInPlugin* InputMap::plugin(const QString& name)
     }
 
     return NULL;
+}
+
+QDir InputMap::systemPluginDirectory()
+{
+    QDir dir;
+#ifdef __APPLE__
+    dir.setPath(QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
+                                   .arg(INPUTPLUGINDIR));
+#else
+    dir.setPath(INPUTPLUGINDIR);
+#endif
+
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtPlugin));
+
+    return dir;
 }
 
 /*****************************************************************************

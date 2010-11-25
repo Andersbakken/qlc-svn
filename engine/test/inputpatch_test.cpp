@@ -25,6 +25,7 @@
 #include "inputpatch_test.h"
 #include "inputpluginstub.h"
 #include "qlcinplugin.h"
+#include "qlcfile.h"
 
 /* Expose protected members to unit test */
 #define protected public
@@ -50,7 +51,10 @@ void InputPatch_Test::defaults()
 void InputPatch_Test::patch()
 {
     InputMap im(this);
-    im.loadPlugins(TESTPLUGINDIR);
+    QDir dir(TESTPLUGINDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtPlugin));
+    im.loadPlugins(dir);
     QVERIFY(im.m_plugins.size() > 0);
 
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));

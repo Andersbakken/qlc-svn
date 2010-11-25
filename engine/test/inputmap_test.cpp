@@ -36,6 +36,14 @@
 #define ENGINEDIR "../src"
 #define PROFILEDIR "../../inputprofiles"
 
+static QDir testPluginDir()
+{
+    QDir dir(TESTPLUGINDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtPlugin));
+    return dir;
+}
+
 void InputMap_Test::initial()
 {
     InputMap im(this);
@@ -70,7 +78,7 @@ void InputMap_Test::appendPlugin()
     InputMap im(this);
     QCOMPARE(im.m_plugins.size(), 0);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() == 1);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -78,8 +86,6 @@ void InputMap_Test::appendPlugin()
     QCOMPARE(im.appendPlugin(stub), false);
     QCOMPARE(im.plugin(stub->name()), stub);
     QVERIFY(im.plugin("Foobar") == NULL);
-
-    im.loadPlugins("foobarxyzzy42");
     QVERIFY(im.m_plugins.size() == 1);
     QCOMPARE(im.plugin(stub->name()), stub);
 }
@@ -90,11 +96,14 @@ void InputMap_Test::notInputPlugin()
     QCOMPARE(im.m_plugins.size(), 0);
 
     // Loading should fail because the plugin is not an input plugin
-    im.loadPlugins(OUTPUT_TESTPLUGINDIR);
+    QDir dir(testPluginDir());
+    dir.setPath(OUTPUT_TESTPLUGINDIR);
+    im.loadPlugins(dir);
     QCOMPARE(im.m_plugins.size(), 0);
 
     // Loading should fail because the engine lib is not a plugin at all
-    im.loadPlugins(ENGINEDIR);
+    dir.setPath(ENGINEDIR);
+    im.loadPlugins(dir);
     QCOMPARE(im.m_plugins.size(), 0);
 }
 
@@ -104,7 +113,7 @@ void InputMap_Test::pluginNames()
 
     QVERIFY(im.pluginNames().size() == 0);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -119,7 +128,7 @@ void InputMap_Test::pluginInputs()
 
     QVERIFY(im.pluginInputs("Foo").size() == 0);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -134,7 +143,7 @@ void InputMap_Test::configurePlugin()
 
     QCOMPARE(im.canConfigurePlugin("Foo"), false);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -163,7 +172,7 @@ void InputMap_Test::pluginStatus()
     QVERIFY(im.pluginStatus("Xyzzy", 2).contains("No plugin"));
     QVERIFY(im.pluginStatus("AYBABTU", 3).contains("No plugin"));
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -204,7 +213,7 @@ void InputMap_Test::setPatch()
 {
     InputMap im(this);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -321,7 +330,7 @@ void InputMap_Test::feedBack()
 {
     InputMap im(this);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -360,7 +369,7 @@ void InputMap_Test::slotValueChanged()
 {
     InputMap im(this);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -404,7 +413,7 @@ void InputMap_Test::slotConfigurationChanged()
 {
     InputMap im(this);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     QVERIFY(im.m_plugins.size() > 0);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
@@ -422,11 +431,13 @@ void InputMap_Test::loadInputProfiles()
 
     // No profiles in a nonexistent directory
     QDir dir("/path/to/a/nonexistent/place/beyond/this/universe");
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtInputProfile));
     im.loadProfiles(dir);
     QVERIFY(im.profileNames().isEmpty() == true);
 
     // No profiles in an existing directory
-    dir.setPath(TESTPLUGINDIR);
+    dir = testPluginDir();
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << QString("*%1").arg(KExtInputProfile));
     im.loadProfiles(dir);
@@ -447,7 +458,7 @@ void InputMap_Test::inputSourceNames()
 {
     InputMap im(this);
 
-    im.loadPlugins(TESTPLUGINDIR);
+    im.loadPlugins(testPluginDir());
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
 
     QDir dir(PROFILEDIR);
@@ -487,9 +498,7 @@ void InputMap_Test::inputSourceNames()
 
 void InputMap_Test::profileDirectories()
 {
-    QDir dir;
-    dir = InputMap::systemProfileDirectory();
-qDebug() << dir;
+    QDir dir = InputMap::systemProfileDirectory();
     QVERIFY(dir.filter() & QDir::Files);
     QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtInputProfile)));
     QVERIFY(dir.absolutePath().contains(INPUTPROFILEDIR));
@@ -499,4 +508,12 @@ qDebug() << dir;
     QVERIFY(dir.filter() & QDir::Files);
     QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtInputProfile)));
     QVERIFY(dir.absolutePath().contains(USERINPUTPROFILEDIR));
+}
+
+void InputMap_Test::pluginDirectories()
+{
+    QDir dir = InputMap::systemPluginDirectory();
+    QVERIFY(dir.filter() & QDir::Files);
+    QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtPlugin)));
+    QVERIFY(dir.absolutePath().contains(INPUTPLUGINDIR));
 }

@@ -33,6 +33,13 @@ class QString;
 #define KExtFixture      ".qxf" // 'Q'lc 'X'ml 'F'ixture
 #define KExtWorkspace    ".qxw" // 'Q'lc 'X'ml 'W'orkspace
 #define KExtInputProfile ".qxi" // 'Q'lc 'X'ml 'I'nput profile
+#ifdef WIN32
+#   define KExtPlugin    ".dll" // Dynamic-Link Library
+#elif __APPLE__
+#   define KExtPlugin  ".dylib" // DYnamic LIBrary
+#else
+#   define KExtPlugin    ".so"  // Shared Object
+#endif
 
 // Generic XML tags common for all documents
 #define KXMLQLCCreator "Creator"

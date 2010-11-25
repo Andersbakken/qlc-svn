@@ -169,11 +169,11 @@ protected:
      *************************************************************************/
 public:
     /**
-     * Load all input plugins from the given directory
+     * Load all input plugins from the given directory, using QDir filters.
      *
-     * @param path The directory to load plugins from
+     * @param dir The directory to load plugins from
      */
-    void loadPlugins(const QString& path);
+    void loadPlugins(const QDir& dir);
 
     /**
      * Get a list of available input plugins as a string list
@@ -224,6 +224,14 @@ public:
      * @return true if successful, otherwise false
      */
     bool appendPlugin(QLCInPlugin* inputPlugin);
+
+    /**
+     * Get the system default input plugin directory. The location varies
+     * greatly between platforms.
+     *
+     * @return System default input plugin directory.
+     */
+    static QDir systemPluginDirectory();
 
 protected:
     /**
