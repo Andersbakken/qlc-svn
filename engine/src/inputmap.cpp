@@ -352,16 +352,10 @@ QLCInPlugin* InputMap::plugin(const QString& name)
  * Profiles
  *****************************************************************************/
 
-void InputMap::loadProfiles(const QString& profilePath)
+void InputMap::loadProfiles(const QDir& dir)
 {
-    /* Find *.qxi from profilePath, sort by name, get regular files */
-    QDir dir(profilePath, QString("*%1").arg(KExtInputProfile),
-             QDir::Name, QDir::Files);
     if (dir.exists() == false || dir.isReadable() == false)
-    {
-        qWarning() << "Unable to load input profiles from" << profilePath;
         return;
-    }
 
     /* Go thru all found file entries and attempt to load an input
        profile from each of them. */

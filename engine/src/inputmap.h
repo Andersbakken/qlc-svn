@@ -242,8 +242,8 @@ protected:
      * Input profiles
      *************************************************************************/
 public:
-    /** Load all profile profiles from the given path */
-    void loadProfiles(const QString& profilePath);
+    /** Load all input profiles from the given directory using QDir filters */
+    void loadProfiles(const QDir& dir);
 
     /** Get a list of available profile names */
     QStringList profileNames();

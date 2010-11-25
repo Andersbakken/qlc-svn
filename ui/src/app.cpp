@@ -376,21 +376,10 @@ void App::initInputMap()
 #endif
     m_inputMap->loadPlugins(path);
 
-#ifdef Q_WS_X11
-    /* First, load user profiles (UNIX only). Override system profiles,
-     * since duplicates in system profiles are ignored. */
-    QDir dir(QString(getenv("HOME")));
-    m_inputMap->loadProfiles(dir.absoluteFilePath(USERINPUTPROFILEDIR));
-#endif
-
-    /* Then, load system profiles */
-#ifdef __APPLE__
-    m_inputMap->loadProfiles(QString("%1/../%2")
-                             .arg(QApplication::applicationDirPath())
-                             .arg(INPUTPROFILEDIR));
-#else
-    m_inputMap->loadProfiles(INPUTPROFILEDIR);
-#endif
+    /* Load user profiles first; They override system profiles, since
+       duplicates from system profiles are ignored. */
+    m_inputMap->loadProfiles(InputMap::userProfileDirectory());
+    m_inputMap->loadProfiles(InputMap::systemProfileDirectory());
 
     m_inputMap->loadDefaults();
 }

@@ -421,20 +421,25 @@ void InputMap_Test::loadInputProfiles()
     InputMap im(this);
 
     // No profiles in a nonexistent directory
-    im.loadProfiles("/path/to/a/nonexistent/place/beyond/this/universe");
+    QDir dir("/path/to/a/nonexistent/place/beyond/this/universe");
+    im.loadProfiles(dir);
     QVERIFY(im.profileNames().isEmpty() == true);
 
     // No profiles in an existing directory
-    im.loadProfiles(TESTPLUGINDIR);
+    dir.setPath(TESTPLUGINDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtInputProfile));
+    im.loadProfiles(dir);
     QVERIFY(im.profileNames().isEmpty() == true);
 
     // Should be able to load profiles
-    im.loadProfiles(PROFILEDIR);
+    dir.setPath(PROFILEDIR);
+    im.loadProfiles(dir);
     QStringList names(im.profileNames());
     QVERIFY(names.size() > 0);
 
     // Shouldn't load duplicates
-    im.loadProfiles(PROFILEDIR);
+    im.loadProfiles(dir);
     QCOMPARE(names, im.profileNames());
 }
 
@@ -444,7 +449,11 @@ void InputMap_Test::inputSourceNames()
 
     im.loadPlugins(TESTPLUGINDIR);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
-    im.loadProfiles(PROFILEDIR);
+
+    QDir dir(PROFILEDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtInputProfile));
+    im.loadProfiles(dir);
 
     QString uni, ch;
     QVERIFY(im.inputSourceNames(0, 0, uni, ch) == false);
