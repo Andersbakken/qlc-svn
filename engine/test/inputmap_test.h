@@ -44,6 +44,7 @@ private slots:
     void slotConfigurationChanged();
     void loadInputProfiles();
     void inputSourceNames();
+    void profileDirectories();
 };
 
 #endif

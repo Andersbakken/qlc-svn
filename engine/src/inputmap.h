@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QVector>
 #include <QList>
+#include <QDir>
 
 #include "qlcinputprofile.h"
 #include "qlctypes.h"
@@ -268,6 +269,23 @@ public:
      */
     bool inputSourceNames(quint32 universe, quint32 channel,
                           QString& uniName, QString& chName) const;
+
+
+    /**
+     * Get the default system input profile directory that contains installed
+     * input profiles. The location varies greatly between platforms.
+     *
+     * @return System profile directory
+     */
+    static QDir systemProfileDirectory();
+
+    /**
+     * Get the user's own default input profile directory that is used to save
+     * custom input profiles. The location varies greatly between platforms.
+     *
+     * @return User profile directory
+     */
+    static QDir userProfileDirectory();
 
 protected:
     /** List that contains all available profiles */

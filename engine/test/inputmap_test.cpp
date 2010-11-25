@@ -23,6 +23,8 @@
 
 #include "inputpluginstub.h"
 #include "inputmap_test.h"
+#include "qlcconfig.h"
+#include "qlcfile.h"
 
 #define protected public
 #include "inputpatch.h"
@@ -472,4 +474,20 @@ void InputMap_Test::inputSourceNames()
     QVERIFY(im.inputSourceNames(InputMap::invalidUniverse(), 0, uni, ch) == false);
     QVERIFY(im.inputSourceNames(InputMap::invalidUniverse(),
                                 KInputChannelInvalid, uni, ch) == false);
+}
+
+void InputMap_Test::profileDirectories()
+{
+    QDir dir;
+    dir = InputMap::systemProfileDirectory();
+qDebug() << dir;
+    QVERIFY(dir.filter() & QDir::Files);
+    QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtInputProfile)));
+    QVERIFY(dir.absolutePath().contains(INPUTPROFILEDIR));
+
+    dir = InputMap::userProfileDirectory();
+    QVERIFY(dir.exists() == true);
+    QVERIFY(dir.filter() & QDir::Files);
+    QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtInputProfile)));
+    QVERIFY(dir.absolutePath().contains(USERINPUTPROFILEDIR));
 }

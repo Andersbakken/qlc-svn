@@ -57,14 +57,22 @@ macx:DOCSDIR       = $$DATADIR/Documents
 # Input profiles
 win32:INPUTPROFILEDIR          = InputProfiles
 unix:!macx:INPUTPROFILEDIR     = $$DATADIR/inputprofiles
-unix:!macx:USERINPUTPROFILEDIR = .qlc/inputprofiles
 macx:INPUTPROFILEDIR           = $$DATADIR/InputProfiles
+
+# User input profiles
+win32:USERINPUTPROFILEDIR      = QLC/InputProfiles
+unix:!macx:USERINPUTPROFILEDIR = .qlc/inputprofiles
+macx:USERINPUTPROFILEDIR       = "Library/Application Support/QLC/InputProfiles"
 
 # Fixtures
 win32:FIXTUREDIR          = Fixtures
 unix:!macx:FIXTUREDIR     = $$DATADIR/fixtures
-unix:!macx:USERFIXTUREDIR = .qlc/fixtures
 macx:FIXTUREDIR           = $$DATADIR/Fixtures
+
+# User fixtures
+win32:USERFIXTUREDIR      = QLC/Fixtures
+unix:!macx:USERFIXTUREDIR = .qlc/fixtures
+macx:USERFIXTUREDIR       = "Library/Application Support/QLC/Fixtures"
 
 # Plugins
 win32:PLUGINDIR      = Plugins

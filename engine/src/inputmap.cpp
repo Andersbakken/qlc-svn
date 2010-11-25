@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QCoreApplication>
 #include <QPluginLoader>
 #include <QStringList>
 #include <QSettings>
@@ -26,10 +27,6 @@
 #include <QList>
 #include <QtXml>
 #include <QDir>
-
-#ifdef __APPLE__
-#include <QCoreApplication>
-#endif
 
 #include "qlcinputchannel.h"
 #include "qlcinplugin.h"
@@ -42,11 +39,12 @@
 #include "inputmap.h"
 
 #ifdef WIN32
-#define PLUGINEXT ".dll"
+#   include <windows.h>
+#   define PLUGINEXT ".dll"
 #elif __APPLE__
-#define PLUGINEXT ".dylib"
+#   define PLUGINEXT ".dylib"
 #else
-#define PLUGINEXT ".so"
+#   define PLUGINEXT ".so"
 #endif
 
 /*****************************************************************************
@@ -491,6 +489,64 @@ bool InputMap::inputSourceNames(quint32 universe, quint32 channel,
     }
 
     return true;
+}
+
+QDir InputMap::systemProfileDirectory()
+{
+    QDir dir;
+
+#ifdef __APPLE__
+    dir.setPath(QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
+                              .arg(INPUTPROFILEDIR));
+#else
+    dir.setPath(INPUTPROFILEDIR);
+#endif
+
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtInputProfile));
+    return dir;
+}
+
+QDir InputMap::userProfileDirectory()
+{
+    QDir dir;
+
+#ifdef Q_WS_X11
+    // If the current user is root, return the system profile dir.
+    // Otherwise return the user's home dir.
+    if (geteuid() == 0)
+    {
+        dir = QDir(INPUTPROFILEDIR);
+    }
+    else
+    {
+        QString path = QString("%1/%2").arg(getenv("HOME"))
+                                       .arg(USERINPUTPROFILEDIR);
+        dir = QDir(path);
+    }
+#elif __APPLE__
+    /* User's input profile directory on OSX */
+    QString path = QString("%1/%2").arg(getenv("HOME"))
+                                   .arg(USERINPUTPROFILEDIR);
+    dir = QDir(path);
+#else
+    /* User's input profile directory on Windows */
+    LPTSTR home = (LPTSTR) malloc(256 * sizeof(TCHAR));
+    GetEnvironmentVariable(TEXT("UserProfile"), home, 256);
+    QString path = QString("%1/%2")
+                    .arg(QString::fromUtf16(reinterpret_cast<ushort*> (home)))
+                    .arg(USERINPUTPROFILEDIR);
+    dir = QDir(path);
+    free(home);
+#endif
+
+    /* Ensure that the selected profile directory exists */
+    if (dir.exists() == false)
+        dir.mkpath(".");
+
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtInputProfile));
+    return dir;
 }
 
 /*****************************************************************************
