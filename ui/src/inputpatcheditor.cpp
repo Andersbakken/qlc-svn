@@ -581,7 +581,6 @@ edit:
         if (dir.exists() == false)
             dir.mkpath(".");
 
-        QMessageBox::information(this, "x11", dir.path());
 #else
 #ifdef __APPLE__
         /* Use the app bundle input profile dir for OSX */
@@ -592,12 +591,11 @@ edit:
         dir = QDir(INPUTPROFILEDIR);
 #endif
 #endif
-        QMessageBox::information(this, "", dir.path());
 
         /* Construct a descriptive file name for the profile */
         path = QString("%1/%2-%3%4").arg(dir.absolutePath())
-               .arg(manufacturer).arg(model)
-               .arg(KExtInputProfile);
+                                    .arg(manufacturer).arg(model)
+                                    .arg(KExtInputProfile);
 
         /* Ensure that creating a new input profile won't overwrite
            an existing file. */
