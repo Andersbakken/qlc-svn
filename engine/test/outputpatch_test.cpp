@@ -24,6 +24,7 @@
 
 #include "outputpluginstub.h"
 #include "outputpatch_test.h"
+#include "qlcfile.h"
 
 /* Expose protected members to unit test */
 #define protected public
@@ -32,6 +33,14 @@
 #undef protected
 
 #define TESTPLUGINDIR "../outputpluginstub"
+
+static QDir testPluginDir()
+{
+    QDir dir(TESTPLUGINDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtPlugin));
+    return dir;
+}
 
 void OutputPatch_Test::defaults()
 {
@@ -47,7 +56,7 @@ void OutputPatch_Test::patch()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -99,7 +108,7 @@ void OutputPatch_Test::dump()
     OutputMap om(this);
     OutputPatch* op = new OutputPatch(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);

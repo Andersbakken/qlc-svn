@@ -305,16 +305,12 @@ void App::initOutputMap()
     Q_ASSERT(m_outputMap != NULL);
 
     /* Load output plugins */
-    QString path;
-#ifdef __APPLE__
-    path = QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
-                              .arg(OUTPUTPLUGINDIR);
-#else
-    path = QString(OUTPUTPLUGINDIR);
-#endif
-    m_outputMap->loadPlugins(path);
+    m_outputMap->loadPlugins(OutputMap::systemPluginDirectory());
+
+    /* Load settings */
     m_outputMap->loadDefaults();
 
+    /* Monitor OutputMap's blackout state */
     connect(m_outputMap, SIGNAL(blackoutChanged(bool)),
             this, SLOT(slotOutputMapBlackoutChanged(bool)));
 }

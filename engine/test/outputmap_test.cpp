@@ -25,6 +25,7 @@
 #include "outputmap_test.h"
 #include "universearray.h"
 #include "qlcoutplugin.h"
+#include "qlcfile.h"
 
 #define protected public
 #include "outputpatch.h"
@@ -34,6 +35,14 @@
 #define TESTPLUGINDIR "../outputpluginstub"
 #define INPUT_TESTPLUGINDIR "../inputpluginstub"
 #define ENGINEDIR "../src"
+
+static QDir testPluginDir()
+{
+    QDir dir(TESTPLUGINDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtPlugin));
+    return dir;
+}
 
 void OutputMap_Test::initial()
 {
@@ -80,18 +89,12 @@ void OutputMap_Test::appendPlugin()
     OutputMap om(this);
     QVERIFY(om.m_plugins.size() == 1);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() == 2);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
 
     QVERIFY(om.appendPlugin(stub) == false);
-    QVERIFY(om.plugin(stub->name()) == stub);
-    QVERIFY(om.plugin(om.m_dummyOut->name()) == om.m_dummyOut);
-
-    // Nonexistent location
-    om.loadPlugins("foobarxyzzy42");
-    QVERIFY(om.m_plugins.size() == 2);
     QVERIFY(om.plugin(stub->name()) == stub);
     QVERIFY(om.plugin(om.m_dummyOut->name()) == om.m_dummyOut);
 }
@@ -102,11 +105,14 @@ void OutputMap_Test::notOutputPlugin()
     QCOMPARE(om.m_plugins.size(), 1);
 
     // Loading should fail because the plugin is not an output plugin
-    om.loadPlugins(INPUT_TESTPLUGINDIR);
+    QDir dir(testPluginDir());
+    dir.setPath(INPUT_TESTPLUGINDIR);
+    om.loadPlugins(dir);
     QCOMPARE(om.m_plugins.size(), 1);
 
     // Loading should fail because the engine lib is not a plugin at all
-    om.loadPlugins(ENGINEDIR);
+    dir.setPath(ENGINEDIR);
+    om.loadPlugins(dir);
     QCOMPARE(om.m_plugins.size(), 1);
 }
 
@@ -114,7 +120,7 @@ void OutputMap_Test::setPatch()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -170,7 +176,7 @@ void OutputMap_Test::claimReleaseDumpReset()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -214,7 +220,7 @@ void OutputMap_Test::blackout()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -291,7 +297,7 @@ void OutputMap_Test::pluginNames()
     QVERIFY(om.pluginNames().size() == 1);
     QVERIFY(om.pluginNames().at(0) == om.m_dummyOut->name());
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -305,7 +311,7 @@ void OutputMap_Test::pluginOutputs()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -327,7 +333,7 @@ void OutputMap_Test::universeNames()
     QCOMPARE(om.universeNames().at(2), QString("3: Dummy Output (3: Dummy Out 3)"));
     QCOMPARE(om.universeNames().at(3), QString("4: Dummy Output (4: Dummy Out 4)"));
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -351,7 +357,7 @@ void OutputMap_Test::configure()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -371,7 +377,7 @@ void OutputMap_Test::slotConfigurationChanged()
 {
     OutputMap om(this);
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -392,7 +398,7 @@ void OutputMap_Test::mapping()
     QCOMPARE(om.mapping("Dummy Output", 2), quint32(2));
     QCOMPARE(om.mapping("Dummy Output", 3), quint32(3));
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);
@@ -418,7 +424,7 @@ void OutputMap_Test::pluginStatus()
     QVERIFY(om.pluginStatus("Xyzzy", 2).contains("No plugin"));
     QVERIFY(om.pluginStatus("AYBABTU", 3).contains("No plugin"));
 
-    om.loadPlugins(TESTPLUGINDIR);
+    om.loadPlugins(testPluginDir());
     QVERIFY(om.m_plugins.size() > 0);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
     QVERIFY(stub != NULL);

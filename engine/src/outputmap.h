@@ -27,6 +27,7 @@
 #include <QMutex>
 #include <QList>
 #include <QHash>
+#include <QDir>
 
 #include "qlctypes.h"
 
@@ -66,11 +67,11 @@ public:
     ~OutputMap();
 
     /**
-     * Load all output plugins from the given directory.
+     * Load all output plugins from the given directory, using QDir filters.
      *
-     * @param path The directory to load plugins from
+     * @param dir The directory to load plugins from
      */
-    void loadPlugins(const QString& path);
+    void loadPlugins(const QDir& dir);
 
 protected:
     /** Total number of supported universes */
@@ -265,6 +266,14 @@ public:
      * @return true if successful, otherwise false
      */
     bool appendPlugin(QLCOutPlugin* outputPlugin);
+
+    /**
+     * Get the system default output plugin directory. The location varies
+     * greatly between platforms.
+     *
+     * @return System default output plugin directory.
+     */
+    static QDir systemPluginDirectory();
 
 protected:
     /**

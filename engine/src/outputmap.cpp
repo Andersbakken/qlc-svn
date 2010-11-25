@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QCoreApplication>
 #include <QPluginLoader>
 #include <QByteArray>
 #include <QSettings>
@@ -28,27 +29,16 @@
 #include <QtXml>
 #include <QDir>
 
-#ifdef __APPLE__
-#include <QCoreApplication>
-#endif
-
 #include "qlcoutplugin.h"
 #include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlci18n.h"
+#include "qlcfile.h"
 
 #include "dummyoutplugin.h"
 #include "universearray.h"
 #include "outputpatch.h"
 #include "outputmap.h"
-
-#ifdef WIN32
-#define PLUGINEXT ".dll"
-#elif __APPLE__
-#define PLUGINEXT ".dylib"
-#else
-#define PLUGINEXT ".so"
-#endif
 
 /*****************************************************************************
  * Initialization
@@ -84,16 +74,11 @@ OutputMap::~OutputMap()
     m_dummyOut = NULL;
 }
 
-void OutputMap::loadPlugins(const QString& path)
+void OutputMap::loadPlugins(const QDir& dir)
 {
-    QDir dir(path, QString("*%1").arg(PLUGINEXT), QDir::Name, QDir::Files);
-
     /* Check that we can access the directory */
     if (dir.exists() == false || dir.isReadable() == false)
-    {
-        qWarning() << "Unable to load output plugins from" << path;
         return;
-    }
 
     /* Loop thru all files in the directory */
     QStringListIterator it(dir.entryList());
@@ -401,6 +386,22 @@ void OutputMap::slotConfigurationChanged()
     QLCOutPlugin* plugin = qobject_cast<QLCOutPlugin*> (QObject::sender());
     if (plugin != NULL)
         emit pluginConfigurationChanged(plugin->name());
+}
+
+QDir OutputMap::systemPluginDirectory()
+{
+    QDir dir;
+#ifdef __APPLE__
+    dir.setPath(QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
+                                   .arg(OUTPUTPLUGINDIR));
+#else
+    dir.setPath(OUTPUTPLUGINDIR);
+#endif
+
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtPlugin));
+
+    return dir;
 }
 
 /*****************************************************************************
