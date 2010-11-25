@@ -24,6 +24,7 @@
 #include <QTreeWidget>
 #include <QToolButton>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QSettings>
 #include <QComboBox>
 #include <QGroupBox>
@@ -501,6 +502,17 @@ void InputPatchEditor::updateProfileItem(const QString& name,
         item->setCheckState(KProfileColumnName, Qt::Unchecked);
 }
 
+QString InputPatchEditor::fullProfilePath(const QString& manufacturer,
+                                          const QString& model) const
+{
+    QDir dir(InputMap::userProfileDirectory());
+    QString path = QString("%1/%2-%3%4").arg(dir.absolutePath())
+                                        .arg(manufacturer).arg(model)
+                                        .arg(KExtInputProfile);
+
+    return path;
+}
+
 void InputPatchEditor::slotProfileItemChanged(QTreeWidgetItem* item)
 {
     if (item->checkState(KProfileColumnName) == Qt::Checked)
@@ -551,74 +563,34 @@ void InputPatchEditor::slotAddProfileClicked()
 edit:
     if (ite.exec() == QDialog::Accepted)
     {
-        QLCInputProfile* profile;
-        QString path;
-        QDir dir;
-        QString manufacturer;
-        QString model;
-
         /* Remove spaces from these */
-        manufacturer = ite.profile()->manufacturer().remove(QChar(' '));
-        model = ite.profile()->model().remove(QChar(' '));
+        QString manufacturer = ite.profile()->manufacturer().remove(QChar(' '));
+        QString model = ite.profile()->model().remove(QChar(' '));
+        QString path = fullProfilePath(manufacturer, model);
 
-#ifdef Q_WS_X11
-        /* If the current user is root, use the system profile dir
-           for saving profiles. Otherwise use the user's home dir.
-           This is done on Linux only, because Win32 & OSX save
-           system profiles in a user-writable directory. */
-        if (geteuid() == 0)
+        /* If another profile with the same name exists, ask permission to overwrite */
+        if (QFile::exists(path) == true && path != ite.profile()->path())
         {
-            dir = QDir(INPUTPROFILEDIR);
-        }
-        else
-        {
-            path = QString("%1/%2").arg(getenv("HOME"))
-                   .arg(USERINPUTPROFILEDIR);
-            dir = QDir(path);
-        }
-
-        /* Ensure that the selected profile directory exists */
-        if (dir.exists() == false)
-            dir.mkpath(".");
-
-#else
-#ifdef __APPLE__
-        /* Use the app bundle input profile dir for OSX */
-        dir = QDir(QString("%1/../%2").arg(QApplication::applicationDirPath())
-                   .arg(INPUTPROFILEDIR));
-#else
-        /* Use the system input profile dir for Windows */
-        dir = QDir(INPUTPROFILEDIR);
-#endif
-#endif
-
-        /* Construct a descriptive file name for the profile */
-        path = QString("%1/%2-%3%4").arg(dir.absolutePath())
-                                    .arg(manufacturer).arg(model)
-                                    .arg(KExtInputProfile);
-
-        /* Ensure that creating a new input profile won't overwrite
-           an existing file. */
-        if (QFile::exists(path + KExtInputProfile) == true)
-        {
-            for (int i = 1; i < INT_MAX; i++)
+            int r = QMessageBox::warning(this, tr("Existing Input Profile"),
+                    tr("An input profile at %1 already exists. Do you wish to overwrite it?").arg(path),
+                    QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                    QMessageBox::No);
+            if (r == QMessageBox::Cancel)
             {
-                /* Start adding a number suffix to the file
-                   name and stop when a unique file name is
-                   found. */
-                path = QString("%1/%2-%3-%4%5")
-                       .arg(dir.absolutePath())
-                       .arg(manufacturer).arg(model)
-                       .arg(i).arg(KExtInputProfile);
-
-                if (QFile::exists(path) == false)
-                    break;
+                goto edit;
+            }
+            else if (r == QMessageBox::No)
+            {
+                path = QFileDialog::getSaveFileName(this, tr("Save Input Profile"),
+                                                    path, tr("Input Profiles (*.qxi)"));
+                if (path.isEmpty() == true)
+                    goto edit;
             }
         }
 
         /* Create a new non-const copy of the profile and
            reparent it to the input map */
-        profile = new QLCInputProfile(*ite.profile());
+        QLCInputProfile* profile = new QLCInputProfile(*ite.profile());
 
         /* Save it to a file, go back to edit if save failed */
         if (profile->saveXML(path) == false)
@@ -721,55 +693,35 @@ edit:
     if (ite.exec() == QDialog::Rejected)
         return;
 
-    QString path;
-
     /* Copy the channel's contents from the editor's copy to
        the actual object (with QLCInputProfile::operator=()). */
     *profile = *ite.profile();
 
-#ifdef Q_WS_X11
-    /* If the current user is root, save the profile to its old path.
-       Otherwise use the user's home dir and generate a new file name
-       if necessary. This is done on Linux only, because Win32 & OSX save
-       profiles always in a user-writable directory. */
-    if (geteuid() == 0)
+    /* Remove spaces from these */
+    QString manufacturer = ite.profile()->manufacturer().remove(QChar(' '));
+    QString model = ite.profile()->model().remove(QChar(' '));
+    QString path = fullProfilePath(manufacturer, model);
+
+    /* If another profile with the same name exists, ask permission to overwrite */
+    if (QFile::exists(path) == true && path != ite.profile()->path())
     {
-        path = profile->path();
-    }
-    else
-    {
-        QString manufacturer;
-        QString model;
-
-        /* Remove spaces from these */
-        manufacturer = profile->manufacturer().remove(QChar(' '));
-        model = profile->model().remove(QChar(' '));
-
-        /* Ensure that user profile directory exists */
-        path = QString("%1/%2").arg(getenv("HOME"))
-               .arg(USERINPUTPROFILEDIR);
-        QDir dir = QDir(path);
-        if (dir.exists() == false)
-            dir.mkpath(".");
-
-        /* Check, whether the profile was originally saved
-           in the system directory. If it is, construct a
-           new name for it into the user's profile dir. */
-        path = profile->path();
-        if (path.contains(getenv("HOME")) == false)
+        int r = QMessageBox::warning(this, tr("Existing Input Profile"),
+                tr("An input profile at %1 already exists. Do you wish to overwrite it?").arg(path),
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                QMessageBox::No);
+        if (r == QMessageBox::Cancel)
         {
-            /* Construct a descriptive file name for
-               the profile under user's HOME dir */
-            path = QString("%1/%2-%3%4").arg(dir.absolutePath())
-                   .arg(manufacturer).arg(model)
-                   .arg(KExtInputProfile);
+            goto edit;
+        }
+        else if (r == QMessageBox::No)
+        {
+            path = QFileDialog::getSaveFileName(this, tr("Save Input Profile"),
+                                                path, tr("Input Profiles (*.qxi)"));
+            if (path.isEmpty() == true)
+                goto edit;
         }
     }
-#else
-    /* Win32 & OSX save input profiles in a user-writable directory,
-       so we can use that directly. */
-    path = profile->path();
-#endif
+
     /* Save the profile */
     if (profile->saveXML(path) == true)
     {

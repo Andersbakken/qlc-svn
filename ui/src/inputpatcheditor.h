@@ -91,6 +91,7 @@ protected:
     void setupProfilePage();
     void fillProfileTree();
     void updateProfileItem(const QString& name, QTreeWidgetItem* item);
+    QString fullProfilePath(const QString& manufacturer, const QString& model) const;
 
 protected slots:
     void slotProfileItemChanged(QTreeWidgetItem* item);
