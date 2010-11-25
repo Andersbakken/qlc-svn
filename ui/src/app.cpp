@@ -441,20 +441,9 @@ void App::slotDocModified(bool state)
 
 void App::loadFixtureDefinitions()
 {
-#ifdef Q_WS_X11
-    /* First, load user fixtures (overrides system fixtures) */
-    QDir dir(QString(getenv("HOME")));
-    m_fixtureDefCache.load(dir.absoluteFilePath(QString(USERFIXTUREDIR)));
-#endif
-
-    /* Then, load system fixtures */
-#ifdef __APPLE__
-    m_fixtureDefCache.load(QString("%1/../%2")
-                           .arg(QApplication::applicationDirPath())
-                           .arg(FIXTUREDIR));
-#else
-    m_fixtureDefCache.load(FIXTUREDIR);
-#endif
+    /* Load user fixtures first so they override system fixtures */
+    m_fixtureDefCache.load(QLCFixtureDefCache::userDefinitionDirectory());
+    m_fixtureDefCache.load(QLCFixtureDefCache::systemDefinitionDirectory());
 }
 
 /*****************************************************************************

@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QString>
 #include <QMap>
+#include <QDir>
 
 #include "qlctypes.h"
 
@@ -97,16 +98,34 @@ public:
      * Returns true even if $fixturePath doesn't contain any fixtures,
      * if it is still accessible (and exists).
      *
-     * @param path The fixturePath to load from.
+     * @param dir The directory to load definitions from.
      * @return true, if the path could be accessed, otherwise false.
      */
-    bool load(const QString& fixturePath);
+    bool load(const QDir& dir);
 
     /**
      * Cleans the contents of the fixture definition cache, deleting
      * all fixture definitions.
      */
     void clear();
+
+    /**
+     * Get the default system fixture definition directory that contains
+     * installed fixture definitions. The location varies greatly between
+     * platforms.
+     *
+     * @return System fixture definition directory
+     */
+    static QDir systemDefinitionDirectory();
+
+    /**
+     * Get the user's own default fixture definition directory that is used to
+     * save custom fixture definitions. The location varies greatly between
+     * platforms.
+     *
+     * @return User fixture definition directory
+     */
+    static QDir userDefinitionDirectory();
 
 protected:
     QList <QLCFixtureDef*> m_defs;

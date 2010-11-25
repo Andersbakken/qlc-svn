@@ -36,10 +36,18 @@
 #undef private
 #undef protected
 
+#include "qlcchannel.h"
+#include "qlcfile.h"
+
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
+
 void PaletteGenerator_Test::initTestCase()
 {
     Bus::init(this);
-    QVERIFY(m_fixtureDefCache.load("../../fixtures/") == true);
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(m_fixtureDefCache.load(dir) == true);
 }
 
 void PaletteGenerator_Test::initial()

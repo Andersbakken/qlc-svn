@@ -37,10 +37,18 @@
 #include "efx.h"
 #undef protected
 
+#include "qlcchannel.h"
+#include "qlcfile.h"
+
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
+
 void EFXFixture_Test::initTestCase()
 {
     Bus::init(this);
-    QVERIFY(m_cache.load("../../fixtures/") == true);
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(m_cache.load(dir) == true);
 }
 
 void EFXFixture_Test::init()

@@ -28,13 +28,17 @@
 
 #include "qlcfixturedefcache_test.h"
 #include "qlcfixturedef.h"
+#include "qlcconfig.h"
 #include "qlcfile.h"
 
 #define INTERNAL_FIXTUREDIR "../../fixtures/"
 
 void QLCFixtureDefCache_Test::init()
 {
-    QVERIFY(cache.load(INTERNAL_FIXTUREDIR) == true);
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(cache.load(dir) == true);
 }
 
 void QLCFixtureDefCache_Test::cleanup()
@@ -46,7 +50,10 @@ void QLCFixtureDefCache_Test::duplicates()
 {
     // Check that duplicates are discarded
     int num = cache.m_defs.size();
-    cache.load(INTERNAL_FIXTUREDIR);
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    cache.load(dir);
     QCOMPARE(cache.m_defs.size(), num);
 }
 
@@ -172,3 +179,18 @@ void QLCFixtureDefCache_Test::load()
     QVERIFY(cache.manufacturers().contains("Robe") == true);
     QVERIFY(cache.manufacturers().contains("SGM") == true);
 }
+
+void QLCFixtureDefCache_Test::defDirectories()
+{
+    QDir dir = QLCFixtureDefCache::systemDefinitionDirectory();
+    QVERIFY(dir.filter() & QDir::Files);
+    QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtFixture)));
+    QVERIFY(dir.absolutePath().contains(FIXTUREDIR));
+
+    dir = QLCFixtureDefCache::userDefinitionDirectory();
+    QVERIFY(dir.exists() == true);
+    QVERIFY(dir.filter() & QDir::Files);
+    QVERIFY(dir.nameFilters().contains(QString("*%1").arg(KExtFixture)));
+    QVERIFY(dir.absolutePath().contains(USERFIXTUREDIR));
+}
+

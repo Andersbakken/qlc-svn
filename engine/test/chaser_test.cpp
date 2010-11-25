@@ -34,10 +34,18 @@
 #include "doc.h"
 #undef protected
 
+#include "qlcchannel.h"
+#include "qlcfile.h"
+
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
+
 void Chaser_Test::initTestCase()
 {
     Bus::init(this);
-    m_cache.load("../fixtures/");
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(m_cache.load(dir) == true);
 }
 
 void Chaser_Test::init()

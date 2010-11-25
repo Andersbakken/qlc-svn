@@ -26,16 +26,24 @@
 #include "qlcfixturemode.h"
 #include "qlcfixturedef.h"
 #include "qlccapability.h"
+#include "qlcconfig.h"
+#include "qlcfile.h"
 
 #include "fixture_test.h"
 #include "fixture.h"
 #include "doc.h"
 #include "bus.h"
 
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
+
 void Fixture_Test::initTestCase()
 {
     Bus::init(this);
-    QVERIFY(m_fixtureDefCache.load("../../fixtures/") == true);
+
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(m_fixtureDefCache.load(dir) == true);
 }
 
 void Fixture_Test::id()

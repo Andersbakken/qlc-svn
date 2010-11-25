@@ -32,10 +32,18 @@
 #include "scene.h"
 #include "doc.h"
 
+#include "qlcchannel.h"
+#include "qlcfile.h"
+
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
+
 void Collection_Test::initTestCase()
 {
     Bus::init(this);
-    m_cache.load("../fixtures/");
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(m_cache.load(dir) == true);
 }
 
 void Collection_Test::init()

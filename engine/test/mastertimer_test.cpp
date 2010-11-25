@@ -37,10 +37,18 @@
 #include "mastertimer.h"
 #undef protected
 
+#include "qlcchannel.h"
+#include "qlcfile.h"
+
+#define INTERNAL_FIXTUREDIR "../../fixtures/"
+
 void MasterTimer_Test::initTestCase()
 {
     m_oms = new OutputMapStub(this);
-    QVERIFY(m_cache.load("../../fixtures/") == true);
+    QDir dir(INTERNAL_FIXTUREDIR);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+    QVERIFY(m_cache.load(dir) == true);
 }
 
 void MasterTimer_Test::init()

@@ -21,11 +21,11 @@
 
 #include <QList>
 #include <QDebug>
-#include <QDir>
 #include <QSet>
 
 #include "qlcfixturedefcache.h"
 #include "qlcfixturedef.h"
+#include "qlcconfig.h"
 #include "qlcfile.h"
 
 QLCFixtureDefCache::QLCFixtureDefCache()
@@ -104,15 +104,10 @@ bool QLCFixtureDefCache::addFixtureDef(QLCFixtureDef* fixtureDef)
     }
 }
 
-bool QLCFixtureDefCache::load(const QString& fixturePath)
+bool QLCFixtureDefCache::load(const QDir& dir)
 {
-    QDir dir(fixturePath, QString("*%1").arg(KExtFixture),
-             QDir::Name, QDir::Files);
     if (dir.exists() == false || dir.isReadable() == false)
-    {
-        qWarning() << "Unable to load fixture definitions from" << fixturePath;
         return false;
-    }
 
     /* Attempt to read all specified files from the given directory */
     QStringListIterator it(dir.entryList());
@@ -150,4 +145,50 @@ void QLCFixtureDefCache::clear()
 {
     while (m_defs.isEmpty() == false)
         delete m_defs.takeFirst();
+}
+
+QDir QLCFixtureDefCache::systemDefinitionDirectory()
+{
+    QDir dir;
+#ifdef __APPLE__
+    dir.setPath(QString("%1/../%2").arg(QApplication::applicationDirPath())
+                                   .arg(FIXTUREDIR));
+#else
+    dir.setPath(FIXTUREDIR);
+#endif
+
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+
+    return dir;
+}
+
+QDir QLCFixtureDefCache::userDefinitionDirectory()
+{
+    QDir dir;
+
+#ifdef Q_WS_X11
+    // If the current user is root, return the system fixture dir.
+    // Otherwise return a path under user's home dir.
+    if (geteuid() == 0)
+        dir = QDir(FIXTUREDIR);
+    else
+        dir.setPath(QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR));
+#elif __APPLE__
+    /* User's input profile directory on OSX */
+    dir.setPath(QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR));
+#else
+    /* User's input profile directory on Windows */
+    LPTSTR home = (LPTSTR) malloc(256 * sizeof(TCHAR));
+    GetEnvironmentVariable(TEXT("UserProfile"), home, 256);
+    dir.setPath(QString("%1/%2")
+                    .arg(QString::fromUtf16(reinterpret_cast<ushort*> (home)))
+                    .arg(USERFIXTUREDIR));
+    free(home);
+#endif
+
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
+
+    return dir;
 }
