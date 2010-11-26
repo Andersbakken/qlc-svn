@@ -380,11 +380,9 @@ void InputPatchEditor::slotConfigureInputClicked()
     else
         plugin = item->text(KMapColumnName);
 
-    /* Configure the plugin */
+    /* Configure the plugin. Changes in plugin outputs are handled with
+       slotPluginConfigurationChanged(). */
     _app->inputMap()->configurePlugin(plugin);
-
-    /* Refill the mapping tree in case configuration changed something */
-    fillMappingTree();
 }
 
 void InputPatchEditor::slotReconnectClicked()
