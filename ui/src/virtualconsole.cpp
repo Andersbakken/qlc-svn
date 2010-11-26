@@ -966,14 +966,12 @@ void VirtualConsole::slotToolsSliders()
 
 void VirtualConsole::slotToolsBlackout()
 {
-    qDebug() << Q_FUNC_INFO;
     Q_ASSERT(_app->outputMap() != NULL);
     _app->outputMap()->setBlackout(!_app->outputMap()->blackout());
     if (s_properties.blackoutInputUniverse() != InputMap::invalidUniverse() &&
         s_properties.blackoutInputChannel() != KInputChannelInvalid)
     {
         uchar value = (_app->outputMap()->blackout()) ? 255 : 0;
-        qDebug() << value;
         _app->inputMap()->feedBack(s_properties.blackoutInputUniverse(),
                                    s_properties.blackoutInputChannel(),
                                    value);
