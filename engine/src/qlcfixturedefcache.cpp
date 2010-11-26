@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QCoreApplication>
 #include <QList>
 #include <QDebug>
 #include <QSet>
@@ -152,7 +153,7 @@ QDir QLCFixtureDefCache::systemDefinitionDirectory()
 {
     QDir dir;
 #ifdef __APPLE__
-    dir.setPath(QString("%1/../%2").arg(QApplication::applicationDirPath())
+    dir.setPath(QString("%1/../%2").arg(QCoreApplication::applicationDirPath())
                                    .arg(FIXTUREDIR));
 #else
     dir.setPath(FIXTUREDIR);
