@@ -91,8 +91,9 @@ QLCFixtureMode& QLCFixtureMode::operator=(const QLCFixtureMode& mode)
             if (actual != NULL)
                 insertChannel(actual, i++);
             else
-                qWarning() << "Unable to find channel" << ch->name() << "for mode"
-                           << m_name << "from its fixture def";
+                qWarning() << Q_FUNC_INFO << "Unable to find channel"
+                           << ch->name() << "for mode"
+                           << m_name << "from its fixture definition";
         }
     }
 
@@ -130,7 +131,8 @@ bool QLCFixtureMode::insertChannel(QLCChannel* channel, quint32 index)
 {
     if (channel == NULL)
     {
-        qWarning() << "Will not add a NULL channel to mode" << m_name;
+        qWarning() << Q_FUNC_INFO << "Will not add a NULL channel to mode"
+                   << m_name;
         return false;
     }
 
@@ -145,17 +147,17 @@ bool QLCFixtureMode::insertChannel(QLCChannel* channel, quint32 index)
         }
         else
         {
-            qWarning() << "Channel" << channel->name()
-            << "is already a member of mode" << m_name;
+            qWarning() << Q_FUNC_INFO << "Channel" << channel->name()
+                       << "is already a member of mode" << m_name;
             return false;
         }
     }
     else
     {
-        qWarning() << "Will not add channel" << channel->name()
-        << "to mode" << m_name
-        << "because the channel does not belong to mode's"
-        << "own fixture definition";
+        qWarning() << Q_FUNC_INFO << "Will not add channel" << channel->name()
+                   << "to mode" << m_name
+                   << "because the channel does not belong to mode's"
+                   << "parent fixture definition.";
         return false;
     }
 }
@@ -239,7 +241,7 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCFixtureMode)
     {
-        qWarning() << "Mode tag not found!";
+        qWarning() << Q_FUNC_INFO << "Mode tag not found";
         return false;
     }
 
@@ -247,7 +249,7 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
     str = root->attribute(KXMLQLCFixtureModeName);
     if (str.isEmpty() == true)
     {
-        qWarning() << "Mode has no name!";
+        qWarning() << Q_FUNC_INFO << "Mode has no name";
         return false;
     }
     else
@@ -278,7 +280,7 @@ bool QLCFixtureMode::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown Mode tag: " << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown Fixture Mode tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

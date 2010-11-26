@@ -30,7 +30,8 @@ QDomDocument QLCFile::readXML(const QString& path)
 {
     if (path.isEmpty() == true)
     {
-        qWarning() << "Empty path given. Not attempting to load file.";
+        qWarning() << Q_FUNC_INFO
+                   << "Empty path given. Not attempting to load file.";
         return QDomDocument();
     }
 
@@ -43,13 +44,13 @@ QDomDocument QLCFile::readXML(const QString& path)
         int col = 0;
         if (doc.setContent(&file, false, &msg, &line, &col) == false)
         {
-            qWarning() << "Error loading file" << path << ":" << msg
-                       << ", line:" << line << ", col:" << col;
+            qWarning() << Q_FUNC_INFO << "Error loading file" << path
+                       << ":" << msg << ", line:" << line << ", col:" << col;
         }
     }
     else
     {
-        qWarning() << "Unable to open file:" << path;
+        qWarning() << Q_FUNC_INFO << "Unable to open file:" << path;
     }
 
     file.close();

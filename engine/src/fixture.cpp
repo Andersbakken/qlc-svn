@@ -310,15 +310,14 @@ bool Fixture::loader(const QDomElement* root, Doc* doc)
         else
         {
             /* Doc is full */
-            qWarning() << "Fixture" << fxi->name()
-            << "cannot be created.";
+            qWarning() << Q_FUNC_INFO << "Fixture" << fxi->name()
+                       << "cannot be created.";
             delete fxi;
         }
     }
     else
     {
-        qWarning() << "Fixture" << fxi->name()
-        << "cannot be loaded.";
+        qWarning() << Q_FUNC_INFO << "Fixture" << fxi->name() << "cannot be loaded.";
         delete fxi;
     }
 
@@ -346,7 +345,7 @@ bool Fixture::loadXML(const QDomElement* root,
 
     if (root->tagName() != KXMLFixture)
     {
-        qDebug() << "Fixture node not found!";
+        qWarning() << Q_FUNC_INFO << "Fixture node not found";
         return false;
     }
 
@@ -389,8 +388,7 @@ bool Fixture::loadXML(const QDomElement* root,
         }
         else
         {
-            qDebug() << "Unknown fixture instance tag:"
-            << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown fixture tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -400,8 +398,8 @@ bool Fixture::loadXML(const QDomElement* root,
     fixtureDef = fixtureDefCache.fixtureDef(manufacturer, model);
     if (fixtureDef == NULL)
     {
-        qDebug() << QString("No fixture definition for [%1 - %2]")
-        .arg(manufacturer).arg(model);
+        qWarning() << Q_FUNC_INFO << "No fixture definition for"
+                   << manufacturer << model;
     }
     else
     {
@@ -409,9 +407,9 @@ bool Fixture::loadXML(const QDomElement* root,
         fixtureMode = fixtureDef->mode(modeName);
         if (fixtureMode == NULL)
         {
-            qDebug() << QString("Fixture mode [%1] for [%2 - %3] "
-                                "not found!").arg(modeName)
-            .arg(manufacturer).arg(model);
+            qWarning() << Q_FUNC_INFO << "Fixture mode" << modeName << "for"
+                       << manufacturer << model << "not found";
+
             /* Set this also NULL so that a generic dimmer will be
                created instead as a backup. */
             fixtureDef = NULL;
@@ -421,34 +419,30 @@ bool Fixture::loadXML(const QDomElement* root,
     /* Number of channels */
     if (channels <= 0)
     {
-        qDebug() << QString("Fixture [%1] channels %2 out of bounds")
-                            .arg(name).arg(channels);
+        qWarning() << Q_FUNC_INFO << "Fixture" << name << "channels"
+                   << channels << "out of bounds";
         channels = 1;
     }
 
     /* Make sure that address is something sensible */
     if (address > 511 || address + (channels - 1) > 511)
     {
-        qDebug() << QString("Fixture channel range %1 - %2 out of DMX "
-                            "bounds (%3 - %4).").arg(address)
-        .arg(address + channels).arg(0).arg(511);
+        qWarning() << Q_FUNC_INFO << "Fixture address range" << address << "-"
+                   << address + channels - 1 << "out of DMX bounds";
         address = 0;
     }
 
     /* Make sure that universe is something sensible */
     if (universe >= KUniverseCount)
     {
-        qDebug() << QString("Fixture universe %1 out of bounds "
-                            "(%2 - %3).").arg(universe).arg(0)
-        .arg(KUniverseCount - 1);
+        qWarning() << Q_FUNC_INFO << "Fixture universe" << universe << "out of bounds";
         universe = 0;
     }
 
     /* Check that we have a sensible ID, otherwise we can't continue */
     if (id < 0 || id >= KFixtureArraySize)
     {
-        qDebug() << QString("Fixture ID %1 out of bounds (%2 - %3).")
-        .arg(id).arg(0).arg(KFixtureArraySize - 1);
+        qWarning() << Q_FUNC_INFO << "Fixture ID" << id << "out of bounds";
         return false;
     }
 

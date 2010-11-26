@@ -308,7 +308,7 @@ QFile::FileError QLCFixtureDef::loadXML(const QString& fileName)
     doc = QLCFile::readXML(fileName);
     if (doc.isNull() == true)
     {
-        qDebug() << "Unable to read from" << fileName;
+        qWarning() << Q_FUNC_INFO << "Unable to read from" << fileName;
         return QFile::ReadError;
     }
 
@@ -322,7 +322,8 @@ QFile::FileError QLCFixtureDef::loadXML(const QString& fileName)
     else
     {
         error = QFile::ReadError;
-        qWarning() << fileName << "is not a fixture definition file";
+        qWarning() << Q_FUNC_INFO << fileName
+                   << "is not a fixture definition file";
     }
 
     return error;
@@ -397,8 +398,9 @@ bool QLCFixtureDef::loadXML(const QDomDocument* doc)
                 }
             }
             else
-                qDebug() << "Unknown Fixture tag: "
-                << tag.tagName();
+            {
+                qWarning() << Q_FUNC_INFO << "Unknown Fixture tag: " << tag.tagName();
+            }
 
             node = node.nextSibling();
         }
@@ -407,7 +409,7 @@ bool QLCFixtureDef::loadXML(const QDomDocument* doc)
     }
     else
     {
-        qDebug() << "Fixture node not found in file!";
+        qWarning() << Q_FUNC_INFO << "Fixture node not found";
         retval = false;
     }
 

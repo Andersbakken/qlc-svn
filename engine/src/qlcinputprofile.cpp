@@ -191,7 +191,7 @@ QLCInputProfile* QLCInputProfile::loader(const QString& path)
     QDomDocument doc(QLCFile::readXML(path));
     if (doc.isNull() == true)
     {
-        qWarning() << "Unable to load input profile from" << path;
+        qWarning() << Q_FUNC_INFO << "Unable to load input profile from" << path;
         return NULL;
     }
 
@@ -251,7 +251,7 @@ bool QLCInputProfile::loadXML(const QDomDocument& doc)
     }
     else
     {
-        qDebug() << "Input profile node not found in file!";
+        qWarning() << Q_FUNC_INFO << "Input profile not found";
         return false;
     }
 }
@@ -261,7 +261,7 @@ bool QLCInputProfile::saveXML(const QString& fileName)
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly) == false)
     {
-        qWarning() << "Unable to open" << fileName << "for writing.";
+        qWarning() << Q_FUNC_INFO << "Unable to write to" << fileName;
         return false;
     }
 

@@ -168,8 +168,8 @@ void MasterTimer::run()
     tod = gettimeofday(finish, NULL);
     if (tod == -1)
     {
-        qWarning() << "Unable to get the time accurately:" << strerror(errno)
-                   << "- Stopping MasterTimer";
+        qWarning() << Q_FUNC_INFO << "Unable to get the time accurately:"
+                   << strerror(errno) << "- Stopping MasterTimer";
         m_running = false;
     }
     else
@@ -186,7 +186,8 @@ void MasterTimer::run()
         tod = gettimeofday(current, NULL);
         if (tod == -1)
         {
-            qWarning("Unable to get the current time: %s", strerror(errno));
+            qWarning() << Q_FUNC_INFO << "Unable to get the current time:"
+                       << strerror(errno);
             m_running = false;
             break;
         }
@@ -214,7 +215,8 @@ void MasterTimer::run()
             tod = gettimeofday(current, NULL);
             if (tod == -1)
             {
-                qWarning("Unable to get the current time: %s", strerror(errno));
+                qWarning() << Q_FUNC_INFO << "Unable to get the current time:"
+                           << strerror(errno);
                 m_running = false;
                 break;
             }

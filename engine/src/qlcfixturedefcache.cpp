@@ -99,7 +99,8 @@ bool QLCFixtureDefCache::addFixtureDef(QLCFixtureDef* fixtureDef)
     }
     else
     {
-        qWarning() << "Cache already contains" << fixtureDef->name();
+        qWarning() << Q_FUNC_INFO << "Cache already contains"
+                   << fixtureDef->name();
         return false;
     }
 }
@@ -131,8 +132,8 @@ bool QLCFixtureDefCache::load(const QDir& dir)
         }
         else
         {
-            qWarning() << "Fixture definition loading from" << path
-                       << "failed: " << QLCFile::errorString(error);
+            qWarning() << Q_FUNC_INFO << "Fixture definition loading from"
+                       << path << "failed:" << QLCFile::errorString(error);
             delete fxi;
             fxi = NULL;
         }

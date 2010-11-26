@@ -124,7 +124,7 @@ bool QLCInputChannel::loadXML(const QDomElement& root)
     /* Verify that the tag contains an input channel */
     if (root.tagName() != KXMLQLCInputChannel)
     {
-        qWarning() << "Channel node not found";
+        qWarning() << Q_FUNC_INFO << "Channel node not found";
         return false;
     }
 
@@ -143,7 +143,7 @@ bool QLCInputChannel::loadXML(const QDomElement& root)
         }
         else
         {
-            qDebug() << "Unknown input channel tag" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown input channel tag" << tag.tagName();
         }
 
         node = node.nextSibling();

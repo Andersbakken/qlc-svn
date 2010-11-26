@@ -98,13 +98,15 @@ void OutputMap::loadPlugins(const QDir& dir)
             else
             {
                 /* Duplicate plugin. Unload it. */
-                qWarning() << "Discarded duplicate output plugin" << path;
+                qWarning() << Q_FUNC_INFO << "Discarded duplicate output plugin"
+                           << path;
                 loader.unload();
             }
         }
         else
         {
-            qWarning() << fileName << "doesn't contain a QLC output plugin:"
+            qWarning() << Q_FUNC_INFO << fileName
+                       << "doesn't contain a QLC output plugin:"
                        << loader.errorString();
             loader.unload();
         }
@@ -219,7 +221,7 @@ bool OutputMap::setPatch(quint32 universe, const QString& pluginName,
 {
     if (universe >= universes())
     {
-        qWarning() << "Universe" << universe << "out of bounds.";
+        qWarning() << Q_FUNC_INFO << "Universe" << universe << "out of bounds.";
         return false;
     }
 
@@ -338,7 +340,7 @@ bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
     }
     else
     {
-        qWarning() << "Output plugin" << outputPlugin->name()
+        qWarning() << Q_FUNC_INFO << "Output plugin" << outputPlugin->name()
                    << "is already loaded. Skipping";
         return false;
     }

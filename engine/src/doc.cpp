@@ -193,10 +193,9 @@ bool Doc::addFixture(Fixture* fixture, t_fixture_id id)
         }
         else
         {
-            qWarning() << "Unable to assign fixture"
-            << fixture->name() << "to ID" << id
-            << "because another fixture already"
-            << "has the same ID.";
+            qWarning() << Q_FUNC_INFO << "Unable to assign fixture"
+                       << fixture->name() << "to ID" << id
+                       << "because another fixture already has the same ID.";
         }
     }
     else
@@ -224,7 +223,7 @@ bool Doc::deleteFixture(t_fixture_id id)
     }
     else
     {
-        qDebug() << QString("No such fixture ID: %1").arg(id);
+        qWarning() << Q_FUNC_INFO << "No such fixture ID:" << id;
         return false;
     }
 }
@@ -352,8 +351,8 @@ bool Doc::addFunction(Function* function, t_function_id id)
 
     if (functions() >= KFunctionArraySize)
     {
-        qDebug() << "Cannot add more than" << KFunctionArraySize
-        << "functions";
+        qWarning() << Q_FUNC_INFO << "Cannot add more than" << KFunctionArraySize
+                   << "functions";
         return false;
     }
 
@@ -386,10 +385,9 @@ bool Doc::addFunction(Function* function, t_function_id id)
         }
         else
         {
-            qWarning() << "Unable to assign function"
-            << function->name() << "to ID" << id
-            << "because another function already"
-            << "has the same ID.";
+            qWarning() << Q_FUNC_INFO << "Unable to assign function"
+                       << function->name() << "to ID" << id
+                       << "because another function already has the same ID.";
         }
     }
     else
@@ -492,7 +490,7 @@ bool Doc::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCEngine)
     {
-        qWarning() << "Engine node not found in file!";
+        qWarning() << Q_FUNC_INFO << "Engine node not found";
         return false;
     }
 
@@ -515,7 +513,7 @@ bool Doc::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown engine tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown engine tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

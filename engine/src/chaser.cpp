@@ -258,14 +258,14 @@ bool Chaser::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCFunction)
     {
-        qDebug() << "Function node not found!";
+        qWarning() << Q_FUNC_INFO << "Function node not found";
         return false;
     }
 
-    if (root->attribute(KXMLQLCFunctionType) !=
-            typeToString(Function::Chaser))
+    if (root->attribute(KXMLQLCFunctionType) != typeToString(Function::Chaser))
     {
-        qWarning("Function is not a chaser!");
+        qWarning() << Q_FUNC_INFO << root->attribute(KXMLQLCFunctionType)
+                   << "is not a chaser";
         return false;
     }
 
@@ -307,7 +307,7 @@ bool Chaser::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown chaser tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown chaser tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -489,9 +489,6 @@ void Chaser::startCurrent(MasterTimer* timer)
     Function* function = doc->function(fid);
     if (function != NULL)
         timer->startFunction(function, true);
-    else
-        qWarning() << name() << "step" << m_runTimePosition
-        << "doesn't exist";
 }
 
 void Chaser::stopCurrent()
@@ -503,7 +500,4 @@ void Chaser::stopCurrent()
     Function* function = doc->function(fid);
     if (function != NULL)
         function->stop();
-    else
-        qWarning() << name() << "step" << m_runTimePosition
-        << "doesn't exist";
 }

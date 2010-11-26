@@ -197,14 +197,14 @@ bool Collection::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCFunction)
     {
-        qDebug() << "Function node not found!";
+        qWarning() << Q_FUNC_INFO << "Function node not found";
         return false;
     }
 
-    if (root->attribute(KXMLQLCFunctionType) !=
-            typeToString(Function::Collection))
+    if (root->attribute(KXMLQLCFunctionType) != typeToString(Function::Collection))
     {
-        qWarning("Function is not a collection!");
+        qWarning() << Q_FUNC_INFO << root->attribute(KXMLQLCFunctionType)
+                   << "is not a collection";
         return false;
     }
 
@@ -217,7 +217,7 @@ bool Collection::loadXML(const QDomElement* root)
         if (tag.tagName() == KXMLQLCFunctionStep)
             addFunction(tag.text().toInt());
         else
-            qDebug() << "Unknown collection tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown collection tag:" << tag.tagName();
 
         node = node.nextSibling();
     }

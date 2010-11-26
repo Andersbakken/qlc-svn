@@ -162,7 +162,7 @@ bool InputMap::setPatch(quint32 universe, const QString& pluginName,
     /* Check that the universe that we're doing mapping for is valid */
     if (universe >= m_universes)
     {
-        qWarning() << "Universe" << universe << "out of bounds.";
+        qWarning() << Q_FUNC_INFO << "Universe" << universe << "out of bounds.";
         return false;
     }
 
@@ -227,13 +227,15 @@ void InputMap::loadPlugins(const QDir& dir)
             else
             {
                 /* Duplicate plugin. Unload it. */
-                qWarning() << "Discarded duplicate input plugin" << fileName;
+                qWarning() << Q_FUNC_INFO << "Discarded duplicate input plugin"
+                           << fileName;
                 loader.unload();
             }
         }
         else
         {
-            qWarning() << fileName << "doesn't contain a QLC input plugin:"
+            qWarning() << Q_FUNC_INFO << fileName
+                       << "doesn't contain a QLC input plugin:"
                        << loader.errorString();
             loader.unload();
         }
@@ -317,7 +319,7 @@ bool InputMap::appendPlugin(QLCInPlugin* inputPlugin)
     }
     else
     {
-        qWarning() << "Input plugin" << inputPlugin->name()
+        qWarning() << Q_FUNC_INFO << "Input plugin" << inputPlugin->name()
                    << "is already loaded. Skipping.";
         return false;
     }
@@ -382,7 +384,7 @@ void InputMap::loadProfiles(const QDir& dir)
         }
         else
         {
-            qWarning() << "Unable to find an input profile from" << path;
+            qWarning() << Q_FUNC_INFO << "Unable to find an input profile from" << path;
         }
     }
 }

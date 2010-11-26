@@ -122,8 +122,7 @@ bool SceneValue::loadXML(const QDomElement* tag)
 
     if (tag->tagName() != KXMLQLCSceneValue)
     {
-        qWarning() << "Node is not a scene value tag:"
-        << tag->tagName();
+        qWarning() << Q_FUNC_INFO << "Scene node not found";
         return false;
     }
 
@@ -333,14 +332,14 @@ bool Scene::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCFunction)
     {
-        qWarning("Function node not found!");
+        qWarning() << Q_FUNC_INFO << "Function node not found";
         return false;
     }
 
     if (root->attribute(KXMLQLCFunctionType) !=
             typeToString(Function::Scene))
     {
-        qWarning("Function is not a scene!");
+        qWarning() << Q_FUNC_INFO << "Function is not a scene";
         return false;
     }
 
@@ -364,7 +363,7 @@ bool Scene::loadXML(const QDomElement* root)
         }
         else
         {
-            qWarning() << "Unknown scene tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown scene tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -434,7 +433,7 @@ void Scene::arm()
         Fixture* fxi = doc->fixture(scv.fxi);
         if (fxi == NULL)
         {
-            qWarning() << "Channel" << scv.channel << "from an"
+            qWarning() << Q_FUNC_INFO << "Channel" << scv.channel << "from an"
                        << "unavailable fixture ID" << scv.fxi
                        << "taking part in scene" << name()
                        << ". Removing the channel.";
@@ -455,7 +454,7 @@ void Scene::arm()
         }
         else
         {
-            qWarning() << "Scene " << name() << "channel"
+            qWarning() << Q_FUNC_INFO << "Scene " << name() << "channel"
                        << scv.channel
                        << "is out of its fixture" << fxi->name()
                        << "channel count ( <" << fxi->channels()

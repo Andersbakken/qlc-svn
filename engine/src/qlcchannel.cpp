@@ -377,7 +377,7 @@ bool QLCChannel::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown Channel tag: " << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown Channel tag: " << tag.tagName();
         }
 
         node = node.nextSibling();

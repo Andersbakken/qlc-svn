@@ -303,7 +303,7 @@ bool QLCPhysical::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown Physical tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown Physical tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

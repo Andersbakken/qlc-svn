@@ -205,14 +205,14 @@ bool Bus::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCBus)
     {
-        qWarning() << "Bus node not found in file!";
+        qWarning() << Q_FUNC_INFO << "Bus node not found!";
         return false;
     }
 
     quint32 id = root->attribute(KXMLQLCBusID).toUInt();
     if (id >= KBusCount)
     {
-        qWarning() << "Bus ID" << id << "out of bounds.";
+        qWarning() << Q_FUNC_INFO << "Bus ID" << id << "out of bounds.";
         return false;
     }
 
@@ -221,17 +221,11 @@ bool Bus::loadXML(const QDomElement* root)
     {
         tag = node.toElement();
         if (tag.tagName() == KXMLQLCBusName)
-        {
             setName(id, tag.text());
-            //m_buses[id]->name = tag.text();
-        }
         else if (tag.tagName() == KXMLQLCBusValue)
-        {
             setValue(id, tag.text().toULong());
-            //m_buses[id]->value = tag.text().toULong();
-        }
         else
-            qDebug() << "Unknown Bus tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown Bus tag:" << tag.tagName();
 
         node = node.nextSibling();
     }
