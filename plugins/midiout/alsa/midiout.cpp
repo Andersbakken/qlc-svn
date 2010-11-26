@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QDBusConnection>
 #include <QMessageBox>
 #include <QStringList>
 #include <QDebug>
@@ -54,6 +55,18 @@ void MIDIOut::init()
     /* Initialize ALSA stuff */
     initALSA();
 
+    /* Listen to device additions and removals thru DBus system bus */
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/org/freedesktop/Hal/Manager"),
+                                         QString("org.freedesktop.Hal.Manager"),
+                                         QString("DeviceAdded"),
+                                         this, SLOT(slotDeviceAddedRemoved(const QString&)));
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/org/freedesktop/Hal/Manager"),
+                                         QString("org.freedesktop.Hal.Manager"),
+                                         QString("DeviceRemoved"),
+                                         this, SLOT(slotDeviceAddedRemoved(const QString&)));
+
     /* Find out what devices we have */
     rescanDevices();
 }
@@ -61,6 +74,14 @@ void MIDIOut::init()
 QString MIDIOut::name()
 {
     return QString("MIDI Output");
+}
+
+void MIDIOut::slotDeviceAddedRemoved(const QString& name)
+{
+    QRegExp re("/org/freedesktop/Hal/devices*_alsa_midi_*");
+    re.setPatternSyntax(QRegExp::Wildcard);
+    if (name.contains(re) == true)
+        rescanDevices();
 }
 
 /*****************************************************************************
@@ -167,8 +188,7 @@ void MIDIOut::unsubscribeDevice(MIDIDevice* device)
 void MIDIOut::configure()
 {
     ConfigureMIDIOut cmo(NULL, this);
-    if (cmo.exec() == true)
-        emit configurationChanged();
+    cmo.exec();
 }
 
 bool MIDIOut::canConfigure()
@@ -323,6 +343,8 @@ void MIDIOut::addDevice(MIDIDevice* device)
 
     m_devices.append(device);
     emit deviceAdded(device);
+
+    emit configurationChanged();
 }
 
 void MIDIOut::removeDevice(MIDIDevice* device)
@@ -332,6 +354,8 @@ void MIDIOut::removeDevice(MIDIDevice* device)
     m_devices.removeAll(device);
     emit deviceRemoved(device);
     delete device;
+
+    emit configurationChanged();
 }
 
 /*****************************************************************************

@@ -4,6 +4,7 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET   = midiout
 
+QT          += dbus
 INCLUDEPATH += ../common
 INCLUDEPATH += ../../interfaces
 DEPENDPATH  += ../common

@@ -20,6 +20,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QDBusConnection>
 #include <QApplication>
 #include <QMessageBox>
 #include <QStringList>
@@ -62,6 +63,18 @@ void MIDIInput::init()
     /* Initialize ALSA stuff */
     initALSA();
 
+    /* Listen to device additions and removals thru DBus system bus */
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/org/freedesktop/Hal/Manager"),
+                                         QString("org.freedesktop.Hal.Manager"),
+                                         QString("DeviceAdded"),
+                                         this, SLOT(slotDeviceAddedRemoved(const QString&)));
+    QDBusConnection::systemBus().connect(QString(),
+                                         QString("/org/freedesktop/Hal/Manager"),
+                                         QString("org.freedesktop.Hal.Manager"),
+                                         QString("DeviceRemoved"),
+                                         this, SLOT(slotDeviceAddedRemoved(const QString&)));
+
     /* Find out what devices we have */
     rescanDevices();
 }
@@ -69,6 +82,14 @@ void MIDIInput::init()
 QString MIDIInput::name()
 {
     return QString("MIDI Input");
+}
+
+void MIDIInput::slotDeviceAddedRemoved(const QString& name)
+{
+    QRegExp re("/org/freedesktop/Hal/devices*_alsa_midi_*");
+    re.setPatternSyntax(QRegExp::Wildcard);
+    if (name.contains(re) == true)
+        rescanDevices();
 }
 
 /*****************************************************************************

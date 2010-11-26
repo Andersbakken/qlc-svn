@@ -63,6 +63,10 @@ public:
     /** @reimp */
     QString name();
 
+protected slots:
+    /** Listen to HAL device additions/removals */
+    void slotDeviceAddedRemoved(const QString& name);
+
     /*********************************************************************
      * Input
      *********************************************************************/

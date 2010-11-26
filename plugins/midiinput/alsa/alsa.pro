@@ -4,6 +4,7 @@ TEMPLATE = lib
 LANGUAGE = C++
 TARGET   = midiinput
 
+QT          += dbus
 INCLUDEPATH += ../common/src
 INCLUDEPATH += ../../interfaces
 DEPENDPATH  += ../common/src
