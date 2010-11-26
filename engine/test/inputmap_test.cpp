@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QSignalSpy>
 #include <QtTest>
 
 #include "inputpluginstub.h"
@@ -78,8 +79,11 @@ void InputMap_Test::appendPlugin()
     InputMap im(this);
     QCOMPARE(im.m_plugins.size(), 0);
 
+    QSignalSpy spy(&im, SIGNAL(pluginAdded(const QString&)));
+
     im.loadPlugins(testPluginDir());
-    QVERIFY(im.m_plugins.size() == 1);
+    QCOMPARE(im.m_plugins.size(), 1);
+    QCOMPARE(spy.size(), 1);
     InputPluginStub* stub = static_cast<InputPluginStub*> (im.m_plugins.at(0));
     QVERIFY(stub != NULL);
 
@@ -88,6 +92,7 @@ void InputMap_Test::appendPlugin()
     QVERIFY(im.plugin("Foobar") == NULL);
     QVERIFY(im.m_plugins.size() == 1);
     QCOMPARE(im.plugin(stub->name()), stub);
+    QCOMPARE(spy.size(), 1);
 }
 
 void InputMap_Test::notInputPlugin()

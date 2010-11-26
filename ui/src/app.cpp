@@ -21,6 +21,7 @@
 */
 
 #include <QCoreApplication>
+#include <QProgressDialog>
 #include <QDesktopWidget>
 #include <QMdiSubWindow>
 #include <QStyleFactory>
@@ -79,6 +80,7 @@
 
 App* _app;
 QStyle* App::s_saneStyle = NULL;
+QProgressDialog* _pd = NULL;
 
 /*****************************************************************************
  * Initialization
@@ -88,6 +90,7 @@ App::App() : QMainWindow()
 {
     _app = this;
 
+    m_progressDialog = NULL;
     m_masterTimer = NULL;
     m_outputMap = NULL;
     m_inputMap = NULL;
@@ -105,12 +108,17 @@ App::App() : QMainWindow()
     QCoreApplication::setOrganizationDomain("sf.net");
     QCoreApplication::setApplicationName(APPNAME);
 
+#ifdef __APPLE__
+    createProgressDialog();
+#endif
+
     init();
     slotModeDesign();
     slotDocModified(false);
 
 #ifdef __APPLE__
     slotWindowAllToFront();
+    destroyProgressDialog();
 #endif
 }
 
@@ -166,9 +174,6 @@ QString App::version()
     return QString("Version %1").arg(APPVERSION);
 }
 
-/**
- * Main initialization function
- */
 void App::init()
 {
     QSettings settings;
@@ -296,6 +301,37 @@ void App::closeEvent(QCloseEvent* e)
 }
 
 /*****************************************************************************
+ * Progress dialog
+ *****************************************************************************/
+
+void App::createProgressDialog()
+{
+    m_progressDialog = new QProgressDialog;
+    m_progressDialog->setCancelButton(NULL);
+    m_progressDialog->show();
+    m_progressDialog->raise();
+    slotSetProgressText(QString());
+    QApplication::processEvents();
+}
+
+void App::destroyProgressDialog()
+{
+    delete m_progressDialog;
+    m_progressDialog = NULL;
+}
+
+void App::slotSetProgressText(const QString& text)
+{
+    if (m_progressDialog == NULL)
+        return;
+
+    m_progressDialog->setLabelText(QString("<B>%1</B><BR/>%2")
+                                   .arg(tr("Starting Q Light Controller"))
+                                   .arg(text));
+    QApplication::processEvents();
+}
+
+/*****************************************************************************
  * Output mapping
  *****************************************************************************/
 
@@ -303,6 +339,10 @@ void App::initOutputMap()
 {
     m_outputMap = new OutputMap(this, KUniverseCount);
     Q_ASSERT(m_outputMap != NULL);
+
+    /* Get progress information from output map */
+    connect(m_outputMap, SIGNAL(pluginAdded(const QString&)),
+            this, SLOT(slotSetProgressText(const QString&)));
 
     /* Load output plugins */
     m_outputMap->loadPlugins(OutputMap::systemPluginDirectory());
@@ -361,6 +401,10 @@ void App::initInputMap()
 {
     m_inputMap = new InputMap(this, KInputUniverseCount);
     Q_ASSERT(m_inputMap != NULL);
+
+    /* Get progress information from input map */
+    connect(m_inputMap, SIGNAL(pluginAdded(const QString&)),
+            this, SLOT(slotSetProgressText(const QString&)));
 
     /* Load input plugins */
     m_inputMap->loadPlugins(InputMap::systemPluginDirectory());

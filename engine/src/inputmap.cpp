@@ -315,6 +315,7 @@ bool InputMap::appendPlugin(QLCInPlugin* inputPlugin)
                 this, SLOT(slotConfigurationChanged()));
         connect(inputPlugin, SIGNAL(valueChanged(quint32,quint32,uchar)),
                 this, SLOT(slotValueChanged(quint32,quint32,uchar)));
+        emit pluginAdded(inputPlugin->name());
         return true;
     }
     else

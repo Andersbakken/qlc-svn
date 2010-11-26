@@ -242,6 +242,10 @@ protected:
      */
     QLCInPlugin* plugin(const QString& name);
 
+signals:
+    /** Notifies of a newly-added plugin */
+    void pluginAdded(const QString& pluginName);
+
 protected:
     /** List containing all available input plugins */
     QList <QLCInPlugin*> m_plugins;

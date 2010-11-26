@@ -19,6 +19,7 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <QSignalSpy>
 #include <QtTest>
 
 #include "outputpluginstub.h"
@@ -68,8 +69,11 @@ void OutputMap_Test::appendPlugin()
     OutputMap om(this);
     QVERIFY(om.m_plugins.size() == 0);
 
+    QSignalSpy spy(&om, SIGNAL(pluginAdded(const QString&)));
+
     om.loadPlugins(testPluginDir());
-    QVERIFY(om.m_plugins.size() == 1);
+    QCOMPARE(om.m_plugins.size(), 1);
+    QCOMPARE(spy.size(), 1);
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(0));
     QVERIFY(stub != NULL);
 

@@ -336,6 +336,7 @@ bool OutputMap::appendPlugin(QLCOutPlugin* outputPlugin)
         m_plugins.append(outputPlugin);
         connect(outputPlugin, SIGNAL(configurationChanged()),
                 this, SLOT(slotConfigurationChanged()));
+        emit pluginAdded(outputPlugin->name());
         return true;
     }
     else

@@ -297,6 +297,9 @@ signals:
     /** Notifies (OutputManager) of plugin configuration changes */
     void pluginConfigurationChanged(const QString& pluginName);
 
+    /** Notifies of a newly-added plugin */
+    void pluginAdded(const QString& pluginName);
+
 protected:
     /** List containing all available plugins */
     QList <QLCOutPlugin*> m_plugins;

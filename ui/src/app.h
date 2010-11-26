@@ -32,6 +32,7 @@
 #include "qlcinplugin.h"
 #include "doc.h"
 
+class QProgressDialog;
 class QDomDocument;
 class QDomElement;
 class QMessageBox;
@@ -61,6 +62,7 @@ class App;
 class App : public QMainWindow
 {
     Q_OBJECT
+    Q_DISABLE_COPY(App)
 
     /*********************************************************************
      * Initialization
@@ -72,12 +74,22 @@ public:
     static QString longName();
     static QString version();
 
-private:
-    Q_DISABLE_COPY(App)
-
 protected:
     void init();
     void closeEvent(QCloseEvent*);
+
+    /*********************************************************************
+     * Progress dialog
+     *********************************************************************/
+public:
+    void createProgressDialog();
+    void destroyProgressDialog();
+
+public slots:
+    void slotSetProgressText(const QString& text);
+
+protected:
+    QProgressDialog* m_progressDialog;
 
     /*********************************************************************
      * Output mapping
