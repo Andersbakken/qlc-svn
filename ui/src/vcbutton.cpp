@@ -284,7 +284,7 @@ bool VCButton::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCButton)
     {
-        qDebug() << "Button node not found!";
+        qWarning() << Q_FUNC_INFO << "Button node not found";
         return false;
     }
 
@@ -312,7 +312,7 @@ bool VCButton::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCButton)
     {
-        qDebug() << "Button node not found!";
+        qWarning() << Q_FUNC_INFO << "Button node not found";
         return false;
     }
 
@@ -359,7 +359,7 @@ bool VCButton::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown button tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown button tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -431,7 +431,7 @@ bool VCButton::loadKeyBind(const QDomElement* key_root)
 
     if (key_root->tagName() != "KeyBind")
     {
-        qWarning() << "Not a key bind node!";
+        qWarning() << Q_FUNC_INFO << "KeyBind node not found";
         return false;
     }
 
@@ -453,8 +453,7 @@ bool VCButton::loadKeyBind(const QDomElement* key_root)
         }
         else
         {
-            qWarning() << "Unknown key binding tag:"
-            << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown key binding tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

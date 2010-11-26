@@ -392,7 +392,7 @@ bool VCWidget::loadXMLAppearance(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCAppearance)
     {
-        qDebug() << "Appearance node not found!";
+        qWarning() << Q_FUNC_INFO << "Appearance node not found!";
         return false;
     }
 
@@ -431,7 +431,7 @@ bool VCWidget::loadXMLAppearance(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown appearance tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown appearance tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -462,7 +462,7 @@ bool VCWidget::loadXMLInput(const QDomElement& root,
 {
     if (root.tagName() != KXMLQLCVCWidgetInput)
     {
-        qDebug() << "Input node not found!";
+        qWarning() << Q_FUNC_INFO << "Input node not found!";
         return false;
     }
     else
@@ -612,7 +612,7 @@ bool VCWidget::loadXMLWindowState(const QDomElement* tag, int* x, int* y,
     }
     else
     {
-        qDebug() << "Window state not found!";
+        qWarning() << Q_FUNC_INFO << "Window state not found";
         return false;
     }
 }

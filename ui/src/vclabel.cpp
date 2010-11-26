@@ -80,7 +80,7 @@ bool VCLabel::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCLabel)
     {
-        qDebug() << "Label node not found!";
+        qWarning() << Q_FUNC_INFO << "Label node not found";
         return false;
     }
 
@@ -108,7 +108,7 @@ bool VCLabel::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCLabel)
     {
-        qDebug() << "Label node not found!";
+        qWarning() << Q_FUNC_INFO << "Label node not found";
         return false;
     }
 
@@ -131,7 +131,7 @@ bool VCLabel::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown label tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown label tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

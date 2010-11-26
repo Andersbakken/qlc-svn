@@ -318,7 +318,7 @@ bool VCXYPadFixture::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCXYPadFixture)
     {
-        qWarning() << "XYPad Fixture node not found";
+        qWarning() << Q_FUNC_INFO << "XYPad Fixture node not found";
         return false;
     }
 
@@ -353,12 +353,12 @@ bool VCXYPadFixture::loadXML(const QDomElement* root)
             }
             else
             {
-                qWarning() << "Unknown XYPad axis" << axis;
+                qWarning() << Q_FUNC_INFO << "Unknown XYPad axis" << axis;
             }
         }
         else
         {
-            qDebug() << "Unknown XY Pad tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown XY Pad tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

@@ -131,7 +131,6 @@ void AddVCButtonMatrix::slotButtonSizeChanged()
 
 void AddVCButtonMatrix::slotNormalFrameToggled(bool toggled)
 {
-    qDebug() << Q_FUNC_INFO << toggled;
     if (toggled == true)
         setFrameStyle(AddVCButtonMatrix::NormalFrame);
     else

@@ -67,9 +67,9 @@ bool VCWidgetProperties::loadXML(const QDomElement* root)
     Q_ASSERT(root != NULL);
 
     if (root->tagName() != KXMLQLCWidgetProperties &&
-            root->tagName() != QString("Properties")) /* Legacy */
+        root->tagName() != QString("Properties")) /* Legacy */
     {
-        qWarning("Widget Properties node not found!");
+        qWarning() << Q_FUNC_INFO << "Widget Properties node not found";
         return false;
     }
 
@@ -91,7 +91,7 @@ bool VCWidgetProperties::loadXML(const QDomElement* root)
         else if (tag.tagName() == KXMLQLCWidgetVisible)
             m_visible = bool(tag.text().toInt());
         else
-            qDebug() << "Unknown widget tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown widget tag:" << tag.tagName();
 
         node = node.nextSibling();
     }

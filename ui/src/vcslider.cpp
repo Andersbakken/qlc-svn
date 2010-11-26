@@ -472,21 +472,12 @@ void VCSlider::addLevelChannel(t_fixture_id fixture, quint32 channel)
         m_levelChannels.append(lch);
         qSort(m_levelChannels.begin(), m_levelChannels.end());
     }
-    else
-    {
-        qDebug() << QString("Fixture %1 & channel %2 already in list")
-                            .arg(fixture).arg(channel);
-    }
 }
 
 void VCSlider::removeLevelChannel(t_fixture_id fixture, quint32 channel)
 {
     LevelChannel lch(fixture, channel);
-    if (m_levelChannels.removeAll(lch) == 0)
-    {
-        qDebug() << QString("Fixture %1 & channel %2 not found")
-                            .arg(fixture).arg(channel);
-    }
+    m_levelChannels.removeAll(lch);
 }
 
 void VCSlider::clearLevelChannels()
@@ -792,7 +783,7 @@ bool VCSlider::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCSlider)
     {
-        qWarning("Slider node not found!");
+        qWarning() << Q_FUNC_INFO << "Slider node not found";
         return false;
     }
 
@@ -822,7 +813,7 @@ bool VCSlider::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCSlider)
     {
-        qDebug() << "Slider node not found!";
+        qWarning() << Q_FUNC_INFO << "Slider node not found";
         return false;
     }
 
@@ -874,7 +865,7 @@ bool VCSlider::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown slider tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown slider tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
@@ -898,7 +889,7 @@ bool VCSlider::loadXMLLevel(const QDomElement* level_root)
 
     if (level_root->tagName() != KXMLQLCVCSliderLevel)
     {
-        qWarning("Slider level node not found!");
+        qWarning() << Q_FUNC_INFO << "Slider level node not found";
         return false;
     }
 
@@ -929,7 +920,7 @@ bool VCSlider::loadXMLLevel(const QDomElement* level_root)
         }
         else
         {
-            qDebug() << "Unknown slider level tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown slider level tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

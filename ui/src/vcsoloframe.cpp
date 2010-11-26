@@ -163,7 +163,7 @@ bool VCSoloFrame::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCSoloFrame)
     {
-        qDebug() << "Frame node not found!";
+        qWarning() << Q_FUNC_INFO << "Frame node not found!";
         return false;
     }
 

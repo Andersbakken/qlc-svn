@@ -107,7 +107,7 @@ bool VCFrame::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCFrame)
     {
-        qDebug() << "Frame node not found!";
+        qWarning() << Q_FUNC_INFO << "Frame node not found";
         return false;
     }
 
@@ -135,7 +135,7 @@ bool VCFrame::loadXML(const QDomElement* root)
 
     if (root->tagName() != xmlTagName())
     {
-        qDebug() << "Frame node not found!";
+        qWarning() << Q_FUNC_INFO << "Frame node not found";
         return false;
     }
 
@@ -186,7 +186,7 @@ bool VCFrame::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown frame tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown frame tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

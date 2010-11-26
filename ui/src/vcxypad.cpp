@@ -226,7 +226,7 @@ bool VCXYPad::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCXYPad)
     {
-        qDebug() << "XY Pad node not found!";
+        qWarning() << Q_FUNC_INFO << "XY Pad node not found";
         return false;
     }
 
@@ -257,7 +257,7 @@ bool VCXYPad::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCXYPad)
     {
-        qDebug() << "XY Pad node not found!";
+        qWarning() << Q_FUNC_INFO << "XY Pad node not found";
         return false;
     }
 
@@ -293,7 +293,7 @@ bool VCXYPad::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown XY Pad tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown XY Pad tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

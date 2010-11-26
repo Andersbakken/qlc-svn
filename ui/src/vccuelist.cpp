@@ -389,7 +389,7 @@ bool VCCueList::loader(const QDomElement* root, QWidget* parent)
 
     if (root->tagName() != KXMLQLCVCCueList)
     {
-        qDebug() << "CueList node not found!";
+        qWarning() << Q_FUNC_INFO << "CueList node not found";
         return false;
     }
 
@@ -417,7 +417,7 @@ bool VCCueList::loadXML(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCCueList)
     {
-        qDebug() << "CueList node not found!";
+        qWarning() << Q_FUNC_INFO << "CueList node not found";
         return false;
     }
 
@@ -457,7 +457,7 @@ bool VCCueList::loadXML(const QDomElement* root)
                 }
                 else
                 {
-                    qWarning() << "Unknown CueList Next tag" << subTag.tagName();
+                    qWarning() << Q_FUNC_INFO << "Unknown CueList Next tag" << subTag.tagName();
                 }
 
                 subNode = subNode.nextSibling();
@@ -482,7 +482,7 @@ bool VCCueList::loadXML(const QDomElement* root)
                 }
                 else
                 {
-                    qWarning() << "Unknown CueList Previous tag" << subTag.tagName();
+                    qWarning() << Q_FUNC_INFO << "Unknown CueList Previous tag" << subTag.tagName();
                 }
 
                 subNode = subNode.nextSibling();
@@ -498,7 +498,7 @@ bool VCCueList::loadXML(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown cuelist tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown cuelist tag:" << tag.tagName();
         }
 
         node = node.nextSibling();

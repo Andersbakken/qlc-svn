@@ -149,7 +149,7 @@ bool VCProperties::loadXML(const QDomElement* vc_root)
 
     if (vc_root->tagName() != KXMLQLCVirtualConsole)
     {
-        qDebug() << "Virtual Console node not found!";
+        qWarning() << Q_FUNC_INFO << "Virtual Console node not found";
         return false;
     }
 
@@ -173,8 +173,8 @@ bool VCProperties::loadXML(const QDomElement* vc_root)
         }
         else
         {
-            qDebug() << "Unknown Virtual Console tag"
-            << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown Virtual Console tag"
+                       << tag.tagName();
         }
 
         /* Next node */
@@ -353,7 +353,7 @@ bool VCProperties::loadProperties(const QDomElement* root)
 
     if (root->tagName() != KXMLQLCVCProperties)
     {
-        qDebug() << "Virtual console properties node not found!";
+        qWarning() << Q_FUNC_INFO << "Virtual console properties node not found";
         return false;
     }
 
@@ -470,7 +470,7 @@ bool VCProperties::loadProperties(const QDomElement* root)
         }
         else
         {
-            qDebug() << "Unknown virtual console property tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown virtual console property tag:" << tag.tagName();
         }
 
         /* Next node */

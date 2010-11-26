@@ -1346,7 +1346,7 @@ bool App::loadXML(const QDomDocument* doc)
     root = doc->documentElement();
     if (root.tagName() != KXMLQLCWorkspace)
     {
-        qWarning() << "Workspace node not found in file!";
+        qWarning() << Q_FUNC_INFO << "Workspace node not found";
         return false;
     }
 
@@ -1384,7 +1384,7 @@ bool App::loadXML(const QDomDocument* doc)
         }
         else
         {
-            qDebug() << "Unknown Workspace tag:" << tag.tagName();
+            qWarning() << Q_FUNC_INFO << "Unknown Workspace tag:" << tag.tagName();
         }
 
         node = node.nextSibling();
