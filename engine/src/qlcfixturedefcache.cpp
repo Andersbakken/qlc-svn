@@ -24,6 +24,10 @@
 #include <QDebug>
 #include <QSet>
 
+#ifdef WIN32
+#   include <windows.h>
+#endif
+
 #include "qlcfixturedefcache.h"
 #include "qlcfixturedef.h"
 #include "qlcconfig.h"
