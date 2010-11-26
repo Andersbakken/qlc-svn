@@ -37,7 +37,6 @@
 
 // Engine
 #include "palettegenerator_test.h"
-#include "dummyoutplugin_test.h"
 #include "universearray_test.h"
 #include "scenechannel_test.h"
 #include "mastertimer_test.h"
@@ -207,11 +206,6 @@ int main(int argc, char** argv)
 
     Doc_Test doc;
     r = QTest::qExec(&doc, argc, argv);
-    if (r != 0)
-        return r;
-
-    DummyOutPlugin_Test dummy;
-    r = QTest::qExec(&dummy, argc, argv);
     if (r != 0)
         return r;
 

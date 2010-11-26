@@ -50,6 +50,8 @@ public slots:
 protected:
     QTreeWidgetItem* currentlyMappedItem() const;
     void fillTree();
+    void fillPluginItem(const QString& pluginName, QTreeWidgetItem* pitem);
+    QTreeWidgetItem* pluginItem(const QString& pluginName);
     void updateOutputInfo();
     void storeDMXZeroBasedSetting(bool set);
 
@@ -57,6 +59,7 @@ protected slots:
     void slotCurrentItemChanged(QTreeWidgetItem* item);
     void slotItemChanged(QTreeWidgetItem* item);
     void slotConfigureClicked();
+    void slotPluginConfigurationChanged(const QString& pluginName);
     void slotReconnectClicked();
     void slotZeroBasedDMXClicked();
 

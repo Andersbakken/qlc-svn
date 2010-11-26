@@ -83,6 +83,11 @@ OutputPatchEditor::OutputPatchEditor(QWidget* parent, quint32 universe,
 
     fillTree();
 
+    /* Listen to plugin configuration changes */
+    connect(_app->outputMap(),
+            SIGNAL(pluginConfigurationChanged(const QString&)),
+            this, SLOT(slotPluginConfigurationChanged(const QString&)));
+
     QVariant var = settings.value(SETTINGS_GEOMETRY);
     if (var.isValid() == true)
         restoreGeometry(var.toByteArray());
@@ -125,84 +130,104 @@ QTreeWidgetItem* OutputPatchEditor::currentlyMappedItem() const
 
 void OutputPatchEditor::fillTree()
 {
-    QTreeWidgetItem* selectItem = NULL;
-    QTreeWidgetItem* pitem;
-    QTreeWidgetItem* oitem;
-    QString pluginName;
-    quint32 i = 0;
-
     /* Disable check state change tracking when the tree is filled */
     disconnect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
                this, SLOT(slotItemChanged(QTreeWidgetItem*)));
 
     m_tree->clear();
 
+    /* Add an empty item so that user can choose not to assign any plugin
+       to an input universe */
+    QTreeWidgetItem* pitem = new QTreeWidgetItem(m_tree);
+    pitem->setText(KColumnName, KOutputNone);
+    pitem->setText(KColumnOutput, QString::number(KOutputInvalid));
+    pitem->setFlags(pitem->flags() | Qt::ItemIsUserCheckable);
+
+    /* Set "Nothing" selected if there is no valid output selected */
+    if (m_currentOutput == KOutputInvalid)
+        pitem->setCheckState(KColumnName, Qt::Checked);
+    else
+        pitem->setCheckState(KColumnName, Qt::Unchecked);
+
     /* Go thru available plugins and put them as the tree's root nodes. */
     QStringListIterator pit(_app->outputMap()->pluginNames());
     while (pit.hasNext() == true)
-    {
-        i = 0;
-        pluginName = pit.next();
-        pitem = new QTreeWidgetItem(m_tree);
-        pitem->setText(KColumnName, pluginName);
-        pitem->setText(KColumnOutput, QString("%1").arg(KOutputInvalid));
-
-        /* Go thru available outputs provided by each plugin and put
-           them as their parent plugin's leaf nodes. */
-        QStringListIterator oit(_app->outputMap()->pluginOutputs(pluginName));
-        while (oit.hasNext() == true)
-        {
-            oitem = new QTreeWidgetItem(pitem);
-            oitem->setText(KColumnName, oit.next());
-            oitem->setText(KColumnOutput, QString("%1").arg(i));
-            oitem->setFlags(oitem->flags() | Qt::ItemIsUserCheckable);
-
-            /* Select the currently mapped plugin output and
-               expand its parent node */
-            if (m_currentPluginName == pluginName && m_currentOutput == i)
-            {
-                oitem->setCheckState(KColumnName, Qt::Checked);
-                pitem->setExpanded(true);
-
-                selectItem = oitem;
-            }
-            else
-            {
-                oitem->setCheckState(KColumnName, Qt::Unchecked);
-                quint32 uni = _app->outputMap()->mapping(pluginName, i);
-                if (uni != QLCChannel::invalid())
-                {
-                    /* If a mapping exists for this plugin
-                       and output, make it impossible to
-                       map it to another universe. */
-                    oitem->setFlags(oitem->flags() & (!Qt::ItemIsEnabled));
-                    oitem->setText(KColumnName, oitem->text(KColumnName) +
-                                   QString(" (Mapped to universe %1)")
-                                        .arg(uni + 1));
-                }
-            }
-
-            i++;
-        }
-
-        /* If no outputs were appended to the plugin node, put a
-           "Nothing" node there. */
-        if (i == 0)
-        {
-            oitem = new QTreeWidgetItem(pitem);
-            oitem->setText(KColumnName, KOutputNone);
-            oitem->setText(KColumnOutput, QString("%1").arg(KOutputInvalid));
-            oitem->setFlags(oitem->flags() & ~Qt::ItemIsEnabled);
-            oitem->setFlags(oitem->flags() & ~Qt::ItemIsSelectable);
-            oitem->setCheckState(KColumnName, Qt::Unchecked);
-        }
-    }
+        fillPluginItem(pit.next(), new QTreeWidgetItem(m_tree));
 
     /* Enable check state change tracking after the tree has been filled */
     connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
             this, SLOT(slotItemChanged(QTreeWidgetItem*)));
+}
 
-    m_tree->setCurrentItem(selectItem);
+void OutputPatchEditor::fillPluginItem(const QString& pluginName,
+                                       QTreeWidgetItem* pitem)
+{
+    Q_ASSERT(pitem != NULL);
+
+    /* Get rid of any existing children */
+    while (pitem->childCount() > 0)
+        delete pitem->child(0);
+
+    pitem->setText(KColumnName, pluginName);
+    pitem->setText(KColumnOutput, QString::number(KOutputInvalid));
+
+    /* Go thru available inputs provided by each plugin and put them as their
+       parent plugin's leaf nodes */
+    quint32 i = 0;
+    QStringListIterator iit(_app->outputMap()->pluginOutputs(pluginName));
+    while (iit.hasNext() == true)
+    {
+        QTreeWidgetItem* iitem = new QTreeWidgetItem(pitem);
+        iitem->setText(KColumnName, iit.next());
+        iitem->setText(KColumnOutput, QString::number(i));
+        iitem->setFlags(iitem->flags() | Qt::ItemIsUserCheckable);
+
+        /* Select the currently mapped output and expand its parent node */
+        if (m_currentPluginName == pluginName && m_currentOutput == i)
+        {
+            iitem->setCheckState(KColumnName, Qt::Checked);
+            pitem->setExpanded(true);
+        }
+        else
+        {
+            iitem->setCheckState(KColumnName, Qt::Unchecked);
+            quint32 uni = _app->outputMap()->mapping(pluginName, i);
+            if (uni != OutputMap::invalidUniverse())
+            {
+                /* If a mapping exists for this plugin and output, make it
+                   impossible to map it to another universe. */
+                iitem->setFlags(iitem->flags() & (!Qt::ItemIsEnabled));
+                QString name = iitem->text(KColumnName);
+                name += QString(" (Mapped to universe %1)").arg(uni + 1);
+                iitem->setText(KColumnName, name);
+            }
+        }
+
+        i++;
+    }
+
+    /* If no outputs were appended to the plugin node, put a "Nothing" node there */
+    if (i == 0)
+    {
+        QTreeWidgetItem* iitem = new QTreeWidgetItem(pitem);
+        iitem->setText(KColumnName, KOutputNone);
+        iitem->setText(KColumnOutput, QString::number(KOutputInvalid));
+        iitem->setFlags(iitem->flags() & ~Qt::ItemIsEnabled);
+        iitem->setFlags(iitem->flags() & ~Qt::ItemIsSelectable);
+        iitem->setCheckState(KColumnName, Qt::Unchecked);
+    }
+}
+
+QTreeWidgetItem* OutputPatchEditor::pluginItem(const QString& pluginName)
+{
+    for (int i = 0; i < m_tree->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = m_tree->topLevelItem(i);
+        if (item->text(KColumnName) == pluginName)
+            return item;
+    }
+
+    return NULL;
 }
 
 void OutputPatchEditor::slotCurrentItemChanged(QTreeWidgetItem* item)
@@ -300,6 +325,23 @@ void OutputPatchEditor::slotItemChanged(QTreeWidgetItem* item)
     _app->outputMap()->setPatch(m_universe, m_currentPluginName, m_currentOutput);
 }
 
+void OutputPatchEditor::slotPluginConfigurationChanged(const QString& pluginName)
+{
+    QTreeWidgetItem* item = pluginItem(pluginName);
+    if (item == NULL)
+        return;
+
+    /* Disable check state tracking while the item is being filled */
+    disconnect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+               this, SLOT(slotItemChanged(QTreeWidgetItem*)));
+
+    /* Re-fill the children for the plugin that's been changed */
+    fillPluginItem(pluginName, pluginItem(pluginName));
+
+    /* Enable check state tracking after the item has been filled */
+    connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+            this, SLOT(slotItemChanged(QTreeWidgetItem*)));
+}
 
 void OutputPatchEditor::slotConfigureClicked()
 {
@@ -315,11 +357,9 @@ void OutputPatchEditor::slotConfigureClicked()
     else
         plugin = item->text(KColumnName);
 
-    /* Configure the plugin */
+    /* Configure the plugin. Changes in plugin outputs are handled with
+       slotPluginConfigurationChanged(). */
     _app->outputMap()->configurePlugin(plugin);
-
-    /* Refill the mapping tree in case configuration changed something */
-    fillTree();
 }
 
 void OutputPatchEditor::slotReconnectClicked()

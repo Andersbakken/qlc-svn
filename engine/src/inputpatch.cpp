@@ -65,7 +65,7 @@ void InputPatch::set(QLCInPlugin* plugin, quint32 input, bool enableFeedback,
     m_feedbackEnabled = enableFeedback;
 
     /* Open the assigned plugin input */
-    if (m_plugin != NULL && input != KInputInvalid)
+    if (m_plugin != NULL && m_input != KInputInvalid)
         m_plugin->open(m_input);
 }
 

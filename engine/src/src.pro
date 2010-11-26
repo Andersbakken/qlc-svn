@@ -46,7 +46,6 @@ HEADERS += bus.h \
            chaser.h \
            collection.h \
            doc.h \
-           dummyoutplugin.h \
            efx.h \
            efxfixture.h \
            fixture.h \
@@ -78,7 +77,6 @@ SOURCES += bus.cpp \
            chaser.cpp \
            collection.cpp \
            doc.cpp \
-           dummyoutplugin.cpp \
            efx.cpp \
            efxfixture.cpp \
            fixture.cpp \

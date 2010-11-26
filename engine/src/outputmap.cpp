@@ -35,7 +35,6 @@
 #include "qlci18n.h"
 #include "qlcfile.h"
 
-#include "dummyoutplugin.h"
 #include "universearray.h"
 #include "outputpatch.h"
 #include "outputmap.h"
@@ -47,7 +46,6 @@
 OutputMap::OutputMap(QObject* parent, quint32 universes) : QObject(parent)
 {
     m_universes = universes;
-    m_dummyOut = NULL;
     m_blackout = false;
     m_universeChanged = false;
 
@@ -69,9 +67,6 @@ OutputMap::~OutputMap()
 
     while (m_plugins.isEmpty() == false)
         delete m_plugins.takeFirst();
-
-    /* The purge above gets rid of m_dummyOut as well. Just NULL it. */
-    m_dummyOut = NULL;
 }
 
 void OutputMap::loadPlugins(const QDir& dir)
@@ -205,22 +200,13 @@ void OutputMap::resetUniverses()
 
 void OutputMap::initPatch()
 {
-    /* Create a dummy output plugin and put it to the plugins list */
-    m_dummyOut = new DummyOutPlugin();
-    m_dummyOut->init();
-    appendPlugin(m_dummyOut);
-
     for (quint32 i = 0; i < m_universes; i++)
-    {
-        OutputPatch* outputPatch;
+        m_patch.insert(i, new OutputPatch(this));
+}
 
-        /* The dummy output plugin provides always as many outputs
-           as QLC has supported universes. So, assign each of these
-           outputs, by default, to each universe */
-        outputPatch = new OutputPatch(this);
-        outputPatch->set(m_dummyOut, i);
-        m_patch.insert(i, outputPatch);
-    }
+quint32 OutputMap::invalidUniverse()
+{
+    return UINT_MAX;
 }
 
 quint32 OutputMap::universes() const
@@ -231,22 +217,13 @@ quint32 OutputMap::universes() const
 bool OutputMap::setPatch(quint32 universe, const QString& pluginName,
                          quint32 output)
 {
-    if (int(universe) >= m_patch.size())
+    if (universe >= universes())
     {
-        qWarning() << "Universe number out of bounds:" << universe
-                   << "Unable to set patch.";
+        qWarning() << "Universe" << universe << "out of bounds.";
         return false;
     }
 
-    QLCOutPlugin* outputPlugin = plugin(pluginName);
-    if (outputPlugin == NULL)
-    {
-        qWarning() << "Plugin" << pluginName << "for universe number"
-                   << universe << "not found.";
-        return false;
-    }
-
-    m_patch[universe]->set(outputPlugin, output);
+    m_patch[universe]->set(plugin(pluginName), output);
 
     return true;
 }

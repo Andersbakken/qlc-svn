@@ -170,6 +170,11 @@ protected:
 
 public:
     /**
+     * Invalid universe number (for comparison etc.)
+     */
+    static quint32 invalidUniverse();
+
+    /**
      * Get the total number of supported universes
      *
      * @return Universe count supported by QLC
@@ -293,9 +298,6 @@ signals:
     void pluginConfigurationChanged(const QString& pluginName);
 
 protected:
-    /** The dummy out plugin that is used for unused universes */
-    QLCOutPlugin* m_dummyOut;
-
     /** List containing all available plugins */
     QList <QLCOutPlugin*> m_plugins;
 

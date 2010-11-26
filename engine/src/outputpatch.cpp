@@ -34,6 +34,8 @@
 
 OutputPatch::OutputPatch(QObject* parent) : QObject(parent)
 {
+    Q_ASSERT(parent != NULL);
+
     m_plugin = NULL;
     m_output = KOutputInvalid;
     m_dmxZeroBased = false;
@@ -51,16 +53,14 @@ OutputPatch::~OutputPatch()
 
 void OutputPatch::set(QLCOutPlugin* plugin, quint32 output)
 {
-    /* TODO: This closes the plugin line always, regardless of whether
-       the line has been assigned to more than one output universe */
-    if (m_plugin != NULL)
+    if (m_plugin != NULL && m_output != KOutputInvalid)
         m_plugin->close(m_output);
-
-    if (plugin != NULL)
-        plugin->open(output);
 
     m_plugin = plugin;
     m_output = output;
+
+    if (m_plugin != NULL && m_output != KOutputInvalid)
+        m_plugin->open(m_output);
 }
 
 QString OutputPatch::pluginName() const
@@ -79,10 +79,14 @@ QLCOutPlugin* OutputPatch::plugin() const
 QString OutputPatch::outputName() const
 {
     if (m_plugin != NULL && m_output != KOutputInvalid &&
-            m_output < quint32(m_plugin->outputs().size()))
+        m_output < quint32(m_plugin->outputs().size()))
+    {
         return m_plugin->outputs()[m_output];
+    }
     else
+    {
         return KOutputNone;
+    }
 }
 
 quint32 OutputPatch::output() const

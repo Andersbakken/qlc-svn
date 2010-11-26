@@ -57,8 +57,8 @@ void OutputPatch_Test::patch()
     OutputMap om(this);
 
     om.loadPlugins(testPluginDir());
-    QVERIFY(om.m_plugins.size() > 1);
-    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(om.m_plugins.size() >= 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(0));
     QVERIFY(stub != NULL);
 
     OutputPatch* op = new OutputPatch(this);
@@ -109,8 +109,8 @@ void OutputPatch_Test::dump()
     OutputPatch* op = new OutputPatch(this);
 
     om.loadPlugins(testPluginDir());
-    QVERIFY(om.m_plugins.size() > 1);
-    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(1));
+    QVERIFY(om.m_plugins.size() >= 1);
+    OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(0));
     QVERIFY(stub != NULL);
 
     op->set(stub, 0);
