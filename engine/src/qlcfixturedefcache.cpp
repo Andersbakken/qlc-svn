@@ -193,6 +193,10 @@ QDir QLCFixtureDefCache::userDefinitionDirectory()
     free(home);
 #endif
 
+    // Ensure the directory exists
+    if (dir.exists() == false)
+        dir.mkpath(".");
+
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
 
