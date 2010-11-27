@@ -39,6 +39,7 @@
 #include <QIcon>
 #include <QUrl>
 
+#include "qlcfixturedefcache.h"
 #include "qlcfixturedef.h"
 #include "qlcchannel.h"
 #include "qlcconfig.h"
@@ -307,31 +308,8 @@ void App::slotFileOpen()
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setNameFilter(KFixtureFilter);
 
-#ifdef Q_WS_X11
-    path = QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR);
-    QList <QUrl> sidebar;
-
-    /* Append the system and user fixture dirs to the sidebar. This is
-       done on Linux only, because WIN32 & MAC ports save fixtures in
-       a user-writable directory. */
-    sidebar.append(QUrl::fromLocalFile(FIXTUREDIR));
-
-    /* Ensure that there is a directory for user fixtures and append that
-       to the sidebar. */
-    QDir dir(path);
-    if (dir.exists() == false)
-        dir.mkpath(".");
-    sidebar.append(QUrl::fromLocalFile(path));
-    dialog.setSidebarUrls(sidebar);
-#elif __APPLE__
-    /* Start from OSX bundle's own fixture definition directory */
-    path = QString("%1/../%2").arg(QApplication::applicationDirPath())
-           .arg(FIXTUREDIR);
-    dialog.setDirectory(path);
-#else
-    /* Start from installation's fixture definition sub-directory */
-    dialog.setDirectory(QString(FIXTUREDIR));
-#endif
+    QDir dir = QLCFixtureDefCache::userDefinitionDirectory();
+    dialog.setDirectory(dir);
     /* Execute the dialog */
     if (dialog.exec() != QDialog::Accepted)
         return;

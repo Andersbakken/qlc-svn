@@ -37,6 +37,7 @@
 #include <QList>
 #include <QUrl>
 
+#include "qlcfixturedefcache.h"
 #include "qlcfixturemode.h"
 #include "qlcfixturedef.h"
 #include "qlccapability.h"
@@ -241,7 +242,7 @@ bool QLCFixtureEditor::save()
     if (checkManufacturerModel() == false)
         return false;
 
-    if (m_fileName.length() == 0)
+    if (m_fileName.simplified().isEmpty() == true)
     {
         return saveAs();
     }
@@ -265,9 +266,6 @@ bool QLCFixtureEditor::save()
 
 bool QLCFixtureEditor::saveAs()
 {
-    QString path;
-    QDir dir;
-
     /* Bail out if there is no manufacturer or model */
     if (checkManufacturerModel() == false)
         return false;
@@ -278,45 +276,14 @@ bool QLCFixtureEditor::saveAs()
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     dialog.setNameFilter(KFixtureFilter);
 
-#ifdef Q_WS_X11
-    /* Set the dialog's default directory to system fixture directory if
-       user is root (UID == 0). If UID != 0 set it to user fixture dir */
-    uid_t uid = geteuid();
-    if (uid == 0)
-    {
-        /* User is root. Use the system fixture directory. */
-        path = QString(FIXTUREDIR);
-        dir = QDir(path);
-    }
-    else
-    {
-        path = QString("%1/%2").arg(getenv("HOME")).arg(USERFIXTUREDIR);
-
-        /* Ensure there is a directory for user fixtures */
-        dir = QDir(path);
-        if (dir.exists() == false)
-            dir.mkpath(".");
-
-        /* Append the system and user fixture dirs to the sidebar. This
-           is done on Linux only, because WIN32 & OSX ports save
-           fixtures in a user-writable directory. */
-        QList <QUrl> sidebar;
-        sidebar.append(QUrl::fromLocalFile(FIXTUREDIR));
-        sidebar.append(QUrl::fromLocalFile(path));
-        dialog.setSidebarUrls(sidebar);
-    }
-#else
-    /* Win32 & OSX keep fixtures in a user-writable directory. Use that. */
-    path = QString(FIXTUREDIR);
-    dir = QDir(path);
-#endif
-
+    QString path;
+    QDir dir = QLCFixtureDefCache::userDefinitionDirectory();
     if (m_fileName.isEmpty() == true)
     {
         /* Construct a new path for the (yet) unnamed file */
-        path = QString("%1-%2%3").arg(m_fixtureDef->manufacturer())
-               .arg(m_fixtureDef->model())
-               .arg(KExtFixture);
+        QString man = m_fixtureDef->manufacturer().replace(" ", "-");
+        QString mod = m_fixtureDef->model().replace(" ", "-");
+        path = QString("%1-%2%3").arg(man).arg(mod).arg(KExtFixture);
         dialog.setDirectory(dir);
         dialog.selectFile(path);
     }
