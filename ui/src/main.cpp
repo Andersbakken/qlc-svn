@@ -147,6 +147,7 @@ int main(int argc, char** argv)
 {
     /* Create the Qt core application object */
     QApplication qapp(argc, argv);
+    qapp.setAttribute(Qt::AA_DontShowIconsInMenus, false);
 
 #ifdef __APPLE__
     /* Load plugins from within the bundle ONLY */
