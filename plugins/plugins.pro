@@ -5,12 +5,11 @@ SUBDIRS              += enttecdmxusbout
 SUBDIRS              += peperoniout
 SUBDIRS              += udmxout
 SUBDIRS              += midiout
+unix:SUBDIRS         += olaout
 !macx:!win32:SUBDIRS += dmx4linuxout
-exists($$OLA_GIT) {
-    unix:SUBDIRS     += olaout
-}
+win32:SUBDIRS        += vellemanout
 
 # Input plugins
-SUBDIRS             += ewinginput
-SUBDIRS             += midiinput
-!mac:!win32:SUBDIRS += hidinput
+SUBDIRS              += ewinginput
+SUBDIRS              += midiinput
+!macx:!win32:SUBDIRS += hidinput
