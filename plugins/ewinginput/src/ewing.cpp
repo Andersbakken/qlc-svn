@@ -71,10 +71,7 @@ bool EWing::isOutputData(const QByteArray& data)
 {
     /* Check, if there's enough bytes for the header */
     if (data.size() < EWING_HEADER_SIZE)
-    {
-        qWarning() << "Got bogus data";
         return false;
-    }
 
     QByteArray header(data.mid(EWING_BYTE_HEADER, EWING_HEADER_SIZE));
     return (header == EWING_HEADER_OUTPUT);
@@ -83,14 +80,12 @@ bool EWing::isOutputData(const QByteArray& data)
 QString EWing::infoText() const
 {
     QString str;
-
     str  = QString("<B>%1</B>").arg(name());
     str += QString("<P>");
     str += tr("Firmware version %1").arg(int(m_firmware));
     str += QString("<BR>");
     str += tr("Device is operating correctly.");
     str += QString("</P>");
-
     return str;
 }
 
@@ -98,14 +93,30 @@ QString EWing::infoText() const
  * Wing data
  ****************************************************************************/
 
+QHostAddress EWing::address() const
+{
+    return m_address;
+}
+
+EWing::Type EWing::type() const
+{
+    return m_type;
+}
+
+uchar EWing::firmware() const
+{
+    return m_firmware;
+}
+
 EWing::Type EWing::resolveType(const QByteArray& data)
 {
     /* Check, if there's enough bytes for wing flags */
     if (data.size() < EWING_BYTE_FLAGS)
     {
-        qWarning() << "Unable to determine wing type."
-        << "Expected at least" << EWING_BYTE_FLAGS
-        << "bytes but got only" << data.size();
+        qWarning() << Q_FUNC_INFO
+                   << "Unable to determine wing type."
+                   << "Expected at least" << EWING_BYTE_FLAGS
+                   << "bytes but got only" << data.size();
         return Unknown;
     }
 
@@ -118,9 +129,10 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
     /* Check, if there's enough bytes for wing flags */
     if (data.size() < EWING_BYTE_FIRMWARE)
     {
-        qWarning() << "Unable to determine firmware version."
-        << "Expected at least" << EWING_BYTE_FIRMWARE
-        << "bytes but got only" << data.size();
+        qWarning() << Q_FUNC_INFO
+                   << "Unable to determine firmware version."
+                   << "Expected at least" << EWING_BYTE_FIRMWARE
+                   << "bytes but got only" << data.size();
         return 0;
     }
 
@@ -131,33 +143,23 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
  * Input data
  ****************************************************************************/
 
-unsigned char EWing::cacheValue(int channel)
+uchar EWing::cacheValue(int channel)
 {
     if (channel >= m_values.size())
-    {
-        qWarning() << "Attempting to retrieve value for a channel that"
-        << "is beyond allocated wing channel count";
         return 0;
-    }
     else
-    {
         return m_values[channel];
-    }
 }
 
-void EWing::setCacheValue(int channel, char value)
+void EWing::setCacheValue(int channel, uchar value)
 {
     if (channel >= m_values.size())
-    {
-        qWarning() << "Attempting to store value for a channel that is"
-        << "beyond allocated wing channel count";
         return;
-    }
 
-    if (channel != EWING_INVALID_CHANNEL && m_values[channel] != value)
+    if (channel != EWING_INVALID_CHANNEL && m_values[channel] != char(value))
     {
-        m_values[channel] = value;
-        emit valueChanged(channel, uchar(value));
+        m_values[channel] = char(value);
+        emit valueChanged(channel, value);
     }
 }
 

@@ -85,13 +85,12 @@ public:
      * @param address The address of the physical wing board.
      * @param data A UDP datagram packet originating from a wing.
      */
-    EWing(QObject* parent, const QHostAddress& address,
-          const QByteArray& data);
+    EWing(QObject* parent, const QHostAddress& address, const QByteArray& data);
 
     /**
      * Destructor.
      */
-    ~EWing();
+    virtual ~EWing();
 
 public:
     /**
@@ -110,18 +109,14 @@ public:
      *
      * @return The IP address of the wing board.
      */
-    QHostAddress address() const {
-        return m_address;
-    }
+    QHostAddress address() const;
 
     /**
      * Get the type of the device (see Type enum).
      *
      * @return The type of the device
      */
-    Type type() const {
-        return m_type;
-    }
+    Type type() const;
 
     /**
      * Return the name of the wing.
@@ -148,9 +143,7 @@ public:
      *
      * @return Firmware version
      */
-    unsigned char firmware() const {
-        return m_firmware;
-    }
+    uchar firmware() const;
 
 public:
     /**
@@ -168,12 +161,12 @@ protected:
      * @param data The data packet to resolve
      * @return Firmware version (0-255)
      */
-    unsigned char resolveFirmware(const QByteArray& data);
+    uchar resolveFirmware(const QByteArray& data);
 
 protected:
     QHostAddress m_address;
     Type m_type;
-    unsigned char m_firmware;
+    uchar m_firmware;
 
     /********************************************************************
      * Input data
@@ -203,7 +196,7 @@ public:
      * @param channel A channel whose value to get
      * @return The channel's value (0 if not found)
      */
-    unsigned char cacheValue(int channel);
+    uchar cacheValue(int channel);
 
 protected:
     /**
@@ -213,7 +206,7 @@ protected:
      * @param channel A channel, whose value to change
      * @param value The value to set
      */
-    void setCacheValue(int channel, char value);
+    void setCacheValue(int channel, uchar value);
 
 signals:
     /**
