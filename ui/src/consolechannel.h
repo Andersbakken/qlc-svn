@@ -44,6 +44,7 @@ class Fixture;
 class ConsoleChannel : public QGroupBox, public DMXSource
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ConsoleChannel)
 
     /*********************************************************************
      * Initialization
@@ -52,9 +53,6 @@ public:
     ConsoleChannel(QWidget *parent, t_fixture_id fixtureID,
                    quint32 channel);
     ~ConsoleChannel();
-
-private:
-    Q_DISABLE_COPY(ConsoleChannel)
 
 protected:
     /** Initialize the UI */
@@ -75,6 +73,9 @@ protected:
 
     /** Initialize the context menu for fixtures with capabilities */
     void initCapabilityMenu(const QLCChannel* ch);
+
+    /** Set button background colour for RGB/CMY colour channels */
+    void setColourButton(const QLCChannel* ch);
 
 protected:
     const QIcon colorIcon(const QString& name);

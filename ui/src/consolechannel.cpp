@@ -82,7 +82,7 @@ ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
     m_valueSlider = NULL;
     m_numberLabel = NULL;
 
-    setFixedWidth(50);
+    setMinimumWidth(50);
 
     init();
     updateValue();
@@ -114,10 +114,9 @@ void ConsoleChannel::init()
         m_presetButton = new QToolButton(this);
         m_presetButton->setStyle(App::saneStyle());
         m_presetButton->setIconSize(QSize(26, 26));
+        m_presetButton->setMinimumSize(QSize(32, 32));
         layout()->addWidget(m_presetButton);
         layout()->setAlignment(m_presetButton, Qt::AlignHCenter);
-        m_presetButton->setSizePolicy(QSizePolicy::Maximum,
-                                      QSizePolicy::Preferred);
         initMenu();
     }
 
@@ -196,47 +195,8 @@ void ConsoleChannel::initMenu()
         m_presetButton->setIcon(QIcon(":/tilt.png"));
         break;
     case QLCChannel::Colour:
-    {
-        if (ch->name().contains("red", Qt::CaseInsensitive) == true)
-        {
-            QPalette pal = m_presetButton->palette();
-            pal.setColor(QPalette::Button, QColor("red"));
-            m_presetButton->setPalette(pal);
-        }
-        else if (ch->name().contains("green", Qt::CaseInsensitive) == true)
-        {
-            QPalette pal = m_presetButton->palette();
-            pal.setColor(QPalette::Button, QColor("green"));
-            m_presetButton->setPalette(pal);
-        }
-        else if (ch->name().contains("blue", Qt::CaseInsensitive) == true)
-        {
-            QPalette pal = m_presetButton->palette();
-            pal.setColor(QPalette::Button, QColor("blue"));
-            m_presetButton->setPalette(pal);
-        }
-        else if (ch->name().contains("cyan", Qt::CaseInsensitive) == true)
-        {
-            QPalette pal = m_presetButton->palette();
-            pal.setColor(QPalette::Button, QColor("cyan"));
-            m_presetButton->setPalette(pal);
-        }
-        else if (ch->name().contains("magenta", Qt::CaseInsensitive) == true)
-        {
-            QPalette pal = m_presetButton->palette();
-            pal.setColor(QPalette::Button, QColor("magenta"));
-            m_presetButton->setPalette(pal);
-        }
-        else if (ch->name().contains("yellow", Qt::CaseInsensitive) == true)
-        {
-            QPalette pal = m_presetButton->palette();
-            pal.setColor(QPalette::Button, QColor("yellow"));
-            m_presetButton->setPalette(pal);
-        }
-
-        m_presetButton->setIcon(QIcon(":/color.png"));
+        setColourButton(ch);
         break;
-    }
     case QLCChannel::Effect:
         m_presetButton->setIcon(QIcon(":/efx.png"));
         break;
@@ -256,7 +216,7 @@ void ConsoleChannel::initMenu()
         m_presetButton->setIcon(QIcon(":/maintenance.png"));
         break;
     case QLCChannel::Intensity:
-        m_presetButton->setIcon(QIcon(":/intensity.png"));
+        setColourButton(ch);
         break;
     case QLCChannel::Beam:
         m_presetButton->setIcon(QIcon(":/beam.png"));
@@ -275,6 +235,65 @@ void ConsoleChannel::initMenu()
     // i.e. not for Generic dimmer fixtures
     if (m_fixture->fixtureDef() != NULL && m_fixture->fixtureMode() != NULL)
         initCapabilityMenu(ch);
+}
+
+void ConsoleChannel::setColourButton(const QLCChannel* channel)
+{
+    if (channel->name().contains("red", Qt::CaseInsensitive) == true)
+    {
+        QPalette pal = m_presetButton->palette();
+        pal.setColor(QPalette::Button, Qt::red);
+        m_presetButton->setPalette(pal);
+        m_presetButton->setText("R"); // Don't localize
+    }
+    else if (channel->name().contains("green", Qt::CaseInsensitive) == true)
+    {
+        QPalette pal = m_presetButton->palette();
+        pal.setColor(QPalette::Button, Qt::green);
+        m_presetButton->setPalette(pal);
+        m_presetButton->setText("G"); // Don't localize
+    }
+    else if (channel->name().contains("blue", Qt::CaseInsensitive) == true)
+    {
+        QPalette pal = m_presetButton->palette();
+        pal.setColor(QPalette::Button, Qt::blue);
+        pal.setColor(QPalette::ButtonText, Qt::white); // Improve contrast
+        m_presetButton->setPalette(pal);
+        m_presetButton->setText("B"); // Don't localize
+    }
+    else if (channel->name().contains("cyan", Qt::CaseInsensitive) == true)
+    {
+        QPalette pal = m_presetButton->palette();
+        pal.setColor(QPalette::Button, QColor("cyan"));
+        m_presetButton->setPalette(pal);
+        m_presetButton->setText("C"); // Don't localize
+    }
+    else if (channel->name().contains("magenta", Qt::CaseInsensitive) == true)
+    {
+        QPalette pal = m_presetButton->palette();
+        pal.setColor(QPalette::Button, QColor("magenta"));
+        m_presetButton->setPalette(pal);
+        m_presetButton->setText("M"); // Don't localize
+    }
+    else if (channel->name().contains("yellow", Qt::CaseInsensitive) == true)
+    {
+        QPalette pal = m_presetButton->palette();
+        pal.setColor(QPalette::Button, QColor("yellow"));
+        m_presetButton->setPalette(pal);
+        m_presetButton->setText("Y"); // Don't localize
+    }
+    else if (channel->group() == QLCChannel::Colour)
+    {
+        // None of the primary colour names matched, but since this is still
+        // a colour channel, it must be controlling a fixed color wheel
+        m_presetButton->setIcon(QIcon(":/color.png"));
+    }
+    else if (channel->group() == QLCChannel::Intensity)
+    {
+        // None of the primary colour names matched and since this is an
+        // intensity channel, it must be controlling a plain dimmer OSLT.
+        m_presetButton->setIcon(QIcon(":/intensity.png"));
+    }
 }
 
 void ConsoleChannel::initCapabilityMenu(const QLCChannel* ch)
