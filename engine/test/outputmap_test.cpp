@@ -109,7 +109,7 @@ void OutputMap_Test::setPatch()
     OutputPluginStub* stub = static_cast<OutputPluginStub*> (om.m_plugins.at(0));
     QVERIFY(stub != NULL);
 
-    QVERIFY(om.setPatch(0, "Foobar", 0) == false);
+    QVERIFY(om.setPatch(0, "Foobar", 0) == true);
     QVERIFY(om.patch(0)->plugin() == NULL);
     QVERIFY(om.patch(0)->output() == KOutputInvalid);
     QVERIFY(om.patch(1)->plugin() == NULL);

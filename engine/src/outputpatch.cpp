@@ -91,7 +91,10 @@ QString OutputPatch::outputName() const
 
 quint32 OutputPatch::output() const
 {
-    return m_output;
+    if (m_plugin != NULL && m_output < quint32(m_plugin->outputs().size()))
+        return m_output;
+    else
+        return KOutputInvalid;
 }
 
 void OutputPatch::setDMXZeroBased(bool set)
