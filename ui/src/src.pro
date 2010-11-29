@@ -24,6 +24,7 @@ win32:RC_FILE = main.rc
 HEADERS += aboutbox.h \
            addfixture.h \
            addvcbuttonmatrix.h \
+           addvcslidermatrix.h \
            app.h \
            apputil.h \
            assignhotkey.h \
@@ -76,6 +77,7 @@ HEADERS += aboutbox.h \
 FORMS += aboutbox.ui \
          addfixture.ui \
          addvcbuttonmatrix.ui \
+         addvcslidermatrix.ui \
          assignhotkey.ui \
          chasereditor.ui \
          collectioneditor.ui \
@@ -99,6 +101,7 @@ FORMS += aboutbox.ui \
 SOURCES += aboutbox.cpp \
            addfixture.cpp \
            addvcbuttonmatrix.cpp \
+           addvcslidermatrix.cpp \
            app.cpp \
            apputil.cpp \
            assignhotkey.cpp \

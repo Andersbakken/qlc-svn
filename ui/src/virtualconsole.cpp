@@ -43,6 +43,7 @@
 
 #include "vcpropertieseditor.h"
 #include "addvcbuttonmatrix.h"
+#include "addvcslidermatrix.h"
 #include "virtualconsole.h"
 #include "vcproperties.h"
 #include "vcdockslider.h"
@@ -63,9 +64,6 @@
 #ifndef WIN32
 #include <X11/Xlib.h>
 #endif
-
-#define SETTINGS_BUTTON_MATRIX_SIZE "buttonmatrix/defaultSize"
-#define SETTINGS_SLIDER_MATRIX_SIZE "slidermatrix/defaultSize"
 
 extern App* _app;
 extern QApplication* _qapp;
@@ -819,36 +817,16 @@ void VirtualConsole::slotAddSliderMatrix()
     if (parent == NULL)
         return;
 
-    int count = 5;
-    int width = VCSlider::defaultSize.width();
-    int height = VCSlider::defaultSize.height();
-
-    // Recall the latest size setting
-    QSettings settings;
-    QString size = QString("%1 x %2").arg(count).arg(height);
-    size = settings.value(SETTINGS_SLIDER_MATRIX_SIZE, size).toString();
-
-    bool ok = false;
-    size = QInputDialog::getText(this, tr("New Slider Matrix"),
-                                 tr("Horizontal Count x Slider Height"),
-                                 QLineEdit::Normal, size, &ok);
-    size = size.simplified();
-    if (ok == false || size.isEmpty() == true)
+    AddVCSliderMatrix avsm(this);
+    if (avsm.exec() == QDialog::Rejected)
         return;
+
+    int width = VCSlider::defaultSize.width();
+    int height = avsm.height();
+    int count = avsm.amount();
 
     VCFrame* frame = new VCFrame(parent);
     Q_ASSERT(frame != NULL);
-
-    // Don't attempt to fetch nonexistent values from list
-    QStringList list(size.split("x", QString::SkipEmptyParts));
-    if (list.size() >= 1)
-        count = list[0].toInt();
-    if (list.size() >= 2)
-        height = MAX(list[1].toInt(), VCSlider::defaultSize.height());
-
-    // Store the latest size as a string to settings
-    size = QString("%1 x %2").arg(count).arg(height);
-    settings.setValue(SETTINGS_SLIDER_MATRIX_SIZE, size);
 
     // Resize the parent frame to fit the sliders nicely
     frame->resize(QSize((count * width) + 20, height + 20));
