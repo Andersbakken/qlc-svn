@@ -231,8 +231,23 @@ public:
      * @param name The name of the channel to search for
      * @param cs Case sensitivity of the search
      * @param group Group name of the channel
+     * @return The first matching channel number
      */
     quint32 channel(const QString& name,
+                    Qt::CaseSensitivity cs = Qt::CaseSensitive,
+                    QLCChannel::Group group = QLCChannel::NoGroup) const;
+
+    /**
+     * Get a set of channels by their name from the given group of channels.
+     * Comparison is done as a "contains" operation, i.e. the given name
+     * can be a substring of a longer name. If group is empty, it is ignored.
+     *
+     * @param name The name of the channel to search for
+     * @param cs Case sensitivity of the search
+     * @param group Group name of the channel
+     * @return A QSet containing the matching channel numbers
+     */
+    QSet <quint32> channels(const QString& name,
                     Qt::CaseSensitivity cs = Qt::CaseSensitive,
                     QLCChannel::Group group = QLCChannel::NoGroup) const;
 

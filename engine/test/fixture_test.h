@@ -38,6 +38,7 @@ private slots:
     void type();
     void dimmer();
     void fixtureDef();
+    void channels();
     void loadWrongRoot();
     void loadFixtureDef();
     void loadFixtureDefWrongChannels();

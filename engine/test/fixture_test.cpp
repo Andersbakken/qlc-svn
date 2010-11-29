@@ -249,6 +249,37 @@ void Fixture_Test::fixtureDef()
     QVERIFY(ch->name().toLower() == "gobo rotation");
 }
 
+void Fixture_Test::channels()
+{
+    Fixture fxi(this);
+    const QLCFixtureDef* fixtureDef = m_fixtureDefCache.fixtureDef("i-Pix", "BB4");
+    QVERIFY(fixtureDef != NULL);
+    const QLCFixtureMode* fixtureMode = fixtureDef->modes().last();
+    QVERIFY(fixtureMode != NULL);
+    fxi.setFixtureDefinition(fixtureDef, fixtureMode);
+
+    QCOMPARE(fxi.channel("red", Qt::CaseInsensitive), quint32(3));
+    QCOMPARE(fxi.channel("red", Qt::CaseInsensitive, QLCChannel::Intensity), quint32(3));
+    QCOMPARE(fxi.channel("brown", Qt::CaseInsensitive), QLCChannel::invalid());
+
+    QSet <quint32> chs;
+    chs << 3 << 4 << 21 << 22 << 12 << 13 << 30 << 31;
+    QCOMPARE(chs, fxi.channels("red", Qt::CaseInsensitive));
+    QCOMPARE(chs, fxi.channels("red", Qt::CaseInsensitive, QLCChannel::Intensity));
+    chs.clear();
+    chs << 5 << 6 << 23 << 24 << 14 << 15 << 32 << 33;
+    QCOMPARE(chs, fxi.channels("green", Qt::CaseInsensitive));
+    chs.clear();
+    QCOMPARE(chs, fxi.channels("green"));
+    chs.clear();
+    chs << 7 << 8 << 16 << 17 << 25 << 26 << 34 << 35;
+    QCOMPARE(chs, fxi.channels("blue", Qt::CaseInsensitive));
+    chs.clear();
+    QCOMPARE(chs, fxi.channels("green", Qt::CaseInsensitive, QLCChannel::Colour));
+    chs.clear();
+    QCOMPARE(fxi.channels("brown", Qt::CaseInsensitive, QLCChannel::Intensity), chs);
+}
+
 void Fixture_Test::loadWrongRoot()
 {
     QDomDocument doc;

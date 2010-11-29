@@ -240,6 +240,34 @@ quint32 Fixture::channel(const QString& name, Qt::CaseSensitivity cs,
     }
 }
 
+QSet <quint32> Fixture::channels(const QString& name, Qt::CaseSensitivity cs,
+                                 QLCChannel::Group group) const
+{
+    QSet <quint32> set;
+    if (m_fixtureDef != NULL && m_fixtureMode != NULL)
+    {
+        /* Search for the channel name (and group) from our list */
+        for (quint32 i = 0; i < quint32(m_fixtureMode->channels().size()); i++)
+        {
+            const QLCChannel* ch = m_fixtureMode->channel(i);
+            Q_ASSERT(ch != NULL);
+
+            if (group != QLCChannel::NoGroup && ch->group() != group)
+            {
+                /* Given group name doesn't match */
+                continue;
+            }
+            else if (ch->name().contains(name, cs) == true)
+            {
+                /* Found the channel */
+                set << i;
+            }
+        }
+    }
+
+    return set;
+}
+
 void Fixture::createGenericChannel()
 {
     if (m_genericChannel == NULL)
