@@ -31,13 +31,19 @@ list of the fixture's channels and values.
    <B>Group</B>
   </TD>
   <TD>
-   The channel group. The group names are usually rather self-explanatory, but
-   here are some tips:
+   The channel group. The group names are usually rather self-explanatory and
+   are used mainly for showing a correct icon and colour in <A HREF="sceneeditor.html">Scene Editor</A>, but
+   there are also some advanced features related to channel groups:
    <LI><B>Intensity:</B> By default, QLC's <A HREF="concept.html#GrandMaster">Grand Master</A>
-   controls only Intensity channels.</LI>
-   <LI><B>Colour:</B> The Colour Tool in <A HREF="sceneeditor.html">Scene Editor</A>
-   is available if a fixture provides channels for <U>Red, Green and Blue</U>
-   or <U>Cyan, Magenta and Yellow</U> belonging to Colour group.</LI>
+   controls only Intensity channels. Note also when you create RGB/CMY channels,
+   that they should be assigned to the <I>Intensity</I> group, NOT the <EM STYLE="text-decoration:line-through;">Colour</EM> group.</LI>
+   <LI><B>Intensity:</B> The Colour Tool in <A HREF="sceneeditor.html">Scene Editor</A>
+   is available if a fixture provides channels named <U>"Red", "Green" and "Blue"</U>
+   and/or <U>"Cyan", "Magenta" and "Yellow"</U>, belonging to the <I>Intensity</I> group.</LI>
+   <LI><B>Colour:</B> If a <A HREF="concept.html#Capabilities">capability</A> name contains the keyword <U>rainbow</U>
+   in a channel that belongs to the <I>Colour</I> group, that capability will
+   have a rainbow icon beside it in <A HREF="sceneeditor.html">Scene Editor</A>
+   and <A HREF="fixturemanager.html">fixture console</A>.</LI>
    <LI><B>Pan/Tilt:</B> <A HREF="concept.html#EFX">EFX</A> and
    <A HREF="vcxypad.html">XY Pad</A> are able to control a fixture only if it
    has <U>Pan and Tilt</U> channels (8bit or 16bit).</LI>

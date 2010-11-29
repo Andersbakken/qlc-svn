@@ -59,6 +59,23 @@ Buses can also send special "tap" signals, that can be used, for example, to
 manually synchronize chaser stepping to match tempo.
 </P>
 
+<A NAME="Capabilities" HREF="#Capabilities"><H3>Capabilities</H3></A>
+
+<P>
+Some channels in intelligent fixtures provide many kinds of functions, or
+<I>capabilities</I> like switching the lamp on when the channel value is [240-255],
+setting a red color on a color wheel when the value is exactly [15], or simply
+controlling the fixture's dimmer intensity with values [0-255]. Each of these
+individual function is called a <U>capability</U> and each of them has these
+three properties:
+</P>
+
+<UL>
+ <LI>Minimum value: The minimum channel value that provides a capability.</LI>
+ <LI>Maximum value: The maximum channel value that provides a capability.</LI>
+ <LI>Name: The friendly name of a capability.</LI>
+</UL>
+
 <A NAME="Chaser" HREF="#Chaser"><H3>Chaser</H3></A>
 
 <P>
