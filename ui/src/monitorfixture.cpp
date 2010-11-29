@@ -170,7 +170,7 @@ void MonitorFixture::slotChannelStyleChanged(Monitor::ChannelStyle style)
 
     /* +1 if addresses should be shown 1-based */
     OutputPatch* op = _app->outputMap()->patch(fxi->universe());
-    if (op != NULL && op->isDMXZeroBased() == true &&
+    if (op != NULL && op->isDMXZeroBased() == false &&
         style == Monitor::DMXChannels)
     {
         /* 1-based addresses */
