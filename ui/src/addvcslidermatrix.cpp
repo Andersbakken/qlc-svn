@@ -33,9 +33,14 @@ AddVCSliderMatrix::AddVCSliderMatrix(QWidget* parent)
 {
     setupUi(this);
 
+    QSize size;
     QSettings settings;
-    QSize size(m_amount, m_height);
-    size = settings.value(SETTINGS_SLIDER_MATRIX_SIZE, size).toSize();
+    QVariant var = settings.value(SETTINGS_SLIDER_MATRIX_SIZE);
+    if (var.isValid() == true)
+        size = var.toSize();
+    else
+        size = QSize(m_amount, m_height);
+
     m_amountSpin->setValue(size.width());
     m_heightSpin->setValue(size.height());
 }
@@ -60,7 +65,7 @@ void AddVCSliderMatrix::accept()
     m_height = m_heightSpin->value();
 
     QSettings settings;
-    QString size = QString("%1 x %2").arg(m_amount).arg(m_height);
+    QSize size(m_amount, m_height);
     settings.setValue(SETTINGS_SLIDER_MATRIX_SIZE, size);
 
     QDialog::accept();
