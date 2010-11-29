@@ -422,25 +422,28 @@ bool Fixture::loadXML(const QDomElement* root,
         node = node.nextSibling();
     }
 
-    /* Find the given fixture definition */
-    fixtureDef = fixtureDefCache.fixtureDef(manufacturer, model);
-    if (fixtureDef == NULL)
+    /* Find the given fixture definition, unless its a generic dimmer */
+    if (manufacturer != KXMLFixtureGeneric && model != KXMLFixtureGeneric)
     {
-        qWarning() << Q_FUNC_INFO << "No fixture definition for"
-                   << manufacturer << model;
-    }
-    else
-    {
-        /* Find the given fixture mode */
-        fixtureMode = fixtureDef->mode(modeName);
-        if (fixtureMode == NULL)
+        fixtureDef = fixtureDefCache.fixtureDef(manufacturer, model);
+        if (fixtureDef == NULL)
         {
-            qWarning() << Q_FUNC_INFO << "Fixture mode" << modeName << "for"
-                       << manufacturer << model << "not found";
+            qWarning() << Q_FUNC_INFO << "No fixture definition for"
+                       << manufacturer << model;
+        }
+        else
+        {
+            /* Find the given fixture mode */
+            fixtureMode = fixtureDef->mode(modeName);
+            if (fixtureMode == NULL)
+            {
+                qWarning() << Q_FUNC_INFO << "Fixture mode" << modeName
+                           << "for" << manufacturer << model << "not found";
 
-            /* Set this also NULL so that a generic dimmer will be
-               created instead as a backup. */
-            fixtureDef = NULL;
+                /* Set this also NULL so that a generic dimmer will be
+                   created instead as a backup. */
+                fixtureDef = NULL;
+            }
         }
     }
 
