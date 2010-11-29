@@ -19,15 +19,15 @@
   <Capability Min="128" Max="255">Intensity</Capability>
  </Channel>
  <Channel Name="Red">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red</Capability>
  </Channel>
  <Channel Name="Green">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green</Capability>
  </Channel>
  <Channel Name="Blue">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue</Capability>
  </Channel>
  <Mode Name="All">

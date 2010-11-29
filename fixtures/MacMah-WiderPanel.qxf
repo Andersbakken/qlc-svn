@@ -9,99 +9,99 @@
  <Model>Wider Panel</Model>
  <Type>Color Changer</Type>
  <Channel Name="Red intensity #1" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #2" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #3" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #4" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #5" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #6" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #7" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Red intensity #8" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #1" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #2" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #3" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #4" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #5" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #6" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #7" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Green intensity #8" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #1" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #2" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #3" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #4" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #5" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #6" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #7" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Blue intensity #8" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue 0~100 %</Capability>
  </Channel>
  <Channel Name="Dimmer effect #1" >

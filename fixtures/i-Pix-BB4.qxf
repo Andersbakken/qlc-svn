@@ -9,39 +9,39 @@
  <Model>BB4</Model>
  <Type>Color Changer</Type>
  <Channel Name="Red all cells">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red all cells</Capability>
  </Channel>
  <Channel Name="Green all cells">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green all cells</Capability>
  </Channel>
  <Channel Name="Blue all cells">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue all cells</Capability>
  </Channel>
  <Channel Name="Red high byte all cells">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red high byte all cells</Capability>
  </Channel>
  <Channel Name="Red low byte all cells">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Red low byte all cells</Capability>
  </Channel>
  <Channel Name="Green high byte all cells">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green high byte all cells</Capability>
  </Channel>
  <Channel Name="Green low byte all cells">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Green low byte all cells</Capability>
  </Channel>
  <Channel Name="Blue high byte all cells">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue high byte all cells</Capability>
  </Channel>
  <Channel Name="Blue low byte all cells">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Blue low byte all cells</Capability>
  </Channel>
  <Channel Name="Master intensity all cells">
@@ -73,147 +73,147 @@
   <Capability Min="0" Max="255">Master intensity low byte all cells</Capability>
  </Channel>
  <Channel Name="Red cell 1">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red level cell 1</Capability>
  </Channel>
  <Channel Name="Green cell 1">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green level cell 1</Capability>
  </Channel>
  <Channel Name="Blue cell 1">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue level cell 1</Capability>
  </Channel>
  <Channel Name="Red cell 2">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red level cell 2</Capability>
  </Channel>
  <Channel Name="Red cell 3">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red level cell 3</Capability>
  </Channel>
  <Channel Name="Red cell 4">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red level cell 4</Capability>
  </Channel>
  <Channel Name="Green cell 2">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green level cell 2</Capability>
  </Channel>
  <Channel Name="Green cell 3">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green level cell 3</Capability>
  </Channel>
  <Channel Name="Green cell 4">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green level cell 4</Capability>
  </Channel>
  <Channel Name="Blue cell 2">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue level cell 2</Capability>
  </Channel>
  <Channel Name="Blue cell 3">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue level cell 3</Capability>
  </Channel>
  <Channel Name="Blue cell 4">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue level cell 4</Capability>
  </Channel>
  <Channel Name="Red high byte cell 1">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red coarse level cell 1</Capability>
  </Channel>
  <Channel Name="Red low byte cell 1">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Red fine level cell 1</Capability>
  </Channel>
  <Channel Name="Green high byte cell 1">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green high byte cell 1</Capability>
  </Channel>
  <Channel Name="Green low byte cell 1">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Green low byte cell 1</Capability>
  </Channel>
  <Channel Name="Blue high byte cell 1">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue high byte cell 1</Capability>
  </Channel>
  <Channel Name="Blue low byte cell 1">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Blue low byte cell 1</Capability>
  </Channel>
  <Channel Name="Red high byte cell 2">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red coarse level cell 2</Capability>
  </Channel>
  <Channel Name="Red low byte cell 2">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Red fine level cell 2</Capability>
  </Channel>
  <Channel Name="Green high byte cell 2">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green high byte cell 2</Capability>
  </Channel>
  <Channel Name="Green low byte cell 2">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Green low byte cell 2</Capability>
  </Channel>
  <Channel Name="Blue high byte cell 2">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue high byte cell 2</Capability>
  </Channel>
  <Channel Name="Blue low byte cell 2">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Blue low byte cell 2</Capability>
  </Channel>
  <Channel Name="Red high byte cell 3">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red coarse level cell 3</Capability>
  </Channel>
  <Channel Name="Red low byte cell 3">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Red fine level cell 3</Capability>
  </Channel>
  <Channel Name="Green high byte cell 3">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green high byte cell 3</Capability>
  </Channel>
  <Channel Name="Green low byte cell 3">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Green low byte cell 3</Capability>
  </Channel>
  <Channel Name="Blue high byte cell 3">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue high byte cell 3</Capability>
  </Channel>
  <Channel Name="Blue low byte cell 3">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Blue low byte cell 3</Capability>
  </Channel>
  <Channel Name="Red high byte cell 4">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Red coarse level cell 4</Capability>
  </Channel>
  <Channel Name="Red low byte cell 4">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Red fine level cell 4</Capability>
  </Channel>
  <Channel Name="Green high byte cell 4">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Green high byte cell 4</Capability>
  </Channel>
  <Channel Name="Green low byte cell 4">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Green low byte cell 4</Capability>
  </Channel>
  <Channel Name="Blue high byte cell 4">
-  <Group Byte="0">Colour</Group>
+  <Group Byte="0">Intensity</Group>
   <Capability Min="0" Max="255">Blue high byte cell 4</Capability>
  </Channel>
  <Channel Name="Blue low byte cell 4">
-  <Group Byte="1">Colour</Group>
+  <Group Byte="1">Intensity</Group>
   <Capability Min="0" Max="255">Blue low byte cell 4</Capability>
  </Channel>
  <Channel Name="Master intensity cell 1">

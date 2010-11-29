@@ -52,15 +52,15 @@
   <Capability Min="193" Max="255" >Rainbow backward slow to fast</Capability>
  </Channel>
  <Channel Name="Cyan" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Cyan mix</Capability>
  </Channel>
  <Channel Name="Magenta" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Magenta mix</Capability>
  </Channel>
  <Channel Name="Yellow" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Yellow mix</Capability>
  </Channel>
  <Channel Name="Speed of CMY and dimmer" >

@@ -54,15 +54,15 @@
   <Capability Min="64" Max="79" >Orange</Capability>
  </Channel>
  <Channel Name="Cyan" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Cyan level</Capability>
  </Channel>
  <Channel Name="Magenta" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Magenta level</Capability>
  </Channel>
  <Channel Name="Yellow" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Yellow level</Capability>
  </Channel>
  <Channel Name="Speed of CMY and Dimmer" >

@@ -46,27 +46,27 @@
   <Capability Min="224" Max="255" >Random rainbow slow to fast</Capability>
  </Channel>
  <Channel Name="Red coarse" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Red mix</Capability>
  </Channel>
  <Channel Name="Red fine" >
-  <Group Byte="1" >Colour</Group>
+  <Group Byte="1" >Intensity</Group>
   <Capability Min="0" Max="255" >Red fine mix</Capability>
  </Channel>
  <Channel Name="Green coarse" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Green mix</Capability>
  </Channel>
  <Channel Name="Green fine" >
-  <Group Byte="1" >Colour</Group>
+  <Group Byte="1" >Intensity</Group>
   <Capability Min="0" Max="255" >Green fine mix</Capability>
  </Channel>
  <Channel Name="Blue coarse" >
-  <Group Byte="0" >Colour</Group>
+  <Group Byte="0" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue mix</Capability>
  </Channel>
  <Channel Name="Blue fine" >
-  <Group Byte="1" >Colour</Group>
+  <Group Byte="1" >Intensity</Group>
   <Capability Min="0" Max="255" >Blue fine mix</Capability>
  </Channel>
  <Channel Name="Shutter" >
