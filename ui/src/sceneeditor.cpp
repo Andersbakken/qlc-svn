@@ -336,63 +336,77 @@ void SceneEditor::slotCopyToAll()
 
 void SceneEditor::slotColorTool()
 {
-    FixtureConsole* fc;
-    Fixture* fxi;
-    QColor color;
-    quint32 cyan, magenta, yellow;
-    quint32 red, green, blue;
-
     /* QObject cast fails unless the widget is a FixtureConsole */
-    fc = qobject_cast<FixtureConsole*> (m_tab->currentWidget());
+    FixtureConsole* fc = qobject_cast<FixtureConsole*> (m_tab->currentWidget());
     if (fc == NULL)
         return;
 
-    fxi = _app->doc()->fixture(fc->fixture());
+    Fixture* fxi = _app->doc()->fixture(fc->fixture());
     Q_ASSERT(fxi != NULL);
 
-    cyan = fxi->channel(CYAN, Qt::CaseInsensitive, QLCChannel::Intensity);
-    magenta = fxi->channel(MAGENTA, Qt::CaseInsensitive, QLCChannel::Intensity);
-    yellow = fxi->channel(YELLOW, Qt::CaseInsensitive, QLCChannel::Intensity);
-    red = fxi->channel(RED, Qt::CaseInsensitive, QLCChannel::Intensity);
-    green = fxi->channel(GREEN, Qt::CaseInsensitive, QLCChannel::Intensity);
-    blue = fxi->channel(BLUE, Qt::CaseInsensitive, QLCChannel::Intensity);
+    QSet <quint32> cyan = fxi->channels(CYAN, Qt::CaseInsensitive, QLCChannel::Intensity);
+    QSet <quint32> magenta = fxi->channels(MAGENTA, Qt::CaseInsensitive, QLCChannel::Intensity);
+    QSet <quint32> yellow = fxi->channels(YELLOW, Qt::CaseInsensitive, QLCChannel::Intensity);
+    QSet <quint32> red = fxi->channels(RED, Qt::CaseInsensitive, QLCChannel::Intensity);
+    QSet <quint32> green = fxi->channels(GREEN, Qt::CaseInsensitive, QLCChannel::Intensity);
+    QSet <quint32> blue = fxi->channels(BLUE, Qt::CaseInsensitive, QLCChannel::Intensity);
 
-    if (cyan != QLCChannel::invalid() && magenta != QLCChannel::invalid() &&
-        yellow != QLCChannel::invalid())
+    if (!cyan.isEmpty() && !magenta.isEmpty() && !yellow.isEmpty())
     {
-        color.setCmyk(fc->channel(cyan)->sliderValue(),
-                      fc->channel(magenta)->sliderValue(),
-                      fc->channel(yellow)->sliderValue(), 0);
+        QColor color;
+        color.setCmyk(fc->channel(*cyan.begin())->sliderValue(),
+                      fc->channel(*magenta.begin())->sliderValue(),
+                      fc->channel(*yellow.begin())->sliderValue(), 0);
 
         color = QColorDialog::getColor(color);
         if (color.isValid() == true)
         {
-            fc->channel(cyan)->setValue(color.cyan());
-            fc->channel(magenta)->setValue(color.magenta());
-            fc->channel(yellow)->setValue(color.yellow());
+            foreach (quint32 ch, cyan)
+            {
+                fc->channel(ch)->enable(true);
+                fc->channel(ch)->setValue(color.cyan());
+            }
 
-            fc->channel(cyan)->enable(true);
-            fc->channel(magenta)->enable(true);
-            fc->channel(yellow)->enable(true);
+            foreach (quint32 ch, magenta)
+            {
+                fc->channel(ch)->enable(true);
+                fc->channel(ch)->setValue(color.magenta());
+            }
+
+            foreach (quint32 ch, yellow)
+            {
+                fc->channel(ch)->enable(true);
+                fc->channel(ch)->setValue(color.yellow());
+            }
         }
     }
-    else if (red != QLCChannel::invalid() && green != QLCChannel::invalid() &&
-             blue != QLCChannel::invalid())
+    else if (!red.isEmpty() && !green.isEmpty() && !blue.isEmpty())
     {
-        color.setRgb(fc->channel(red)->sliderValue(),
-                     fc->channel(green)->sliderValue(),
-                     fc->channel(blue)->sliderValue(), 0);
+        QColor color;
+        color.setRgb(fc->channel(*red.begin())->sliderValue(),
+                     fc->channel(*green.begin())->sliderValue(),
+                     fc->channel(*blue.begin())->sliderValue(), 0);
 
         color = QColorDialog::getColor(color);
         if (color.isValid() == true)
         {
-            fc->channel(red)->setValue(color.red());
-            fc->channel(green)->setValue(color.green());
-            fc->channel(blue)->setValue(color.blue());
+            foreach (quint32 ch, red)
+            {
+                fc->channel(ch)->enable(true);
+                fc->channel(ch)->setValue(color.red());
+            }
 
-            fc->channel(red)->enable(true);
-            fc->channel(green)->enable(true);
-            fc->channel(blue)->enable(true);
+            foreach (quint32 ch, green)
+            {
+                fc->channel(ch)->enable(true);
+                fc->channel(ch)->setValue(color.green());
+            }
+
+            foreach (quint32 ch, blue)
+            {
+                fc->channel(ch)->enable(true);
+                fc->channel(ch)->setValue(color.blue());
+            }
         }
     }
 }
