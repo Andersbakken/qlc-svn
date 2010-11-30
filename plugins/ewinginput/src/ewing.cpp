@@ -33,7 +33,8 @@
 #define EWING_BYTE_HEADER   0 /* 4 bytes */
 #define EWING_HEADER_SIZE   4
 #define EWING_HEADER_OUTPUT "WODD"
-#define EWING_HEADER_INPUT "WIDD"
+#define EWING_HEADER_INPUT  "WIDD"
+#define EWING_MAX_PAGES     98
 
 /****************************************************************************
  * Status data common to all wings
@@ -55,12 +56,13 @@ const int EWing::UDPPort = 3330;
  * Initialization
  ****************************************************************************/
 
-EWing::EWing(QObject* parent, const QHostAddress& address,
-             const QByteArray& data) : QObject(parent)
+EWing::EWing(QObject* parent, const QHostAddress& address, const QByteArray& data)
+    : QObject(parent)
 {
     m_address = address;
     m_type = resolveType(data);
     m_firmware = resolveFirmware(data);
+    m_page = 0;
 }
 
 EWing::~EWing()
@@ -137,6 +139,22 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
     }
 
     return data[EWING_BYTE_FIRMWARE];
+}
+
+/****************************************************************************
+ * Page
+ ****************************************************************************/
+
+void EWing::nextPage()
+{
+    if (m_page == EWING_MAX_PAGES)
+        m_page = 0;
+}
+
+void EWing::previousPage()
+{
+    if (m_page == 0)
+        m_page = EWING_MAX_PAGES;
 }
 
 /****************************************************************************

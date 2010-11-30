@@ -66,6 +66,9 @@ public:
     /** @reimp */
     void parseData(const QByteArray& data);
 
+    /** Check if extra buttons were pressed and act accordingly */
+    void applyExtraButtons(const QByteArray& data);
+
 protected:
     /**
      * Since some of the channels in a playback wing seem to be in a weird

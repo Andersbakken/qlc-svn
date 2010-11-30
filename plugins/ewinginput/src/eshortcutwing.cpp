@@ -59,6 +59,9 @@ EWING_SHORTCUT_BYTE_BUTTON + 6: Buttons 08 - 15 (8 buttons)
 EWING_SHORTCUT_BYTE_BUTTON + 7: Buttons 00 - 07 (8 buttons)
 */
 
+#define EWING_PAGE_UP   (1 << 3)
+#define EWING_PAGE_DOWN (1 << 2)
+
 #define EWING_SHORTCUT_BYTE_BUTTON 6
 #define EWING_SHORTCUT_BUTTON_SIZE 8
 
@@ -70,7 +73,8 @@ EWING_SHORTCUT_BYTE_BUTTON + 7: Buttons 00 - 07 (8 buttons)
  ****************************************************************************/
 
 EShortcutWing::EShortcutWing(QObject* parent, const QHostAddress& address,
-                             const QByteArray& data) : EWing(parent, address, data)
+                             const QByteArray& data)
+    : EWing(parent, address, data)
 {
     m_values = QByteArray(EWING_SHORTCUT_CHANNEL_COUNT, 0);
 
@@ -105,6 +109,9 @@ void EShortcutWing::parseData(const QByteArray& data)
 {
     char value;
     int size;
+
+    /* Check if page buttons were pressed and act accordingly */
+    applyPageButtons(data);
 
     /* Check that we can get all channels from the packet */
     size = EWING_SHORTCUT_BYTE_BUTTON + EWING_SHORTCUT_BUTTON_SIZE;
@@ -141,4 +148,16 @@ void EShortcutWing::parseData(const QByteArray& data)
             setCacheValue(key, value);
         }
     }
+}
+
+void EShortcutWing::applyPageButtons(const QByteArray& data)
+{
+    /* Check that there's enough data for flags */
+    if (data.size() < EWING_BYTE_FLAGS + 1)
+        return;
+
+    if ((data[EWING_BYTE_FLAGS] & EWING_PAGE_UP) == 0)
+        nextPage();
+    else if ((data[EWING_BYTE_FLAGS] & EWING_PAGE_DOWN) == 0)
+        previousPage();
 }

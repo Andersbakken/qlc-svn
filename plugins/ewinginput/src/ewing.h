@@ -46,10 +46,6 @@
 #define EWING_BYTE_FIRMWARE   4 /* Firmware version, 8bit value (0-255) */
 
 #define EWING_BYTE_FLAGS      5 /* Wing flags */
-#define EWING_FLAGS_MASK_PGUP 1 << 7
-#define EWING_FLAGS_MASK_PGDN 1 << 6
-#define EWING_FLAGS_MASK_BACK 1 << 5 /* Playback Wing only */
-#define EWING_FLAGS_MASK_GO   1 << 4 /* Playback Wing only */
 #define EWING_FLAGS_MASK_TYPE 0x3
 
 /****************************************************************************
@@ -167,6 +163,16 @@ protected:
     QHostAddress m_address;
     Type m_type;
     uchar m_firmware;
+
+    /********************************************************************
+     * Page
+     ********************************************************************/
+public:
+    void nextPage();
+    void previousPage();
+
+protected:
+    quint32 m_page;
 
     /********************************************************************
      * Input data

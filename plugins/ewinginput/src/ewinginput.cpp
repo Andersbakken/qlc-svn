@@ -243,9 +243,11 @@ void EWingInput::slotReadSocket()
             if (wing != NULL)
                 addDevice(wing);
         }
-
-        if (wing != NULL)
+        else
+        {
+            // Since creating a wing already does parseData, don't do it again
             wing->parseData(data);
+        }
     }
 }
 

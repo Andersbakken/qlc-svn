@@ -59,12 +59,15 @@ public:
     /** @reimp */
     QString name() const;
 
-    /********************************************************************
+    /************************************************************************
      * Input data
-     ********************************************************************/
+     ************************************************************************/
 public:
     /** @reimp */
     void parseData(const QByteArray& data);
+
+    /** Check if page buttons were pressed and increase/decrease page number */
+    void applyPageButtons(const QByteArray& data);
 };
 
 #endif

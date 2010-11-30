@@ -78,6 +78,12 @@ EWING_PLAYBACK_BYTE_SLIDER + 9: Slider 10 (0-255)
 #define EWING_PLAYBACK_BYTE_SLIDER 15 /* Bytes 15-25 are for sliders */
 #define EWING_PLAYBACK_SLIDER_SIZE 10 /* 10 slider values in all */
 
+#define EWING_PLAYBACK_BYTE_EXTRA_BUTTONS 6
+#define EWING_PLAYBACK_BIT_PAGEUP   (1 << 7)
+#define EWING_PLAYBACK_BIT_PAGEDOWN (1 << 6)
+#define EWING_PLAYBACK_BIT_BACK     (1 << 5)
+#define EWING_PLAYBACK_BIT_GO       (1 << 4)
+
 /** Should constitute up to 50 channels */
 #define EWING_PLAYBACK_CHANNEL_COUNT 8 * EWING_PLAYBACK_BUTTON_SIZE \
 					+ EWING_PLAYBACK_SLIDER_SIZE
@@ -172,6 +178,9 @@ void EPlaybackWing::parseData(const QByteArray& data)
     int size;
     int byte;
 
+    /* Check if page buttons were pressed and act accordingly */
+    applyExtraButtons(data);
+
     /* Check that we can get all buttons from the packet */
     size = EWING_PLAYBACK_BYTE_BUTTON + EWING_PLAYBACK_BUTTON_SIZE;
     if (data.size() < size)
@@ -216,5 +225,29 @@ void EPlaybackWing::parseData(const QByteArray& data)
 
         /* Slider channels start from zero */
         setCacheValue(slider, value);
+    }
+}
+
+void EPlaybackWing::applyExtraButtons(const QByteArray& data)
+{
+    /* Check that there's enough data for flags */
+    if (data.size() < EWING_PLAYBACK_BYTE_EXTRA_BUTTONS + 1)
+        return;
+
+    if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_PAGEUP))
+    {
+        nextPage();
+    }
+    else if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_PAGEDOWN))
+    {
+        previousPage();
+    }
+    else if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_BACK))
+    {
+        /** @todo */
+    }
+    else if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_GO))
+    {
+        /** @todo */
     }
 }
