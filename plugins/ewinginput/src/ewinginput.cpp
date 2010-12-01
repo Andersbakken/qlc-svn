@@ -19,16 +19,14 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QCoreApplication>
-#include <QMessageBox>
 #include <QStringList>
 #include <QUdpSocket>
 #include <QDebug>
 
-#include "ewinginput.h"
 #include "eplaybackwing.h"
 #include "eshortcutwing.h"
 #include "eprogramwing.h"
+#include "ewinginput.h"
 #include "ewing.h"
 
 /*****************************************************************************
@@ -40,7 +38,7 @@ void EWingInput::init()
     /* Create a new UDP socket and start listening to packets coming to
        any local address. */
     m_socket = new QUdpSocket(this);
-    m_socket->bind(QHostAddress::Any, EWing::UDPPort);
+    reBindSocket();
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(slotReadSocket()));
 }
 
@@ -55,22 +53,37 @@ QString EWingInput::name()
     return QString("ENTTEC Wing Input");
 }
 
+void EWingInput::reBindSocket()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    if (m_socket->state() == QAbstractSocket::BoundState)
+        m_socket->close();
+
+    if (m_socket->bind(QHostAddress::Any, EWing::UDPPort) == false)
+    {
+        m_errorString = m_socket->errorString();
+        qWarning() << Q_FUNC_INFO << m_errorString;
+    }
+    else
+    {
+        m_errorString.clear();
+    }
+}
+
 /*****************************************************************************
  * Inputs
  *****************************************************************************/
 
 void EWingInput::open(quint32 input)
 {
-    EWing* dev = device(input);
-    if (dev == NULL)
-        qDebug() << name() << "has no input number:" << input;
+    Q_UNUSED(input);
+    reBindSocket();
 }
 
 void EWingInput::close(quint32 input)
 {
-    EWing* dev = device(input);
-    if (dev == NULL)
-        qDebug() << name() << "has no input number:" << input;
+    Q_UNUSED(input);
 }
 
 QStringList EWingInput::inputs()
@@ -108,13 +121,14 @@ QString EWingInput::infoText(quint32 input)
         if (m_socket->state() != QAbstractSocket::BoundState)
         {
             str += QString("<P>");
-            str += tr("Unable to bind to UDP port %1").arg(EWing::UDPPort);
+            str += tr("Unable to bind to UDP port %1:").arg(EWing::UDPPort);
+            str += QString(" %1.").arg(m_errorString);
             str += QString("</P>");
         }
         else
         {
             str += QString("<P>");
-            str += tr("Listening to UDP port %1").arg(EWing::UDPPort);
+            str += tr("Listening to UDP port %1.").arg(EWing::UDPPort);
             str += QString("</P>");
         }
     }
@@ -263,13 +277,8 @@ void EWingInput::slotValueChanged(quint32 channel, uchar value)
 
 void EWingInput::configure()
 {
-    /* There's no REAL rescanning here. Just command the plugin manager
-       to re-read this plugin's children */
-    int r = QMessageBox::question(NULL, name(),
-                                  tr("Do you wish to re-scan your hardware?"),
-                                  QMessageBox::Yes, QMessageBox::No);
-    if (r == QMessageBox::Yes)
-        emit configurationChanged();
+    reBindSocket();
+    emit configurationChanged();
 }
 
 bool EWingInput::canConfigure()

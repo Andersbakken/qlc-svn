@@ -53,6 +53,9 @@ public:
     /** @reimp */
     QString name();
 
+    /** Attempt to bind the socket to listen to EWing::UDPPort */
+    void reBindSocket();
+
     /*********************************************************************
      * Inputs
      *********************************************************************/
@@ -110,6 +113,7 @@ protected slots:
 protected:
     QList <EWing*> m_devices;
     QUdpSocket* m_socket;
+    QString m_errorString;
 
     /*********************************************************************
      * Configuration
