@@ -425,6 +425,8 @@ void InputPatchEditor::slotPluginConfigurationChanged(const QString& pluginName)
     /* Re-fill the children for the plugin that's been changed */
     fillPluginItem(pluginName, pluginItem(pluginName));
 
+    slotMapCurrentItemChanged(item);
+
     /* Enable check state tracking after the item has been filled */
     connect(m_mapTree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
             this, SLOT(slotMapItemChanged(QTreeWidgetItem*)));

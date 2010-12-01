@@ -337,6 +337,7 @@ void OutputPatchEditor::slotPluginConfigurationChanged(const QString& pluginName
 
     /* Re-fill the children for the plugin that's been changed */
     fillPluginItem(pluginName, pluginItem(pluginName));
+    slotCurrentItemChanged(item);
 
     /* Enable check state tracking after the item has been filled */
     connect(m_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
