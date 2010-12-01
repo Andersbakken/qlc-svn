@@ -37,7 +37,9 @@
 #define EWING_BYTE_HEADER   0 /* 4 bytes */
 #define EWING_HEADER_SIZE   4
 #define EWING_HEADER_OUTPUT "WODD"
-#define EWING_HEADER_INPUT "WIDD"
+#define EWING_HEADER_INPUT  "WIDD"
+#define EWING_PAGE_MIN      1
+#define EWING_PAGE_MAX      99
 
 /****************************************************************************
  * Status data common to all wings
@@ -172,7 +174,7 @@ public:
     void previousPage();
 
 protected:
-    quint32 m_page;
+    uchar m_page;
 
     /********************************************************************
      * Input data
@@ -203,6 +205,14 @@ public:
      * @return The channel's value (0 if not found)
      */
     uchar cacheValue(int channel);
+
+    /**
+     * Convert the given number to a BCD number (0-99).
+     *
+     * @param number The number to convert
+     * @return BCD-encoded representation of the given number
+     */
+    static uchar toBCD(quint8 number);
 
 protected:
     /**

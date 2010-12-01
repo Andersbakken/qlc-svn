@@ -55,8 +55,6 @@ QString EWingInput::name()
 
 void EWingInput::reBindSocket()
 {
-    qDebug() << Q_FUNC_INFO;
-
     if (m_socket->state() == QAbstractSocket::BoundState)
         m_socket->close();
 

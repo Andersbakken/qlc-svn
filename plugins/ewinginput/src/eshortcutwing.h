@@ -68,6 +68,9 @@ public:
 
     /** Check if page buttons were pressed and increase/decrease page number */
     void applyPageButtons(const QByteArray& data);
+
+    /** Send current page number back to the wing */
+    void sendPageData();
 };
 
 #endif

@@ -26,29 +26,6 @@
 
 #include "ewing.h"
 
-/****************************************************************************
- * Header data common to all wings
- ****************************************************************************/
-
-#define EWING_BYTE_HEADER   0 /* 4 bytes */
-#define EWING_HEADER_SIZE   4
-#define EWING_HEADER_OUTPUT "WODD"
-#define EWING_HEADER_INPUT  "WIDD"
-#define EWING_MAX_PAGES     98
-
-/****************************************************************************
- * Status data common to all wings
- ****************************************************************************/
-
-#define EWING_BYTE_FIRMWARE   4 /* Firmware version, 8bit value (0-255) */
-
-#define EWING_BYTE_FLAGS      5 /* Wing flags */
-#define EWING_FLAGS_MASK_PGUP 1 << 7
-#define EWING_FLAGS_MASK_PGDN 1 << 6
-#define EWING_FLAGS_MASK_BACK 1 << 5 /* Playback Wing only */
-#define EWING_FLAGS_MASK_GO   1 << 4 /* Playback Wing only */
-#define EWING_FLAGS_MASK_TYPE 0x3
-
 /** ENTTEC wings send data thru UDP port 3330 */
 const int EWing::UDPPort = 3330;
 
@@ -62,7 +39,7 @@ EWing::EWing(QObject* parent, const QHostAddress& address, const QByteArray& dat
     m_address = address;
     m_type = resolveType(data);
     m_firmware = resolveFirmware(data);
-    m_page = 0;
+    m_page = EWING_PAGE_MIN;
 }
 
 EWing::~EWing()
@@ -147,14 +124,18 @@ unsigned char EWing::resolveFirmware(const QByteArray& data)
 
 void EWing::nextPage()
 {
-    if (m_page == EWING_MAX_PAGES)
-        m_page = 0;
+    if (m_page == EWING_PAGE_MAX)
+        m_page = EWING_PAGE_MIN;
+    else
+        m_page++;
 }
 
 void EWing::previousPage()
 {
-    if (m_page == 0)
-        m_page = EWING_MAX_PAGES;
+    if (m_page == EWING_PAGE_MIN)
+        m_page = EWING_PAGE_MAX;
+    else
+        m_page--;
 }
 
 /****************************************************************************
@@ -185,4 +166,11 @@ void EWing::feedBack(quint32 channel, uchar value)
 {
     Q_UNUSED(channel);
     Q_UNUSED(value);
+}
+
+uchar EWing::toBCD(uchar number)
+{
+    uchar bcd = ((number / 10) & 0x0F) << 4;
+    bcd |= (number % 10) & 0x0F;
+    return bcd;
 }

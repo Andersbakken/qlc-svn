@@ -22,6 +22,7 @@
 #include <QHostAddress>
 #include <QMessageBox>
 #include <QByteArray>
+#include <QUdpSocket>
 #include <QString>
 
 #include "eshortcutwing.h"
@@ -59,8 +60,8 @@ EWING_SHORTCUT_BYTE_BUTTON + 6: Buttons 08 - 15 (8 buttons)
 EWING_SHORTCUT_BYTE_BUTTON + 7: Buttons 00 - 07 (8 buttons)
 */
 
-#define EWING_PAGE_UP   (1 << 3)
-#define EWING_PAGE_DOWN (1 << 2)
+#define EWING_SHORTCUT_PAGE_UP   (1 << 3)
+#define EWING_SHORTCUT_PAGE_DOWN (1 << 2)
 
 #define EWING_SHORTCUT_BYTE_BUTTON 6
 #define EWING_SHORTCUT_BUTTON_SIZE 8
@@ -107,14 +108,11 @@ QString EShortcutWing::name() const
 
 void EShortcutWing::parseData(const QByteArray& data)
 {
-    char value;
-    int size;
-
     /* Check if page buttons were pressed and act accordingly */
     applyPageButtons(data);
 
     /* Check that we can get all channels from the packet */
-    size = EWING_SHORTCUT_BYTE_BUTTON + EWING_SHORTCUT_BUTTON_SIZE;
+    int size = EWING_SHORTCUT_BYTE_BUTTON + EWING_SHORTCUT_BUTTON_SIZE;
     if (data.size() < size)
     {
         qWarning() << Q_FUNC_INFO << "Expected at least" << size
@@ -129,6 +127,7 @@ void EShortcutWing::parseData(const QByteArray& data)
         for (int bit = 7; bit >= 0; bit--)
         {
             int key;
+            char value;
 
             key = (size - byte - 1) * 8;
             key += (7 - bit);
@@ -156,8 +155,25 @@ void EShortcutWing::applyPageButtons(const QByteArray& data)
     if (data.size() < EWING_BYTE_FLAGS + 1)
         return;
 
-    if ((data[EWING_BYTE_FLAGS] & EWING_PAGE_UP) == 0)
+    if ((data[EWING_BYTE_FLAGS] & EWING_SHORTCUT_PAGE_UP) == 0)
+    {
         nextPage();
-    else if ((data[EWING_BYTE_FLAGS] & EWING_PAGE_DOWN) == 0)
+        sendPageData();
+    }
+    else if ((data[EWING_BYTE_FLAGS] & EWING_SHORTCUT_PAGE_DOWN) == 0)
+    {
         previousPage();
+        sendPageData();
+    }
+}
+
+void EShortcutWing::sendPageData()
+{
+    QByteArray sendData(42, char(0));
+    sendData.replace(0, sizeof(EWING_HEADER_INPUT), EWING_HEADER_INPUT);
+    sendData[4] = 1; // Enttec spec says version must be 1
+    sendData[37] = toBCD(m_page);
+
+    QUdpSocket sock(this);
+    sock.writeDatagram(sendData, address(), EWing::UDPPort);
 }
