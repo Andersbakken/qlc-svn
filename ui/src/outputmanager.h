@@ -35,6 +35,7 @@ class QToolBar;
 class OutputManager : public QWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(OutputManager)
 
     /*********************************************************************
      * Initialization
@@ -50,9 +51,6 @@ public:
 
     /** Normal public destructor */
     virtual ~OutputManager();
-
-private:
-    Q_DISABLE_COPY(OutputManager)
 
 protected:
     /** Protected constructor to prevent multiple instances. */
@@ -75,6 +73,10 @@ public:
 protected:
     /** Update the contents of an OutputPatch to an item */
     void updateItem(QTreeWidgetItem* item, OutputPatch* op, int universe);
+
+protected slots:
+    /** Updates the mapping tree */
+    void slotPluginConfigurationChanged();
 
 protected:
     QTreeWidget* m_tree;

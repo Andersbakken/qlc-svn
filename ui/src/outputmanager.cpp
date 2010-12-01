@@ -86,6 +86,9 @@ OutputManager::OutputManager(QWidget* parent, Qt::WindowFlags flags)
             this, SLOT(slotDocumentChanged(Doc*)));
     /* Use the initial document */
     slotDocumentChanged(_app->doc());
+
+    connect(_app->outputMap(), SIGNAL(pluginConfigurationChanged(const QString&)),
+            this, SLOT(slotPluginConfigurationChanged()));
 }
 
 OutputManager::~OutputManager()
@@ -186,6 +189,11 @@ void OutputManager::updateItem(QTreeWidgetItem* item, OutputPatch* op,
     item->setText(KColumnPlugin, op->pluginName());
     item->setText(KColumnOutputName, op->outputName());
     item->setText(KColumnOutput, QString("%1").arg(op->output() + 1));
+}
+
+void OutputManager::slotPluginConfigurationChanged()
+{
+    updateTree();
 }
 
 /****************************************************************************

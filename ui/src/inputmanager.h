@@ -73,10 +73,12 @@ public:
 
 protected:
     /** Update the contents of an input patch to an item */
-    void updateItem(QTreeWidgetItem* item, InputPatch* patch,
-                    quint32 universe);
+    void updateItem(QTreeWidgetItem* item, InputPatch* patch, quint32 universe);
 
 protected slots:
+    /** Updates the tree whwn plugin configuration changes */
+    void slotPluginConfigurationChanged();
+
     /** Listens to input data and displays a small icon to indicate a
         working connection between a plugin and an input device. */
     void slotInputValueChanged(quint32 universe, quint32 channel, uchar value);

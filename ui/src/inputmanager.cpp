@@ -103,6 +103,10 @@ InputManager::InputManager(QWidget* parent, Qt::WindowFlags flags)
             this, SLOT(slotDocumentChanged(Doc*)));
     /* Use the initial document */
     slotDocumentChanged(_app->doc());
+
+    /* Listen to plugin configuration changes */
+    connect(_app->inputMap(), SIGNAL(pluginConfigurationChanged(const QString&)),
+            this, SLOT(slotPluginConfigurationChanged()));
 }
 
 InputManager::~InputManager()
@@ -212,6 +216,11 @@ void InputManager::updateItem(QTreeWidgetItem* item, InputPatch* ip,
         item->setFlags(item->flags() & ~Qt::ItemIsUserCheckable);
     }
     item->setText(KColumnInputNum, QString("%1").arg(ip->input() + 1));
+}
+
+void InputManager::slotPluginConfigurationChanged()
+{
+    updateTree();
 }
 
 void InputManager::slotInputValueChanged(quint32 universe, quint32 channel,
