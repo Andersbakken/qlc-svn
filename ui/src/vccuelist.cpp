@@ -172,8 +172,8 @@ void VCCueList::slotFunctionRemoved(t_function_id fid)
 
 void VCCueList::slotFunctionChanged(t_function_id fid)
 {
-	QTreeWidgetItem* item;
-	Function* function;
+    QTreeWidgetItem* item;
+    Function* function;
 
     function = _app->doc()->function(fid);
 

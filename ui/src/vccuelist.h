@@ -47,8 +47,8 @@ class Function;
 /**
  * VCCueList provides a \ref VirtualConsole widget to control cue lists.
  *
- * @see		VCWidget
- * @see		VirtualConsole
+ * @see VCWidget
+ * @see VirtualConsole
  */
 class VCCueList : public VCWidget
 {
