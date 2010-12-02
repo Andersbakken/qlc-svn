@@ -76,6 +76,8 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
 
     connect(_app->doc(), SIGNAL(functionRemoved(t_function_id)),
             this, SLOT(slotFunctionRemoved(t_function_id)));
+    connect(_app->doc(), SIGNAL(functionChanged(t_function_id)),
+            this, SLOT(slotFunctionChanged(t_function_id)));
 
     setNextInputSource(InputMap::invalidUniverse(), KInputChannelInvalid);
     setPreviousInputSource(InputMap::invalidUniverse(), KInputChannelInvalid);
@@ -165,6 +167,26 @@ void VCCueList::slotFunctionRemoved(t_function_id fid)
 
         if (item->text(KVCCueListColumnID).toInt() == fid)
             delete item;
+    }
+}
+
+void VCCueList::slotFunctionChanged(t_function_id fid)
+{
+	QTreeWidgetItem* item;
+	Function* function;
+
+    function = _app->doc()->function(fid);
+
+    /* Find all items matching the changed function ID and update them */
+    for (int i = 0; i < m_list->topLevelItemCount(); i++)
+    {
+        item = m_list->topLevelItem(i);
+        Q_ASSERT(item != NULL);
+
+        if (item->text(KVCCueListColumnID).toInt() == fid)
+        {
+            item->setText(KVCCueListColumnName, function->name());
+        }
     }
 }
 

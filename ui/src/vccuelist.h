@@ -44,6 +44,12 @@ class Function;
 #define KVCCueListColumnName   1
 #define KVCCueListColumnID     2
 
+/**
+ * VCCueList provides a \ref VirtualConsole widget to control cue lists.
+ *
+ * @see		VCWidget
+ * @see		VirtualConsole
+ */
 class VCCueList : public VCWidget
 {
     Q_OBJECT
@@ -85,6 +91,9 @@ public:
 protected slots:
     /** Removes destroyed functions from the list */
     void slotFunctionRemoved(t_function_id fid);
+
+    /** Updates name in the list if function got changed */
+    void slotFunctionChanged(t_function_id fid);
 
     /** Skip to the next cue */
     void slotNextCue();
