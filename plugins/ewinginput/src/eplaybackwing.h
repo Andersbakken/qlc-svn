@@ -69,6 +69,9 @@ public:
     /** Check if extra buttons were pressed and act accordingly */
     void applyExtraButtons(const QByteArray& data);
 
+    /** Send current page number back to the wing */
+    void sendPageData();
+
 protected:
     /**
      * Since some of the channels in a playback wing seem to be in a weird

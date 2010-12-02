@@ -38,7 +38,7 @@
 #define EWING_HEADER_SIZE   4
 #define EWING_HEADER_OUTPUT "WODD"
 #define EWING_HEADER_INPUT  "WIDD"
-#define EWING_PAGE_MIN      1
+#define EWING_PAGE_MIN      0
 #define EWING_PAGE_MAX      99
 
 /****************************************************************************

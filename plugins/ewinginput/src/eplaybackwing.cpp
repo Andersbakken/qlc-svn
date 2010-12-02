@@ -22,6 +22,7 @@
 #include <QHostAddress>
 #include <QMessageBox>
 #include <QByteArray>
+#include <QUdpSocket>
 #include <QString>
 
 #include "eplaybackwing.h"
@@ -88,6 +89,10 @@ EWING_PLAYBACK_BYTE_SLIDER + 9: Slider 10 (0-255)
 #define EWING_PLAYBACK_CHANNEL_COUNT 8 * EWING_PLAYBACK_BUTTON_SIZE \
 					+ EWING_PLAYBACK_SLIDER_SIZE
 
+#define EWING_PLAYBACK_INPUT_VERSION 1
+#define EWING_PLAYBACK_INPUT_BYTE_VERSION 4
+#define EWING_PLAYBACK_INPUT_BYTE_PAGE 37
+
 /****************************************************************************
  * Initialization
  ****************************************************************************/
@@ -149,6 +154,7 @@ EPlaybackWing::EPlaybackWing(QObject* parent, const QHostAddress& address,
        The plugin hasn't yet connected to valueChanged() signal, so this
        won't cause any input events. */
     parseData(data);
+    sendPageData();
 }
 
 EPlaybackWing::~EPlaybackWing()
@@ -174,15 +180,11 @@ QString EPlaybackWing::name() const
 
 void EPlaybackWing::parseData(const QByteArray& data)
 {
-    char value;
-    int size;
-    int byte;
-
     /* Check if page buttons were pressed and act accordingly */
     applyExtraButtons(data);
 
     /* Check that we can get all buttons from the packet */
-    size = EWING_PLAYBACK_BYTE_BUTTON + EWING_PLAYBACK_BUTTON_SIZE;
+    int size = EWING_PLAYBACK_BYTE_BUTTON + EWING_PLAYBACK_BUTTON_SIZE;
     if (data.size() < size)
     {
         qWarning() << Q_FUNC_INFO << "Expected at least" << size
@@ -191,16 +193,16 @@ void EPlaybackWing::parseData(const QByteArray& data)
     }
 
     /* Read the state of each button */
-    for (byte = size - 1; byte >= EWING_PLAYBACK_BYTE_BUTTON; byte--)
+    for (int byte = size - 1; byte >= EWING_PLAYBACK_BYTE_BUTTON; byte--)
     {
         /* Each byte has 8 button values as binary bits */
         for (int bit = 7; bit >= 0; bit--)
         {
-            int key;
+            char value;
 
             /* Calculate the key number, which is 10-49, since
                sliders are mapped to 0-9. */
-            key = (size - byte - 1) * 8;
+            int key = (size - byte - 1) * 8;
             key += bit;
 
             /* 0 = button down, 1 = button up */
@@ -221,7 +223,7 @@ void EPlaybackWing::parseData(const QByteArray& data)
     /* Read the state of each slider. Each value takes all 8 bits. */
     for (int slider = 0; slider < EWING_PLAYBACK_SLIDER_SIZE; slider++)
     {
-        value = data[EWING_PLAYBACK_BYTE_SLIDER + slider];
+        char value = data[EWING_PLAYBACK_BYTE_SLIDER + slider];
 
         /* Slider channels start from zero */
         setCacheValue(slider, value);
@@ -237,10 +239,12 @@ void EPlaybackWing::applyExtraButtons(const QByteArray& data)
     if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_PAGEUP))
     {
         nextPage();
+        sendPageData();
     }
     else if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_PAGEDOWN))
     {
         previousPage();
+        sendPageData();
     }
     else if (!(data[EWING_PLAYBACK_BYTE_EXTRA_BUTTONS] & EWING_PLAYBACK_BIT_BACK))
     {
@@ -250,4 +254,15 @@ void EPlaybackWing::applyExtraButtons(const QByteArray& data)
     {
         /** @todo */
     }
+}
+
+void EPlaybackWing::sendPageData()
+{
+    QByteArray sendData(42, char(0));
+    sendData.replace(0, sizeof(EWING_HEADER_INPUT), EWING_HEADER_INPUT);
+    sendData[EWING_PLAYBACK_INPUT_BYTE_VERSION] = EWING_PLAYBACK_INPUT_VERSION;
+    sendData[EWING_PLAYBACK_INPUT_BYTE_PAGE] = toBCD(m_page);
+
+    QUdpSocket sock(this);
+    sock.writeDatagram(sendData, address(), EWing::UDPPort);
 }

@@ -69,6 +69,10 @@ EWING_SHORTCUT_BYTE_BUTTON + 7: Buttons 00 - 07 (8 buttons)
 /** Should constitute up to 64 values (with the last 4 unused) */
 #define EWING_SHORTCUT_CHANNEL_COUNT 8 * EWING_SHORTCUT_BUTTON_SIZE
 
+#define EWING_SHORTCUT_INPUT_VERSION 1
+#define EWING_SHORTCUT_INPUT_BYTE_VERSION 4
+#define EWING_SHORTCUT_INPUT_BYTE_PAGE 37
+
 /****************************************************************************
  * Initialization
  ****************************************************************************/
@@ -83,6 +87,7 @@ EShortcutWing::EShortcutWing(QObject* parent, const QHostAddress& address,
        The plugin hasn't yet connected to valueChanged() signal, so this
        won't cause any input events. */
     parseData(data);
+    sendPageData();
 }
 
 EShortcutWing::~EShortcutWing()
@@ -171,8 +176,8 @@ void EShortcutWing::sendPageData()
 {
     QByteArray sendData(42, char(0));
     sendData.replace(0, sizeof(EWING_HEADER_INPUT), EWING_HEADER_INPUT);
-    sendData[4] = 1; // Enttec spec says version must be 1
-    sendData[37] = toBCD(m_page);
+    sendData[EWING_SHORTCUT_INPUT_BYTE_VERSION] = EWING_SHORTCUT_INPUT_VERSION;
+    sendData[EWING_SHORTCUT_INPUT_BYTE_PAGE] = toBCD(m_page);
 
     QUdpSocket sock(this);
     sock.writeDatagram(sendData, address(), EWing::UDPPort);
