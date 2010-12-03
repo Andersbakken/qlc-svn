@@ -129,6 +129,7 @@ fixtures.files += Robe-ClubSpot-250CT.qxf
 fixtures.files += Robe-ClubSpot-500-CT.qxf
 fixtures.files += Robe-ClubWash-250CT.qxf
 fixtures.files += Robe-ClubWash-300CT.qxf
+fixtures.files += Robe-ClubWash-500-CT.qxf
 fixtures.files += Robe-Colorspot-170-AT.qxf
 fixtures.files += Robe-ColorSpot-250-XT.qxf
 fixtures.files += SGM-Colorlab-250.qxf
