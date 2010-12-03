@@ -126,6 +126,7 @@ fixtures.files += Robe-ClubScan-250CT.qxf
 fixtures.files += Robe-ClubSpot-150CT.qxf
 fixtures.files += Robe-ClubSpot-160CT.qxf
 fixtures.files += Robe-ClubSpot-250CT.qxf
+fixtures.files += Robe-ClubSpot-500-CT.qxf
 fixtures.files += Robe-ClubWash-250CT.qxf
 fixtures.files += Robe-ClubWash-300CT.qxf
 fixtures.files += Robe-Colorspot-170-AT.qxf
