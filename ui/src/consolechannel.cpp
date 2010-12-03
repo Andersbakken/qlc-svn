@@ -143,7 +143,7 @@ void ConsoleChannel::init()
     // Generic fixtures don't have channel objects
     ch = m_fixture->channel(m_channel);
     if (ch != NULL)
-        setToolTip(QString("%1 / %2").arg(ch->name()).arg(ch->group()));
+        setToolTip(QString("%1 / %2").arg(ch->name()));
     else
         setToolTip(tr("Level"));
 
@@ -151,13 +151,21 @@ void ConsoleChannel::init()
     num.sprintf("%d", m_channel + 1);
     m_numberLabel->setText(num);
 
-    connect(m_valueEdit, SIGNAL(textEdited(const QString&)),
-            this, SLOT(slotValueEdited(const QString&)));
-    connect(m_valueSlider, SIGNAL(valueChanged(int)),
-            this, SLOT(slotValueChange(int)));
+    if (ch->group() == QLCChannel::NoGroup)
+    {
+        /* Hide channel strips that have no purpose */
+        hide();
+    }
+    else
+    {
+        connect(m_valueEdit, SIGNAL(textEdited(const QString&)),
+                this, SLOT(slotValueEdited(const QString&)));
+        connect(m_valueSlider, SIGNAL(valueChanged(int)),
+                this, SLOT(slotValueChange(int)));
 
-    /* Register this object as a source of DMX data */
-    _app->masterTimer()->registerDMXSource(this);
+        /* Register this object as a source of DMX data */
+        _app->masterTimer()->registerDMXSource(this);
+    }
 }
 
 /*****************************************************************************
