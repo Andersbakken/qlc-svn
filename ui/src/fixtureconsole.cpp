@@ -74,6 +74,11 @@ void FixtureConsole::setFixture(t_fixture_id id)
     /* Create channel units */
     for (unsigned int i = 0; i < fxi->channels(); i++)
     {
+        const QLCChannel* ch = fxi->channel(i);
+        Q_ASSERT(ch != NULL);
+        if (ch->group() == QLCChannel::NoGroup)
+            continue;
+
         cc = new ConsoleChannel(this, m_fixture, i);
         cc->setCheckable(m_channelsCheckable);
         layout()->addWidget(cc);

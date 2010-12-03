@@ -97,9 +97,6 @@ ConsoleChannel::~ConsoleChannel()
 
 void ConsoleChannel::init()
 {
-    const QLCChannel* ch;
-    QString num;
-
     setCheckable(true);
     connect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled(bool)));
 
@@ -141,31 +138,22 @@ void ConsoleChannel::init()
     m_numberLabel->setAlignment(Qt::AlignCenter);
 
     // Generic fixtures don't have channel objects
-    ch = m_fixture->channel(m_channel);
+    const QLCChannel* ch = m_fixture->channel(m_channel);
     if (ch != NULL)
         setToolTip(QString("%1 / %2").arg(ch->name()));
     else
         setToolTip(tr("Level"));
 
     // Set channel label
-    num.sprintf("%d", m_channel + 1);
-    m_numberLabel->setText(num);
+    m_numberLabel->setText(QString::number(m_channel + 1));
 
-    if (ch->group() == QLCChannel::NoGroup)
-    {
-        /* Hide channel strips that have no purpose */
-        hide();
-    }
-    else
-    {
-        connect(m_valueEdit, SIGNAL(textEdited(const QString&)),
-                this, SLOT(slotValueEdited(const QString&)));
-        connect(m_valueSlider, SIGNAL(valueChanged(int)),
-                this, SLOT(slotValueChange(int)));
+    connect(m_valueEdit, SIGNAL(textEdited(const QString&)),
+            this, SLOT(slotValueEdited(const QString&)));
+    connect(m_valueSlider, SIGNAL(valueChanged(int)),
+            this, SLOT(slotValueChange(int)));
 
-        /* Register this object as a source of DMX data */
-        _app->masterTimer()->registerDMXSource(this);
-    }
+    /* Register this object as a source of DMX data */
+    _app->masterTimer()->registerDMXSource(this);
 }
 
 /*****************************************************************************
