@@ -37,6 +37,7 @@ class QAction;
 class SceneEditor : public QDialog, public Ui_SceneEditor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(SceneEditor)
 
     /*********************************************************************
      * Initialization
@@ -44,9 +45,6 @@ class SceneEditor : public QDialog, public Ui_SceneEditor
 public:
     SceneEditor(QWidget* parent, Scene* scene);
     ~SceneEditor();
-
-private:
-    Q_DISABLE_COPY(SceneEditor)
 
 protected:
     void init();
@@ -111,10 +109,6 @@ protected:
 
     void addFixtureTab(Fixture* fixture);
     void removeFixtureTab(Fixture* fixture);
-
-protected slots:
-    void slotValueChanged(t_fixture_id fxi_id, quint32 channel,
-                          uchar value, bool enabled);
 
 protected:
     int m_currentTab;

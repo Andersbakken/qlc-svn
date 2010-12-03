@@ -226,6 +226,11 @@ public:
      */
     QList <SceneValue> values() const;
 
+    /**
+     * Clear all values
+     */
+    void clear();
+
 protected:
     QList <SceneValue> m_values;
 

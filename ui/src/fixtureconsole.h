@@ -37,6 +37,7 @@ class QDomElement;
 class FixtureConsole : public QWidget
 {
     Q_OBJECT
+    Q_DISABLE_COPY(FixtureConsole)
 
     /*********************************************************************
      * Initialization
@@ -44,9 +45,6 @@ class FixtureConsole : public QWidget
 public:
     FixtureConsole(QWidget* parent);
     ~FixtureConsole();
-
-private:
-    Q_DISABLE_COPY(FixtureConsole)
 
     /*********************************************************************
      * Fixture
@@ -109,8 +107,7 @@ public:
     void enableExternalInput(bool enable);
 
 protected slots:
-    void slotInputValueChanged(quint32 uni, quint32 ch,
-                               uchar value);
+    void slotInputValueChanged(quint32 uni, quint32 ch, uchar value);
 
 protected:
     bool m_externalInputEnabled;

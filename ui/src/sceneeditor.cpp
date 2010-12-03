@@ -144,8 +144,6 @@ void SceneEditor::init()
             this, SLOT(slotBusComboActivated(int)));
     fillBusCombo();
 
-    m_initializing = true;
-
     QListIterator <SceneValue> it(m_scene->values());
     while (it.hasNext() == true)
     {
@@ -163,8 +161,6 @@ void SceneEditor::init()
 
         setSceneValue(scv);
     }
-
-    m_initializing = false;
 }
 
 void SceneEditor::fillBusCombo()
@@ -206,6 +202,19 @@ void SceneEditor::slotBusComboActivated(int index)
 void SceneEditor::accept()
 {
     m_scene->setName(m_nameEdit->text());
+    m_scene->clear();
+    for (int i = 1; i < m_tab->count(); i++)
+    {
+        FixtureConsole* fc = qobject_cast<FixtureConsole*> (m_tab->widget(i));
+        if (fc != NULL)
+        {
+            QListIterator <SceneValue> it(fc->values());
+            while (it.hasNext() == true)
+            {
+                m_scene->setValue(it.next());
+            }
+        }
+    }
 
     /* Copy the contents of the modified scene over the original scene */
     m_original->copyFrom(m_scene);
@@ -615,11 +624,6 @@ void SceneEditor::addFixtureTab(Fixture* fixture)
 
     /* Start off with all channels disabled */
     console->enableAllChannels(false);
-
-    connect(console,
-            SIGNAL(valueChanged(t_fixture_id,quint32,uchar,bool)),
-            this,
-            SLOT(slotValueChanged(t_fixture_id,quint32,uchar,bool)));
 }
 
 void SceneEditor::removeFixtureTab(Fixture* fixture)
@@ -641,17 +645,4 @@ void SceneEditor::removeFixtureTab(Fixture* fixture)
             break;
         }
     }
-}
-
-void SceneEditor::slotValueChanged(t_fixture_id fxi_id, quint32 channel,
-                                   uchar value, bool enabled)
-{
-    /* Don't accept any changes during initialization */
-    if (m_initializing == true)
-        return;
-
-    if (enabled == true)
-        m_scene->setValue(fxi_id, channel, value);
-    else
-        m_scene->unsetValue(fxi_id, channel);
 }
