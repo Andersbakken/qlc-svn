@@ -188,7 +188,7 @@ void ChaserEditor::slotBusComboActivated(int index)
 
 void ChaserEditor::slotAddClicked()
 {
-    FunctionSelection fs(this, true, m_original->id());
+    FunctionSelection fs(this, true, m_original->id(), Function::Scene, true);
     if (fs.exec() == QDialog::Accepted)
     {
         QListIterator <t_function_id> it(fs.selection());
