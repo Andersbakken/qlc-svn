@@ -228,12 +228,15 @@ void FunctionManager::initActions()
 
 void FunctionManager::initMenu()
 {
-    QAction* action;
+    QMenuBar* menuBar = new QMenuBar(this);
+    QAction* action = NULL;
 
-    // layout()->setMenuBar(new QMenuBar(this));
+#ifndef __APPLE__
+    layout()->setMenuBar(menuBar);
+#endif
 
     /* Function menu */
-    m_addMenu = new QMenu(this);
+    m_addMenu = new QMenu(menuBar);
     m_addMenu->setTitle(tr("&Add"));
     m_addMenu->addAction(m_addSceneAction);
     m_addMenu->addAction(m_addChaserAction);
@@ -243,7 +246,7 @@ void FunctionManager::initMenu()
     m_addMenu->addAction(m_wizardAction);
 
     /* Edit menu */
-    m_editMenu = new QMenu(this);
+    m_editMenu = new QMenu(menuBar);
     m_editMenu->setTitle("&Edit");
     m_editMenu->addAction(m_editAction);
     m_editMenu->addSeparator();
@@ -256,7 +259,7 @@ void FunctionManager::initMenu()
     /* Bus menu */
     m_busGroup = new QActionGroup(this);
     m_busGroup->setExclusive(false);
-    m_busMenu = new QMenu(this);
+    m_busMenu = new QMenu(menuBar);
     m_busMenu->setTitle("Assign &bus");
     for (quint32 id = 0; id < Bus::count(); id++)
     {
@@ -277,8 +280,8 @@ void FunctionManager::initMenu()
             this, SLOT(slotBusNameChanged(quint32, const QString&)));
 
     /* Construct menu bar */
-    //static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_addMenu);
-    //static_cast<QMenuBar*>(layout()->menuBar())->addMenu(m_editMenu);
+    menuBar->addMenu(m_addMenu);
+    menuBar->addMenu(m_editMenu);
     m_editMenu->addMenu(m_busMenu);
 }
 
