@@ -91,7 +91,7 @@ FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
         m_tree->header()->hideSection(KColumnManufacturer);
         m_tree->header()->hideSection(KColumnModel);
         QTreeWidgetItem* item = new QTreeWidgetItem(m_tree);
-        item->setText(0, tr("Go to Fixture Manager to add some fixtures first."));
+        item->setText(0, tr("Go to the Fixture Manager and add some fixtures first."));
         m_tree->setEnabled(false);
         m_buttonBox->setStandardButtons(QDialogButtonBox::Close);
     }
