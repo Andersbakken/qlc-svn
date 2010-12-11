@@ -47,6 +47,7 @@ extern App* _app;
 FunctionWizard::FunctionWizard(QWidget* parent) : QDialog(parent)
 {
     setupUi(this);
+    m_fixtureTree->sortItems(KColumnName, Qt::AscendingOrder);
 }
 
 FunctionWizard::~FunctionWizard()
