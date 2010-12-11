@@ -27,10 +27,12 @@
 #include "qlcfile.h"
 
 #include "universearray.h"
+#include "chaserrunner.h"
 #include "mastertimer.h"
 #include "function.h"
 #include "fixture.h"
 #include "chaser.h"
+#include "scene.h"
 #include "doc.h"
 #include "bus.h"
 
@@ -42,6 +44,7 @@ Chaser::Chaser(Doc* doc) : Function(doc)
 {
     m_runTimeDirection = Forward;
     m_runTimePosition = 0;
+    m_runner = NULL;
 
     setName(tr("New Chaser"));
     setBus(Bus::defaultHold());
@@ -179,6 +182,23 @@ bool Chaser::lowerStep(int index)
 QList <t_function_id> Chaser::steps() const
 {
     return m_steps;
+}
+
+QList <Function*> Chaser::stepFunctions() const
+{
+    Doc* doc = qobject_cast<Doc*> (parent());
+    Q_ASSERT(doc != NULL);
+
+    QList <Function*> list;
+    QListIterator <t_function_id> it(m_steps);
+    while (it.hasNext() == true)
+    {
+        Function* function = doc->function(it.next());
+        if (function != NULL)
+            list << function;
+    }
+
+    return list;
 }
 
 void Chaser::slotFunctionRemoved(t_function_id fid)
@@ -322,182 +342,40 @@ bool Chaser::loadXML(const QDomElement* root)
 
 void Chaser::slotBusTapped(quint32 id)
 {
-    if (id == m_busID)
-        m_tapped = true;
+    if (id == m_busID && m_runner != NULL)
+        m_runner->next();
 }
 
 void Chaser::arm()
 {
     Doc* doc = qobject_cast <Doc*> (parent());
     Q_ASSERT(doc != NULL);
-
-    /* Check that all member functions exist (nonexistent functions can
-       be present only when a corrupted file has been loaded) */
-    QMutableListIterator<t_function_id> it(m_steps);
-    while (it.hasNext() == true)
-    {
-        /* Remove any nonexistent member functions */
-        if (doc->function(it.next()) == NULL)
-            it.remove();
-    }
-
+    m_runner = new ChaserRunner(doc, stepFunctions(), busID(), direction(), runOrder());
     resetElapsed();
 }
 
 void Chaser::disarm()
 {
+    delete m_runner;
+    m_runner = NULL;
 }
 
 void Chaser::preRun(MasterTimer* timer)
 {
-    /* Current position starts from invalid index because nextStep() is
-       called first in write(). */
-    m_runTimeDirection = m_direction;
-    if (m_runTimeDirection == Forward)
-        m_runTimePosition = -1;
-    else
-        m_runTimePosition = m_steps.count();
-
-    /* Reset bus tapping flag */
-    m_tapped = false;
+    Q_UNUSED(timer);
+    Q_ASSERT(m_runner != NULL);
+    m_runner->reset();
 
     Function::preRun(timer);
 }
 
-void Chaser::postRun(MasterTimer* timer, UniverseArray* universes)
-{
-    /* Only stop a member if the current position is within range. It is
-       not in range, when nextStep() moves it deliberately off at each
-       end in all running modes. */
-    if (m_runTimePosition >= 0 && m_runTimePosition < m_steps.size())
-        stopCurrent();
-
-    Function::postRun(timer, universes);
-}
-
 void Chaser::write(MasterTimer* timer, UniverseArray* universes)
 {
-    Q_UNUSED(universes);
+    Q_UNUSED(timer);
+    Q_ASSERT(m_runner != NULL);
 
-    /* With some changes to scene, chaser could basically act as a
-       proxy for its members by calling the scene's write() functions
-       by itself instead of starting/stopping them. Whether this would do
-       any good is not clear. */
+    if (m_runner->write(universes) == false)
+        stop();
 
-    /* TODO: One extra step is required in single shot mode to return
-       false and thus get a chaser removed from MasterTimer. Not a big
-       problem, but removing already after starting the last step would
-       improve performance (very) slightly. */
-
-    if (elapsed() == 0)
-    {
-        /* This is the first step since the last start() call */
-
-        /* Get the next step index */
-        nextStep();
-
-        /* Start the current function */
-        startCurrent(timer);
-
-        /* Mark one cycle being elapsed */
-        incrementElapsed();
-    }
-    else if (elapsed() >= Bus::instance()->value(m_busID) ||
-             m_tapped == true)
-    {
-        /* Reset tapped flag even if it wasn't true */
-        m_tapped = false;
-
-        /* Stop current function */
-        stopCurrent();
-
-        /* Get the next step index */
-        nextStep();
-
-        /* Check, whether we have gone a full cycle (thru all steps) */
-        if (roundCheck() == false)
-            stop();
-        else
-            startCurrent(timer);
-
-        /* Mark one cycle being elapsed since it tracks only the
-           duration of the current step. */
-        resetElapsed();
-        incrementElapsed();
-    }
-    else
-    {
-        /* Just waiting for hold time to pass */
-        incrementElapsed();
-    }
-}
-
-bool Chaser::roundCheck()
-{
-    /* Check if one complete chase round has been completed. */
-    if ((m_runTimeDirection == Backward && m_runTimePosition == -1) ||
-            (m_runTimeDirection == Forward && m_runTimePosition == m_steps.size()))
-    {
-        if (m_runOrder == SingleShot)
-        {
-            /* One single-shot round complete. Terminate. */
-            return false;
-        }
-        else if (m_runOrder == Loop)
-        {
-            /* Loop around at either end */
-            if (m_runTimeDirection == Forward)
-                m_runTimePosition = 0;
-            else
-                m_runTimePosition = m_steps.count() - 1;
-        }
-        else /* Ping Pong */
-        {
-            /* Change running direction, don't run the step at
-               each end twice, so -1/+1 */
-            if (m_runTimeDirection == Forward)
-            {
-                m_runTimePosition = m_steps.count() - 2;
-                m_runTimeDirection = Backward;
-            }
-            else
-            {
-                m_runTimePosition = 1;
-                m_runTimeDirection = Forward;
-            }
-        }
-    }
-
-    /* Let's continue */
-    return true;
-}
-
-void Chaser::nextStep()
-{
-    if (m_runTimeDirection == Forward)
-        m_runTimePosition++;
-    else
-        m_runTimePosition--;
-}
-
-void Chaser::startCurrent(MasterTimer* timer)
-{
-    Doc* doc = qobject_cast <Doc*> (parent());
-    Q_ASSERT(doc != NULL);
-
-    t_function_id fid = m_steps.at(m_runTimePosition);
-    Function* function = doc->function(fid);
-    if (function != NULL)
-        timer->startFunction(function, true);
-}
-
-void Chaser::stopCurrent()
-{
-    Doc* doc = qobject_cast <Doc*> (parent());
-    Q_ASSERT(doc != NULL);
-
-    t_function_id fid = m_steps.at(m_runTimePosition);
-    Function* function = doc->function(fid);
-    if (function != NULL)
-        function->stop();
+    incrementElapsed();
 }

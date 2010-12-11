@@ -63,6 +63,7 @@ class VCSliderProperties;
 class VCSlider : public VCWidget, public DMXSource
 {
     Q_OBJECT
+    Q_DISABLE_COPY(VCSlider)
 
     friend class VCSliderProperties;
 
@@ -78,11 +79,6 @@ public:
 
     /** Destructor */
     ~VCSlider();
-
-private:
-    /** Prevent copying thru operator= or copy constructor since QObject's
-        parental properties get confused when copied. */
-    Q_DISABLE_COPY(VCSlider)
 
     /*********************************************************************
      * Clipboard
@@ -354,8 +350,8 @@ protected:
     uchar m_levelHighLimit;
 
     QMutex m_levelValueMutex;
+    bool m_levelValueChanged;
     uchar m_levelValue;
-    uchar m_lastWrittenLevelValue;
 
     /*********************************************************************
      * DMXSource

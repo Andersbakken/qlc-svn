@@ -48,17 +48,6 @@ private slots:
     void copyFrom();
     void createCopy();
 
-    void armSuccess();
-    void armMissingFunction();
-
-    void writeBusZeroLoopForward();
-    void writeBusZeroLoopBackward();
-    void writeBusZeroSingleShotForward();
-    void writeBusZeroSingleShotBackward();
-    void writeBusZeroPingPongForward();
-    void writeBusZeroPingPongBackward();
-
-    void tap();
 private:
     Doc* m_doc;
     QLCFixtureDefCache m_cache;

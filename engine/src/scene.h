@@ -25,128 +25,12 @@
 #include <QList>
 #include <QtXml>
 
+#include "fadechannel.h"
+#include "scenevalue.h"
 #include "dmxsource.h"
 #include "qlctypes.h"
 #include "function.h"
 #include "fixture.h"
-
-#define KXMLQLCSceneValue "Value"
-#define KXMLQLCSceneValueFixture "Fixture"
-#define KXMLQLCSceneValueChannel "Channel"
-
-/*****************************************************************************
- * SceneChannel
- *****************************************************************************/
-
-/**
- * SceneChannel is a helper class used to store individual RUNTIME values for
- * channels as they are operated by a Scene function during Operate mode.
- *
- * Unlike SceneValue, a SceneChannel consists of an absolute DMX address,
- * starting channel value, target value and channel's current value.
- * SceneChannels are used only during Operate mode, when fixture addresses
- * cannot change anymore, so it is slightly more efficient to store absolute
- * DMX addresses than relative channel numbers as in SceneValue. When a Scene
- * starts, it takes the current values of all of its channels and stores them
- * into their respective SceneChannels' $start variable. The Scene then
- * calculates how much time it still has until the values specified in $target
- * need to be set for each involved channel and adjusts the step size
- * accordingly. The more time there's left, the smoother the fade effect. Each
- * gradual step is written to the channels' DMX addresses and also stored to
- * SceneChannels' $current variable for the next round. When $current == $target
- * the SceneChannel is seen ready and won't be touched any longer (until the
- * rest of the channels are ready as well).
- *
- * Although uchar is an UNSIGNED char (0-255), these variables must be SIGNED
- * because the floating-point calculations that Scene does don't necessarily
- * stop exactly at 0.0 and 255.0, but might go slightly over/under. If these
- * variables were unsigned, an overflow would occur in some cases, resulting in
- * UINT_MAX values and everything would go wacko.
- */
-class SceneChannel
-{
-public:
-    SceneChannel();
-    SceneChannel(const SceneChannel& sch);
-    ~SceneChannel();
-
-public:
-    /** The universe and channel that this object refers to */
-    quint32 address;
-
-    /** The channel group that this channel belongs to */
-    QLCChannel::Group group;
-
-    /** The value of the channel where a scene started fading from */
-    qint32 start;
-
-    /** The current value set by a scene */
-    qint32 current;
-
-    /** The target value to eventually fade to */
-    qint32 target;
-};
-
-/*****************************************************************************
- * SceneValue
- *****************************************************************************/
-
-/**
- * SceneValue is a helper class used to store individual channel TARGET values
- * for Scene functions. Each channel that is taking part in a scene is
- * represented with a SceneValue.
- *
- * A SceneValue consists of a fixture, channel and value. Fixture tells, which
- * fixture a particular value corresponds to, channel contains the particular
- * channel number from the fixture and, value tells the exact target value for
- * that channel. Channel numbers are not absolute DMX channels because the
- * fixture address can be changed at any time. Instead, channel number tells
- * the relative channel number, respective to fixture address.
- *
- * For example:
- * Let's say we have a SceneValue with channel = 5, value = 127 and, the
- * fixture assigned to the SceneValue is at DMX address 100. Thus, the
- * SceneValue represents value 127 for absolute DMX channel 105. If the address
- * of the fixture is changed, the SceneValue doesn't need to be touched at all.
- */
-class SceneValue
-{
-public:
-    /** Normal constructor */
-    SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
-               quint32 channel = QLCChannel::invalid(),
-               uchar value = 0);
-
-    /** Copy constructor */
-    SceneValue(const SceneValue& scv);
-
-    /** Destructor */
-    ~SceneValue();
-
-    /** A SceneValue is not valid if .fxi == Fixture::invalidId() */
-    bool isValid();
-
-    /** Comparator function for qSort() */
-    bool operator< (const SceneValue& scv) const;
-
-    /** Comparator function for matching SceneValues */
-    bool operator== (const SceneValue& scv) const;
-
-    /** Load this SceneValue's contents from an XML tag */
-    bool loadXML(const QDomElement* tag);
-
-    /** Save this SceneValue to an XML document */
-    bool saveXML(QDomDocument* doc, QDomElement* scene_root) const;
-
-public:
-    t_fixture_id fxi;
-    quint32 channel;
-    uchar value;
-};
-
-/*****************************************************************************
- * Scene
- *****************************************************************************/
 
 /**
  * Scene encapsulates the values of selected channels from one or more fixture
@@ -297,16 +181,10 @@ public:
                             t_fixture_id fxi_id = Fixture::invalidId());
 
     /** Get a list of channels that have been armed for running */
-    QList <SceneChannel> armedChannels() const {
-        return m_armedChannels;
-    }
+    QList <FadeChannel> armedChannels() const;
 
 protected:
-    /** Calculate channel values for the next step. */
-    uchar nextValue(SceneChannel* sch);
-
-protected:
-    QList <SceneChannel> m_armedChannels;
+    QList <FadeChannel> m_armedChannels;
 };
 
 #endif

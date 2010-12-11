@@ -26,6 +26,7 @@
 #include <QMutex>
 #include <QList>
 
+class UniverseArray;
 class OutputMap;
 class DMXSource;
 class Function;
@@ -135,10 +136,10 @@ protected:
     void timerTick();
 
     /** Execute one timer tick for each registered Function */
-    void runFunctions();
+    void runFunctions(UniverseArray* universes);
 
     /** Execute one timer tick for each registered DMXSource */
-    void runDMXSources();
+    void runDMXSources(UniverseArray* universes);
 
 protected:
     /** Running status, telling, whether the MasterTimer has been started */

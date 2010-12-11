@@ -198,8 +198,21 @@ void FixtureManager::slotFixtureRemoved(t_fixture_id id)
 
 void FixtureManager::slotModeChanged(Doc::Mode mode)
 {
-    Q_UNUSED(mode);
-    slotSelectionChanged();
+    if (mode == Doc::Design)
+    {
+        m_addAction->setEnabled(true);
+        if (m_tree->selectedItems().isEmpty() == false)
+        {
+            m_removeAction->setEnabled(true);
+            m_propertiesAction->setEnabled(true);
+        }
+    }
+    else
+    {
+        m_addAction->setEnabled(false);
+        m_removeAction->setEnabled(false);
+        m_propertiesAction->setEnabled(false);
+    }
 }
 
 /*****************************************************************************

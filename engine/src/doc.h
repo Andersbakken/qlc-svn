@@ -141,7 +141,7 @@ public:
      *
      * @param id The ID of the fixture to get
      */
-    Fixture* fixture(t_fixture_id id);
+    Fixture* fixture(t_fixture_id id) const;
 
     /**
      * Attempt to find the next contiguous free address space for the given

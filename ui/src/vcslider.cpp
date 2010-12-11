@@ -80,7 +80,7 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
     m_sliderValue = 0;
     m_levelValue = 0;
-    m_lastWrittenLevelValue = 0;
+    m_levelValueChanged = false;
 
     m_time = NULL;
 
@@ -514,6 +514,7 @@ void VCSlider::setLevelValue(uchar value)
 {
     m_levelValueMutex.lock();
     m_levelValue = value;
+    m_levelValueChanged = true;
     m_levelValueMutex.unlock();
 }
 
@@ -541,21 +542,8 @@ void VCSlider::writeDMX(MasterTimer* timer, UniverseArray* universes)
 {
     Q_UNUSED(timer);
 
-    bool exit = false;
-
-    /* Check, whether the current value has changed */
     m_levelValueMutex.lock();
-    if (m_levelValue == m_lastWrittenLevelValue)
-        exit = true;
-    else
-        m_lastWrittenLevelValue = m_levelValue;
-    m_levelValueMutex.unlock();
 
-    /* Value has not been changed -> don't do anything with it */
-    if (exit == true)
-        return;
-
-    /* Value has changed, write it to all selected channels */
     QListIterator <LevelChannel> it(m_levelChannels);
     while (it.hasNext() == true)
     {
@@ -567,10 +555,20 @@ void VCSlider::writeDMX(MasterTimer* timer, UniverseArray* universes)
             if (qlcch == NULL)
                 continue;
 
+            if (qlcch->group() != QLCChannel::Intensity &&
+                m_levelValueChanged == false)
+            {
+                /* Value has not changed and this is not an intensity channel.
+                   LTP in effect. */
+                continue;
+            }
+
             quint32 dmx_ch = fxi->channelAddress(lch.channel);
-            universes->write(dmx_ch, m_lastWrittenLevelValue, qlcch->group());
+            universes->write(dmx_ch, m_levelValue, qlcch->group());
         }
     }
+    m_levelValueChanged = false;
+    m_levelValueMutex.unlock();
 }
 
 /*****************************************************************************

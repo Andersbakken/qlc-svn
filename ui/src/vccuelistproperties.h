@@ -26,6 +26,7 @@
 #include <QDialog>
 
 #include "ui_vccuelistproperties.h"
+#include "qlctypes.h"
 
 class VCCueList;
 
@@ -51,11 +52,15 @@ protected:
     /************************************************************************
      * Cues
      ************************************************************************/
+protected:
+    void updateChaserName();
+
 protected slots:
-    void slotAddClicked();
-    void slotRemoveClicked();
-    void slotRaiseClicked();
-    void slotLowerClicked();
+    void slotAttachClicked();
+    void slotDetachClicked();
+
+protected:
+    t_function_id m_chaser;
 
     /************************************************************************
      * Next Cue

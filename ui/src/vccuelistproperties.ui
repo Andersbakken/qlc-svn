@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>488</width>
-    <height>360</height>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,52 +41,54 @@
        <string>Cues</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0" rowspan="5">
-        <widget class="QTreeWidget" name="m_list">
-         <property name="toolTip">
-          <string>List of scenes that can be activated with this cue list</string>
+       <item row="0" column="0">
+        <widget class="QLabel" name="m_chaserLabel">
+         <property name="text">
+          <string>Chaser</string>
          </property>
-         <property name="showDropIndicator" stdset="0">
-          <bool>false</bool>
-         </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="selectionMode">
-          <enum>QAbstractItemView::SingleSelection</enum>
-         </property>
-         <property name="rootIsDecorated">
-          <bool>false</bool>
-         </property>
-         <property name="itemsExpandable">
-          <bool>false</bool>
-         </property>
-         <property name="allColumnsShowFocus">
-          <bool>true</bool>
-         </property>
-         <column>
-          <property name="text">
-           <string>Number</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Scene</string>
-          </property>
-         </column>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QToolButton" name="m_addButton">
+        <widget class="QLineEdit" name="m_chaserEdit">
          <property name="toolTip">
-          <string>Add functions to the cue list</string>
+          <string>Use the chosen chaser's steps as cues for this cue list.</string>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QToolButton" name="m_attachButton">
+         <property name="toolTip">
+          <string>Choose a chaser to be used as the list of cues</string>
          </property>
          <property name="text">
           <string notr="true">...</string>
          </property>
          <property name="icon">
           <iconset resource="main.qrc">
-           <normaloff>:/edit_add.png</normaloff>:/edit_add.png</iconset>
+           <normaloff>:/attach.png</normaloff>:/attach.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QToolButton" name="m_detachButton">
+         <property name="toolTip">
+          <string>Detach the currently chosen chaser from this cue list</string>
+         </property>
+         <property name="text">
+          <string notr="true">...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="main.qrc">
+           <normaloff>:/detach.png</normaloff>:/detach.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -97,66 +99,6 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QToolButton" name="m_removeButton">
-         <property name="toolTip">
-          <string>Remove selected functions from the cue list</string>
-         </property>
-         <property name="text">
-          <string notr="true">...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="main.qrc">
-           <normaloff>:/edit_remove.png</normaloff>:/edit_remove.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>26</width>
-           <height>26</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QToolButton" name="m_raiseButton">
-         <property name="toolTip">
-          <string>Raise the selected function</string>
-         </property>
-         <property name="text">
-          <string notr="true">...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="main.qrc">
-           <normaloff>:/up.png</normaloff>:/up.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>26</width>
-           <height>26</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QToolButton" name="m_lowerButton">
-         <property name="toolTip">
-          <string>Lower the selected function</string>
-         </property>
-         <property name="text">
-          <string notr="true">...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="main.qrc">
-           <normaloff>:/down.png</normaloff>:/down.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>26</width>
-           <height>26</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -164,7 +106,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>40</height>
+           <height>169</height>
           </size>
          </property>
         </spacer>

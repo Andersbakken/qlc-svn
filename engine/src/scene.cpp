@@ -33,130 +33,6 @@
 #include "doc.h"
 #include "bus.h"
 
-/****************************************************************************
- * SceneChannel
- ****************************************************************************/
-
-SceneChannel::SceneChannel()
-{
-    address = 0;
-    group = QLCChannel::NoGroup;
-    start = 0;
-    current = 0;
-    target = 0;
-}
-
-SceneChannel::SceneChannel(const SceneChannel& sch)
-{
-    address = sch.address;
-    group = sch.group;
-    start = sch.start;
-    current = sch.current;
-    target = sch.target;
-}
-
-SceneChannel::~SceneChannel()
-{
-}
-
-/*****************************************************************************
- * SceneValue
- *****************************************************************************/
-
-SceneValue::SceneValue(t_fixture_id id, quint32 ch, uchar val) :
-        fxi     ( id ),
-        channel ( ch ),
-        value   ( val )
-{
-}
-
-SceneValue::SceneValue(const SceneValue& scv)
-{
-    fxi = scv.fxi;
-    channel = scv.channel;
-    value = scv.value;
-}
-
-SceneValue::~SceneValue()
-{
-}
-
-bool SceneValue::isValid()
-{
-    if (fxi == Fixture::invalidId())
-        return false;
-    else
-        return true;
-}
-
-bool SceneValue::operator< (const SceneValue& scv) const
-{
-    if (fxi < scv.fxi)
-    {
-        return true;
-    }
-    else if (fxi == scv.fxi)
-    {
-        if (channel < scv.channel)
-            return true;
-        else
-            return false;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool SceneValue::operator== (const SceneValue& scv) const
-{
-    if (fxi == scv.fxi && channel == scv.channel)
-        return true;
-    else
-        return false;
-}
-
-bool SceneValue::loadXML(const QDomElement* tag)
-{
-    Q_ASSERT(tag != NULL);
-
-    if (tag->tagName() != KXMLQLCSceneValue)
-    {
-        qWarning() << Q_FUNC_INFO << "Scene node not found";
-        return false;
-    }
-
-    fxi = t_fixture_id(tag->attribute(KXMLQLCSceneValueFixture).toInt());
-    if (fxi < 0 || fxi >= KFixtureArraySize)
-        return false;
-
-    channel = quint32(tag->attribute(KXMLQLCSceneValueChannel).toInt());
-    value = uchar(tag->text().toUInt());
-
-    return isValid();
-}
-
-bool SceneValue::saveXML(QDomDocument* doc, QDomElement* scene_root) const
-{
-    QDomElement tag;
-    QDomText text;
-
-    Q_ASSERT(doc != NULL);
-    Q_ASSERT(scene_root != NULL);
-
-    /* Value tag and its attributes */
-    tag = doc->createElement(KXMLQLCSceneValue);
-    tag.setAttribute(KXMLQLCSceneValueFixture, fxi);
-    tag.setAttribute(KXMLQLCSceneValueChannel, channel);
-    scene_root->appendChild(tag);
-
-    /* The actual value as node text */
-    text = doc->createTextNode(QString("%1").arg(value));
-    tag.appendChild(text);
-
-    return true;
-}
-
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
@@ -341,8 +217,7 @@ bool Scene::loadXML(const QDomElement* root)
         return false;
     }
 
-    if (root->attribute(KXMLQLCFunctionType) !=
-            typeToString(Function::Scene))
+    if (root->attribute(KXMLQLCFunctionType) != typeToString(Function::Scene))
     {
         qWarning() << Q_FUNC_INFO << "Function is not a scene";
         return false;
@@ -363,7 +238,7 @@ bool Scene::loadXML(const QDomElement* root)
         {
             /* Channel value */
             SceneValue scv;
-            if (scv.loadXML(&tag) == true)
+            if (scv.loadXML(tag) == true)
                 setValue(scv);
         }
         else
@@ -406,14 +281,9 @@ void Scene::writeDMX(MasterTimer* timer, UniverseArray* universes)
     Q_ASSERT(universes != NULL);
 
     if (flashing() == true)
-    {
         writeValues(universes);
-    }
     else
-    {
-        writeZeros(universes);
         timer->unregisterDMXSource(this);
-    }
 }
 
 /****************************************************************************
@@ -422,50 +292,31 @@ void Scene::writeDMX(MasterTimer* timer, UniverseArray* universes)
 
 void Scene::arm()
 {
-    m_armedChannels.clear();
-
     /* Scenes cannot run unless they are children of Doc */
     Doc* doc = qobject_cast <Doc*> (parent());
     Q_ASSERT(doc != NULL);
 
-    /* Get exact address numbers from fixtures and fixate them to this
-       scene for running. */
+    m_armedChannels.clear();
+
+    /* Fixate exact DMX addresses */
     QMutableListIterator <SceneValue> it(m_values);
     while (it.hasNext() == true)
     {
-        SceneValue scv(it.next());
+        SceneValue value(it.next());
 
-        Fixture* fxi = doc->fixture(scv.fxi);
-        if (fxi == NULL)
+        Fixture* fxi = doc->fixture(value.fxi);
+        if (fxi == NULL || fxi->channel(value.channel) == NULL)
         {
-            qWarning() << Q_FUNC_INFO << "Channel" << scv.channel << "from an"
-                       << "unavailable fixture ID" << scv.fxi
-                       << "taking part in scene" << name()
-                       << ". Removing the channel.";
+            // Remove such fixtures and channels that don't exist
             it.remove();
             continue;
         }
 
-        if (scv.channel < fxi->channels())
-        {
-            const QLCChannel* qlcch = fxi->channel(scv.channel);
-            Q_ASSERT(qlcch != NULL);
-
-            SceneChannel channel;
-            channel.address = fxi->universeAddress() + scv.channel;
-            channel.group = qlcch->group();
-            channel.target = scv.value;
-            m_armedChannels.append(channel);
-        }
-        else
-        {
-            qWarning() << Q_FUNC_INFO << "Scene " << name() << "channel"
-                       << scv.channel
-                       << "is out of its fixture" << fxi->name()
-                       << "channel count ( <" << fxi->channels()
-                       << ") bounds. Removing the channel.";
-            it.remove();
-        }
+        FadeChannel fc;
+        fc.setAddress(fxi->universeAddress() + value.channel);
+        fc.setGroup(fxi->channel(value.channel)->group());
+        fc.setTarget(value.value);
+        m_armedChannels << fc;
     }
 
     resetElapsed();
@@ -485,64 +336,84 @@ void Scene::write(MasterTimer* timer, UniverseArray* universes)
     quint32 ready = m_armedChannels.count();
 
     /* Iterator for all scene channels */
-    QMutableListIterator <SceneChannel> it(m_armedChannels);
+    QMutableListIterator <FadeChannel> it(m_armedChannels);
 
     /* Get starting values for each channel on the first pass */
     if (elapsed() == 0)
     {
         while (it.hasNext() == true)
         {
-            SceneChannel sch = it.next();
+            FadeChannel& fc(it.next());
 
             /* Get the starting value from universes. Important
                to cast to uchar, since UniverseArray handles signed
                char, whereas uchar is unsigned. Without cast,
                this will result in negative values when x > 127 */
-            sch.start = uchar(universes->preGMValues()[sch.address]);
-            sch.current = sch.start;
+            fc.setStart(uchar(universes->preGMValues()[fc.address()]));
+            fc.setCurrent(fc.start());
 
-            /* Set the changed object back to the list */
-            it.setValue(sch);
+            // Don't touch the value at all if it's already on target
+            if (fc.start() == fc.target())
+            {
+                fc.setReady(true);
+                if (fc.group() != QLCChannel::Intensity)
+                    ready--;
+            }
+            else
+            {
+                fc.setReady(false);
+            }
         }
 
         /* Reel back to start of list */
         it.toFront();
     }
 
+    // Grab current fade bus value
+    quint32 fadeTime = Bus::instance()->value(m_busID);
+
     while (it.hasNext() == true)
     {
-        SceneChannel sch = it.next();
-
-        if (sch.current == sch.target)
+        FadeChannel& fc(it.next());
+        if (elapsed() >= fadeTime)
         {
-            ready--;
-            continue;
-        }
-        if (elapsed() >= Bus::instance()->value(m_busID))
-        {
-            /* When this scene's time is up, write the absolute
-               target values to get rid of rounding errors that
-               may happen in nextValue(). */
-            sch.current = sch.target;
-            ready--;
-
-            /* Write the target value to the universe */
-            universes->write(sch.address, sch.target, sch.group);
+            if (fc.group() == QLCChannel::Intensity)
+            {
+                // Don't do "ready--" for intensity channels to keep the
+                // scene on as long as its manually stopped.
+                fc.setReady(true);
+                universes->write(fc.address(), fc.target(), fc.group());
+            }
+            else if (fc.isReady() == false)
+            {
+                // If an LTP channel has not been marked ready (i.e. we've just
+                // consumed all time) mark it ready so that its value will not
+                // be written anymore (otherwise it would not be LTP anymore).
+                ready--;
+                fc.setReady(true);
+                universes->write(fc.address(), fc.target(), fc.group());
+            }
+            else
+            {
+                // Once an LTP-channel (non-intensity) has been marked ready,
+                // it's value is no longer touched by scene.
+            }
         }
         else
         {
             /* Write the next value to the universe buffer */
-            universes->write(sch.address, nextValue(&sch), sch.group);
+            universes->write(fc.address(),
+                             fc.calculateCurrent(fadeTime, elapsed()),
+                             fc.group());
         }
-
-        /* Set the changed object back to the list */
-        it.setValue(sch);
     }
 
     /* Next time unit */
     incrementElapsed();
 
-    /* When all channels are ready, this function can be stopped. */
+    // When all channels are ready, this function can be stopped. If there is
+    // even one HTP channel in a scene, the function will not stop by itself
+    // because then (ready == HTP_channel_count).
     if (ready == 0)
         stop();
 }
@@ -555,8 +426,8 @@ void Scene::writeValues(UniverseArray* universes, t_fixture_id fxi_id)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
-            SceneChannel sch = m_armedChannels[i];
-            universes->write(sch.address, m_values[i].value, sch.group);
+            const FadeChannel& fc(m_armedChannels[i]);
+            universes->write(fc.address(), fc.target(), fc.group());
         }
     }
 }
@@ -569,30 +440,14 @@ void Scene::writeZeros(UniverseArray* universes, t_fixture_id fxi_id)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
-            SceneChannel sch = m_armedChannels[i];
-            universes->write(sch.address, 0, sch.group);
+            const FadeChannel& fc(m_armedChannels[i]);
+            universes->write(fc.address(), 0, fc.group());
         }
     }
 }
 
-uchar Scene::nextValue(SceneChannel* sch)
+QList <FadeChannel> Scene::armedChannels() const
 {
-    Q_ASSERT(sch != NULL);
-
-    /* Ensure that bus value is never zero */
-    qreal busValue = qreal(Bus::instance()->value(m_busID)) + 1.0;
-
-    /* Time scale is basically a percentage (0.0 - 1.0) of remaining time */
-    qreal timeScale = qreal(elapsed() + 1) / busValue;
-
-    /*
-     * Calculate the current value based on what it should be after
-     * Function::elapsed() cycles, so that it will be ready when
-     * Function::elapsed() == Bus::instance()->value()
-     */
-    sch->current = sch->target - sch->start;
-    sch->current = int(qreal(sch->current) * timeScale);
-    sch->current += sch->start;
-
-    return uchar(sch->current);
+    return m_armedChannels;
 }
+

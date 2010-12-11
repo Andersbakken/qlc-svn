@@ -74,6 +74,35 @@ void UniverseArray::reset(int address, int range)
 }
 
 /****************************************************************************
+ * Highest Takes Precedence
+ ****************************************************************************/
+
+void UniverseArray::zeroIntensityChannels()
+{
+    QSetIterator <int> it(m_gMIntensityChannels);
+    while (it.hasNext() == true)
+    {
+        int channel(it.next());
+        m_preGMValues->data()[channel] = 0;
+        m_postGMValues->data()[channel] = 0;
+    }
+}
+
+bool UniverseArray::checkHTP(int channel, uchar value, QLCChannel::Group group) const
+{
+    if (group == QLCChannel::Intensity && value < uchar(preGMValues()[channel]))
+    {
+        /* Current value is higher than new value and HTP applies: reject. */
+        return false;
+    }
+    else
+    {
+        /* Current value is below new value or HTP does not apply: accept. */
+        return true;
+    }
+}
+
+/****************************************************************************
  * Grand Master
  ****************************************************************************/
 
@@ -238,8 +267,10 @@ bool UniverseArray::write(int channel, uchar value, QLCChannel::Group group)
     if (channel >= size())
         return false;
 
-    m_preGMValues->data()[channel] = char(value);
+    if (checkHTP(channel, value, group) == false)
+        return false;
 
+    m_preGMValues->data()[channel] = char(value);
     value = applyGM(channel, value, group);
     m_postGMValues->data()[channel] = char(value);
 

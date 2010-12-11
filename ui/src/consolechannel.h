@@ -90,9 +90,6 @@ public:
     /** Get the channel's value */
     int sliderValue() const;
 
-    /** Update the UI to match the channel's real status & value */
-    void updateValue();
-
     /** Enable/disable DMX value output */
     void setOutputDMX(bool state);
 

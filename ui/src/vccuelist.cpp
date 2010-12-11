@@ -31,18 +31,25 @@
 
 #include "vccuelistproperties.h"
 #include "virtualconsole.h"
+#include "chaserrunner.h"
 #include "mastertimer.h"
 #include "vccuelist.h"
 #include "function.h"
 #include "inputmap.h"
+#include "chaser.h"
 #include "app.h"
 #include "doc.h"
+
+#define KColumnNumber 0
+#define KColumnName   1
 
 #define HYSTERESIS 3 // Hysteresis for next/previous external input
 
 extern App* _app;
 
 VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
+    , m_chaser(Function::invalidId())
+    , m_runner(NULL)
 {
     /* Set the class name "VCCueList" as the object name as well */
     setObjectName(VCCueList::staticMetaObject.className());
@@ -69,8 +76,6 @@ VCCueList::VCCueList(QWidget* parent) : VCWidget(parent)
     setFrameStyle(KVCFrameStyleSunken);
     setCaption(tr("Cue list"));
     resize(QSize(200, 200));
-
-    m_current = NULL;
 
     slotModeChanged(mode());
 
@@ -114,20 +119,18 @@ bool VCCueList::copyFrom(VCWidget* widget)
         return false;
 
     /* Function list contents */
-    m_list->clear();
-    for (int i = 0; i < cuelist->m_list->topLevelItemCount(); i++)
-    {
-        QTreeWidgetItem* item = cuelist->m_list->topLevelItem(i);
-        append(item->text(KVCCueListColumnID).toInt());
-    }
+    setChaser(cuelist->chaser());
+    updateList();
 
     /* Key sequence */
     setNextKeySequence(cuelist->nextKeySequence());
     setPreviousKeySequence(cuelist->previousKeySequence());
 
     /* Input source */
-    setNextInputSource(cuelist->nextInputUniverse(), cuelist->nextInputChannel());
-    setPreviousInputSource(cuelist->previousInputUniverse(), cuelist->previousInputChannel());
+    setNextInputSource(cuelist->nextInputUniverse(),
+                       cuelist->nextInputChannel());
+    setPreviousInputSource(cuelist->previousInputUniverse(),
+                           cuelist->previousInputChannel());
 
     /* Common stuff */
     return VCWidget::copyFrom(widget);
@@ -137,57 +140,50 @@ bool VCCueList::copyFrom(VCWidget* widget)
  * Cue list
  *****************************************************************************/
 
-void VCCueList::clear()
+void VCCueList::setChaser(t_function_id fid)
 {
-    m_list->clear();
+    m_chaser = fid;
 }
 
-void VCCueList::append(t_function_id fid)
+t_function_id VCCueList::chaser() const
 {
-    QTreeWidgetItem* item;
-    Function* function;
+    return m_chaser;
+}
 
-    function = _app->doc()->function(fid);
-    Q_ASSERT(function != NULL);
+void VCCueList::updateList()
+{
+    m_list->clear();
 
-    item = new QTreeWidgetItem(m_list);
-    item->setText(KVCCueListColumnNumber,
-                  QString("%1").arg(m_list->indexOfTopLevelItem(item) + 1));
-    item->setText(KVCCueListColumnName, function->name());
-    item->setText(KVCCueListColumnID, QString("%1").arg(fid));
+    Chaser* cha = qobject_cast<Chaser*> (_app->doc()->function(chaser()));
+    if (cha == NULL)
+        return;
+
+    int i = 1;
+    QListIterator <Function*> it(cha->stepFunctions());
+    while (it.hasNext() == true)
+    {
+        Function* function(it.next());
+        QTreeWidgetItem* item = new QTreeWidgetItem(m_list);
+        item->setText(KColumnNumber, QString::number(i++));
+        item->setText(KColumnName, function->name());
+        if (function->type() != Function::Scene)
+            item->setDisabled(true);
+    }
 }
 
 void VCCueList::slotFunctionRemoved(t_function_id fid)
 {
-    /* Find all items matching the destroyed function ID and remove them */
-    for (int i = 0; i < m_list->topLevelItemCount(); i++)
+    if (m_chaser == fid)
     {
-        QTreeWidgetItem* item = m_list->topLevelItem(i);
-        Q_ASSERT(item != NULL);
-
-        if (item->text(KVCCueListColumnID).toInt() == fid)
-            delete item;
+        m_chaser = Function::invalidId();
+        updateList();
     }
 }
 
 void VCCueList::slotFunctionChanged(t_function_id fid)
 {
-    QTreeWidgetItem* item;
-    Function* function;
-
-    function = _app->doc()->function(fid);
-
-    /* Find all items matching the changed function ID and update them */
-    for (int i = 0; i < m_list->topLevelItemCount(); i++)
-    {
-        item = m_list->topLevelItem(i);
-        Q_ASSERT(item != NULL);
-
-        if (item->text(KVCCueListColumnID).toInt() == fid)
-        {
-            item->setText(KVCCueListColumnName, function->name());
-        }
-    }
+    if (m_chaser == fid)
+        updateList();
 }
 
 void VCCueList::slotNextCue()
@@ -195,19 +191,11 @@ void VCCueList::slotNextCue()
     if (mode() != Doc::Operate)
         return;
 
-    if (m_list->currentItem() == NULL)
-    {
-        int count = m_list->topLevelItemCount();
-        if (count == 0)
-            return;
-        m_list->setCurrentItem(m_list->topLevelItem(0));
-    }
+    /* Create the runner only when the first/last cue is engaged. */
+    if (m_runner == NULL)
+        createRunner();
     else
-    {
-        m_list->setCurrentItem(m_list->itemBelow(m_list->currentItem()));
-    }
-
-    slotItemActivated(m_list->currentItem());
+        m_runner->next();
 }
 
 void VCCueList::slotPreviousCue()
@@ -215,28 +203,20 @@ void VCCueList::slotPreviousCue()
     if (mode() != Doc::Operate)
         return;
 
-    if (m_list->currentItem() == NULL)
-    {
-        int count = m_list->topLevelItemCount();
-        if (count == 0)
-            return;
-        m_list->setCurrentItem(m_list->topLevelItem(count - 1));
-    }
+    /* Create the runner only when the first/last cue is engaged. */
+    if (m_runner == NULL)
+        createRunner();
     else
-    {
-        m_list->setCurrentItem(m_list->itemAbove(m_list->currentItem()));
-    }
-
-    slotItemActivated(m_list->currentItem());
+        m_runner->previous();
 }
 
-void VCCueList::slotFunctionStopped(t_function_id fid)
+void VCCueList::slotCurrentStepChanged(int stepNumber)
 {
-    if (m_current != NULL && m_current->id() == fid)
-    {
-        disconnect(m_current, SIGNAL(stopped(t_function_id)),
-                   this, SLOT(slotFunctionStopped(t_function_id)));
-    }
+    Q_ASSERT(stepNumber < m_list->topLevelItemCount() && stepNumber >= 0);
+    QTreeWidgetItem* item = m_list->topLevelItem(stepNumber);
+    Q_ASSERT(item != NULL);
+    m_list->scrollToItem(item, QAbstractItemView::PositionAtCenter);
+    m_list->setCurrentItem(item);
 }
 
 void VCCueList::slotItemActivated(QTreeWidgetItem* item)
@@ -244,21 +224,38 @@ void VCCueList::slotItemActivated(QTreeWidgetItem* item)
     if (mode() != Doc::Operate)
         return;
 
-    if (m_current != NULL)
-        m_current->stop();
+    if (m_runner == NULL)
+        createRunner();
+    m_runner->setCurrentStep(m_list->indexOfTopLevelItem(item));
+}
 
-    if (item == NULL)
+void VCCueList::createRunner()
+{
+    Q_ASSERT(m_runner == NULL);
+
+    QList <Function*> cues;
+    Chaser* cha = qobject_cast<Chaser*> (_app->doc()->function(chaser()));
+    if (cha != NULL)
+        cues = cha->stepFunctions();
+    m_runner = new ChaserRunner(_app->doc(), cues, Bus::defaultHold(),
+                                Function::Forward, Function::Loop);
+    m_runner->setAutoStep(false);
+    connect(m_runner, SIGNAL(currentStepChanged(int)),
+            this, SLOT(slotCurrentStepChanged(int)));
+}
+
+/*****************************************************************************
+ * DMX Source
+ *****************************************************************************/
+
+void VCCueList::writeDMX(MasterTimer* timer, UniverseArray* universes)
+{
+    Q_UNUSED(timer);
+
+    if (m_runner == NULL)
         return;
-
-    m_current = _app->doc()->function(item->text(KVCCueListColumnID).toInt());
-    if (m_current == NULL)
-        return;
-
-    connect(m_current, SIGNAL(stopped(t_function_id)),
-            this, SLOT(slotFunctionStopped(t_function_id)));
-
-    //! @todo not sure how a cuelist should behave in a solopanel...
-    _app->masterTimer()->startFunction(m_current, true);
+    else
+        m_runner->write(universes);
 }
 
 /*****************************************************************************
@@ -309,8 +306,7 @@ void VCCueList::setPreviousInputSource(quint32 uni, quint32 ch)
                 this, SLOT(slotPreviousInputValueChanged(quint32, quint32, uchar)));
 }
 
-void VCCueList::slotNextInputValueChanged(quint32 universe, quint32 channel,
-                                          uchar value)
+void VCCueList::slotNextInputValueChanged(quint32 universe, quint32 channel, uchar value)
 {
     if (universe == m_nextInputUniverse && channel == m_nextInputChannel)
     {
@@ -333,8 +329,7 @@ void VCCueList::slotNextInputValueChanged(quint32 universe, quint32 channel,
     }
 }
 
-void VCCueList::slotPreviousInputValueChanged(quint32 universe, quint32 channel,
-                                              uchar value)
+void VCCueList::slotPreviousInputValueChanged(quint32 universe, quint32 channel, uchar value)
 {
     if (universe == m_previousInputUniverse && channel == m_previousInputChannel)
     {
@@ -358,44 +353,51 @@ void VCCueList::slotPreviousInputValueChanged(quint32 universe, quint32 channel,
 }
 
 /*****************************************************************************
- * Caption
+ * VCWidget-inherited methods
  *****************************************************************************/
 
 void VCCueList::setCaption(const QString& text)
 {
-    QStringList list;
-
     VCWidget::setCaption(text);
-    m_list->setHeaderLabels(list << tr("Number") << text);
-}
 
-/*****************************************************************************
- * QLC Mode
- *****************************************************************************/
+    QStringList list;
+    list << tr("Number") << text;
+    m_list->setHeaderLabels(list);
+}
 
 void VCCueList::slotModeChanged(Doc::Mode mode)
 {
     if (mode == Doc::Operate)
+    {
+        Q_ASSERT(m_runner == NULL);
+        _app->masterTimer()->registerDMXSource(this);
+
+        updateList();
         m_list->setEnabled(true);
+    }
     else
+    {
+        _app->masterTimer()->unregisterDMXSource(this);
+        if (m_runner != NULL)
+            delete m_runner;
+        m_runner = NULL;
         m_list->setEnabled(false);
+    }
 
     /* Always start from the beginning */
     m_list->setCurrentItem(NULL);
-    m_current = NULL;
 
     VCWidget::slotModeChanged(mode);
 }
-
-/*****************************************************************************
- * Properties
- *****************************************************************************/
 
 void VCCueList::editProperties()
 {
     VCCueListProperties prop(_app, this);
     if (prop.exec() == QDialog::Accepted)
+    {
         _app->doc()->setModified();
+        updateList();
+    }
 }
 
 /*****************************************************************************
@@ -404,8 +406,6 @@ void VCCueList::editProperties()
 
 bool VCCueList::loader(const QDomElement* root, QWidget* parent)
 {
-    VCCueList* cuelist = NULL;
-
     Q_ASSERT(root != NULL);
     Q_ASSERT(parent != NULL);
 
@@ -416,24 +416,22 @@ bool VCCueList::loader(const QDomElement* root, QWidget* parent)
     }
 
     /* Create a new cuelist into its parent */
-    cuelist = new VCCueList(parent);
-    cuelist->show();
+    VCCueList* cuelist = new VCCueList(parent);
+    Q_ASSERT(cuelist != NULL);
 
     /* Continue loading */
-    return cuelist->loadXML(root);
+    bool ret = cuelist->loadXML(root);
+    cuelist->updateList();
+    cuelist->show();
+    return ret;
 }
 
 bool VCCueList::loadXML(const QDomElement* root)
 {
-    bool visible = false;
-    int x = 0;
-    int y = 0;
-    int w = 0;
-    int h = 0;
-
     QDomNode node;
     QDomElement tag;
     QString str;
+    Chaser* legacyChaser = NULL;
 
     Q_ASSERT(root != NULL);
 
@@ -453,6 +451,8 @@ bool VCCueList::loadXML(const QDomElement* root)
         tag = node.toElement();
         if (tag.tagName() == KXMLQLCWindowState)
         {
+            bool visible = false;
+            int x = 0, y = 0, w = 0, h = 0;
             loadXMLWindowState(&tag, &x, &y, &w, &h, &visible);
             setGeometry(x, y, w, h);
         }
@@ -510,13 +510,35 @@ bool VCCueList::loadXML(const QDomElement* root)
                 subNode = subNode.nextSibling();
             }
         }
+        else if (tag.tagName() == KXMLQLCVCCueListChaser)
+        {
+            setChaser(tag.text().toInt());
+        }
         else if (tag.tagName() == KXMLQLCVCCueListKey) /* Legacy */
         {
             setNextKeySequence(QKeySequence(tag.text()));
         }
         else if (tag.tagName() == KXMLQLCVCCueListFunction)
         {
-            append(tag.text().toInt());
+            // Legacy: Create a chaser to incorporate old-style cue list
+            // member functions and assign that chaser to this cue list.
+            if (legacyChaser == NULL)
+            {
+                legacyChaser = new Chaser(_app->doc());
+                if (_app->doc()->addFunction(legacyChaser) == true)
+                {
+                    setChaser(legacyChaser->id());
+                    legacyChaser->setName(caption());
+                }
+                else
+                {
+                    delete legacyChaser;
+                    legacyChaser = NULL;
+                }
+            }
+
+            // Add cue list members to the chaser
+            legacyChaser->addStep(tag.text().toInt());
         }
         else
         {
@@ -547,18 +569,11 @@ bool VCCueList::saveXML(QDomDocument* doc, QDomElement* vc_root)
     /* Caption */
     root.setAttribute(KXMLQLCVCCaption, caption());
 
-    /* Cues */
-    QTreeWidgetItemIterator it(m_list);
-    while (*it != NULL)
-    {
-        tag = doc->createElement(KXMLQLCVCCueListFunction);
-        root.appendChild(tag);
-
-        text = doc->createTextNode((*it)->text(KVCCueListColumnID));
-        tag.appendChild(text);
-
-        ++it;
-    }
+    /* Chaser */
+    tag = doc->createElement(KXMLQLCVCCueListChaser);
+    root.appendChild(tag);
+    text = doc->createTextNode(QString::number(chaser()));
+    tag.appendChild(text);
 
     /* Next cue */
     tag = doc->createElement(KXMLQLCVCCueListNext);

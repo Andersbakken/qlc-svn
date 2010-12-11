@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  scenechannel_test.cpp
+  fadechannel_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,38 +19,22 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <QtTest>
-#include <QtXml>
+#ifndef FADECHANNEL_TEST_H
+#define FADECHANNEL_TEST_H
 
-#include "scenechannel_test.h"
-#include "scene.h"
+#include <QObject>
 
-void SceneChannel_Test::initial()
+class FadeChannel_Test : public QObject
 {
-    SceneChannel sch;
-    QVERIFY(sch.address == 0);
-    QVERIFY(sch.start == 0);
-    QVERIFY(sch.current == 0);
-    QVERIFY(sch.target == 0);
-}
+    Q_OBJECT
 
-void SceneChannel_Test::copy()
-{
-    SceneChannel sch;
-    sch.address = 123;
-    sch.start = 15;
-    sch.current = 48;
-    sch.target = 90;
+private slots:
+    void address();
+    void group();
+    void start();
+    void target();
+    void current();
+    void calculateCurrent();
+};
 
-    SceneChannel sch2 = sch;
-    QVERIFY(sch2.address == 123);
-    QVERIFY(sch2.start == 15);
-    QVERIFY(sch2.current == 48);
-    QVERIFY(sch2.target == 90);
-
-    SceneChannel sch3(sch);
-    QVERIFY(sch3.address == 123);
-    QVERIFY(sch3.start == 15);
-    QVERIFY(sch3.current == 48);
-    QVERIFY(sch3.target == 90);
-}
+#endif

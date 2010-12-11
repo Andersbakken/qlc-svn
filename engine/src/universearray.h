@@ -56,6 +56,16 @@ protected:
     const int m_size;
 
     /************************************************************************
+     * Highest Takes Precedence
+     ************************************************************************/
+public:
+    /** Set all intensity channel values to zero */
+    void zeroIntensityChannels();
+
+    /** Check if new $value for $channel & $group pass HTP criteria. */
+    bool checkHTP(int channel, uchar value, QLCChannel::Group group) const;
+
+    /************************************************************************
      * Grand Master
      ************************************************************************/
 public:
@@ -175,8 +185,8 @@ protected:
      ************************************************************************/
 public:
     /**
-     * Write a value to a DMX channel, taking Grand Master into account, if
-     * applicable.
+     * Write a value to a DMX channel, taking Grand Master and HTP into
+     * account, if applicable.
      *
      * @param channel The channel number to write to
      * @param value The value to write

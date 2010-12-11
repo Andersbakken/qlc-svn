@@ -228,7 +228,7 @@ bool Doc::deleteFixture(t_fixture_id id)
     }
 }
 
-Fixture* Doc::fixture(t_fixture_id id)
+Fixture* Doc::fixture(t_fixture_id id) const
 {
     if (id >= 0 && id < KFixtureArraySize)
         return m_fixtureArray[id];

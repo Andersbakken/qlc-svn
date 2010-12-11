@@ -44,10 +44,12 @@ HEADERS += qlccapability.h \
 # Engine
 HEADERS += bus.h \
            chaser.h \
+           chaserrunner.h \
            collection.h \
            doc.h \
            efx.h \
            efxfixture.h \
+           fadechannel.h \
            fixture.h \
            function.h \
            inputmap.h \
@@ -58,7 +60,8 @@ HEADERS += bus.h \
            outputmap.h \
            outputpatch.h \
            palettegenerator.h \
-           scene.h
+           scene.h \
+           scenevalue.h
 
 # Fixture metadata
 SOURCES += qlccapability.cpp \
@@ -75,10 +78,12 @@ SOURCES += qlccapability.cpp \
 # Engine
 SOURCES += bus.cpp \
            chaser.cpp \
+           chaserrunner.cpp \
            collection.cpp \
            doc.cpp \
            efx.cpp \
            efxfixture.cpp \
+           fadechannel.cpp \
            fixture.cpp \
            function.cpp \
            inputmap.cpp \
@@ -89,7 +94,8 @@ SOURCES += bus.cpp \
            outputmap.cpp \
            outputpatch.cpp \
            palettegenerator.cpp \
-           scene.cpp
+           scene.cpp \
+           scenevalue.cpp
 
 # Interfaces
 HEADERS += ../../plugins/interfaces/qlcinplugin.h \

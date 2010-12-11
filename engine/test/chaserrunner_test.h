@@ -1,6 +1,6 @@
 /*
   Q Light Controller - Unit test
-  scene_test.h
+  chaserrunner_test.h
 
   Copyright (c) Heikki Junnila
 
@@ -19,15 +19,16 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SCENE_TEST_H
-#define SCENE_TEST_H
+#ifndef CHASERRUNNER_TEST_H
+#define CHASERRUNNER_TEST_H
 
 #include <QObject>
 #include "qlcfixturedefcache.h"
 
+class Scene;
 class Doc;
 
-class Scene_Test : public QObject
+class ChaserRunner_Test : public QObject
 {
     Q_OBJECT
 
@@ -37,30 +38,32 @@ private slots:
     void cleanup();
 
     void initial();
-    void values();
-    void fixtureRemoval();
-    void loadSuccess();
-    void loadWrongType();
-    void loadWrongRoot();
-    void save();
-    void copyFrom();
-    void createCopy();
+    void nextPrevious();
+    void autoStep();
+    void roundCheckSingleShotForward();
+    void roundCheckSingleShotBackward();
+    void roundCheckLoopForward();
+    void roundCheckLoopBackward();
+    void roundCheckPingPongForward();
+    void roundCheckPingPongBackward();
+    void createFadeChannels();
 
-    void arm();
-    void armMissingFixture();
-    void armTooManyChannels();
+    void writeNoSteps();
+    void writeMissingFixture();
+    void writeHoldZero();
 
-    void flashUnflash();
-
-    void writeHTPBusZero();
-    void writeHTPBusOne();
-    void writeLTPHTPBusZero();
-    void writeLTPBusOne();
-    void writeLTPReady();
+    void writeForwardLoopHoldFiveNextPrevious();
+    void writeBackwardLoopHoldFiveNextPrevious();
+    void writeForwardSingleShotHoldFive();
+    void writeNoAutoStepHoldFive();
+    void writeNoAutoSetCurrentStep();
 
 private:
     Doc* m_doc;
     QLCFixtureDefCache m_cache;
+    Scene* m_scene1;
+    Scene* m_scene2;
+    Scene* m_scene3;
 };
 
 #endif

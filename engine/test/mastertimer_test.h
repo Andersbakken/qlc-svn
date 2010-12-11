@@ -26,6 +26,7 @@
 #include "qlcfixturedefcache.h"
 
 class OutputMapStub;
+class UniverseArray;
 class Doc;
 
 class MasterTimer_Test : public QObject
@@ -52,9 +53,9 @@ private slots:
 
 protected:
     OutputMapStub* m_oms;
+    UniverseArray* m_ua;
     Doc* m_doc;
     QLCFixtureDefCache m_cache;
 };
 
 #endif
-

@@ -45,6 +45,8 @@
 void MasterTimer_Test::initTestCase()
 {
     m_oms = new OutputMapStub(this);
+    m_ua = new UniverseArray(4 * 512);
+    m_oms->setUniverses(m_ua);
     QDir dir(INTERNAL_FIXTUREDIR);
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << QString("*%1").arg(KExtFixture));
@@ -408,6 +410,10 @@ void MasterTimer_Test::restart()
 
 void MasterTimer_Test::cleanupTestCase()
 {
+    m_oms->setUniverses(NULL);
     delete m_oms;
     m_oms = NULL;
+
+    delete m_ua;
+    m_ua = NULL;
 }

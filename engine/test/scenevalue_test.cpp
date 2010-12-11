@@ -23,7 +23,7 @@
 #include <QtXml>
 
 #include "scenevalue_test.h"
-#include "scene.h"
+#include "scenevalue.h"
 
 void SceneValue_Test::initial()
 {
@@ -85,7 +85,7 @@ void SceneValue_Test::loadSuccess()
     val.appendChild(valText);
 
     SceneValue scv;
-    QVERIFY(scv.loadXML(&val) == true);
+    QVERIFY(scv.loadXML(val) == true);
     QVERIFY(scv.fxi == 5);
     QVERIFY(scv.channel == 60);
     QVERIFY(scv.value == 100);
@@ -102,7 +102,7 @@ void SceneValue_Test::loadWrongRoot()
     val.appendChild(valText);
 
     SceneValue scv;
-    QVERIFY(scv.loadXML(&val) == false);
+    QVERIFY(scv.loadXML(val) == false);
 }
 
 void SceneValue_Test::loadWrongFixture()
@@ -116,7 +116,7 @@ void SceneValue_Test::loadWrongFixture()
     val.appendChild(valText);
 
     SceneValue scv;
-    QVERIFY(scv.loadXML(&val) == false);
+    QVERIFY(scv.loadXML(val) == false);
 }
 
 void SceneValue_Test::loadWrongValue()
@@ -130,7 +130,7 @@ void SceneValue_Test::loadWrongValue()
     val.appendChild(valText);
 
     SceneValue scv;
-    QVERIFY(scv.loadXML(&val) == true);
+    QVERIFY(scv.loadXML(val) == true);
     QVERIFY(scv.value == 1);
 }
 

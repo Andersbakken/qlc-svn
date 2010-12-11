@@ -35,6 +35,7 @@
 #include <windows.h>
 #endif
 
+#include "universearray.h"
 #include "mastertimer.h"
 #include "outputmap.h"
 #include "dmxsource.h"
@@ -270,15 +271,18 @@ void MasterTimer::run()
 
 void MasterTimer::timerTick()
 {
-    runFunctions();
-    runDMXSources();
+    UniverseArray* universes = m_outputMap->claimUniverses();
+    universes->zeroIntensityChannels();
+
+    runFunctions(universes);
+    runDMXSources(universes);
+
+    m_outputMap->releaseUniverses();
     m_outputMap->dumpUniverses();
 }
 
-void MasterTimer::runFunctions()
+void MasterTimer::runFunctions(UniverseArray* universes)
 {
-    UniverseArray* universes = m_outputMap->claimUniverses();
-
     /* Lock before accessing the running functions list. */
     m_functionListMutex.lock();
     for (int i = 0; i < m_functionList.size(); i++)
@@ -317,13 +321,10 @@ void MasterTimer::runFunctions()
 
     /* No more functions. Get out and wait for next timer event. */
     m_functionListMutex.unlock();
-    m_outputMap->releaseUniverses();
 }
 
-void MasterTimer::runDMXSources()
+void MasterTimer::runDMXSources(UniverseArray* universes)
 {
-    UniverseArray* universes = m_outputMap->claimUniverses();
-
     /* Lock before accessing the running functions list. */
     m_dmxSourceListMutex.lock();
     for (int i = 0; i < m_dmxSourceList.size(); i++)
@@ -343,7 +344,6 @@ void MasterTimer::runDMXSources()
 
     /* No more sources. Get out and wait for next timer event. */
     m_dmxSourceListMutex.unlock();
-    m_outputMap->releaseUniverses();
 }
 
 void MasterTimer::stop()
