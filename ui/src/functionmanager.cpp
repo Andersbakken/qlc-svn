@@ -248,7 +248,7 @@ void FunctionManager::initMenu()
 
     /* Edit menu */
     m_editMenu = new QMenu(menuBar);
-    m_editMenu->setTitle("&Edit");
+    m_editMenu->setTitle(tr("&Edit"));
     m_editMenu->addAction(m_editAction);
     m_editMenu->addSeparator();
     m_editMenu->addAction(m_cloneAction);
@@ -261,7 +261,7 @@ void FunctionManager::initMenu()
     m_busGroup = new QActionGroup(this);
     m_busGroup->setExclusive(false);
     m_busMenu = new QMenu(menuBar);
-    m_busMenu->setTitle("Assign &bus");
+    m_busMenu->setTitle(tr("Assign &bus"));
     for (quint32 id = 0; id < Bus::count(); id++)
     {
         /* <xx>: <name> */
@@ -348,20 +348,16 @@ void FunctionManager::slotBusNameChanged(quint32 id, const QString& name)
 
         if (action->data().toUInt() == id)
         {
-            action->setText(QString("%1: %2")
-                            .arg(id + 1).arg(name));
+            action->setText(QString("%1: %2").arg(id + 1).arg(name));
             break;
         }
     }
 
     /* Change all affected function item's bus names as well */
-    QListIterator <QTreeWidgetItem*> twit(
-        m_tree->findItems(QString("%1: ").arg(id + 1),
-                          Qt::MatchStartsWith,
-                          KColumnBus));
+    QListIterator <QTreeWidgetItem*> twit =
+        m_tree->findItems(QString("%1: ").arg(id + 1), Qt::MatchStartsWith, KColumnBus);
     while (twit.hasNext() == true)
-        twit.next()->setText(KColumnBus,
-                             QString("%1: %2").arg(id + 1).arg(name));
+        twit.next()->setText(KColumnBus, QString("%1: %2").arg(id + 1).arg(name));
 }
 
 void FunctionManager::slotAddScene()
@@ -491,14 +487,14 @@ void FunctionManager::slotDelete()
     if (it.hasNext() == false)
         return;
 
-    msg = "Do you want to DELETE:\n";
+    msg = tr("Do you want to DELETE functions:") + QString("\n");
 
     // Append functions' names to the message
     while (it.hasNext() == true)
-        msg += it.next()->text(KColumnName) + QString("\n");
+        msg += it.next()->text(KColumnName) + QString(", ");
 
     // Ask for user's confirmation
-    if (QMessageBox::question(this, "Delete Functions", msg,
+    if (QMessageBox::question(this, tr("Delete Functions"), msg,
                               QMessageBox::Yes, QMessageBox::No)
             == QMessageBox::Yes)
     {
@@ -736,8 +732,7 @@ int FunctionManager::editFunction(Function* function)
     }
     else if (function->type() == Function::Collection)
     {
-        CollectionEditor editor(this,
-                                qobject_cast<Collection*> (function));
+        CollectionEditor editor(this, qobject_cast<Collection*> (function));
         result = editor.exec();
     }
     else if (function->type() == Function::EFX)
