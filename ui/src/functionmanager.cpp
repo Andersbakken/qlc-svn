@@ -56,8 +56,9 @@
 #define SETTINGS_GEOMETRY "functionmanager/geometry"
 
 #define KColumnName 0
-#define KColumnBus  1
-#define KColumnID   2
+#define KColumnType 1
+#define KColumnBus  2
+#define KColumnID   3
 
 extern App* _app;
 
@@ -554,7 +555,7 @@ void FunctionManager::initTree()
 
     // Add two columns for function and bus
     QStringList labels;
-    labels << "Function" << "Bus";
+    labels << tr("Function") << tr("Type") << tr("Bus");
     m_tree->setHeaderLabels(labels);
     m_tree->header()->setResizeMode(QHeaderView::ResizeToContents);
     m_tree->setRootIsDecorated(false);
@@ -602,6 +603,7 @@ void FunctionManager::updateFunctionItem(QTreeWidgetItem* item,
 
     item->setText(KColumnName, function->name());
     item->setIcon(KColumnName, functionIcon(function));
+    item->setText(KColumnType, function->typeString());
     item->setText(KColumnBus, Bus::instance()->idName(function->busID()));
     item->setText(KColumnID, QString("%1").arg(function->id()));
 }
