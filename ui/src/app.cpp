@@ -310,6 +310,7 @@ void App::createProgressDialog()
     m_progressDialog->setCancelButton(NULL);
     m_progressDialog->show();
     m_progressDialog->raise();
+    m_progressDialog->setRange(0, 10);
     slotSetProgressText(QString());
     QApplication::processEvents();
 }
@@ -325,6 +326,8 @@ void App::slotSetProgressText(const QString& text)
     if (m_progressDialog == NULL)
         return;
 
+    static int progress = 0;
+    m_progressDialog->setValue(progress++);
     m_progressDialog->setLabelText(QString("<B>%1</B><BR/>%2")
                                    .arg(tr("Starting Q Light Controller"))
                                    .arg(text));
