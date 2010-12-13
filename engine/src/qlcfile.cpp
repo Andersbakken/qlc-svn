@@ -23,8 +23,11 @@
 #include <QtXml>
 
 #ifndef WIN32
-#include <sys/types.h>
-#include <pwd.h>
+#   include <sys/types.h>
+#   include <pwd.h>
+#else
+#   include <windows.h>
+#   include <lmcons.h>
 #endif
 
 #include "qlcconfig.h"
@@ -152,11 +155,11 @@ QString QLCFile::currentUserName()
     else
         return QString(passwd->pw_gecos);
 #else
-/*
-    TCHAR name[UNLEN + 1];
-    if (GetUserName(name, UNLEN + 1))
-        return QString(name);
-    else*/
+    DWORD length = UNLEN + 1;
+    TCHAR name[length];
+    if (GetUserName(name, &length))
+        return QString::fromUtf16((ushort*) name);
+    else
         return QString("Unknown windows user");
 #endif
 }
