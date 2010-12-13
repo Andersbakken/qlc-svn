@@ -86,7 +86,7 @@ void QLCFile_Test::getXMLHeader()
 
         QDomElement tag(node.toElement());
         if (tag.tagName() == KXMLQLCCreatorAuthor)
-            QCOMPARE(tag.text(), QString(getenv("USER")));
+            QVERIFY(tag.text().isEmpty() == false);
         else if (tag.tagName() == KXMLQLCCreatorName)
             QCOMPARE(tag.text(), QString(APPNAME));
         else if (tag.tagName() == KXMLQLCCreatorVersion)
