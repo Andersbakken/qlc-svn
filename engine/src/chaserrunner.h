@@ -106,21 +106,20 @@ private:
     bool roundCheck();
 
     /**
-     * Create FadeChannel map for the currently active scene. If $handover
-     * == true, then the created FadeChannels' starting values are taken from
-     * the old m_channelMap's current values. If the old map doesn't contain
+     * Create FadeChannel map for the currently active scene. If m_channelMap
+     * is not empty, then the created FadeChannels' starting values are taken
+     * from the old m_channelMap's current values. If the old map doesn't contain
      * a FadeChannel for a new channel, then the new FadeChannel will start
-     * from whatever is currently in $universes[address]. This handover must
-     * be done for HTP channels to work since UniverseArray's intensity
-     * channels are always reset to zero before MasterTimer starts making
-     * Function::write() calls. If this handover isn't done, all intensity
+     * from whatever is currently in $universes[address].
+     *
+     * This handover must be done for HTP channels to work since UniverseArray's
+     * intensity channels are always reset to zero before MasterTimer starts
+     * making Function::write() calls. If this handover isn't done, all intensity
      * channels would always fade from 0 to the target value.
      *
      * @param universes Current UniverseArray
-     * @param handover See above description.
      */
-    QMap <quint32,FadeChannel> createFadeChannels(const UniverseArray* universes,
-                                                  bool handover = false) const;
+    QMap <quint32,FadeChannel> createFadeChannels(const UniverseArray* universes) const;
 
     /************************************************************************
      * Constant parameters

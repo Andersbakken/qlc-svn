@@ -124,7 +124,7 @@ bool ChaserRunner::write(UniverseArray* universes)
         // always within m_steps limits.
 
         m_elapsed = 1;
-        m_channelMap = createFadeChannels(universes, true);
+        m_channelMap = createFadeChannels(universes);
 
         emit currentStepChanged(m_currentStep);
     }
@@ -163,7 +163,7 @@ bool ChaserRunner::write(UniverseArray* universes)
         m_elapsed = 1;
         m_next = false;
         m_previous = false;
-        m_channelMap = createFadeChannels(universes, true);
+        m_channelMap = createFadeChannels(universes);
 
         emit currentStepChanged(m_currentStep);
     }
@@ -262,12 +262,15 @@ bool ChaserRunner::roundCheck()
     return true;
 }
 
-QMap <quint32,FadeChannel> ChaserRunner::createFadeChannels(const UniverseArray* universes,
-                                                            bool handover) const
+QMap <quint32,FadeChannel> ChaserRunner::createFadeChannels(
+                                        const UniverseArray* universes) const
 {
     QMap <quint32,FadeChannel> map;
     if (m_currentStep >= m_steps.size() || m_currentStep < 0)
         return map;
+
+    // Put all current channels to a map of channels that will be faded to zero
+    QMap <quint32,FadeChannel> zeroChannels(m_channelMap);
 
     // If the step is not a scene, don't attempt to create fade channels
     Scene* scene = qobject_cast<Scene*> (m_steps.at(m_currentStep));
@@ -287,13 +290,46 @@ QMap <quint32,FadeChannel> ChaserRunner::createFadeChannels(const UniverseArray*
         channel.setGroup(fxi->channel(value.channel)->group());
         channel.setTarget(value.value);
 
+        // Get starting value from universes. For HTP channels it's always 0.
         channel.setStart(uchar(universes->preGMValues()[channel.address()]));
-        if (handover && m_channelMap.contains(channel.address()))
+
+        // Transfer last step's current value to current step's starting value.
+        if (m_channelMap.contains(channel.address()) == true)
             channel.setStart(m_channelMap[channel.address()].current());
         channel.setCurrent(channel.start());
 
+        // Append the channel to the channel map
         map[channel.address()] = channel;
+
+        // Remove the channel from a map of to-be-zeroed channels since now it
+        // has a new value to fade to.
+        zeroChannels.remove(channel.address());
     }
+
+    // All channels that were present in the previous step but are not present
+    // in the current step will go through this zeroing process.
+    QMutableMapIterator <quint32,FadeChannel> zit(zeroChannels);
+    while (zit.hasNext() == true)
+    {
+        zit.next();
+        FadeChannel& channel(zit.value());
+        if (channel.current() == 0 || channel.group() != QLCChannel::Intensity)
+        {
+            // Remove all non-HTP channels and such HTP channels that are
+            // already at zero. There's nothing to do for them.
+            zit.remove();
+        }
+        else
+        {
+            // This HTP channel was present in the previous step, but is absent
+            // in the current. It's nicer that we fade it back to zero, rather
+            // than just let it drop straight to zero.
+            channel.setStart(channel.current());
+            channel.setTarget(0);
+        }
+    }
+
+    map.unite(zeroChannels);
 
     return map;
 }

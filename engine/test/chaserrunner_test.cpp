@@ -402,7 +402,7 @@ void ChaserRunner_Test::createFadeChannels()
 
     // No handover
     QCOMPARE(cr.currentStep(), 0);
-    map = cr.createFadeChannels(&ua, false);
+    map = cr.createFadeChannels(&ua);
 
     QVERIFY(map.contains(0) == true);
     ch = map[0];
@@ -455,7 +455,7 @@ void ChaserRunner_Test::createFadeChannels()
     map[5].setCurrent(map[5].target());
     cr.m_channelMap = map;
     cr.m_currentStep = 1;
-    map = cr.createFadeChannels(&ua, true);
+    map = cr.createFadeChannels(&ua);
 
     QVERIFY(map.contains(0) == true);
     ch = map[0];
@@ -508,7 +508,7 @@ void ChaserRunner_Test::createFadeChannels()
     ua.write(5, 6, QLCChannel::Intensity);
     cr.m_channelMap.clear();
     cr.m_currentStep = 2;
-    map = cr.createFadeChannels(&ua, true);
+    map = cr.createFadeChannels(&ua);
 
     QVERIFY(map.contains(0) == true);
     ch = map[0];
@@ -553,11 +553,11 @@ void ChaserRunner_Test::createFadeChannels()
     QCOMPARE(ch.current(), uchar(6));
 
     cr.m_currentStep = 3;
-    map = cr.createFadeChannels(&ua, false);
+    map = cr.createFadeChannels(&ua);
     QVERIFY(map.isEmpty() == true);
 
     cr.m_currentStep = -1;
-    map = cr.createFadeChannels(&ua, false);
+    map = cr.createFadeChannels(&ua);
     QVERIFY(map.isEmpty() == true);
 }
 
