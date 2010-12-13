@@ -22,6 +22,11 @@
 #include <QFile>
 #include <QtXml>
 
+#ifndef WIN32
+#include <sys/types.h>
+#include <pwd.h>
+#endif
+
 #include "qlcconfig.h"
 #include "qlctypes.h"
 #include "qlcfile.h"
@@ -93,7 +98,7 @@ QDomDocument QLCFile::getXMLHeader(const QString& content)
     /* Author */
     subtag = doc.createElement(KXMLQLCCreatorAuthor);
     tag.appendChild(subtag);
-    text = doc.createTextNode(QString(getenv("USER")));
+    text = doc.createTextNode(currentUserName());
     subtag.appendChild(text);
 
     return doc;
@@ -138,3 +143,20 @@ QString QLCFile::errorString(QFile::FileError error)
     }
 }
 
+QString QLCFile::currentUserName()
+{
+#ifndef WIN32
+    struct passwd* passwd = getpwuid(getuid());
+    if (passwd == NULL)
+        return QString(getenv("USER"));
+    else
+        return QString(passwd->pw_gecos);
+#else
+/*
+    TCHAR name[UNLEN + 1];
+    if (GetUserName(name, UNLEN + 1))
+        return QString(name);
+    else*/
+        return QString("Unknown windows user");
+#endif
+}

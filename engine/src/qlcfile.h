@@ -88,6 +88,15 @@ public:
      * @return Short description of the given file error
      */
     static QString errorString(QFile::FileError error);
+
+    /**
+     * Get the current user name (to be written in a file's "Author" tags).
+     * On unix, the user name is whatever's been written to the user's passwd
+     * entry.
+     *
+     * @return Current user name.
+     */
+    static QString currentUserName();
 };
 
 #endif
