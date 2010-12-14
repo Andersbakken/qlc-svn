@@ -561,6 +561,60 @@ void ChaserRunner_Test::createFadeChannels()
     QVERIFY(map.isEmpty() == true);
 }
 
+void ChaserRunner_Test::createFadeChannelsAutoHTPZero()
+{
+    const QLCFixtureDef* def = m_cache.fixtureDef("Futurelight", "DJScan250");
+    QVERIFY(def != NULL);
+    const QLCFixtureMode* mode = def->mode("Mode 1");
+    QVERIFY(mode != NULL);
+
+    Fixture* fxi = new Fixture(m_doc);
+    QVERIFY(fxi != NULL);
+    fxi->setFixtureDefinition(def, mode);
+    fxi->setName("Test Fixture 2");
+    fxi->setAddress(10);
+    fxi->setUniverse(0);
+    m_doc->addFixture(fxi);
+
+    m_scene1->setValue(fxi->id(), 5, 255);
+    // m_scene2 is missing dimmer channel setting -> it should auto fade to 0
+    m_scene3->setValue(fxi->id(), 5, 255);
+
+    QList <Function*> steps;
+    steps << m_scene1 << m_scene2 << m_scene3;
+    ChaserRunner cr(m_doc, steps, Bus::defaultHold(), Function::Forward,
+                    Function::Loop);
+    UniverseArray ua(512);
+    QMap <quint32,FadeChannel> map;
+
+    // Normal first execution with step 0
+    QCOMPARE(cr.currentStep(), 0);
+    map = cr.createFadeChannels(&ua);
+
+    QVERIFY(map.contains(15) == true);
+    FadeChannel& ch = map[15];
+    QCOMPARE(ch.address(), quint32(15));
+    QCOMPARE(ch.start(), uchar(0));
+    QCOMPARE(ch.target(), uchar(255));
+    QCOMPARE(ch.current(), uchar(0));
+    ch.setCurrent(142); // Let's assume write() has been called several times
+
+    // Second execution with handover from step 0 to 1 and auto-zeroing of ch15:
+    // m_scene2 at m_currentStep == 1 doesn't contain anything regarding ch15
+    // (i.e. fixture2 @ DMX address 10 + 5) but since it was present in the last
+    // step, it should be auto-faded to zero.
+    cr.m_channelMap = map;
+    cr.m_currentStep = 1;
+    map = cr.createFadeChannels(&ua);
+
+    QVERIFY(map.contains(15) == true);
+    ch = map[15];
+    QCOMPARE(ch.address(), quint32(15));
+    QCOMPARE(ch.start(), uchar(142));
+    QCOMPARE(ch.target(), uchar(0));
+    QCOMPARE(ch.current(), uchar(142));
+}
+
 void ChaserRunner_Test::writeNoSteps()
 {
     QList <Function*> steps;

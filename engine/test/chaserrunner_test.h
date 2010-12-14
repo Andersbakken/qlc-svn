@@ -47,6 +47,7 @@ private slots:
     void roundCheckPingPongForward();
     void roundCheckPingPongBackward();
     void createFadeChannels();
+    void createFadeChannelsAutoHTPZero();
 
     void writeNoSteps();
     void writeMissingFixture();
