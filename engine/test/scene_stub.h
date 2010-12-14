@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QMap>
 
+#include "qlcchannel.h"
 #include "fixture.h"
 #include "scene.h"
 
@@ -45,7 +46,8 @@ public:
 
     void setValue(quint32 address, uchar value);
     void writeValues(UniverseArray* universes,
-                     t_fixture_id fxi_id = Fixture::invalidId());
+                     t_fixture_id fxi_id = Fixture::invalidId(),
+                     QLCChannel::Group grp = QLCChannel::NoGroup);
 
     QMap <quint32,uchar> m_values;
 };

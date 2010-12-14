@@ -281,7 +281,7 @@ void Scene::writeDMX(MasterTimer* timer, UniverseArray* universes)
     Q_ASSERT(universes != NULL);
 
     if (flashing() == true)
-        writeValues(universes);
+        writeValues(universes); // Keep HTP & LTP up
     else
         timer->unregisterDMXSource(this);
 }
@@ -418,30 +418,18 @@ void Scene::write(MasterTimer* timer, UniverseArray* universes)
         stop();
 }
 
-void Scene::writeValues(UniverseArray* universes, t_fixture_id fxi_id)
+void Scene::writeValues(UniverseArray* universes, t_fixture_id fxi_id,
+                        QLCChannel::Group grp)
 {
     Q_ASSERT(universes != NULL);
 
-    for (int i = 0; i < m_values.size(); i++)
+    for (int i = 0; i < m_armedChannels.size() && i < m_values.size(); i++)
     {
         if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
         {
             const FadeChannel& fc(m_armedChannels[i]);
-            universes->write(fc.address(), fc.target(), fc.group());
-        }
-    }
-}
-
-void Scene::writeZeros(UniverseArray* universes, t_fixture_id fxi_id)
-{
-    Q_ASSERT(universes != NULL);
-
-    for (int i = 0; i < m_values.size(); i++)
-    {
-        if (fxi_id == Fixture::invalidId() || m_values[i].fxi == fxi_id)
-        {
-            const FadeChannel& fc(m_armedChannels[i]);
-            universes->write(fc.address(), 0, fc.group());
+            if (grp == QLCChannel::NoGroup || fc.group() == grp)
+                universes->write(fc.address(), fc.target(), fc.group());
         }
     }
 }

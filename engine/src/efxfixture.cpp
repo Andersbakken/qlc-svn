@@ -309,12 +309,7 @@ void EFXFixture::nextStep(UniverseArray* universes)
     }
     else
     {
-        if (m_initialized == false)
-        {
-            /* This fixture is now running. Initialize it. */
-            m_initialized = true;
-            start(universes);
-        }
+        start(universes);
     }
 
     if (m_iterator < (M_PI * 2.0))
@@ -369,14 +364,27 @@ void EFXFixture::nextStep(UniverseArray* universes)
 
 void EFXFixture::start(UniverseArray* universes)
 {
-    if (m_startScene != NULL)
-        m_startScene->writeValues(universes, m_fixture);
+    if (m_initialized == false)
+    {
+        // On the first pass, write HTP & LTP values
+        m_initialized = true;
+        if (m_startScene != NULL)
+            m_startScene->writeValues(universes, m_fixture);
+    }
+    else
+    {
+        // On the next passes, keep writing only HTP/intensity values
+        if (m_startScene != NULL)
+            m_startScene->writeValues(universes, m_fixture,
+                                      QLCChannel::Intensity);
+    }
 }
 
 void EFXFixture::stop(UniverseArray* universes)
 {
     if (m_stopScene != NULL)
         m_stopScene->writeValues(universes, m_fixture);
+    m_initialized = false;
 }
 
 void EFXFixture::setPoint(UniverseArray* universes)

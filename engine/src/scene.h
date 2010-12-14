@@ -166,19 +166,14 @@ public:
      *
      * The scene must be armed with arm() before calling this function or
      * otherwise nothing will be written.
+     *
+     * @param universes The universe array to write values to
+     * @param fxi_id if non-invalid, writes values concerning only given fixture
+     * @param grp if non-invalid, writes values concerning only given channel group
      */
     virtual void writeValues(UniverseArray* universes,
-                             t_fixture_id fxi_id = Fixture::invalidId());
-
-    /**
-     * Write zeros for all involved channels to OutputMap. If fxi_id is
-     * given, writes zeros only for the specified fixture.
-     *
-     * The scene must be armed with arm() before calling this function or
-     * otherwise nothing will be written.
-     */
-    virtual void writeZeros(UniverseArray* universes,
-                            t_fixture_id fxi_id = Fixture::invalidId());
+                             t_fixture_id fxi_id = Fixture::invalidId(),
+                             QLCChannel::Group grp = QLCChannel::NoGroup);
 
     /** Get a list of channels that have been armed for running */
     QList <FadeChannel> armedChannels() const;

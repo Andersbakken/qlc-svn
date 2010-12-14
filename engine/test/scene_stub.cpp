@@ -40,9 +40,11 @@ void SceneStub::setValue(quint32 address, uchar value)
     m_values[address] = value;
 }
 
-void SceneStub::writeValues(UniverseArray* array, t_fixture_id fxi_id)
+void SceneStub::writeValues(UniverseArray* array, t_fixture_id fxi_id,
+                            QLCChannel::Group grp)
 {
     Q_UNUSED(fxi_id);
+    Q_UNUSED(grp);
 
     QMapIterator <quint32,uchar> it(m_values);
     while (it.hasNext() == true)
