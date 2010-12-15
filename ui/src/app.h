@@ -146,7 +146,8 @@ public:
     void newDocument();
 
 signals:
-    void documentChanged(Doc* doc);
+    /** Tells that the current Doc object has changed. */
+    void documentChanged(Doc* newDoc);
 
 protected slots:
     void slotDocModified(bool state);

@@ -116,7 +116,9 @@ VirtualConsole::VirtualConsole(QWidget* parent, Qt::WindowFlags flags)
     connect(_app->outputMap(), SIGNAL(blackoutChanged(bool)),
             this, SLOT(slotBlackoutChanged(bool)));
 
-    slotModeChanged(_app->doc()->mode());
+    connect(_app, SIGNAL(documentChanged(Doc*)),
+            this, SLOT(slotDocumentChanged(Doc*)));
+    slotDocumentChanged(_app->doc());
 }
 
 VirtualConsole::~VirtualConsole()
@@ -154,10 +156,6 @@ void VirtualConsole::create(QWidget* parent)
     s_instance = new VirtualConsole(parent);
     window = area->addSubWindow(s_instance);
 #endif
-
-    /* Listen to mode changes */
-    connect(_app->doc(), SIGNAL(modeChanged(Doc::Mode)),
-            s_instance, SLOT(slotModeChanged(Doc::Mode)));
 
     /* Set some common properties for the window and show it */
     window->setAttribute(Qt::WA_DeleteOnClose);
@@ -1607,6 +1605,16 @@ void VirtualConsole::slotModeChanged(Doc::Mode mode)
         m_stackingRaiseAction->setShortcut(QKeySequence("SHIFT+UP"));
         m_stackingLowerAction->setShortcut(QKeySequence("SHIFT+DOWN"));
     }
+}
+
+void VirtualConsole::slotDocumentChanged(Doc* doc)
+{
+    Q_ASSERT(doc != NULL);
+
+    /* Listen to mode changes */
+    connect(doc, SIGNAL(modeChanged(Doc::Mode)),
+            this, SLOT(slotModeChanged(Doc::Mode)));
+    slotModeChanged(doc->mode());
 }
 
 /*****************************************************************************
