@@ -52,6 +52,8 @@ private slots:
     void armMissingFunction();
     void write();
 
+    void stopNotOwnChildren();
+
 private:
     Doc* m_doc;
     QLCFixtureDefCache m_cache;

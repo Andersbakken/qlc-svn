@@ -22,8 +22,8 @@
 #ifndef COLLECTION_H
 #define COLLECTION_H
 
-#include <QMutex>
 #include <QList>
+#include <QSet>
 
 #include "function.h"
 
@@ -131,10 +131,7 @@ protected slots:
 
 protected:
     /** Number of currently running children */
-    int m_childCount;
-
-    /** Mutex guarding the access to m_childCount */
-    QMutex m_childCountMutex;
+    QSet <t_function_id> m_runningChildren;
 };
 
 #endif

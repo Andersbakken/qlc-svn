@@ -25,8 +25,11 @@
 #include "mastertimer_stub.h"
 #include "collection_test.h"
 
-#include "universearray.h"
+#define protected public
 #include "collection.h"
+#undef protected
+
+#include "universearray.h"
 #include "function.h"
 #include "fixture.h"
 #include "scene.h"
@@ -510,6 +513,7 @@ void Collection_Test::write()
 
     /* Now the collection must also tell it's ready to be stopped */
     mts->stopFunction(s2);
+    c->write(mts, &uni);
     QVERIFY(s2->stopped() == true);
     QVERIFY(c->stopped() == true);
     mts->stopFunction(c);
@@ -520,4 +524,77 @@ void Collection_Test::write()
 
     delete mts;
     delete doc;
+}
+
+void Collection_Test::stopNotOwnChildren()
+{
+    Doc* doc = new Doc(this, m_cache);
+
+    Bus::instance()->setValue(Bus::defaultFade(), 0);
+    Bus::instance()->setValue(Bus::defaultHold(), 0);
+
+    Fixture* fxi = new Fixture(doc);
+    fxi->setAddress(0);
+    fxi->setUniverse(0);
+    fxi->setChannels(4);
+    doc->addFixture(fxi);
+
+    Scene* s1 = new Scene(doc);
+    s1->setName("Scene1");
+    s1->setValue(fxi->id(), 0, UCHAR_MAX);
+    s1->setValue(fxi->id(), 1, UCHAR_MAX);
+    doc->addFunction(s1);
+
+    Scene* s2 = new Scene(doc);
+    s2->setName("Scene2");
+    s2->setValue(fxi->id(), 2, UCHAR_MAX);
+    s2->setValue(fxi->id(), 3, UCHAR_MAX);
+    doc->addFunction(s2);
+
+    Collection* c = new Collection(doc);
+    c->setName("Collection");
+    c->addFunction(s1->id());
+    c->addFunction(s2->id());
+    doc->addFunction(c);
+
+    s1->arm();
+    s2->arm();
+    c->arm();
+
+    UniverseArray uni(1);
+    MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
+
+    QVERIFY(c->stopped() == true);
+    mts->startFunction(c, false);
+    QVERIFY(c->stopped() == false);
+
+    c->preRun(mts);
+    QVERIFY(c->m_runningChildren.isEmpty() == true);
+
+    c->write(mts, &uni);
+    QVERIFY(s1->stopped() == false);
+    QVERIFY(s2->stopped() == false);
+
+    // Collection controls s1 & s2
+    QVERIFY(c->m_runningChildren.contains(s1->id()) == true);
+    QVERIFY(c->m_runningChildren.contains(s2->id()) == true);
+
+    // Manually stop and re-start s1
+    s1->stop();
+    s1->write(mts, &uni);
+    s1->postRun(mts, &uni);
+    mts->startFunction(s1, true);
+    QVERIFY(s1->stopped() == false);
+
+    // Collection should no longer be controlling s1
+    QVERIFY(c->m_runningChildren.contains(s1->id()) == false);
+    QVERIFY(c->m_runningChildren.contains(s2->id()) == true);
+
+    c->stop();
+    c->write(mts, &uni);
+    c->postRun(mts, &uni);
+
+    QVERIFY(c->stopped() == true);
+    QVERIFY(s1->stopped() == false); // No longer controlled by collection
+    QVERIFY(s2->stopped() == true);
 }

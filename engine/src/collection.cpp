@@ -253,10 +253,7 @@ void Collection::disarm()
 
 void Collection::preRun(MasterTimer* timer)
 {
-    m_childCountMutex.lock();
-    m_childCount = 0;
-    m_childCountMutex.unlock();
-
+    m_runningChildren.clear();
     Function::preRun(timer);
 }
 
@@ -265,16 +262,17 @@ void Collection::postRun(MasterTimer* timer, UniverseArray* universes)
     Doc* doc = qobject_cast <Doc*> (parent());
     Q_ASSERT(doc != NULL);
 
-    /* TODO: this stops these functions, regardless of whether they
-       were started by this collection or not. Oh well... */
-    QListIterator <t_function_id> it(m_functions);
+    /** Stop the member functions only if they have been started by this
+        collection. */
+    QSetIterator <t_function_id> it(m_runningChildren);
     while (it.hasNext() == true)
     {
         Function* function = doc->function(it.next());
-        if (function != NULL)
-            function->stop();
+        Q_ASSERT(function != NULL);
+        function->stop();
     }
 
+    m_runningChildren.clear();
     Function::postRun(timer, universes);
 }
 
@@ -291,13 +289,15 @@ void Collection::write(MasterTimer* timer, UniverseArray* universes)
         while (it.hasNext() == true)
         {
             Function* function = doc->function(it.next());
-            if (function == NULL)
-                continue;
+            Q_ASSERT(function != NULL);
 
-            m_childCountMutex.lock();
-            m_childCount++;
-            m_childCountMutex.unlock();
+            // Append the IDs of all functions started by this collection
+            // to a set so that we can track which of them are still controlled
+            // by this collection which are not.
+            m_runningChildren << function->id();
 
+            // Listen to the children's stopped signals so that this collection
+            // can give up its rights to stop the function later.
             connect(function, SIGNAL(stopped(t_function_id)),
                     this, SLOT(slotChildStopped(t_function_id)));
 
@@ -307,7 +307,7 @@ void Collection::write(MasterTimer* timer, UniverseArray* universes)
 
     incrementElapsed();
 
-    if (m_childCount == 0)
+    if (m_runningChildren.size() == 0)
         stop();
 }
 
@@ -320,9 +320,5 @@ void Collection::slotChildStopped(t_function_id fid)
     disconnect(function, SIGNAL(stopped(t_function_id)),
                this, SLOT(slotChildStopped(t_function_id)));
 
-    m_childCountMutex.lock();
-    m_childCount--;
-    if (m_childCount == 0)
-        stop();
-    m_childCountMutex.unlock();
+    m_runningChildren.remove(fid);
 }
