@@ -29,10 +29,13 @@
 #include "function.h"
 #include "fixture.h"
 #define protected public
+#define private public
+#include "chaserrunner.h"
 #include "chaser.h"
 #include "scene.h"
 #include "doc.h"
 #undef protected
+#undef private
 
 #include "qlcchannel.h"
 #include "qlcfile.h"
@@ -68,6 +71,7 @@ void Chaser_Test::initial()
     QVERIFY(c.direction() == Chaser::Forward);
     QVERIFY(c.runOrder() == Chaser::Loop);
     QVERIFY(c.id() == Function::invalidId());
+    QVERIFY(c.m_runner == NULL);
 }
 
 void Chaser_Test::directionRunOrder()
@@ -232,6 +236,126 @@ void Chaser_Test::functionRemoval()
     QVERIFY(c.steps().size() == 2);
     QVERIFY(c.steps().at(0) == 2);
     QVERIFY(c.steps().at(1) == 3);
+}
+
+void Chaser_Test::copyFrom()
+{
+    Chaser c1(m_doc);
+    c1.setName("First");
+    c1.setDirection(Chaser::Backward);
+    c1.setRunOrder(Chaser::PingPong);
+    c1.setBus(15);
+    c1.addStep(2);
+    c1.addStep(0);
+    c1.addStep(1);
+    c1.addStep(25);
+
+    /* Verify that chaser contents are copied */
+    Chaser c2(m_doc);
+    QVERIFY(c2.copyFrom(&c1) == true);
+    QVERIFY(c2.name() == "First");
+    QVERIFY(c2.busID() == 15);
+    QVERIFY(c2.direction() == Chaser::Backward);
+    QVERIFY(c2.runOrder() == Chaser::PingPong);
+    QVERIFY(c2.steps().size() == 4);
+    QVERIFY(c2.steps().at(0) == 2);
+    QVERIFY(c2.steps().at(1) == 0);
+    QVERIFY(c2.steps().at(2) == 1);
+    QVERIFY(c2.steps().at(3) == 25);
+
+    /* Verify that a Chaser gets a copy only from another Chaser */
+    Scene s(m_doc);
+    QVERIFY(c2.copyFrom(&s) == false);
+
+    /* Make a third Chaser */
+    Chaser c3(m_doc);
+    c3.setName("Third");
+    c3.setBus(8);
+    c3.setDirection(Chaser::Forward);
+    c3.setRunOrder(Chaser::Loop);
+    c3.addStep(15);
+    c3.addStep(94);
+    c3.addStep(3);
+
+    /* Verify that copying TO the same Chaser a second time succeeds and
+       that steps are not appended but replaced completely. */
+    QVERIFY(c2.copyFrom(&c3) == true);
+    QVERIFY(c2.name() == "Third");
+    QVERIFY(c2.busID() == 8);
+    QVERIFY(c2.direction() == Chaser::Forward);
+    QVERIFY(c2.runOrder() == Chaser::Loop);
+    QVERIFY(c2.steps().size() == 3);
+    QVERIFY(c2.steps().at(0) == 15);
+    QVERIFY(c2.steps().at(1) == 94);
+    QVERIFY(c2.steps().at(2) == 3);
+}
+
+void Chaser_Test::createCopy()
+{
+    Doc doc(this, m_cache);
+
+    Chaser* c1 = new Chaser(m_doc);
+    c1->setName("First");
+    c1->setBus(15);
+    c1->setDirection(Chaser::Backward);
+    c1->setRunOrder(Chaser::SingleShot);
+    c1->addStep(20);
+    c1->addStep(30);
+    c1->addStep(40);
+
+    doc.addFunction(c1);
+    QVERIFY(c1->id() != Function::invalidId());
+
+    // Verify that the function is not created when Doc is full
+    doc.m_functionAllocation = KFunctionArraySize;
+    Function* f = c1->createCopy(&doc);
+    QVERIFY(f == NULL);
+
+    doc.m_functionAllocation = 1;
+    f = c1->createCopy(&doc);
+    QVERIFY(f != NULL);
+    QVERIFY(f != c1);
+    QVERIFY(f->id() != c1->id());
+
+    Chaser* copy = qobject_cast<Chaser*> (f);
+    QVERIFY(copy != NULL);
+    QVERIFY(copy->busID() == 15);
+    QVERIFY(copy->direction() == Chaser::Backward);
+    QVERIFY(copy->runOrder() == Chaser::SingleShot);
+    QVERIFY(copy->steps().size() == 3);
+    QVERIFY(copy->steps().at(0) == 20);
+    QVERIFY(copy->steps().at(1) == 30);
+    QVERIFY(copy->steps().at(2) == 40);
+}
+
+void Chaser_Test::stepFunctions()
+{
+    Scene* s1 = new Scene(m_doc);
+    m_doc->addFunction(s1);
+
+    Scene* s2 = new Scene(m_doc);
+    m_doc->addFunction(s2);
+
+    Scene* s3 = new Scene(m_doc);
+    m_doc->addFunction(s3);
+
+    Scene* s4 = new Scene(m_doc);
+    m_doc->addFunction(s4);
+
+    Chaser* c = new Chaser(m_doc);
+    c->addStep(s1->id());
+    c->addStep(s2->id());
+    c->addStep(s3->id());
+    c->addStep(s4->id());
+    c->addStep(123); // Nonexistent, should not appear in stepFunctions()
+    m_doc->addFunction(c);
+
+    QList <Function*> funcs = c->stepFunctions();
+    QCOMPARE(funcs.size(), 4);
+    QCOMPARE(funcs.at(0), s1);
+    QCOMPARE(funcs.at(1), s2);
+    QCOMPARE(funcs.at(2), s3);
+    QCOMPARE(funcs.at(3), s4);
 }
 
 void Chaser_Test::loadSuccess()
@@ -447,111 +571,19 @@ void Chaser_Test::save()
     QVERIFY(fids == 4);
 }
 
-void Chaser_Test::copyFrom()
+void Chaser_Test::arm()
 {
-    Chaser c1(m_doc);
-    c1.setName("First");
-    c1.setDirection(Chaser::Backward);
-    c1.setRunOrder(Chaser::PingPong);
-    c1.setBus(15);
-    c1.addStep(2);
-    c1.addStep(0);
-    c1.addStep(1);
-    c1.addStep(25);
-
-    /* Verify that chaser contents are copied */
-    Chaser c2(m_doc);
-    QVERIFY(c2.copyFrom(&c1) == true);
-    QVERIFY(c2.name() == "First");
-    QVERIFY(c2.busID() == 15);
-    QVERIFY(c2.direction() == Chaser::Backward);
-    QVERIFY(c2.runOrder() == Chaser::PingPong);
-    QVERIFY(c2.steps().size() == 4);
-    QVERIFY(c2.steps().at(0) == 2);
-    QVERIFY(c2.steps().at(1) == 0);
-    QVERIFY(c2.steps().at(2) == 1);
-    QVERIFY(c2.steps().at(3) == 25);
-
-    /* Verify that a Chaser gets a copy only from another Chaser */
-    Scene s(m_doc);
-    QVERIFY(c2.copyFrom(&s) == false);
-
-    /* Make a third Chaser */
-    Chaser c3(m_doc);
-    c3.setName("Third");
-    c3.setBus(8);
-    c3.setDirection(Chaser::Forward);
-    c3.setRunOrder(Chaser::Loop);
-    c3.addStep(15);
-    c3.addStep(94);
-    c3.addStep(3);
-
-    /* Verify that copying TO the same Chaser a second time succeeds and
-       that steps are not appended but replaced completely. */
-    QVERIFY(c2.copyFrom(&c3) == true);
-    QVERIFY(c2.name() == "Third");
-    QVERIFY(c2.busID() == 8);
-    QVERIFY(c2.direction() == Chaser::Forward);
-    QVERIFY(c2.runOrder() == Chaser::Loop);
-    QVERIFY(c2.steps().size() == 3);
-    QVERIFY(c2.steps().at(0) == 15);
-    QVERIFY(c2.steps().at(1) == 94);
-    QVERIFY(c2.steps().at(2) == 3);
-}
-
-void Chaser_Test::createCopy()
-{
-    Doc doc(this, m_cache);
-
-    Chaser* c1 = new Chaser(m_doc);
-    c1->setName("First");
-    c1->setBus(15);
-    c1->setDirection(Chaser::Backward);
-    c1->setRunOrder(Chaser::SingleShot);
-    c1->addStep(20);
-    c1->addStep(30);
-    c1->addStep(40);
-
-    doc.addFunction(c1);
-    QVERIFY(c1->id() != Function::invalidId());
-
-    // Verify that the function is not created when Doc is full
-    doc.m_functionAllocation = KFunctionArraySize;
-    Function* f = c1->createCopy(&doc);
-    QVERIFY(f == NULL);
-
-    doc.m_functionAllocation = 1;
-    f = c1->createCopy(&doc);
-    QVERIFY(f != NULL);
-    QVERIFY(f != c1);
-    QVERIFY(f->id() != c1->id());
-
-    Chaser* copy = qobject_cast<Chaser*> (f);
-    QVERIFY(copy != NULL);
-    QVERIFY(copy->busID() == 15);
-    QVERIFY(copy->direction() == Chaser::Backward);
-    QVERIFY(copy->runOrder() == Chaser::SingleShot);
-    QVERIFY(copy->steps().size() == 3);
-    QVERIFY(copy->steps().at(0) == 20);
-    QVERIFY(copy->steps().at(1) == 30);
-    QVERIFY(copy->steps().at(2) == 40);
-}
-
-void Chaser_Test::stepFunctions()
-{
-    Doc doc(this, m_cache);
-
     Scene* s1 = new Scene(m_doc);
-    doc.addFunction(s1);
+    m_doc->addFunction(s1);
 
     Scene* s2 = new Scene(m_doc);
-    doc.addFunction(s2);
+    m_doc->addFunction(s2);
 
     Scene* s3 = new Scene(m_doc);
-    doc.addFunction(s3);
+    m_doc->addFunction(s3);
 
     Scene* s4 = new Scene(m_doc);
-    doc.addFunction(s4);
+    m_doc->addFunction(s4);
 
     Chaser* c = new Chaser(m_doc);
     c->addStep(s1->id());
@@ -559,12 +591,50 @@ void Chaser_Test::stepFunctions()
     c->addStep(s3->id());
     c->addStep(s4->id());
     c->addStep(123); // Nonexistent, should not appear in stepFunctions()
-    doc.addFunction(c);
+    m_doc->addFunction(c);
 
-    QList <Function*> funcs = c->stepFunctions();
+    QVERIFY(c->m_runner == NULL);
+    c->arm();
+    QVERIFY(c->m_runner != NULL);
+    QCOMPARE(c->elapsed(), quint32(0));
+
+    QList <Function*> funcs (c->m_runner->m_steps);
     QCOMPARE(funcs.size(), 4);
     QCOMPARE(funcs.at(0), s1);
     QCOMPARE(funcs.at(1), s2);
     QCOMPARE(funcs.at(2), s3);
     QCOMPARE(funcs.at(3), s4);
+
+    c->disarm();
+    QCOMPARE(c->m_runner, (ChaserRunner*)(0));
+    c->disarm();
+    QCOMPARE(c->m_runner, (ChaserRunner*)(0));
+}
+
+void Chaser_Test::tap()
+{
+    Scene* s1 = new Scene(m_doc);
+    m_doc->addFunction(s1);
+
+    Scene* s2 = new Scene(m_doc);
+    m_doc->addFunction(s2);
+
+    Scene* s3 = new Scene(m_doc);
+    m_doc->addFunction(s3);
+
+    Scene* s4 = new Scene(m_doc);
+    m_doc->addFunction(s4);
+
+    Chaser* c = new Chaser(m_doc);
+    c->addStep(s1->id());
+    c->addStep(s2->id());
+    c->addStep(s3->id());
+    c->addStep(s4->id());
+    m_doc->addFunction(c);
+
+    c->slotBusTapped(Bus::defaultFade()); // Wrong bus
+    c->slotBusTapped(Bus::defaultHold()); // Correct bus, m_runner == NULL
+    c->arm();
+    c->slotBusTapped(Bus::defaultHold()); // Correct bus, m_runner != NULL
+    QCOMPARE(c->m_runner->m_next, true);
 }

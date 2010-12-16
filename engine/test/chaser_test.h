@@ -40,15 +40,17 @@ private slots:
     void directionRunOrder();
     void steps();
     void functionRemoval();
+    void copyFrom();
+    void createCopy();
+    void stepFunctions();
 
     void loadSuccess();
     void loadWrongType();
     void loadWrongRoot();
     void save();
-    void copyFrom();
-    void createCopy();
 
-    void stepFunctions();
+    void arm();
+    void tap();
 
 private:
     Doc* m_doc;
