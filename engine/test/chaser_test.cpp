@@ -275,6 +275,13 @@ void Chaser_Test::loadSuccess()
     s3.appendChild(s3Text);
     root.appendChild(s3);
 
+    // Unknown tag
+    QDomElement foo = doc.createElement("Foo");
+    foo.setAttribute("Number", 3);
+    QDomText fooText = doc.createTextNode("1");
+    foo.appendChild(fooText);
+    root.appendChild(foo);
+
     Chaser c(m_doc);
     QVERIFY(c.loadXML(&root) == true);
     QVERIFY(c.busID() == 16);
@@ -528,4 +535,36 @@ void Chaser_Test::createCopy()
     QVERIFY(copy->steps().at(0) == 20);
     QVERIFY(copy->steps().at(1) == 30);
     QVERIFY(copy->steps().at(2) == 40);
+}
+
+void Chaser_Test::stepFunctions()
+{
+    Doc doc(this, m_cache);
+
+    Scene* s1 = new Scene(m_doc);
+    doc.addFunction(s1);
+
+    Scene* s2 = new Scene(m_doc);
+    doc.addFunction(s2);
+
+    Scene* s3 = new Scene(m_doc);
+    doc.addFunction(s3);
+
+    Scene* s4 = new Scene(m_doc);
+    doc.addFunction(s4);
+
+    Chaser* c = new Chaser(m_doc);
+    c->addStep(s1->id());
+    c->addStep(s2->id());
+    c->addStep(s3->id());
+    c->addStep(s4->id());
+    c->addStep(123); // Nonexistent, should not appear in stepFunctions()
+    doc.addFunction(c);
+
+    QList <Function*> funcs = c->stepFunctions();
+    QCOMPARE(funcs.size(), 4);
+    QCOMPARE(funcs.at(0), s1);
+    QCOMPARE(funcs.at(1), s2);
+    QCOMPARE(funcs.at(2), s3);
+    QCOMPARE(funcs.at(3), s4);
 }

@@ -48,6 +48,8 @@ private slots:
     void copyFrom();
     void createCopy();
 
+    void stepFunctions();
+
 private:
     Doc* m_doc;
     QLCFixtureDefCache m_cache;
