@@ -287,7 +287,7 @@ void QLCPhysical_Test::save()
             QVERIFY(e.attribute("Width") == "530");
             QVERIFY(e.attribute("Depth") == "260");
             QVERIFY(e.attribute("Height") == "320");
-            QVERIFY(e.attribute("Weight") == "39.4");
+            QCOMPARE(e.attribute("Weight").toDouble(), 39.4);
         }
         else if (e.tagName() == "Lens")
         {
