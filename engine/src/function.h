@@ -287,7 +287,7 @@ public:
      * Save this function to an XML document
      *
      * @param doc The XML document to save to
-     * @wksp_root A QLC workspace XML root node to save under
+     * @param wksp_root A QLC workspace XML root node to save under
      */
     virtual bool saveXML(QDomDocument* doc, QDomElement* wksp_root) = 0;
 
