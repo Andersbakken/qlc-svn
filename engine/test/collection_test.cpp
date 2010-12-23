@@ -561,7 +561,7 @@ void Collection_Test::stopNotOwnChildren()
     s2->arm();
     c->arm();
 
-    UniverseArray uni(1);
+    UniverseArray uni(512);
     MasterTimerStub* mts = new MasterTimerStub(this, NULL, uni);
 
     QVERIFY(c->stopped() == true);
@@ -581,9 +581,6 @@ void Collection_Test::stopNotOwnChildren()
 
     // Manually stop and re-start s1
     s1->stop();
-    // QFATAL : Collection_Test::stopNotOwnChildren() ASSERT: "i < uint(size())" in file /usr/lib64/qt/include/QtCore/qbytearray.h, line 400
-    // FAIL!  : Collection_Test::stopNotOwnChildren() Received a fatal error.
-    //   Loc: [Unknown file(0)]
     s1->write(mts, &uni);
     s1->postRun(mts, &uni);
     mts->startFunction(s1, true);
