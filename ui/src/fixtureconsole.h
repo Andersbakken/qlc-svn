@@ -51,15 +51,15 @@ public:
      *********************************************************************/
 public:
     /** Set the fixture that this console is controlling */
-    void setFixture(t_fixture_id id);
+    void setFixture(quint32 id);
 
     /** Get the fixture that this console is controlling */
-    t_fixture_id fixture() const {
+    quint32 fixture() const {
         return m_fixture;
     }
 
 protected:
-    t_fixture_id m_fixture;
+    quint32 m_fixture;
 
     /*********************************************************************
      * Channels
@@ -93,7 +93,7 @@ protected slots:
 
 signals:
     /** Signal telling one of this console's channels has changed value */
-    void valueChanged(t_fixture_id fxi, quint32 channel, uchar value,
+    void valueChanged(quint32 fxi, quint32 channel, uchar value,
                       bool enabled);
 
 protected:

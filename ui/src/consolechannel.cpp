@@ -53,7 +53,7 @@ extern App* _app;
  * Initialization
  *****************************************************************************/
 
-ConsoleChannel::ConsoleChannel(QWidget* parent, t_fixture_id fixtureID,
+ConsoleChannel::ConsoleChannel(QWidget* parent, quint32 fixtureID,
                                quint32 channel) : QGroupBox(parent)
 {
     /* Set the class name as the object name */

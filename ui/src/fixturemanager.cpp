@@ -167,17 +167,17 @@ void FixtureManager::slotDocumentChanged(Doc* doc)
     Q_ASSERT(doc != NULL);
 
     /* Connect fixture list change signals from the new document object */
-    connect(doc, SIGNAL(fixtureAdded(t_fixture_id)),
-            this, SLOT(slotFixtureAdded(t_fixture_id)));
+    connect(doc, SIGNAL(fixtureAdded(quint32)),
+            this, SLOT(slotFixtureAdded(quint32)));
 
-    connect(doc, SIGNAL(fixtureRemoved(t_fixture_id)),
-            this, SLOT(slotFixtureRemoved(t_fixture_id)));
+    connect(doc, SIGNAL(fixtureRemoved(quint32)),
+            this, SLOT(slotFixtureRemoved(quint32)));
 
     connect(doc, SIGNAL(modeChanged(Doc::Mode)),
             this, SLOT(slotModeChanged(Doc::Mode)));
 }
 
-void FixtureManager::slotFixtureAdded(t_fixture_id id)
+void FixtureManager::slotFixtureAdded(quint32 id)
 {
     Fixture* fxi = _app->doc()->fixture(id);
     if (fxi != NULL)
@@ -188,7 +188,7 @@ void FixtureManager::slotFixtureAdded(t_fixture_id id)
     }
 }
 
-void FixtureManager::slotFixtureRemoved(t_fixture_id id)
+void FixtureManager::slotFixtureRemoved(quint32 id)
 {
     // Find a matching fixture item and destroy it
     QTreeWidgetItem* item = fixtureItem(id);
@@ -272,32 +272,27 @@ void FixtureManager::initDataView()
 void FixtureManager::updateView()
 {
     QTreeWidgetItem* item;
-    t_fixture_id currentId = Fixture::invalidId();
-    t_fixture_id id = Fixture::invalidId();
-    Fixture* fxt = NULL;
+    quint32 currentId = Fixture::invalidId();
 
     // Store the currently selected fixture's ID
     item = m_tree->currentItem();
     if (item != NULL)
-        currentId = item->text(KColumnID).toInt();
+        currentId = item->text(KColumnID).toUInt();
 
     // Clear the view
     m_tree->clear();
 
     // Add all fixtures
-    for (id = 0; id < KFixtureArraySize; id++)
+    foreach (Fixture* fixture, _app->doc()->fixtures())
     {
-        fxt = _app->doc()->fixture(id);
-        if (fxt == NULL)
-            continue;
-
-        item = new QTreeWidgetItem(m_tree);
+        Q_ASSERT(fixture != NULL);
 
         // Update fixture information to the item
-        updateItem(item, fxt);
+        item = new QTreeWidgetItem(m_tree);
+        updateItem(item, fixture);
 
         // Select this if it was selected before update
-        if (currentId == id)
+        if (currentId == fixture->id())
             m_tree->setCurrentItem(item);
     }
 
@@ -306,12 +301,12 @@ void FixtureManager::updateView()
         m_tree->setCurrentItem(m_tree->topLevelItem(0));
 }
 
-QTreeWidgetItem* FixtureManager::fixtureItem(t_fixture_id id) const
+QTreeWidgetItem* FixtureManager::fixtureItem(quint32 id) const
 {
     QTreeWidgetItemIterator it(m_tree);
     while (*it != NULL)
     {
-        if ((*it)->text(KColumnID).toInt() == id)
+        if ((*it)->text(KColumnID).toUInt() == id)
             return (*it);
         ++it;
     }
@@ -352,7 +347,7 @@ void FixtureManager::slotSelectionChanged()
     if (selectedCount == 1)
     {
         QScrollArea* scrollArea;
-        t_fixture_id id;
+        quint32 id;
         Fixture* fxi;
         int page;
 
@@ -360,7 +355,7 @@ void FixtureManager::slotSelectionChanged()
         Q_ASSERT(item != NULL);
 
         // Set the text view's contents
-        id = item->text(KColumnID).toInt();
+        id = item->text(KColumnID).toUInt();
         fxi = _app->doc()->fixture(id);
         Q_ASSERT(fxi != NULL);
         m_info->setText(QString("%1<BODY>%2</BODY></HTML>")
@@ -536,7 +531,7 @@ void FixtureManager::slotAdd()
     if (af.exec() == QDialog::Rejected)
         return;
 
-    t_fixture_id latestFxi = Fixture::invalidId();
+    quint32 latestFxi = Fixture::invalidId();
 
     QString name = af.name();
     quint32 address = af.address();
@@ -644,17 +639,8 @@ void FixtureManager::slotAdd()
 
 void FixtureManager::addFixtureErrorMessage()
 {
-    if (_app->doc()->fixtures() >= KFixtureArraySize)
-    {
-        QMessageBox::critical(this, tr("Too many fixtures"),
-                              tr("You can't create more than %1 fixtures.")
-                              .arg(KFixtureArraySize));
-    }
-    else
-    {
-        QMessageBox::critical(this, tr("Fixture creation failed"),
-                              tr("Unable to create new fixture."));
-    }
+    QMessageBox::critical(this, tr("Fixture creation failed"),
+                          tr("Unable to create new fixture."));
 }
 
 void FixtureManager::slotRemove()
@@ -673,7 +659,7 @@ void FixtureManager::slotRemove()
         QTreeWidgetItem* item(it.next());
         Q_ASSERT(item != NULL);
 
-        t_fixture_id id = item->text(KColumnID).toInt();
+        quint32 id = item->text(KColumnID).toUInt();
 
         /** @todo This is REALLY bogus here, since Fixture or Doc should do
             this. However, FixtureManager is the only place to destroy fixtures,
@@ -694,7 +680,7 @@ void FixtureManager::slotProperties()
     if (item == NULL)
         return;
 
-    t_fixture_id id = item->text(KColumnID).toInt();
+    quint32 id = item->text(KColumnID).toUInt();
     Fixture* fxi = _app->doc()->fixture(id);
     if (fxi == NULL)
         return;

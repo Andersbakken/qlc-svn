@@ -523,7 +523,7 @@ const QList <EFXFixture*> EFX::fixtures() const
     return m_fixtures;
 }
 
-void EFX::slotFixtureRemoved(t_fixture_id fxi_id)
+void EFX::slotFixtureRemoved(quint32 fxi_id)
 {
     /* Remove the destroyed fixture from our list */
     QMutableListIterator <EFXFixture*> it(m_fixtures);

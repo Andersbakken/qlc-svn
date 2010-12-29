@@ -130,7 +130,7 @@ void VCXYPad::appendFixture(const VCXYPadFixture& fxi)
         m_fixtures.append(fxi);
 }
 
-void VCXYPad::removeFixture(t_fixture_id fxi_id)
+void VCXYPad::removeFixture(quint32 fxi_id)
 {
     VCXYPadFixture fixture;
     fixture.setFixture(fxi_id);

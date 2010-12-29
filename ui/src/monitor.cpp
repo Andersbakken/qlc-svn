@@ -81,11 +81,10 @@ Monitor::Monitor(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
     initToolBar();
 
     /* Create a bunch of MonitorFixtures for each fixture */
-    for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+    foreach(Fixture* fxi, _app->doc()->fixtures())
     {
-        Fixture* fxi = _app->doc()->fixture(i);
-        if (fxi != NULL)
-            createMonitorFixture(fxi);
+        Q_ASSERT(fxi != NULL);
+        createMonitorFixture(fxi);
     }
 
     /* Show the master container widgets */
@@ -98,10 +97,10 @@ Monitor::Monitor(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
             this, SLOT(slotDocumentChanged(Doc*)));
 
     /* Listen to fixture additions and changes from Doc */
-    connect(_app->doc(), SIGNAL(fixtureAdded(t_fixture_id)),
-            this, SLOT(slotFixtureAdded(t_fixture_id)));
-    connect(_app->doc(), SIGNAL(fixtureChanged(t_fixture_id)),
-            this, SLOT(slotFixtureChanged(t_fixture_id)));
+    connect(_app->doc(), SIGNAL(fixtureAdded(quint32)),
+            this, SLOT(slotFixtureAdded(quint32)));
+    connect(_app->doc(), SIGNAL(fixtureChanged(quint32)),
+            this, SLOT(slotFixtureChanged(quint32)));
 
     m_timer = startTimer(1000 / 50);
     QWidget::show();
@@ -341,14 +340,14 @@ void Monitor::slotDocumentChanged(Doc* doc)
 #endif
 }
 
-void Monitor::slotFixtureAdded(t_fixture_id fxi_id)
+void Monitor::slotFixtureAdded(quint32 fxi_id)
 {
     Fixture* fxi = _app->doc()->fixture(fxi_id);
     if (fxi != NULL)
         createMonitorFixture(fxi);
 }
 
-void Monitor::slotFixtureChanged(t_fixture_id fxi_id)
+void Monitor::slotFixtureChanged(quint32 fxi_id)
 {
     Q_UNUSED(fxi_id);
 

@@ -116,18 +116,18 @@ void Scene::setValue(const SceneValue& scv)
     emit changed(m_id);
 }
 
-void Scene::setValue(t_fixture_id fxi, quint32 ch, uchar value)
+void Scene::setValue(quint32 fxi, quint32 ch, uchar value)
 {
     setValue(SceneValue(fxi, ch, value));
 }
 
-void Scene::unsetValue(t_fixture_id fxi, quint32 ch)
+void Scene::unsetValue(quint32 fxi, quint32 ch)
 {
     m_values.removeAll(SceneValue(fxi, ch, 0));
     emit changed(m_id);
 }
 
-uchar Scene::value(t_fixture_id fxi, quint32 ch)
+uchar Scene::value(quint32 fxi, quint32 ch)
 {
     SceneValue scv(fxi, ch, 0);
     int index = m_values.indexOf(scv);
@@ -151,7 +151,7 @@ void Scene::clear()
  * Fixtures
  *****************************************************************************/
 
-void Scene::slotFixtureRemoved(t_fixture_id fxi_id)
+void Scene::slotFixtureRemoved(quint32 fxi_id)
 {
     QMutableListIterator <SceneValue> it(m_values);
     while (it.hasNext() == true)
@@ -418,7 +418,7 @@ void Scene::write(MasterTimer* timer, UniverseArray* universes)
         stop();
 }
 
-void Scene::writeValues(UniverseArray* universes, t_fixture_id fxi_id,
+void Scene::writeValues(UniverseArray* universes, quint32 fxi_id,
                         QLCChannel::Group grp)
 {
     Q_ASSERT(universes != NULL);

@@ -56,7 +56,7 @@ class SceneValue
 {
 public:
     /** Normal constructor */
-    SceneValue(t_fixture_id fxi_id = Fixture::invalidId(),
+    SceneValue(quint32 fxi_id = Fixture::invalidId(),
                quint32 channel = QLCChannel::invalid(),
                uchar value = 0);
 
@@ -82,7 +82,7 @@ public:
     bool saveXML(QDomDocument* doc, QDomElement* scene_root) const;
 
 public:
-    t_fixture_id fxi;
+    quint32 fxi;
     quint32 channel;
     uchar value;
 };

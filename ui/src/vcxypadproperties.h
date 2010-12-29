@@ -49,13 +49,13 @@ private:
      ********************************************************************/
 protected:
     void fillTree();
-    QList <t_fixture_id> selectedFixtureIDs() const;
+    QList <quint32> selectedFixtureIDs() const;
     QList <VCXYPadFixture> selectedFixtures() const;
     QTreeWidgetItem* fixtureItem(const VCXYPadFixture& fxi);
 
     void updateFixtureItem(QTreeWidgetItem* item,
                            const VCXYPadFixture& fxi);
-    void removeFixtureItem(t_fixture_id fxi_id);
+    void removeFixtureItem(quint32 fxi_id);
 
 protected slots:
     void slotAddClicked();

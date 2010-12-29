@@ -59,10 +59,10 @@ protected:
      ********************************************************************/
 public:
     /** Set the fixture that this EFXFixture represents */
-    void setFixture(t_fixture_id fxi_id);
+    void setFixture(quint32 fxi_id);
 
     /** Get the fixture that this EFXFixture represents */
-    t_fixture_id fixture() const;
+    quint32 fixture() const;
 
     /** Set this fixture's direction */
     void setDirection(Function::Direction dir);
@@ -72,7 +72,7 @@ public:
 
 protected:
     /** The ID of the fixture this EFXFixture represents */
-    t_fixture_id m_fixture;
+    quint32 m_fixture;
 
     /** This fixture's original running direction */
     Function::Direction m_direction;

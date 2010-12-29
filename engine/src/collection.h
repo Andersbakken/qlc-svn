@@ -42,7 +42,7 @@ public:
     virtual ~Collection();
 
     /** Collections don't belong to any particular fixture */
-    void setFixture(t_fixture_id) { /* NOP */ }
+    void setFixture(quint32) { /* NOP */ }
 
     /*********************************************************************
      * Function type

@@ -90,10 +90,10 @@ protected:
     void levelUpdateFixtures();
 
     /** Update a fixture node in the listview on the level page */
-    void levelUpdateFixtureNode(t_fixture_id id);
+    void levelUpdateFixtureNode(quint32 id);
 
     /** Get a fixture node from the listview on the level page */
-    QTreeWidgetItem* levelFixtureNode(t_fixture_id id);
+    QTreeWidgetItem* levelFixtureNode(quint32 id);
 
     /** Update fixture channels to the listview on the level page */
     void levelUpdateChannels(QTreeWidgetItem* parent, Fixture* fxi);

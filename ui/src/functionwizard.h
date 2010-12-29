@@ -50,13 +50,13 @@ protected slots:
      ********************************************************************/
 protected:
     /** Add a fixture to the tree widget */
-    void addFixture(t_fixture_id fxi_id);
+    void addFixture(quint32 fxi_id);
 
     /** Get a list of currently selected fixtures */
     QList <Fixture*> fixtures() const;
 
     /** Get a list of currently selected fixture ids */
-    QList <t_fixture_id> fixtureIds() const;
+    QList <quint32> fixtureIds() const;
 };
 
 #endif

@@ -392,7 +392,7 @@ public:
 
 public slots:
     /** Slot that captures Doc::fixtureRemoved signals */
-    void slotFixtureRemoved(t_fixture_id fxi_id);
+    void slotFixtureRemoved(quint32 fxi_id);
 
 protected:
     QList <EFXFixture*> m_fixtures;

@@ -82,7 +82,7 @@ public:
      *********************************************************************/
 public:
     void appendFixture(const VCXYPadFixture& fxi);
-    void removeFixture(t_fixture_id fxi);
+    void removeFixture(quint32 fxi);
     void clearFixtures();
 
     QList <VCXYPadFixture> fixtures() const {

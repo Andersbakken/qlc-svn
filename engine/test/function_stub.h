@@ -49,14 +49,14 @@ public:
     void postRun(MasterTimer* timer, UniverseArray* universes);
 
 public slots:
-    void slotFixtureRemoved(t_fixture_id id);
+    void slotFixtureRemoved(quint32 id);
 
 public:
     int m_writeCalls;
     int m_preRunCalls;
     int m_postRunCalls;
 
-    t_fixture_id m_slotFixtureRemovedId;
+    quint32 m_slotFixtureRemovedId;
     Function::Type m_type;
 };
 

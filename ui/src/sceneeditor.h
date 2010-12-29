@@ -91,7 +91,7 @@ protected:
      * General tab
      *********************************************************************/
 protected:
-    QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id);
+    QTreeWidgetItem* fixtureItem(quint32 fxi_id);
     QList <Fixture*> selectedFixtures() const;
 
     void addFixtureItem(Fixture* fixture);

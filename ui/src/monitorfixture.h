@@ -51,18 +51,18 @@ public:
      * Fixture
      ********************************************************************/
 public:
-    void setFixture(t_fixture_id fxi_id);
-    t_fixture_id fixture() const {
+    void setFixture(quint32 fxi_id);
+    quint32 fixture() const {
         return m_fixture;
     }
 
 public slots:
     void slotChannelStyleChanged(Monitor::ChannelStyle style);
-    void slotFixtureChanged(t_fixture_id fxi_id);
-    void slotFixtureRemoved(t_fixture_id fxi_id);
+    void slotFixtureChanged(quint32 fxi_id);
+    void slotFixtureRemoved(quint32 fxi_id);
 
 protected:
-    t_fixture_id m_fixture;
+    quint32 m_fixture;
     Monitor::ChannelStyle m_channelStyle;
     QLabel* m_fixtureLabel;
     QList <QLabel*> m_channelLabels;

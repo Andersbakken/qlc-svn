@@ -50,7 +50,7 @@ class ConsoleChannel : public QGroupBox, public DMXSource
      * Initialization
      *********************************************************************/
 public:
-    ConsoleChannel(QWidget *parent, t_fixture_id fixtureID,
+    ConsoleChannel(QWidget *parent, quint32 fixtureID,
                    quint32 channel);
     ~ConsoleChannel();
 
@@ -152,7 +152,7 @@ public:
 
 protected:
     quint32 m_channel;
-    t_fixture_id m_fixtureID;
+    quint32 m_fixtureID;
     Fixture* m_fixture;
 
     /*********************************************************************

@@ -59,7 +59,7 @@ void FunctionWizard::slotAddClicked()
     FixtureSelection fs(this, _app->doc(), true, fixtureIds());
     if (fs.exec() == QDialog::Accepted)
     {
-        QListIterator <t_fixture_id> it(fs.selection);
+        QListIterator <quint32> it(fs.selection);
         while (it.hasNext() == true)
             addFixture(it.next());
     }
@@ -99,7 +99,7 @@ void FunctionWizard::accept()
  * Fixtures
  ****************************************************************************/
 
-void FunctionWizard::addFixture(t_fixture_id fxi_id)
+void FunctionWizard::addFixture(quint32 fxi_id)
 {
     Fixture* fxi = _app->doc()->fixture(fxi_id);
     Q_ASSERT(fxi != NULL);
@@ -132,7 +132,7 @@ QList <Fixture*> FunctionWizard::fixtures() const
         QTreeWidgetItem* item(m_fixtureTree->topLevelItem(i));
         Q_ASSERT(item != NULL);
 
-        t_fixture_id id = item->data(KColumnID, Qt::UserRole).toInt();
+        quint32 id = item->data(KColumnID, Qt::UserRole).toInt();
         Fixture* fxi = _app->doc()->fixture(id);
         Q_ASSERT(fxi != NULL);
 
@@ -142,9 +142,9 @@ QList <Fixture*> FunctionWizard::fixtures() const
     return list;
 }
 
-QList <t_fixture_id> FunctionWizard::fixtureIds() const
+QList <quint32> FunctionWizard::fixtureIds() const
 {
-    QList <t_fixture_id> list;
+    QList <quint32> list;
     for (int i = 0; i < m_fixtureTree->topLevelItemCount(); i++)
     {
         QTreeWidgetItem* item(m_fixtureTree->topLevelItem(i));

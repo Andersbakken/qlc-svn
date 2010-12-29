@@ -40,17 +40,11 @@
 #include "doc.h"
 
 Doc::Doc(QObject* parent, const QLCFixtureDefCache& fixtureDefCache)
-        : QObject(parent)
-        , m_mode(Design)
-        , m_fixtureDefCache(fixtureDefCache)
+    : QObject(parent)
+    , m_mode(Design)
+    , m_fixtureDefCache(fixtureDefCache)
+    , m_latestFixtureId(0)
 {
-    // Allocate fixture array
-    m_fixtureArray = (Fixture**) malloc(sizeof(Fixture*) *
-                                        KFixtureArraySize);
-    for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
-        m_fixtureArray[i] = NULL;
-    m_fixtureAllocation = 0;
-
     // Allocate function array
     m_functionArray = (Function**) malloc(sizeof(Function*) *
                                           KFunctionArraySize);
@@ -83,18 +77,9 @@ Doc::~Doc()
     m_functionAllocation = 0;
 
     // Delete all fixture instances
-    for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
-    {
-        if (m_fixtureArray[i] != NULL)
-        {
-            delete m_fixtureArray[i];
-            m_fixtureArray[i] = NULL;
-
-            emit fixtureRemoved(i);
-        }
-    }
-    delete [] m_fixtureArray;
-    m_fixtureAllocation = 0;
+    QListIterator <quint32> fxit(m_fixtures.keys());
+    while (fxit.hasNext() == true)
+        delete m_fixtures.take(fxit.next());
 }
 
 /*****************************************************************************
@@ -149,9 +134,9 @@ Doc::Mode Doc::mode() const
     return m_mode;
 }
 
-/*************************************************************************
+/*****************************************************************************
  * Fixture definition cache
- *************************************************************************/
+ *****************************************************************************/
 
 const QLCFixtureDefCache& Doc::fixtureDefCache() const
 {
@@ -162,76 +147,77 @@ const QLCFixtureDefCache& Doc::fixtureDefCache() const
  * Fixtures
  *****************************************************************************/
 
-bool Doc::addFixture(Fixture* fixture, t_fixture_id id)
+quint32 Doc::createFixtureId()
 {
-    bool ok = false;
+    /* This results in an endless loop if there are UINT_MAX-1 fixtures. That,
+       however, seems a bit unlikely. Are there even 4294967295-1 fixtures in
+       total in the whole world? */
+    while (m_fixtures.contains(m_latestFixtureId) == true ||
+           m_latestFixtureId == Fixture::invalidId())
+    {
+        m_latestFixtureId++;
+    }
 
+    return m_latestFixtureId;
+}
+
+bool Doc::addFixture(Fixture* fixture, quint32 id)
+{
     Q_ASSERT(fixture != NULL);
 
-    if (m_fixtureAllocation == KFixtureArraySize)
-        return false;
-
+    // No ID given, this method can assign one
     if (id == Fixture::invalidId())
+        id = createFixtureId();
+
+    if (m_fixtures.contains(id) == true || id == Fixture::invalidId())
     {
-        /* Find the next free slot for a new fixture */
-        for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
-        {
-            if (m_fixtureArray[i] == NULL)
-            {
-                assignFixture(fixture, i);
-                ok = true;
-                break;
-            }
-        }
-    }
-    else if (id >= 0 && id < KFunctionArraySize)
-    {
-        if (m_fixtureArray[id] == NULL)
-        {
-            assignFixture(fixture, id);
-            ok = true;
-        }
-        else
-        {
-            qWarning() << Q_FUNC_INFO << "Unable to assign fixture"
-                       << fixture->name() << "to ID" << id
-                       << "because another fixture already has the same ID.";
-        }
+        qWarning() << Q_FUNC_INFO << "a fixture with ID" << id << "already exists!";
+        return false;
     }
     else
     {
-        /* Pure and honest epic fail */
-    }
+        /* Patch fixture change signals thru Doc */
+        connect(fixture, SIGNAL(changed(quint32)),
+                this, SLOT(slotFixtureChanged(quint32)));
 
-    return ok;
+        fixture->setID(id);
+        m_fixtures[id] = fixture;
+        emit fixtureAdded(id);
+        setModified();
+
+        return true;
+    }
 }
 
-bool Doc::deleteFixture(t_fixture_id id)
+bool Doc::deleteFixture(quint32 id)
 {
-    if (id < 0 || id > KFixtureArraySize)
-        return false;
-
-    if (m_fixtureArray[id] != NULL)
+    if (m_fixtures.contains(id) == true)
     {
-        delete m_fixtureArray[id];
-        m_fixtureArray[id] = NULL;
-        m_fixtureAllocation--;
+        Fixture* fxi = m_fixtures.take(id);
+        Q_ASSERT(fxi != NULL);
 
         emit fixtureRemoved(id);
         setModified();
+        delete fxi;
+
         return true;
     }
     else
     {
-        qWarning() << Q_FUNC_INFO << "No such fixture ID:" << id;
+        qWarning() << Q_FUNC_INFO << "No fixture with id" << id;
         return false;
     }
 }
 
-Fixture* Doc::fixture(t_fixture_id id) const
+QList <Fixture*> Doc::fixtures() const
 {
-    if (id >= 0 && id < KFixtureArraySize)
-        return m_fixtureArray[id];
+    return m_fixtures.values();
+}
+
+Fixture* Doc::fixture(quint32 id) const
+{
+    if (m_fixtures.contains(id) == true)
+        return m_fixtures[id];
     else
         return NULL;
 }
@@ -258,12 +244,11 @@ quint32 Doc::findAddress(quint32 universe, quint32 numChannels) const
     int map[maxChannels];
     std::fill(map, map + maxChannels, 0);
 
-    /* Go thru all fixtures and mark their address spaces to the map */
-    for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+    QListIterator <Fixture*> fxit(fixtures());
+    while (fxit.hasNext() == true)
     {
-        Fixture* fxi = m_fixtureArray[fxi_id];
-        if (fxi == NULL)
-            continue;
+        Fixture* fxi(fxit.next());
+        Q_ASSERT(fxi != NULL);
 
         if (fxi->universe() != universe)
             continue;
@@ -287,11 +272,6 @@ quint32 Doc::findAddress(quint32 universe, quint32 numChannels) const
     return QLCChannel::invalid();
 }
 
-int Doc::fixtures() const
-{
-    return m_fixtureAllocation;
-}
-
 int Doc::totalPowerConsumption(int& fuzzy) const
 {
     int totalPowerConsumption = 0;
@@ -299,15 +279,16 @@ int Doc::totalPowerConsumption(int& fuzzy) const
     // Make sure fuzzy starts from zero
     fuzzy = 0;
 
-    for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+    QListIterator <Fixture*> fxit(fixtures());
+    while (fxit.hasNext() == true)
     {
-        if (m_fixtureArray[i] == NULL)
-            continue;
+        Fixture* fxi(fxit.next());
+        Q_ASSERT(fxi != NULL);
 
         // Generic dimmer has no mode and physical
-        if (m_fixtureArray[i]->isDimmer() == false)
+        if (fxi->isDimmer() == false && fxi->fixtureMode() != NULL)
         {
-            QLCPhysical phys = m_fixtureArray[i]->fixtureMode()->physical();
+            QLCPhysical phys = fxi->fixtureMode()->physical();
             if (phys.powerConsumption() > 0)
                 totalPowerConsumption += phys.powerConsumption();
             else
@@ -320,23 +301,6 @@ int Doc::totalPowerConsumption(int& fuzzy) const
     }
 
     return totalPowerConsumption;
-}
-
-void Doc::assignFixture(Fixture* fixture, t_fixture_id id)
-{
-    Q_ASSERT(fixture != NULL);
-    Q_ASSERT(id >= 0 && id < KFixtureArraySize);
-
-    /* Patch fixture change signals thru Doc */
-    connect(fixture, SIGNAL(changed(t_fixture_id)),
-            this, SLOT(slotFixtureChanged(t_fixture_id)));
-
-    m_fixtureArray[id] = fixture;
-    fixture->setID(id);
-    m_fixtureAllocation++;
-    emit fixtureAdded(id);
-
-    setModified();
 }
 
 /*****************************************************************************
@@ -446,8 +410,8 @@ void Doc::assignFunction(Function* function, t_function_id id)
 
     /* Make the function listen to fixture removals so that it can
        get rid of nonexisting members. */
-    connect(this, SIGNAL(fixtureRemoved(t_fixture_id)),
-            function, SLOT(slotFixtureRemoved(t_fixture_id)));
+    connect(this, SIGNAL(fixtureRemoved(quint32)),
+            function, SLOT(slotFixtureRemoved(quint32)));
 
     m_functionAllocation++;
     m_functionArray[id] = function;
@@ -466,7 +430,7 @@ void Doc::slotFunctionChanged(t_function_id fid)
  * Monitoring/listening methods
  *****************************************************************************/
 
-void Doc::slotFixtureChanged(t_fixture_id id)
+void Doc::slotFixtureChanged(quint32 id)
 {
     setModified();
     emit fixtureChanged(id);
@@ -536,12 +500,12 @@ bool Doc::saveXML(QDomDocument* doc, QDomElement* wksp_root)
     wksp_root->appendChild(root);
 
     /* Write fixtures into an XML document */
-    for (t_fixture_id i = 0; i < KFixtureArraySize; i++)
+    QListIterator <Fixture*> fxit(fixtures());
+    while (fxit.hasNext() == true)
     {
-        if (m_fixtureArray[i] != NULL)
-        {
-            m_fixtureArray[i]->saveXML(doc, &root);
-        }
+        Fixture* fxi(fxit.next());
+        Q_ASSERT(fxi != NULL);
+        fxi->saveXML(doc, &root);
     }
 
     /* Write functions into an XML document */

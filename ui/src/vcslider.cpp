@@ -142,8 +142,8 @@ VCSlider::VCSlider(QWidget* parent) : VCWidget(parent)
 
     /* Listen to fixture removals so that LevelChannels can be removed when
        they no longer point to an existing fixture->channel */
-    connect(_app->doc(), SIGNAL(fixtureRemoved(t_fixture_id)),
-            this, SLOT(slotFixtureRemoved(t_fixture_id)));
+    connect(_app->doc(), SIGNAL(fixtureRemoved(quint32)),
+            this, SLOT(slotFixtureRemoved(quint32)));
 }
 
 VCSlider::~VCSlider()
@@ -463,7 +463,7 @@ void VCSlider::slotBusNameChanged(quint32 bus, const QString&)
  * Level
  *****************************************************************************/
 
-void VCSlider::addLevelChannel(t_fixture_id fixture, quint32 channel)
+void VCSlider::addLevelChannel(quint32 fixture, quint32 channel)
 {
     LevelChannel lch(fixture, channel);
 
@@ -474,7 +474,7 @@ void VCSlider::addLevelChannel(t_fixture_id fixture, quint32 channel)
     }
 }
 
-void VCSlider::removeLevelChannel(t_fixture_id fixture, quint32 channel)
+void VCSlider::removeLevelChannel(quint32 fixture, quint32 channel)
 {
     LevelChannel lch(fixture, channel);
     m_levelChannels.removeAll(lch);
@@ -523,7 +523,7 @@ uchar VCSlider::levelValue() const
     return m_levelValue;
 }
 
-void VCSlider::slotFixtureRemoved(t_fixture_id fxi_id)
+void VCSlider::slotFixtureRemoved(quint32 fxi_id)
 {
     QMutableListIterator <LevelChannel> it(m_levelChannels);
     while (it.hasNext() == true)
@@ -913,7 +913,7 @@ bool VCSlider::loadXMLLevel(const QDomElement* level_root)
             /* Fixture & channel */
             str = tag.attribute(KXMLQLCVCSliderChannelFixture);
             addLevelChannel(
-                static_cast<t_fixture_id>(str.toInt()),
+                static_cast<quint32>(str.toInt()),
                 static_cast<quint32> (tag.text().toInt()));
         }
         else
@@ -1016,7 +1016,7 @@ bool VCSlider::saveXML(QDomDocument* doc, QDomElement* vc_root)
  * LevelChannel implementation
  ****************************************************************************/
 
-VCSlider::LevelChannel::LevelChannel(t_fixture_id fid, quint32 ch)
+VCSlider::LevelChannel::LevelChannel(quint32 fid, quint32 ch)
 {
     this->fixture = fid;
     this->channel = ch;

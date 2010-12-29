@@ -36,9 +36,9 @@ private slots:
 
     void defaults();
 
+    void createFixtureId();
     void addFixture();
     void deleteFixture();
-    void fixtureLimits();
     void fixture();
     void findAddress();
     void totalPowerConsumption();
@@ -53,7 +53,7 @@ private slots:
     void save();
 
 private:
-    QDomElement createFixtureNode(QDomDocument& doc, t_fixture_id id);
+    QDomElement createFixtureNode(QDomDocument& doc, quint32 id);
     QDomElement createCollectionNode(QDomDocument& doc, t_function_id id);
     QDomElement createBusNode(QDomDocument& doc, quint32 id, quint32 value);
 

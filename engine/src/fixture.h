@@ -84,23 +84,23 @@ public:
      *
      * @param id The new fixture id
      */
-    void setID(t_fixture_id id);
+    void setID(quint32 id);
 
     /**
      * Get the fixture instance's fixture ID.
      *
      * @return The instance's fixture ID
      */
-    t_fixture_id id() const;
+    quint32 id() const;
 
     /**
      * Get the invalid fixture ID (for comparison etc...)
      */
-    static t_fixture_id invalidId();
+    static quint32 invalidId();
 
 protected:
     /** Fixture ID */
-    t_fixture_id m_id;
+    quint32 m_id;
 
     /*********************************************************************
      * Name
@@ -346,7 +346,7 @@ public:
      * Signals
      *********************************************************************/
 signals:
-    void changed(t_fixture_id);
+    void changed(quint32);
 };
 
 #endif

@@ -93,17 +93,17 @@ public:
     /**
      * Set the value of one fixture channel, specify parameters separately
      */
-    void setValue(t_fixture_id fxi, quint32 ch, uchar value);
+    void setValue(quint32 fxi, quint32 ch, uchar value);
 
     /**
      * Clear the value of one fixture channel
      */
-    void unsetValue(t_fixture_id fxi, quint32 ch);
+    void unsetValue(quint32 fxi, quint32 ch);
 
     /**
      * Get the value of one fixture channel
      */
-    uchar value(t_fixture_id fxi, quint32 ch);
+    uchar value(quint32 fxi, quint32 ch);
 
     /**
      * Get a list of values in this scene
@@ -122,7 +122,7 @@ protected:
      * Fixtures
      *********************************************************************/
 public slots:
-    void slotFixtureRemoved(t_fixture_id fxi_id);
+    void slotFixtureRemoved(quint32 fxi_id);
 
     /*********************************************************************
      * Load & Save
@@ -172,7 +172,7 @@ public:
      * @param grp if non-invalid, writes values concerning only given channel group
      */
     virtual void writeValues(UniverseArray* universes,
-                             t_fixture_id fxi_id = Fixture::invalidId(),
+                             quint32 fxi_id = Fixture::invalidId(),
                              QLCChannel::Group grp = QLCChannel::NoGroup);
 
     /** Get a list of channels that have been armed for running */

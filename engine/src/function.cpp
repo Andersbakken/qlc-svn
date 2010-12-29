@@ -270,7 +270,7 @@ quint32 Function::busID() const
  * Fixtures
  *****************************************************************************/
 
-void Function::slotFixtureRemoved(t_fixture_id fid)
+void Function::slotFixtureRemoved(quint32 fid)
 {
     Q_UNUSED(fid);
 }

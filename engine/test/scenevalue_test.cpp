@@ -110,7 +110,7 @@ void SceneValue_Test::loadWrongFixture()
     QDomDocument doc;
 
     QDomElement val = doc.createElement("Value");
-    val.setAttribute("Fixture", 65535);
+    val.setAttribute("Fixture", Fixture::invalidId());
     val.setAttribute("Channel", 60);
     QDomText valText = doc.createTextNode("100");
     val.appendChild(valText);

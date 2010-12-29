@@ -25,7 +25,7 @@
 
 #include "scenevalue.h"
 
-SceneValue::SceneValue(t_fixture_id id, quint32 ch, uchar val)
+SceneValue::SceneValue(quint32 id, quint32 ch, uchar val)
     : fxi(id)
     , channel(ch)
     , value(val)
@@ -86,11 +86,8 @@ bool SceneValue::loadXML(const QDomElement& tag)
         return false;
     }
 
-    fxi = t_fixture_id(tag.attribute(KXMLQLCSceneValueFixture).toInt());
-    if (fxi < 0 || fxi >= KFixtureArraySize)
-        return false;
-
-    channel = quint32(tag.attribute(KXMLQLCSceneValueChannel).toInt());
+    fxi = tag.attribute(KXMLQLCSceneValueFixture).toUInt();
+    channel = tag.attribute(KXMLQLCSceneValueChannel).toUInt();
     value = uchar(tag.text().toUInt());
 
     return isValid();

@@ -96,10 +96,10 @@ void VCXYPadProperties::updateFixtureItem(QTreeWidgetItem* item,
     item->setData(KColumnFixture, Qt::UserRole, QVariant(fxi));
 }
 
-QList <t_fixture_id> VCXYPadProperties::selectedFixtureIDs() const
+QList <quint32> VCXYPadProperties::selectedFixtureIDs() const
 {
     QListIterator <QTreeWidgetItem*> it(m_tree->selectedItems());
-    QList <t_fixture_id> list;
+    QList <quint32> list;
 
     /* Put all selected fixture IDs to a list and return it */
     while (it.hasNext() == true)
@@ -140,7 +140,7 @@ QTreeWidgetItem* VCXYPadProperties::fixtureItem(const VCXYPadFixture& fxi)
     return NULL;
 }
 
-void VCXYPadProperties::removeFixtureItem(t_fixture_id fxi_id)
+void VCXYPadProperties::removeFixtureItem(quint32 fxi_id)
 {
     QTreeWidgetItemIterator it(m_tree);
     while (*it != NULL)
@@ -161,7 +161,7 @@ void VCXYPadProperties::slotAddClicked()
 {
     /* Put all fixtures already present into a list of fixtures that
        will be disabled in the fixture selection dialog */
-    QList <t_fixture_id> disabled;
+    QList <quint32> disabled;
     QTreeWidgetItemIterator twit(m_tree);
     while (*twit != NULL)
     {
@@ -172,11 +172,9 @@ void VCXYPadProperties::slotAddClicked()
     }
 
     /* Disable all fixtures that don't have pan OR tilt channels */
-    for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+    foreach(Fixture* fixture, _app->doc()->fixtures())
     {
-        Fixture* fixture = _app->doc()->fixture(fxi_id);
-        if (fixture == NULL)
-            continue;
+        Q_ASSERT(fixture != NULL);
 
         // If a channel with pan group exists, don't disable this fixture
         if (fixture->channel("", Qt::CaseSensitive, QLCChannel::Pan)
@@ -193,8 +191,7 @@ void VCXYPadProperties::slotAddClicked()
         }
 
         // Disable all fixtures without pan or tilt channels
-        disabled << fxi_id;
-
+        disabled << fixture->id();
     }
 
     /* Get a list of new fixtures to add to the pad */
@@ -202,7 +199,7 @@ void VCXYPadProperties::slotAddClicked()
     FixtureSelection fs(this, _app->doc(), true, disabled);
     if (fs.exec() == QDialog::Accepted)
     {
-        QListIterator <t_fixture_id> it(fs.selection);
+        QListIterator <quint32> it(fs.selection);
         while (it.hasNext() == true)
         {
             VCXYPadFixture fxi;

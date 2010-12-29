@@ -91,12 +91,12 @@ EFXFixture::~EFXFixture()
  * Public properties
  ****************************************************************************/
 
-void EFXFixture::setFixture(t_fixture_id fxi_id)
+void EFXFixture::setFixture(quint32 fxi_id)
 {
     m_fixture = fxi_id;
 }
 
-t_fixture_id EFXFixture::fixture() const
+quint32 EFXFixture::fixture() const
 {
     return m_fixture;
 }

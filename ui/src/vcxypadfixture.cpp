@@ -153,7 +153,7 @@ VCXYPadFixture::operator QVariant() const
  * Fixture
  ****************************************************************************/
 
-void VCXYPadFixture::setFixture(t_fixture_id fxi_id)
+void VCXYPadFixture::setFixture(quint32 fxi_id)
 {
     m_fixture = fxi_id;
 }

@@ -76,10 +76,10 @@ public slots:
     void slotDocumentChanged(Doc* doc);
 
     /** Callback for Doc::fixtureAdded() signals */
-    void slotFixtureAdded(t_fixture_id id);
+    void slotFixtureAdded(quint32 id);
 
     /** Callback for Doc::fixtureRemoved() signals */
-    void slotFixtureRemoved(t_fixture_id id);
+    void slotFixtureRemoved(quint32 id);
 
     /** Callback that listens to mode change signals */
     void slotModeChanged(Doc::Mode mode);
@@ -93,7 +93,7 @@ public:
 
 protected:
     /** Get a QTreeWidgetItem whose fixture ID is $id */
-    QTreeWidgetItem* fixtureItem(t_fixture_id id) const;
+    QTreeWidgetItem* fixtureItem(quint32 id) const;
 
     /** Construct the list view and data view */
     void initDataView();

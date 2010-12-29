@@ -68,8 +68,8 @@ public:
      * Fixture
      ********************************************************************/
 public:
-    void setFixture(t_fixture_id fxi_id);
-    t_fixture_id fixture() const {
+    void setFixture(quint32 fxi_id);
+    quint32 fixture() const {
         return m_fixture;
     }
 
@@ -82,7 +82,7 @@ public:
     void writeDMX(double xmul, double ymul, UniverseArray* universes);
 
 protected:
-    t_fixture_id m_fixture;
+    quint32 m_fixture;
 
     /********************************************************************
      * X-Axis

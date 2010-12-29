@@ -170,7 +170,7 @@ void Function_Test::slotFixtureRemoved()
 
     QCOMPARE(stub->m_slotFixtureRemovedId, Fixture::invalidId());
     doc.deleteFixture(42);
-    QCOMPARE(stub->m_slotFixtureRemovedId, 42);
+    QCOMPARE(stub->m_slotFixtureRemovedId, quint32(42));
 }
 
 void Function_Test::invalidId()

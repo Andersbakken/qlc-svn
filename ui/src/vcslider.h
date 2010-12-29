@@ -249,7 +249,7 @@ public:
     {
     public:
         /** Construct a new LevelChannel with the given fixture & channel */
-        LevelChannel(t_fixture_id fid, quint32 ch);
+        LevelChannel(quint32 fid, quint32 ch);
         /** Copy constructor */
         LevelChannel(const LevelChannel& lc);
         /** Comparison operator */
@@ -261,7 +261,7 @@ public:
 
     public:
         /** The associated fixture ID */
-        t_fixture_id fixture;
+        quint32 fixture;
         /** The associated channel within the fixture */
         quint32 channel;
     };
@@ -277,7 +277,7 @@ public:
      * @param fixture Fixture ID
      * @param channel A channel from the fixture
      */
-    void addLevelChannel(t_fixture_id fixture, quint32 channel);
+    void addLevelChannel(quint32 fixture, quint32 channel);
 
     /**
      * Remove a fixture & channel from the slider's list of
@@ -286,7 +286,7 @@ public:
      * @param fixture Fixture ID
      * @param channel A channel from the fixture
      */
-    void removeLevelChannel(t_fixture_id fixture, quint32 channel);
+    void removeLevelChannel(quint32 fixture, quint32 channel);
 
     /**
      * Clear the list of level channels
@@ -342,7 +342,7 @@ protected:
 
 protected slots:
     /** Removes all level channels related to removed fixture */
-    void slotFixtureRemoved(t_fixture_id fxi_id);
+    void slotFixtureRemoved(quint32 fxi_id);
 
 protected:
     QList <VCSlider::LevelChannel> m_levelChannels;

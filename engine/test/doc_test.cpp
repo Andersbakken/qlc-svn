@@ -57,16 +57,29 @@ void Doc_Test::defaults()
     Doc doc(this, m_fixtureDefCache);
     QVERIFY(&doc.m_fixtureDefCache == &m_fixtureDefCache);
     QVERIFY(doc.m_modified == false);
-    QVERIFY(doc.m_fixtureAllocation == 0);
-    QVERIFY(doc.m_fixtureArray != NULL);
+    QVERIFY(doc.m_latestFixtureId == 0);
+    QVERIFY(doc.m_fixtures.size() == 0);
     QVERIFY(doc.m_functionAllocation == 0);
     QVERIFY(doc.m_functionArray != NULL);
+}
+
+void Doc_Test::createFixtureId()
+{
+    Doc doc(this, m_fixtureDefCache);
+
+    for (quint32 i = 0; i < 1048576; i++)
+    {
+        quint32 id = doc.createFixtureId();
+        doc.m_fixtures[i] = NULL; // Just insert empty data to the map
+        QCOMPARE(id, i);
+    }
 }
 
 void Doc_Test::addFixture()
 {
     Doc doc(this, m_fixtureDefCache);
     QVERIFY(doc.isModified() == false);
+    QSignalSpy spy(&doc, SIGNAL(fixtureAdded(quint32)));
 
     /* Add a completely new fixture */
     Fixture* f1 = new Fixture(&doc);
@@ -74,10 +87,12 @@ void Doc_Test::addFixture()
     f1->setChannels(5);
     f1->setAddress(0);
     f1->setUniverse(0);
+
     QVERIFY(doc.addFixture(f1) == true);
-    QVERIFY(doc.m_fixtureAllocation == 1);
     QVERIFY(f1->id() == 0);
     QVERIFY(doc.isModified() == true);
+    QVERIFY(spy.size() == 1);
+    QVERIFY(spy.at(0).at(0) == f1->id());
 
     doc.resetModified();
 
@@ -89,15 +104,17 @@ void Doc_Test::addFixture()
     f2->setAddress(0);
     f2->setUniverse(0);
     QVERIFY(doc.addFixture(f2, f1->id()) == false);
-    QVERIFY(doc.m_fixtureAllocation == 1);
     QVERIFY(doc.isModified() == false);
+    QVERIFY(spy.size() == 1);
+    QVERIFY(spy.at(0).at(0) == f1->id());
 
     /* But, the fixture can be added if we give it an unassigned ID. */
     QVERIFY(doc.addFixture(f2, f1->id() + 1) == true);
-    QVERIFY(doc.m_fixtureAllocation == 2);
     QVERIFY(f1->id() == 0);
     QVERIFY(f2->id() == 1);
     QVERIFY(doc.isModified() == true);
+    QVERIFY(spy.size() == 2);
+    QVERIFY(spy.at(1).at(0) == f2->id());
 
     doc.resetModified();
 
@@ -108,24 +125,25 @@ void Doc_Test::addFixture()
     f3->setAddress(0);
     f3->setUniverse(0);
     QVERIFY(doc.addFixture(f3) == true);
-    QVERIFY(doc.m_fixtureAllocation == 3);
     QVERIFY(f1->id() == 0);
     QVERIFY(f2->id() == 1);
     QVERIFY(f3->id() == 2);
     QVERIFY(doc.isModified() == true);
+    QVERIFY(spy.size() == 3);
+    QVERIFY(spy.at(2).at(0) == f3->id());
 }
 
 void Doc_Test::deleteFixture()
 {
     Doc doc(this, m_fixtureDefCache);
 
-    QVERIFY(doc.m_fixtureAllocation == 0);
+    QVERIFY(doc.fixtures().size() == 0);
     QVERIFY(doc.deleteFixture(0) == false);
-    QVERIFY(doc.m_fixtureAllocation == 0);
+    QVERIFY(doc.fixtures().size() == 0);
     QVERIFY(doc.deleteFixture(1) == false);
-    QVERIFY(doc.m_fixtureAllocation == 0);
+    QVERIFY(doc.fixtures().size() == 0);
     QVERIFY(doc.deleteFixture(Fixture::invalidId()) == false);
-    QVERIFY(doc.m_fixtureAllocation == 0);
+    QVERIFY(doc.fixtures().size() == 0);
 
     Fixture* f1 = new Fixture(&doc);
     f1->setName("One");
@@ -152,20 +170,20 @@ void Doc_Test::deleteFixture()
     doc.resetModified();
 
     QVERIFY(doc.deleteFixture(42) == false);
-    QVERIFY(doc.m_fixtureAllocation == 3);
+    QVERIFY(doc.fixtures().size() == 3);
     QVERIFY(doc.isModified() == false);
 
     QVERIFY(doc.deleteFixture(Fixture::invalidId()) == false);
-    QVERIFY(doc.m_fixtureAllocation == 3);
+    QVERIFY(doc.fixtures().size() == 3);
     QVERIFY(doc.isModified() == false);
 
-    t_fixture_id id = f2->id();
+    quint32 id = f2->id();
     QVERIFY(doc.deleteFixture(id) == true);
-    QVERIFY(doc.m_fixtureAllocation == 2);
+    QVERIFY(doc.fixtures().size() == 2);
     QVERIFY(doc.isModified() == true);
 
     QVERIFY(doc.deleteFixture(id) == false);
-    QVERIFY(doc.m_fixtureAllocation == 2);
+    QVERIFY(doc.fixtures().size() == 2);
     QVERIFY(doc.isModified() == true);
 
     doc.resetModified();
@@ -177,31 +195,9 @@ void Doc_Test::deleteFixture()
     f4->setUniverse(0);
     doc.addFixture(f4);
     QVERIFY(f1->id() == 0);
-    QVERIFY(f4->id() == 1); // Takes the place of the removed f2
     QVERIFY(f3->id() == 2);
+    QVERIFY(f4->id() == 3); // IDs are sequential
     QVERIFY(doc.isModified() == true);
-}
-
-void Doc_Test::fixtureLimits()
-{
-    Doc doc(this, m_fixtureDefCache);
-
-    for (t_fixture_id id = 0; id < KFixtureArraySize; id++)
-    {
-        Fixture* fxi = new Fixture(&doc);
-        fxi->setName(QString("Test %1").arg(id));
-        QVERIFY(doc.addFixture(fxi) == true);
-        QVERIFY(doc.m_fixtureAllocation == id + 1);
-    }
-
-    doc.resetModified();
-
-    Fixture* over = new Fixture(&doc);
-    over->setName("Over Limits");
-    QVERIFY(doc.addFixture(over) == false);
-    QVERIFY(doc.isModified() == false);
-    QVERIFY(doc.m_fixtureAllocation == KFixtureArraySize);
-    delete over;
 }
 
 void Doc_Test::fixture()
@@ -234,7 +230,7 @@ void Doc_Test::fixture()
     QVERIFY(doc.fixture(f3->id()) == f3);
     QVERIFY(doc.fixture(f3->id() + 1) == NULL);
     QVERIFY(doc.fixture(42) == NULL);
-    QVERIFY(doc.fixture(KFixtureArraySize) == NULL);
+    QVERIFY(doc.fixture(Fixture::invalidId()) == NULL);
 }
 
 void Doc_Test::findAddress()
@@ -434,16 +430,16 @@ void Doc_Test::deleteFunction()
     QVERIFY(doc.deleteFunction(42) == false);
     QVERIFY(doc.isModified() == false);
     QVERIFY(ptr == NULL); // doc.deleteFunction() should also delete
-    QVERIFY(doc.m_fixtureArray[id] == NULL);
+    QVERIFY(doc.m_fixtures.contains(id) == false);
 
     id = s1->id();
     QVERIFY(doc.deleteFunction(id) == true);
-    QVERIFY(doc.m_fixtureArray[id] == NULL);
+    QVERIFY(doc.m_fixtures.contains(id) == false);
     QVERIFY(doc.isModified() == true);
 
     id = s3->id();
     QVERIFY(doc.deleteFunction(id) == true);
-    QVERIFY(doc.m_fixtureArray[id] == NULL);
+    QVERIFY(doc.m_fixtures.contains(id) == false);
     QVERIFY(doc.isModified() == true);
 
     QVERIFY(doc.functions() == 0);
@@ -517,10 +513,10 @@ void Doc_Test::load()
 
     root.appendChild(document.createElement("ExtraTag"));
 
-    QVERIFY(doc.fixtures() == 0);
+    QVERIFY(doc.fixtures().size() == 0);
     QVERIFY(doc.functions() == 0);
     QVERIFY(doc.loadXML(&root) == true);
-    QVERIFY(doc.fixtures() == 3);
+    QVERIFY(doc.fixtures().size() == 3);
     QVERIFY(doc.functions() == 4);
     QVERIFY(Bus::instance()->value(0) == 1);
     QVERIFY(Bus::instance()->value(7) == 2);
@@ -629,7 +625,7 @@ void Doc_Test::save()
     QVERIFY(doc.isModified() == true);
 }
 
-QDomElement Doc_Test::createFixtureNode(QDomDocument& doc, t_fixture_id id)
+QDomElement Doc_Test::createFixtureNode(QDomDocument& doc, quint32 id)
 {
     QDomElement root = doc.createElement("Fixture");
     doc.appendChild(root);

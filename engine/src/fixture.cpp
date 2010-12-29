@@ -33,15 +33,13 @@
 #include "fixture.h"
 #include "doc.h"
 
-#define KInvalidFixtureID -1
-
 /*****************************************************************************
  * Initialization
  *****************************************************************************/
 
 Fixture::Fixture(QObject* parent) : QObject(parent)
 {
-    m_id = KInvalidFixtureID;
+    m_id = Fixture::invalidId();
 
     m_address = 0;
     m_channels = 0;
@@ -72,20 +70,20 @@ bool Fixture::operator<(const Fixture& fxi)
  * Fixture ID
  *****************************************************************************/
 
-void Fixture::setID(t_fixture_id id)
+void Fixture::setID(quint32 id)
 {
     m_id = id;
     emit changed(m_id);
 }
 
-t_fixture_id Fixture::id() const
+quint32 Fixture::id() const
 {
     return m_id;
 }
 
-t_fixture_id Fixture::invalidId()
+quint32 Fixture::invalidId()
 {
-    return KInvalidFixtureID;
+    return UINT_MAX;
 }
 
 /*****************************************************************************
@@ -361,7 +359,7 @@ bool Fixture::loadXML(const QDomElement* root,
     QString model;
     QString modeName;
     QString name;
-    t_fixture_id id = KInvalidFixtureID;
+    quint32 id = Fixture::invalidId();
     quint32 universe = 0;
     quint32 address = 0;
     quint32 channels = 0;
@@ -396,7 +394,7 @@ bool Fixture::loadXML(const QDomElement* root,
         }
         else if (tag.tagName() == KXMLFixtureID)
         {
-            id = tag.text().toInt();
+            id = tag.text().toUInt();
         }
         else if (tag.tagName() == KXMLFixtureName)
         {
@@ -470,10 +468,10 @@ bool Fixture::loadXML(const QDomElement* root,
         universe = 0;
     }
 
-    /* Check that we have a sensible ID, otherwise we can't continue */
-    if (id < 0 || id >= KFixtureArraySize)
+    /* Check that the invalid ID is not used */
+    if (id == Fixture::invalidId())
     {
-        qWarning() << Q_FUNC_INFO << "Fixture ID" << id << "out of bounds";
+        qWarning() << Q_FUNC_INFO << "Fixture ID" << id << "is not allowed.";
         return false;
     }
 

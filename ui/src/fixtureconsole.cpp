@@ -57,7 +57,7 @@ FixtureConsole::~FixtureConsole()
  * Fixture
  *****************************************************************************/
 
-void FixtureConsole::setFixture(t_fixture_id id)
+void FixtureConsole::setFixture(quint32 id)
 {
     ConsoleChannel* cc = NULL;
     Fixture* fxi = NULL;

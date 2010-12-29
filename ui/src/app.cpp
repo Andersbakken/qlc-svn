@@ -127,6 +127,27 @@ App::~App()
     QSettings settings;
     settings.setValue(SETTINGS_GEOMETRY, saveGeometry());
 
+    if (FixtureManager::instance() != NULL)
+        delete FixtureManager::instance();
+
+    if (Monitor::instance() != NULL)
+        delete Monitor::instance();
+
+    if (FunctionManager::instance() != NULL)
+        delete FunctionManager::instance();
+
+    if (BusManager::instance() != NULL)
+        delete BusManager::instance();
+
+    if (InputManager::instance() != NULL)
+        delete InputManager::instance();
+
+    if (OutputManager::instance() != NULL)
+        delete OutputManager::instance();
+
+    if (VirtualConsole::instance() != NULL)
+        delete VirtualConsole::instance();
+
     // Store outputmap defaults
     if (m_outputMap != NULL)
         m_outputMap->saveDefaults();
@@ -467,13 +488,13 @@ void App::slotDocModified(bool state)
     }
 
     /* Update fixture & function allocation status */
-    m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2 (%3W)")
-                                          .arg(m_doc->fixtures()).arg(KFixtureArraySize)
+    m_fixtureAllocationIndicator->setText(tr("Fixtures: %1 (%2W)")
+                                          .arg(m_doc->fixtures().size())
                                           .arg(totalPowerConsumption));
     m_fixtureAllocationIndicator->setToolTip(
-        tr("Space left for %n fixtures. Currently consuming %1 watts total.", "",
-           KFixtureArraySize - m_doc->fixtures())
-        .arg(totalPowerConsumption) + msg);
+        tr("%1 fixtures currently consuming %2 watts of power in total.")
+           .arg(m_doc->fixtures().size())
+           .arg(totalPowerConsumption) + msg);
 
     m_functionAllocationIndicator->setText(tr("Functions: %1/%2")
                                            .arg(m_doc->functions()).arg(KFunctionArraySize));
@@ -623,10 +644,8 @@ void App::initStatusBar()
 {
     /* Fixture Allocation Indicator */
     m_fixtureAllocationIndicator = new QLabel(statusBar());
-    m_fixtureAllocationIndicator->setFrameStyle(QFrame::StyledPanel |
-            QFrame::Sunken);
-    m_fixtureAllocationIndicator->setText(tr("Fixtures: %1/%2")
-                                          .arg(KFixtureArraySize).arg(KFixtureArraySize));
+    m_fixtureAllocationIndicator->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+    m_fixtureAllocationIndicator->setText(tr("Fixtures: %1").arg(0));
     statusBar()->addWidget(m_fixtureAllocationIndicator);
 
     /* Function Allocation Indicator */

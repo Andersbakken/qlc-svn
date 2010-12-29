@@ -384,7 +384,7 @@ void EFXEditor::slotAddFixtureClicked()
 {
     /* Put all fixtures already present into a list of fixtures that
        will be disabled in the fixture selection dialog */
-    QList <t_fixture_id> disabled;
+    QList <quint32> disabled;
     QTreeWidgetItemIterator twit(m_tree);
     while (*twit != NULL)
     {
@@ -397,11 +397,11 @@ void EFXEditor::slotAddFixtureClicked()
     }
 
     /* Disable all fixtures that don't have pan OR tilt channels */
-    for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+    QListIterator <Fixture*> fxit(_app->doc()->fixtures());
+    while (fxit.hasNext() == true)
     {
-        Fixture* fixture = _app->doc()->fixture(fxi_id);
-        if (fixture == NULL)
-            continue;
+        Fixture* fixture(fxit.next());
+        Q_ASSERT(fixture != NULL);
 
         // If a channel with pan group exists, don't disable this fixture
         if (fixture->channel("", Qt::CaseSensitive, QLCChannel::Pan)
@@ -418,15 +418,14 @@ void EFXEditor::slotAddFixtureClicked()
         }
 
         // Disable all fixtures without pan or tilt channels
-        disabled << fxi_id;
-
+        disabled << fixture->id();
     }
 
     /* Get a list of new fixtures to add to the scene */
     FixtureSelection fs(this, _app->doc(), true, disabled);
     if (fs.exec() == QDialog::Accepted)
     {
-        QListIterator <t_fixture_id> it(fs.selection);
+        QListIterator <quint32> it(fs.selection);
         while (it.hasNext() == true)
         {
             EFXFixture* ef = new EFXFixture(m_efx);

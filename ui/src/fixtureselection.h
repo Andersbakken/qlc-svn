@@ -48,7 +48,7 @@ public:
      *                 fixtures etc...)
      */
     FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
-                     QList <t_fixture_id> disabled);
+                     QList <quint32> disabled);
 
     /**
      * Destructor
@@ -58,7 +58,7 @@ public:
     /**
      * List of selected fixture IDs
      */
-    QList <t_fixture_id> selection;
+    QList <quint32> selection;
 
 private:
     Q_DISABLE_COPY(FixtureSelection)

@@ -48,7 +48,7 @@ void Fixture_Test::initTestCase()
 
 void Fixture_Test::id()
 {
-    QVERIFY(Fixture::invalidId() == -1);
+    QVERIFY(Fixture::invalidId() == UINT_MAX);
 
     Fixture fxi(this);
     QVERIFY(fxi.id() == Fixture::invalidId());
@@ -609,8 +609,7 @@ void Fixture_Test::loadWrongID()
     root.appendChild(type);
 
     QDomElement id = doc.createElement("ID");
-    QDomText idText = doc.createTextNode(QString("%1")
-                                         .arg(KFixtureArraySize));
+    QDomText idText = doc.createTextNode(QString::number(Fixture::invalidId()));
     id.appendChild(idText);
     root.appendChild(id);
 
@@ -672,10 +671,10 @@ void Fixture_Test::loader()
 
     Doc* qlcdoc = new Doc(this, m_fixtureDefCache);
     QVERIFY(qlcdoc != NULL);
-    QVERIFY(qlcdoc->fixtures() == 0);
+    QVERIFY(qlcdoc->fixtures().size() == 0);
 
     QVERIFY(Fixture::loader(&root, qlcdoc) == true);
-    QVERIFY(qlcdoc->fixtures() == 1);
+    QVERIFY(qlcdoc->fixtures().size() == 1);
     QVERIFY(qlcdoc->fixture(0) == NULL); // No ID auto-assignment
 
     Fixture* fxi = qlcdoc->fixture(42);

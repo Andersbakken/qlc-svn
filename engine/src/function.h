@@ -277,7 +277,7 @@ protected:
 
 public slots:
     /** Slot that captures Doc::fixtureRemoved signals */
-    virtual void slotFixtureRemoved(t_fixture_id fxi_id);
+    virtual void slotFixtureRemoved(quint32 fxi_id);
 
     /*********************************************************************
      * Load & Save

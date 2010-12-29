@@ -463,13 +463,13 @@ bool SceneEditor::isColorToolAvailable()
  * General page
  *****************************************************************************/
 
-QTreeWidgetItem* SceneEditor::fixtureItem(t_fixture_id fxi_id)
+QTreeWidgetItem* SceneEditor::fixtureItem(quint32 fxi_id)
 {
     QTreeWidgetItemIterator it(m_tree);
     while (*it != NULL)
     {
         QTreeWidgetItem* item = *it;
-        if (item->text(KColumnID).toInt() == fxi_id)
+        if (item->text(KColumnID).toUInt() == fxi_id)
             return item;
         ++it;
     }
@@ -485,7 +485,7 @@ QList <Fixture*> SceneEditor::selectedFixtures() const
     while (it.hasNext() == true)
     {
         QTreeWidgetItem* item;
-        t_fixture_id fxi_id;
+        quint32 fxi_id;
         Fixture* fixture;
 
         item = it.next();
@@ -540,7 +540,7 @@ void SceneEditor::slotAddFixtureClicked()
 {
     /* Put all fixtures already present into a list of fixtures that
        will be disabled in the fixture selection dialog */
-    QList <t_fixture_id> disabled;
+    QList <quint32> disabled;
     QTreeWidgetItemIterator twit(m_tree);
     while (*twit != NULL)
     {
@@ -554,7 +554,7 @@ void SceneEditor::slotAddFixtureClicked()
     {
         Fixture* fixture;
 
-        QListIterator <t_fixture_id> it(fs.selection);
+        QListIterator <quint32> it(fs.selection);
         while (it.hasNext() == true)
         {
             fixture = _app->doc()->fixture(it.next());

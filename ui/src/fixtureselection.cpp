@@ -37,7 +37,7 @@
 #define KColumnID           3
 
 FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
-                                   QList <t_fixture_id> disabled)
+                                   QList <quint32> disabled)
         : QDialog(parent)
 {
     Q_ASSERT(doc != NULL);
@@ -54,19 +54,16 @@ FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
             this, SLOT(slotItemDoubleClicked(QTreeWidgetItem*)));
 
     /* Fill the tree */
-    for (t_fixture_id fxi_id = 0; fxi_id < KFixtureArraySize; fxi_id++)
+    foreach (Fixture* fixture, doc->fixtures())
     {
-        QTreeWidgetItem* item;
-        Fixture* fixture;
-        QString str;
+        Q_ASSERT(fixture != NULL);
 
-        fixture = doc->fixture(fxi_id);
-        if (fixture == NULL)
-            continue;
+        QTreeWidgetItem* item;
+        QString str;
 
         item = new QTreeWidgetItem(m_tree);
         item->setText(KColumnName, fixture->name());
-        item->setText(KColumnID, str.setNum(fxi_id));
+        item->setText(KColumnID, str.setNum(fixture->id()));
 
         if (fixture->fixtureDef() == NULL)
         {
@@ -81,7 +78,7 @@ FixtureSelection::FixtureSelection(QWidget* parent, Doc* doc, bool multiple,
                           fixture->fixtureDef()->model());
         }
 
-        if (disabled.contains(fxi_id) == true)
+        if (disabled.contains(fixture->id()) == true)
             item->setFlags(0); // Disables the item
     }
 

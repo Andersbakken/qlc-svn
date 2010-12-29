@@ -53,10 +53,10 @@ MonitorFixture::MonitorFixture(QWidget* parent) : QFrame(parent)
     setBackgroundRole(QPalette::Window);
 
     /* Listen to existing fixture changes and removals */
-    connect(_app->doc(), SIGNAL(fixtureChanged(t_fixture_id)),
-            this, SLOT(slotFixtureChanged(t_fixture_id)));
-    connect(_app->doc(), SIGNAL(fixtureRemoved(t_fixture_id)),
-            this, SLOT(slotFixtureRemoved(t_fixture_id)));
+    connect(_app->doc(), SIGNAL(fixtureChanged(quint32)),
+            this, SLOT(slotFixtureChanged(quint32)));
+    connect(_app->doc(), SIGNAL(fixtureRemoved(quint32)),
+            this, SLOT(slotFixtureRemoved(quint32)));
 }
 
 MonitorFixture::~MonitorFixture()
@@ -97,7 +97,7 @@ void MonitorFixture::updateLabelStyles()
  * Fixture
  ****************************************************************************/
 
-void MonitorFixture::setFixture(t_fixture_id fxi_id)
+void MonitorFixture::setFixture(quint32 fxi_id)
 {
     Fixture* fxi;
 
@@ -182,14 +182,14 @@ void MonitorFixture::slotChannelStyleChanged(Monitor::ChannelStyle style)
         it.next()->setText(str.sprintf("<B>%.3d</B>", i++));
 }
 
-void MonitorFixture::slotFixtureChanged(t_fixture_id fxi_id)
+void MonitorFixture::slotFixtureChanged(quint32 fxi_id)
 {
     /* Create this object's contents anew */
     if (fxi_id == m_fixture)
         setFixture(fxi_id);
 }
 
-void MonitorFixture::slotFixtureRemoved(t_fixture_id fxi_id)
+void MonitorFixture::slotFixtureRemoved(quint32 fxi_id)
 {
     if (fxi_id == m_fixture)
         deleteLater(); /* Can't delete this immediately */

@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QList>
 #include <QFile>
+#include <QMap>
 
 #include "function.h"
 #include "fixture.h"
@@ -127,21 +128,26 @@ public:
      * @return true if the fixture was successfully added to doc,
      *         otherwise false.
      */
-    bool addFixture(Fixture* fixture, t_fixture_id id = Fixture::invalidId());
+    bool addFixture(Fixture* fixture, quint32 id = Fixture::invalidId());
 
     /**
      * Delete the given fixture instance from Doc
      *
      * @param id The ID of the fixture instance to delete
      */
-    bool deleteFixture(t_fixture_id id);
+    bool deleteFixture(quint32 id);
 
     /**
      * Get the fixture instance that has the given ID
      *
      * @param id The ID of the fixture to get
      */
-    Fixture* fixture(t_fixture_id id) const;
+    Fixture* fixture(quint32 id) const;
+
+    /**
+     * Get a list of fixtures
+     */
+    QList <Fixture*> fixtures() const;
 
     /**
      * Attempt to find the next contiguous free address space for the given
@@ -153,13 +159,6 @@ public:
      * @return The address or QLCChannel::invalid() if not found
      */
     quint32 findAddress(quint32 numChannels) const;
-
-    /**
-     * Get the number of fixtures currently present/allocated.
-     *
-     * @return Number of fixtures
-     */
-    int fixtures() const;
 
     /**
      * Get the total power consumption of all fixtures in the current
@@ -183,31 +182,26 @@ protected:
     quint32 findAddress(quint32 universe, quint32 numChannels) const;
 
     /**
-     * Assign the given fixture ID to the fixture, placing the fixture
-     * at the same index in m_fixtureArray, increase fixture count and
-     * emit fixtureAdded() signal.
-     *
-     * @param fixture The fixture to assign
-     * @param id The ID to assign to the fixture
+     * Create a new fixture ID
      */
-    void assignFixture(Fixture* fixture, t_fixture_id id);
+    quint32 createFixtureId();
 
 signals:
     /** Signal that a fixture has been added */
-    void fixtureAdded(t_fixture_id fxi_id);
+    void fixtureAdded(quint32 fxi_id);
 
     /** Signal that a fixture has been removed */
-    void fixtureRemoved(t_fixture_id fxi_id);
+    void fixtureRemoved(quint32 fxi_id);
 
     /** Signal that a fixture's properties have changed */
-    void fixtureChanged(t_fixture_id fxi_id);
+    void fixtureChanged(quint32 fxi_id);
 
 protected:
-    /** Array that holds all fixtures */
-    Fixture** m_fixtureArray;
+    /** Fixtures */
+    QMap <quint32,Fixture*> m_fixtures;
 
-    /** Number of allocated fixtures in fixture array */
-    int m_fixtureAllocation;
+    /** Latest assigned fixture ID */
+    quint32 m_latestFixtureId;
 
     /*********************************************************************
      * Functions
@@ -272,7 +266,7 @@ protected:
 
 public slots:
     /** Catch fixture property changes */
-    void slotFixtureChanged(t_fixture_id fxi_id);
+    void slotFixtureChanged(quint32 fxi_id);
 
 protected slots:
     /** Slot that catches function change signals */

@@ -142,7 +142,7 @@ protected:
      * @param fxi_id The fixture ID to search for
      * @param doc A QLC Doc* pointer that contains all fixture instances
      */
-    QTreeWidgetItem* fixtureItem(t_fixture_id fxi_id, Doc* doc);
+    QTreeWidgetItem* fixtureItem(quint32 fxi_id, Doc* doc);
 
     /**
      * Edit the given function with an editor dialog

@@ -358,20 +358,14 @@ void VCSliderProperties::slotBusHighLimitSpinChanged(int value)
 
 void VCSliderProperties::levelUpdateFixtures()
 {
-    t_fixture_id id = 0;
-    Fixture* fxi = NULL;
-
-    for (id = 0; id < KFixtureArraySize; id++)
+    foreach(Fixture* fixture, _app->doc()->fixtures())
     {
-        fxi = _app->doc()->fixture(id);
-        if (fxi == NULL)
-            continue;
-
-        levelUpdateFixtureNode(id);
+        Q_ASSERT(fixture != NULL);
+        levelUpdateFixtureNode(fixture->id());
     }
 }
 
-void VCSliderProperties::levelUpdateFixtureNode(t_fixture_id id)
+void VCSliderProperties::levelUpdateFixtureNode(quint32 id)
 {
     QTreeWidgetItem* item;
     Fixture* fxi;
@@ -395,7 +389,7 @@ void VCSliderProperties::levelUpdateFixtureNode(t_fixture_id id)
     levelUpdateChannels(item, fxi);
 }
 
-QTreeWidgetItem* VCSliderProperties::levelFixtureNode(t_fixture_id id)
+QTreeWidgetItem* VCSliderProperties::levelFixtureNode(quint32 id)
 {
     QTreeWidgetItem* item;
     int i;
@@ -403,7 +397,7 @@ QTreeWidgetItem* VCSliderProperties::levelFixtureNode(t_fixture_id id)
     for (i = 0; i < m_levelList->topLevelItemCount(); i++)
     {
         item = m_levelList->topLevelItem(i);
-        if (item->text(KColumnID).toInt() == id)
+        if (item->text(KColumnID).toUInt() == id)
             return item;
     }
 
@@ -677,7 +671,7 @@ void VCSliderProperties::storeLevelChannels()
         QTreeWidgetItem* fxi_item = m_levelList->topLevelItem(i);
         Q_ASSERT(fxi_item != NULL);
 
-        t_fixture_id fxi_id = fxi_item->text(KColumnID).toUInt();
+        quint32 fxi_id = fxi_item->text(KColumnID).toUInt();
 
         for (int j = 0; j < fxi_item->childCount(); j++)
         {
